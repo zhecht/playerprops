@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Defensive Ranks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+    <link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+    <style>
+      html { min-height:100%; position: relative; }
+      body { height: 100%;margin:0; }
+      #header { width: 100%; text-align: center; }
+      #header h2 { line-height: 0.5; }
+      #breakdownWrapper {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: auto;
+        width: 100%; height: 100vh;
+      }
+      #breakdownTable {
+        height: 100%;
+      }
+      #breakdownWindow {
+        height: 80%;
+        width: 60%;
+        background: #eee;
+      }
+      #breakdownWindow h1 {
+        margin: 0;
+        text-align: center;
+      }
+      #main_div { display: flex; width: 100%; flex-direction: column; align-items: center; overflow: auto;padding-top: 10px;}
+      #nav { padding: 10px; }
+      #nav a { text-decoration: none; }
+      #nav a.active { text-decoration: underline; }
+      table { width: 70%; border-collapse: collapse; justify-content: center;margin-top: 1.5%; }
+      #click_me { font-size: 16px; font-style: italic; padding-top: 15px; text-align: center;}
+      .clickable { cursor: pointer; }
+      .players_table, .players_proj_table, .players_var_table { width: 100%; margin-top: 0; }      
+      .players_table th { font-style: italic; text-decoration: underline; }
+      .players_table th, .players_table td, .players_proj_table th, .players_proj_table td, .players_var_table th, .players_var_table td { border:0px; padding: 2.5px; margin: 0; }
+      .players_table th, .players_table td { }
+      .players_table td:nth-child(1) { width: 20%; }
+      .players_table td:nth-child(2) { width: 30%; }
+      .players_table td:last-child { width: 50%; }
+      #scoring { display: none; width: 70%; background: #f1f1f1; position: absolute; height: 750px; top:30px; align-items: center; justify-content: center; flex-direction: column; }
+      #main_scoring { display: flex; width: 100%; justify-content: center; }
+      #main_scoring div { display: flex; flex-direction: column; flex: 1; text-align: center; }
+      #main_scoring h3 { text-decoration: underline; }
+      #link_div { text-align: center; }
+      #sort_div {padding-bottom: 10px;}
+      #hide_div { display: none;padding-top: 1.5%;width: 100%; text-align: center;flex-direction: column; }
+      #hide_div span {  }
+      #checkbox_wrapper { flex-direction: row; display: flex; justify-content: space-evenly; }
+      #variance_div { display: flex; width: 100%; justify-content: center; flex-direction: column;}
+      #variance_div a {text-align: center;}
+      #variance_explanation { flex-direction: column; width: 50%; margin-left: 25%; text-align: center; margin-top: 15px; }
+      #variance_explanation div { margin: 10px 0; }
+      #scoring label { padding-right: 10px; }
+      #scoring div {  }
+      #scoring_result { display: none; padding: 5px; }
+      #save_div {  }
+      #scoring_offense div, #scoring_kicking div, #scoring_defense div { flex-direction: row; justify-content: space-evenly; padding: 0 5%; padding-bottom: 5%; }
+      #ppg_by_pos { display: none; }
+      #color_table {  }
+      #value_overview {  }
+      .tableDiv {
+        display: flex;
+        justify-content: center;
+        height: 80%;
+      }
+      .close_table { position: absolute;right: 15px; cursor: pointer; }
+      button { width: 250px;text-align: center; cursor: pointer; background: rgba(0,0,0,0);  padding: 7px; flex: 1; font-weight: bold; }
+      #scoring button { width: 125px;  }
+      #main_scoring button { width: 50px;padding:5px;margin-top:-5px; }
+      #save_div button { width: 200px; }
+      button.active { box-shadow: inset 0 0 0 0px white,inset 0 5px 40px #231F20; }
+      td, th { padding: 5px; border: 1px solid; text-align: center; background-color: #f1f1f1; }
+      td { font-weight: bold; }
+      img { width: 35%; justify-content: center; }
+      #darkened_back { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,.6); display: none; }
+      .positive { color: green; }
+      .negative { color: red; }
+      @media (max-width: 450px) {
+        #breakdownWindow {
+          width: 100%;
+        }
+
+        td { padding: 7px; }
+        table { width: 100%; }
+        button { width: 150px; }
+        .click_tables { width: 100%; }
+        .mobile_show_wrapper { display: flex; justify-content: space-between;padding:0 20px; }
+        .players_table td:nth-child(1) { width: unset;text-align: left; }
+        .players_table td:nth-child(2) { width: unset; }
+        .players_table td:last-child {  width: unset;}
+        #scoring { width: 100%; justify-content: normal; overflow: scroll; }
+        #ppg_by_team, #ppg_by_pos { overflow: scroll; }
+        #main_scoring { flex-direction: column; display: none; }
+        #scoring button { width: 100px; }
+        #ppr { margin-top: 10%; }
+        #save_div { position: relative; bottom: 0; margin-top: 15%; }
+        #main_scoring button { margin-top: 0; }
+        #hide_div { display: flex; margin-left: 0; }
+        #variance_explanation { width: 100%; margin-left: 0; }
+      }
+    </style>
+  </head>
+  <body style="font-size:18px;">
+    <div id="darkened_back"></div>
+    <div id="header">
+      <div id="nav">
+        <a href="#" class="active">Defensive Ranks</a>
+        /
+        <a href="#">RBBC Trends</a>
+        /
+        <a href="#">Redzone Look Trends</a>
+      </div>
+    </div>
+    <div id="main_div">
+      <div id="sort_div" style="display:flex;flex-direction: row;">
+        <button class="active">Sorted By Team</button>
+        <button>Sorted By Pos</button>
+      </div>
+      {{ link_html|safe }}
+      {{ scoring_html|safe }}
+      {{ variance_html|safe }}
+      <div id="click_me">Click any box to show the data used to calculate the number on a weekly basis</div>
+      {{ hide_html|safe }}
+      {{ color_html|safe }}
+      {{ table_html|safe }}
+    </div>
+    <div id="breakdownWrapper">
+      <div id="breakdownWindow">
+        <h1></h1>
+        <div id="breakdownTable"></div>
+      </div>
+    </div>
+
+    <script src="/static/js/defense.js"></script>
+    <script>
+      settings = JSON.parse('{{ settings_string|safe }}');
+    </script>
+    <input type="hidden" id="showing" value="" />
+  </body>
+</html>

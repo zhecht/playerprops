@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NHL Slate</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/nhlteams.css" type="text/css">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		.game {
+			position: relative;
+			display: flex;
+			padding: 2rem 0;
+			border-bottom: 1px solid;
+			min-height: 100px;
+			justify-content: space-evenly;
+		}
+		.team {
+			display: flex;
+			flex-direction: column;
+			text-align: center;
+			width: calc(calc(100% - 500px) / 2);
+		}
+		.team h2 {
+			width: 100%;
+			margin: 0;
+		}
+		table {
+			border-collapse: collapse;
+			width: 500px;
+			height: min-content;
+			margin-top: auto;
+			margin-bottom: auto;
+		}
+		tr {
+			text-align: center;
+			border-bottom: 1px solid;
+		}
+		td:nth-child(2) {
+			padding: 0 1rem;
+		}
+		.row {
+			margin-top: 1rem;
+			display:flex;
+			flex-direction:column;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+
+		@media (max-width: 500px) {
+			.game {
+				flex-direction: column;
+
+			}
+			.team {
+				width: 100%;
+			}
+		}
+	</style>
+	<body>
+		<div style="text-align: center;margin-top:1rem">
+			C: Confirmed, E: Expected, QS: Quality Starts, RBS: Really Bad Starts
+		</div>
+		{% for game in data %}
+		<div class="game">
+			<div class="team">
+				<h2 class="{{data[game]['A'].team}}">{{ data[game]["A"].team.upper() }}</h2>
+				<div>
+					{{ data[game]["A"].goalie.title() }} ({{ "C" if data[game]["A"].goalieStatus else "E" }})
+				</div>
+				<div>
+					{{ data[game]["A"].goalieRecord }}
+					&bull;
+					{{ data[game]["A"].gsaa }} GSAA
+					&bull;
+					{{ data[game]["A"].gaa }} GAA
+				</div>
+				<div>
+					{{ data[game]["A"].svPct }} SV%
+					&bull;
+					{{ data[game]["A"].qs }} QS%
+					&bull;
+					{{ data[game]["A"].rbs }} RBS
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Team Totals</span>
+					<span>{{ data[game]["A"].ttOvers }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Game Totals</span>
+					<span>{{ ",".join(data[game]["A"].oversL10) }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Team % Over</span>
+					<span>{{ data[game]["A"].teamOverShort }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Goalie % Over</span>
+					<span>{{ data[game]["A"].goalieOver }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Prev Matchups</span>
+					{% for matchup in data[game]["A"].prevMatchupList %}
+					<span>{{matchup}}</span>
+					{% endfor %}
+				</div>
+			</div>
+			<table>
+				<tr>
+					<td>{{ data[game]["A"].team.upper() }}</td><td>TEAM</td><td>{{ data[game]["H"].team.upper() }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].moneylineOdds }}</td><td>ML</td><td>{{ data[game]["H"].moneylineOdds }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].puckline }}</td><td>PL</td><td>{{ data[game]["H"].puckline }}</div>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].tt }}</td><td>TT</td><td>{{ data[game]["H"].tt }}</div>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].ttOU }}</td><td>TT O/U</td><td>{{ data[game]["H"].ttOU }}</div>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].total }}</td><td>O/U</td><td>{{ data[game]["H"].total }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].teamOverSzn }}</td><td>% Over</td><td>{{ data[game]["H"].teamOverSzn }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].oversAvg }}</td><td>Avg Overs</td><td>{{ data[game]["H"].oversAvg }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].gpg }}</td><td>GPG</td><td>{{ data[game]["H"].gpg }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].gpga }}</td><td>GPGA</td><td>{{ data[game]["H"].gpga }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].corsiTot }}</td><td>Corsi</td><td>{{ data[game]["H"].corsiTot }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].fenwickTot }}</td><td>Fenwick</td><td>{{ data[game]["H"].fenwickTot }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].shotsTot }}</td><td>Shots</td><td>{{ data[game]["H"].shotsTot }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].scoringTot }}</td><td>Scoring</td><td>{{ data[game]["H"].scoringTot }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].shotsLast5 }}</td><td>Shots L5</td><td>{{ data[game]["H"].shotsLast5 }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].scoringLast5 }}</td><td>Scoring L5</td><td>{{ data[game]["H"].scoringLast5 }}</td>
+				</tr>
+			</table>
+			<div class="team">
+				<h2 class="{{data[game]['H'].team}}">{{ data[game]["H"].team.upper() }}</h2>
+				<div>
+					{{ data[game]["H"].goalie.title() }} ({{ "C" if data[game]["H"].goalieStatus else "E" }})
+				</div>
+				<div>
+					{{ data[game]["H"].goalieRecord }}
+					&bull;
+					{{ data[game]["H"].gsaa }}
+					GSAA
+					&bull;
+					{{ data[game]["H"].gaa }}
+					GAA
+				</div>
+				<div>
+					{{ data[game]["H"].svPct }} SV%
+					&bull;
+					{{ data[game]["H"].qs }} QS%
+					&bull;
+					{{ data[game]["H"].rbs }} RBS
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Team Totals</span>
+					<span>{{ data[game]["H"].ttOvers }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Game Totals</span>
+					<span>{{ ",".join(data[game]["H"].oversL10) }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Team % Over</span>
+					<span>{{ data[game]["H"].teamOverShort }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Goalie % Over</span>
+					<span>{{ data[game]["H"].goalieOver }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Prev Matchups</span>
+					{% for matchup in data[game]["H"].prevMatchupList %}
+					<span>{{matchup}}</span>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</body>
+
+</html>

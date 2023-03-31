@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tackles Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/teams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+			<button onclick="print();">Print</button>
+			<button onclick="print('csv');">PRINT CSV</button>
+		</div>
+		<script>
+			const CURR_WEEK = {{curr_week}};
+			let TABLE;
+			const teamNames = ["All", "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LAR", "LV", "MIA", "MIN", "NO", "NE", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
+
+			function save() {
+				const args = [];
+				for (row of TABLE.getSelectedRows()) {
+					const data = row.getData();
+					args.push(data.player+"*"+data.propType);
+				}
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState === 4 && this.status === 200) {
+						var j = JSON.parse(this.responseText);
+
+					}
+				};
+				var url = "/props?favorites="+args.join(";");
+				xhttp.open("POST", url);
+				xhttp.send();
+			}
+
+			function print(output = "") {
+				const args = [];
+				let s = "";
+				const joinChar = (output == "csv") ? "\t" : "|";
+				s += ["NAME","POS","TEAM","OPP","OPP RANK","PROP","LINE","SZN AVG","% OVER","LAST GAMES","OVER", "UNDER"].join(joinChar);
+				s += "\n";
+                if (output != "csv") {
+                    s += ":--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--\n";
+                }
+				let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+				for (row of rows) {
+					const data = row.getData();
+					let overOdds = data.overOdds;
+					let underOdds = data.underOdds;
+					if (output == "csv") {
+						if (parseInt(overOdds) > 0) {
+							overOdds = "'"+overOdds;
+						}
+						if (parseInt(underOdds) > 0) {
+							underOdds = "'"+underOdds;
+						}
+					}
+					s += [data.player, data.pos, data.team.toUpperCase(), data.opponent.toUpperCase(), addNumSuffix(data.oppRank), parseProp(data.propType), data.line, data.avg, data.totalOver+"%", data.last5, overOdds, underOdds].join(joinChar);
+					s += "\n";
+				}
+				console.log(s);
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const projFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				if (parseFloat(data.proj) >= parseFloat(data.line)) {
+					return "<div class='positive'>"+data.proj+"</div>";
+				}
+				return "<div class='negative'>"+data.proj+"</div>";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const propFormatter = function(cell, params, rendered) {
+				let prop = cell.getValue();
+				return parseProp(prop);
+			}
+
+			function parseProp(prop) {
+				if (prop == "recv_yd") return "REC YDs";
+				else if (prop == "recv_rec") return "RECs";
+				else if (prop == "rush_att") return "RUSHs";
+				else if (prop == "rush_recv_yd") return "RUSH+REC YDs";
+				else if (prop == "rush_yd") return "RUSH YDs";
+				else if (prop == "pass_att") return "ATTEMPS";
+				else if (prop == "pass_comp") return "COMPs";
+				else if (prop == "pass_int") return "INTs";
+				else if (prop == "pass_td") return "PASS TDs";
+				else if (prop == "pass_yd") return "PASS YDs";
+				else if (prop == "recv_rec") return "REC";
+				else if (prop == "tackles_combined") return "TACKLES";
+				return prop;
+			}
+
+			function convertType(type) {
+				if (type == "pass_comp") return "pass_cmp";
+				else if (type == "recv_rec") return "rec";
+				else if (type == "recv_yd") return "rec_yds";
+				else if (type == "pass_comp") return "pass_cmp";
+				else if (type == "pass_yd") return "pass_yds";
+				else if (type == "rush_yd") return "rush_yds";
+				return type;
+			}
+
+			const avgFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const stats = data.stats;
+				const propType = data.propType;
+				if (stats.tot && stats.tot.gamesPlayed) {
+					let avg = 0;
+					let gamesPlayed = 0;
+					for (wk in stats) {
+						if (wk != "tot" && parseInt(wk.substring(2)) <= CURR_WEEK && stats[wk]["snap_counts"] && stats[wk]["snap_counts"] > 1) {
+							gamesPlayed += 1;
+							if (propType == "rush_recv_yd") {
+								avg += stats[wk].rush_yds + stats[wk].rec_yds;
+							} else {
+								if (stats[wk][convertType(propType)]) {
+									avg += stats[wk][convertType(propType)];
+								}
+							}
+						}
+					}
+					avg = (avg / gamesPlayed).toFixed(1);
+					if (avg >= parseFloat(data.line)) {
+						return "<div class='positive'>"+avg+"</div>";
+					}
+					return "<div class='negative'>"+avg+"</div>";
+				}
+				return "-";
+			}
+
+			const overFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const stats = data.stats;
+				const propType = data.propType;
+				if (stats.tot && stats.tot.gamesPlayed) {
+					let gamesOver = 0;
+					let gamesPlayed = 0;
+					for (wk in stats) {
+						if (wk != "tot" && parseInt(wk.substring(2)) <= CURR_WEEK) {
+							let val = 0;
+							gamesPlayed += 1;
+							if (propType == "rush_recv_yd") {
+								val = stats[wk].rush_yds + stats[wk].rec_yds;
+							} else {
+								val = stats[wk][convertType(propType)];
+							}
+							if (val >= parseFloat(data.line)) {
+								gamesOver += 1;
+							}
+						}
+					}
+					const over = ((gamesOver / gamesPlayed) * 100).toFixed(0);
+					if (over >= 50) {
+						return "<div class='positive'>"+over+"%</div>";
+					}
+					return "<div class='negative'>"+over+"%</div>";
+				}
+				return "-";
+			}
+
+			const lastOverFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const stats = data.stats;
+				const propType = data.propType;
+				if (stats.tot && stats.tot.gamesPlayed && stats["wk"+CURR_WEEK]) {
+					let val = 0;
+					if (propType == "rush_recv_yd") {
+						val = stats["wk"+CURR_WEEK].rush_yds + stats["wk"+CURR_WEEK].rec_yds;
+					} else {
+						val = stats["wk"+CURR_WEEK][convertType(propType)];
+					}
+					if (val >= parseFloat(data.line)) {
+						return "<div class='positive'>Yes</div>";
+					}
+					return "<div class='negative'>No</div>";
+				}
+				return "-";
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const scoredFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const stats = data.stats;
+				const propType = data.propType;
+				if (stats.tot && stats["wk"+(CURR_WEEK+1)] && stats["wk"+(CURR_WEEK+1)]["snap_counts"]) {
+					let scored = 0;
+					if (propType == "rush_recv_yd") {
+						scored = stats["wk"+(CURR_WEEK+1)].rush_yds + stats["wk"+(CURR_WEEK+1)].rec_yds;
+					} else {
+						scored = stats["wk"+(CURR_WEEK+1)][convertType(propType)];
+					}
+					if (!scored) {
+						scored = 0;
+					}
+					if (scored > parseFloat(data.line)) {
+						return "<div class='positive'>"+scored+"</div>";
+					}
+					return "<div class='negative'>"+scored+"</div>";
+				}
+				return "-";
+			}
+
+			function addNumSuffix(val) {
+				const a = val % 10;
+				const b = val % 100;
+				if (val == 0) {
+					return "";
+				}
+				if (a == 1 && b != 11) {
+					return val+"st";
+				} else if (a == 2 && b != 12) {
+					return val+"nd";
+				} else if (a == 3 && b != 13) {
+					return val+"rd";
+				} else {
+					return val+"th";
+				}
+			}
+
+			const rankFormatter = function(cell, params, rendered) {
+				const field = cell.getField();
+				const val = cell.getValue();
+				const suffix = addNumSuffix(val);
+				if (field == "oppRank") {
+					if (val >= 20) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val <= 10) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				} else {
+					if (val <= 10) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val >= 20) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				}
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getDefProps",
+					ajaxParams:{teams: "{{teams}}"},
+					//responsiveLayout:"collapse",
+					//layout: "fitDataFill",
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					//groupBy: "team",
+					groupHeader: function(value, count, data, group){
+						const playerTxt = count == 1 ? "Player" : "Players"
+						return "<a href='https://www.espn.com/nfl/team/depth/_/name/"+value+"' target='_blank'>"+value+"</a>" + "<span style='color:black; margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+					},
+					initialSort: [
+						{column: "totalOver", dir: "desc"},
+					],
+					columns: [
+						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+							cell.getRow().toggleSelect();
+						}},
+						{title: "Player", field: "player", headerFilter: "input"},
+						{title: "Pos", field: "pos", headerFilter: "select", hozAlign: "center"},
+						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
+						{title: "Line", field: "line", hozAlign: "center"},
+						{title: "", field: "diff", hozAlign: "center", visible: false},
+						{title: "SZN AVG", field: "avg", hozAlign: "center", formatter: colorFormatter},
+						{title: "% Over", field: "totalOver", formatter: percentFormatter, hozAlign: "center", width:80, sorter:"number"},
+						{title: "Last", field: "last5WithLines", hozAlign: "center"},
+						{title: "LYR % Over", field: "lastTotalOver", formatter: percentFormatter, hozAlign: "center", width:80, sorter:"number"},
+						{title: "Over", field: "overOdds", hozAlign: "center"},
+						{title: "Under", field: "underOdds", hozAlign: "center"},
+					]
+				})
+			}
+
+			renderTable();
+		</script>
+
+	</body>
+
+</html>

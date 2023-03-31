@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NFL H2H Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/teams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+			<button onclick="print();">Print</button>
+			<button onclick="print('csv');">PRINT CSV</button>
+			<button onclick="calculateParlayOdds();">Parlay Odds</button>
+			<button onclick="addLast();">Add</button>
+		</div>
+		<script>
+			let TABLE;
+			const teamNames = ["All", "ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SA", "SAC", "TOR", "UTAH", "WSH"];
+
+			function print(output = "") {
+				const args = [];
+				let s = "";
+				const joinChar = (output == "csv") ? "\t" : "|";
+				s += ["NAME","POS","MIN","TEAM","OPP","OPP RANK","PROP","LINE","SZN AVG","% OVER","L5 % OVER","LAST 7 GAMES ➡️","LAST YR % OVER","OVER", "UNDER"].join(joinChar);
+				s += "\n";
+                if (output != "csv") {
+                    s += ":--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--\n";
+                }
+				let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+				for (row of rows) {
+					const data = row.getData();
+					let overOdds = data.overOdds;
+					let underOdds = data.underOdds;
+					if (output == "csv") {
+						if (parseInt(overOdds) > 0) {
+							overOdds = "'"+overOdds;
+						}
+						if (parseInt(underOdds) > 0) {
+							underOdds = "'"+underOdds;
+						}
+					}
+					s += [data.player, data.position, data.avgMin, data.team, data.opponent.toUpperCase(), addNumSuffix(data.oppRank), data.propType, data.line, data.avg, data.totalOver+"%", data.totalOverLast5+"%", data.last5, data.lastTotalOver+"%",overOdds, underOdds].join(joinChar);
+					s += "\n";
+				}
+				console.log(s);
+			}
+
+			function calculateParlayOdds() {
+				const rows = TABLE.getSelectedRows();
+				let totOdds = 1;
+				let out = "";
+				for (row of rows) {
+					const data = row.getData();
+					const overLast5 = data.totalOverLast5;
+					const overPerMin = data.totalOverPerMin;
+					const avg = (overLast5 + overPerMin) / 2;
+
+					let odds = 0;
+					if (avg == 100) {
+						odds = -100000;
+					} else {
+						odds = (100 * avg) / (-100 + avg);
+					}
+					const decOdds = (100 / odds) + 1;
+
+					totOdds *= decOdds;
+					out += [data.player, data.propType, "avg="+avg+"%", odds].join(", ");
+					out += "\n";
+				}
+
+				out += "totOdds="+totOdds.toFixed(5);
+				const usOdds = Math.round((100 / (totOdds-1)));
+				out += "\nUS Odds="+usOdds;
+				if (usOdds > 0) {
+					out += "\nProb="+((100 / (usOdds + 100)) * 100).toFixed(2)+"%";
+				} else {
+					out += "\nProb="+((-(usOdds) / (-(usOdds) + 100)) * 100).toFixed(2)+"%";
+				}
+				alert(out);
+			}
+
+			function addLast() {
+				let rows = TABLE.getSelectedRows();
+				if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+                let arr = [];
+                let tot = [];
+                let diff = [];
+                let firstRow = true;
+				for (row of rows) {
+					const data = row.getData();
+					let idx = 0;
+					arr.push(data.lastAll);
+					for (val of data.lastAll.split(",")) {
+						if (firstRow) {
+							tot.push(parseInt(val));
+							diff.push(parseInt(val));
+						} else {
+							tot[idx] += parseInt(val);
+							diff[idx] -= parseInt(val);
+						}
+						idx++;
+					}
+					firstRow = false;
+				}
+
+				let over = pairs = 0;
+				for (r1 of rows[0].getData().lastAll.split(",")) {
+					for (r2 of rows[1].getData().lastAll.split(",")) {
+						if (rows.length > 2) {
+							for (r3 of rows[2].getData().last5.split(",")) {
+								if (parseInt(r1)+parseInt(r2)+parseInt(r3) > line) {
+									over += 1;
+								}
+								pairs += 1;	
+							}	
+						} else {
+							if (parseInt(r1)+parseInt(r2) > line) {
+								over += 1;
+							}
+							pairs += 1;
+						}
+					}
+				}
+				const pairsOver = (over * 100 / pairs).toFixed(1);
+
+				let out = "";
+				out += "Line: "+line+" -- Spread: "+spread+"\n\n";
+				out += rows[0].getData().player+": "+rows[0].getData().lastAll+"\n";
+				out += rows[1].getData().player+": "+rows[1].getData().lastAll+"\n\n";
+				out += "Tot Pairs Over: "+pairsOver+"%\n";
+				out += "Tot: "+tot.join(",")+"\n\n";
+
+				over = pairs = 0;
+				for (r1 of rows[0].getData().lastAll.split(",")) {
+					for (r2 of rows[1].getData().lastAll.split(",")) {
+						if (parseInt(r1)+spread > r2) {
+							over += 1;
+						}
+						pairs += 1;
+					}
+				}
+				out += "Diff Pairs Over: "+(over * 100 / pairs).toFixed(1)+"%\n";
+				out += "Diff: "+diff.join(",")+"\n\n";
+
+				over = pairs = 0;
+				for (r1 of rows[0].getData().lastAll.split(",")) {
+					for (r2 of rows[1].getData().lastAll) {
+						if (parseInt(r1) >= parseInt(r2)) {
+							over += 1;
+						}
+						pairs += 1;
+					}
+				}
+				const avg = over * 100 / pairs;
+				let odds = 0;
+				if (avg == 100) {
+					odds = -100000;
+				} else {
+					odds = (100 * avg) / (-100 + avg);
+				}
+				out += "ML Pairs Over: "+avg.toFixed(1)+"% ("+parseInt(odds)+")\n";
+				alert(out);
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const projFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				if (parseFloat(data.proj) >= parseFloat(data.line)) {
+					return "<div class='positive'>"+data.proj+"</div>";
+				}
+				return "<div class='negative'>"+data.proj+"</div>";
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			function addNumSuffix(val) {
+				const a = val % 10;
+				const b = val % 100;
+				if (val == 0) {
+					return "";
+				}
+				if (a == 1 && b != 11) {
+					return val+"st";
+				} else if (a == 2 && b != 12) {
+					return val+"nd";
+				} else if (a == 3 && b != 13) {
+					return val+"rd";
+				} else {
+					return val+"th";
+				}
+			}
+
+			const rankFormatter = function(cell, params, rendered) {
+				const field = cell.getField();
+				const val = cell.getValue();
+				const suffix = addNumSuffix(val);
+				if (val == undefined) {
+					return "";
+				}
+				if (field == "oppRank" || field == "rank1" || field == "rank2") {
+					if (val >= 20) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val <= 10) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				} else {
+					if (val <= 10) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val >= 20) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				}
+			}
+
+			const allPairsFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				let odds = data.allPairsOver >= 50 ? data.odds1 : data.odds2;
+				odds = parseInt(odds);
+				const allPairsOdds = parseInt(data.allPairsOdds);
+				if (Math.abs(allPairsOdds) - Math.abs(odds) >= 50) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return cell.getValue();
+			}
+			
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getH2HNFLProps",
+					ajaxParams:{alt: "{{alt}}", date: "{{date}}", teams: "{{teams}}", players: "{{players}}"},
+					responsiveLayout:"collapse",
+					responsiveLayoutCollapseStartOpen: false,
+					
+					groupBy: "game",
+					initialSort: [
+						//{column: "pos", dir: "asc"},
+						{column: "totalOverPerMin", dir: "{{alt}}" == "under" ? "asc" : "desc"},
+						{column: "totalOverLast5", dir: "{{alt}}" == "under" ? "asc" : "desc"},
+						//{column: "team", dir: "asc"},
+					],
+					columns: [
+						{formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
+						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+							cell.getRow().toggleSelect();
+						}},
+						{title: "Prop", field: "prop", hozAlign: "center", width: 90},
+						{title: "Type", field: "type", hozAlign: "center", width: 90},
+						{title: "Line", field: "line", hozAlign: "center", width: 70},
+						{title: "Matchup", field: "matchup", headerFilter: "input"},
+						{title: "Odds1", field: "odds1", width: 80, hozAlign: "center", sorter: "number"},
+						{title: "Odds2", field: "odds2", width: 80, hozAlign: "center", sorter: "number"},
+						{title: "All Pairs Odds", field: "allPairsOdds", width: 80, hozAlign: "center", sorter: "number", formatter: allPairsFormatter},
+						{title: "Straight Up Over", field: "straightOver", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
+						{title: "All Pairs Over", field: "allPairsOver", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
+						{title: "Player 1", field: "player1", width: 100, hozAlign: "center", responsive: 0},
+						{title: "Opp1", field: "team2", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+						{title: "Opp Rank 1", field: "rank2", hozAlign: "center", formatter: rankFormatter, width: 70, responsive: 0},
+						{title: "Line 1", field: "line1", width: 70, hozAlign: "center", responsive: 0},
+						{title: "Log 1", field: "log1", hozAlign: "center", responsive: 1},
+						{title: "Player 2", field: "player2", width: 100, hozAlign: "center", responsive: 0},
+						{title: "Opp2", field: "team1", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+						{title: "Opp Rank 2", field: "rank1", hozAlign: "center", formatter: rankFormatter, width: 70, responsive: 0},
+						{title: "Line 2", field: "line2", width: 70, hozAlign: "center", responsive: 0},
+						{title: "Log 2", field: "log2", hozAlign: "center", responsive: 1},
+					]
+				})
+			}
+
+			renderTable();
+		</script>
+		{% if prop != "" %}
+			<script>
+				//TABLE.setFilter([{field:"propType", type:"=", value:"{{prop}}"}]);
+			</script>
+		{% endif %}
+	</body>
+
+</html>

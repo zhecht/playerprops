@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NHL Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/nhlteams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+			<button onclick="hideExtras()">Hide Extras</button>
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+			<button onclick="print();">PRINT</button>
+            <button onclick="print('csv');">PRINT CSV</button>
+            <button onclick="calculateParlayOdds();">Parlay Odds</button>
+            <button onclick="printExcerpt();">EXCERPT</button>
+		</div>
+		<script>
+			let TABLE;
+			const teamNames = ["All", "ANA", "ARI", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI", "COL", "DAL", "DET", "EDM", "FLA", "LA", "MIN", "MTL", "NJ", "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA", "SJ", "STL", "TB", "TOR", "VAN", "VGK", "WPG", "WSH"];
+
+			function print(output = "") {
+                let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+                const args = [];
+                let s = "";
+                const joinChar = (output == "csv") ? "\t" : "|";
+                s += ["NAME","TEAM","PROP","LINE","SZN AVG","% OVER","L5 % OVER","LAST 10 GAMES ➡️","LAST YR % OVER","OVER","UNDER"].join(joinChar);
+                s += "\n";
+                if (output != "csv") {
+                    s += ":--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--\n";
+                }
+                for (row of rows) {
+                    const data = row.getData();
+                    let overOdds = data.overOdds;
+					let underOdds = data.underOdds;
+					if (output == "csv") {
+						if (parseInt(overOdds) > 0) {
+							overOdds = "'"+overOdds;
+						}
+						if (parseInt(underOdds) > 0) {
+							underOdds = "'"+underOdds;
+						}
+					}
+                    s += [data.player, data.team, data.propType, data.line, data.avg, data.totalOver+"%", data.totalOverLast5+"%", data.last5, data.lastTotalOver+"%",overOdds, underOdds].join(joinChar);
+                    s += "\n";
+                }
+                console.log(s);
+            }
+
+            function hideExtras() {
+            	let hide = false;
+            	if (this.innerText == "Show Extras") {
+					hide = true;
+				}
+
+				if (hide) {
+					TABLE.getColumn("propType").hide();
+					TABLE.getColumn("savesProjLast5").hide();
+					TABLE.getColumn("savesProjLast3").hide();
+					TABLE.getColumn("oppSavesAgainstProjLast5").hide();
+					TABLE.getColumn("oppSavesAgainstProjLast3").hide();
+					TABLE.getColumn("savesPer60Last1").hide();
+					TABLE.getColumn("savesPer60Last3").hide();
+					TABLE.getColumn("savesPer60Last5").hide();
+					TABLE.getColumn("oppSavesAgainstPer60Last1").hide();
+					TABLE.getColumn("oppSavesAgainstPer60Last3").hide();
+					TABLE.getColumn("oppSavesAgainstPer60Last5").hide();
+				} else {
+					TABLE.getColumn("savesProjLast5").show();
+					TABLE.getColumn("savesProjLast3").show();
+					TABLE.getColumn("oppSavesAgainstProjLast5").show();
+					TABLE.getColumn("oppSavesAgainstProjLast3").show();
+					TABLE.getColumn("savesPer60Last1").show();
+					TABLE.getColumn("savesPer60Last3").show();
+					TABLE.getColumn("savesPer60Last5").show();
+					TABLE.getColumn("oppSavesAgainstPer60Last1").show();
+					TABLE.getColumn("oppSavesAgainstPer60Last3").show();
+					TABLE.getColumn("oppSavesAgainstPer60Last5").show();
+				}
+
+				let newText = "Show";
+				if (hide) {
+					newText = "Hide";
+				}
+				this.innerText = newText+" Extras";
+            }
+
+            function printExcerpt() {
+				let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+                let s = "";
+                for (row of rows) {
+                    const data = row.getData();
+                	let last = data.player.split(" ");
+                	last = last[last.length-1];
+                    const overLine = Math.round(data.line);
+                    const svPerGm = [];
+                    for (val of [data.savesPer60, data.savesPer60Last5, data.savesPer60Last3, data.savesPer60Last1]) {
+                    	if (val >= data.line) {
+                    		svPerGm.push("**"+val+"**");
+                    	} else {
+                    		svPerGm.push(val);
+                    	}
+                    }
+                    const oppSvAgainstPerGm = [];
+                    for (val of [data.oppSavesAgainstPer60, data.oppSavesAgainstPer60Last5, data.oppSavesAgainstPer60Last3, data.oppSavesAgainstPer60Last1]) {
+                    	if (val >= data.line) {
+                    		oppSvAgainstPerGm.push("**"+val+"**");
+                    	} else {
+                    		oppSvAgainstPerGm.push(val);
+                    	}
+                    }
+                    let avg = data.avg;
+                    if (avg >= data.line) {
+                    	avg = "**"+avg+"**";
+                    }
+                    let winSplits = parseFloat(data.winLossSplits.split(" - ")[0]);
+                    let lossSplits = parseFloat(data.winLossSplits.split(" - ")[1]);
+                    if (winSplits >= data.line) {
+                    	winSplits = "**"+winSplits+"**";
+                    }
+                    if (lossSplits >= data.line) {
+                    	lossSplits = "**"+lossSplits+"**";
+                    }
+                    s += data.team+" "+data.player+"\n";
+                    s += "> "+data.team+" sv/60m  -------- (szn, L5, L3, L1): "+[svPerGm].join(", ")+"  \n";
+                    s += "> "+data.opponent+" sv against/60m (szn, L5, L3, L1): "+[oppSvAgainstPerGm].join(", ")+"  \n";
+                    s += "> "+data.team+" Shots/60m Against (szn, L10, L5, L3): "+data.shotsAgainst+"  \n";
+                    s += "> "+data.opponent+" Shots/60m ------ (szn, L10, L5, L3): "+data.oppShots+"  \n";
+                    s += "> "+data.team+" Scoring Chances Against (szn, L10, L5, L3): "+data.scoringAgainst+"  \n";
+                    s += "> "+data.opponent+" Scoring Chances ------ (szn, L10, L5, L3): "+data.oppScoring+"  \n";
+                    s += "> Avg: "+avg+". W-L splits: "+winSplits+" - "+lossSplits+". "+data.team+" ML odds: "+data.gameLine+"  \n";
+                    s += "> "+last+" has had "+overLine+"+ saves in "+data.totalOver+"% of games this season and "+data.lastTotalOver+"% of games last season  \n";
+                    s += "> Goalies on "+data.team+" have had "+overLine+"+ saves in "+data.teamOver+"% of games this year  \n";
+                    s += "> Goalies playing "+data.opponent+" have had "+overLine+"+ saves in "+data.oppOver+"% of games this year  \n";
+                    s += "> Goals Saved Above Average: "+data.gsaa+"  \n";
+                    s += "> Saves Above Expected Per 60m: "+data.savesAboveExp+"  \n";
+                    s += "\n\n";
+                }
+                alert(s);
+			}
+
+            function calculateParlayOdds() {
+				const rows = TABLE.getSelectedRows();
+				let totOdds = 1;
+				let out = "";
+				for (row of rows) {
+					const data = row.getData();
+					const avg = (data.totalOverLast5 + data.totalOver) / 2;
+
+					let odds = 0;
+					if (avg == 100) {
+						odds = -100000;
+					} else {
+						odds = (100 * avg) / (-100 + avg);
+					}
+					const decOdds = (100 / odds) + 1;
+
+					totOdds *= decOdds;
+					out += [data.player, data.propType, "avg="+avg+"%", odds].join(", ");
+					out += "\n";
+				}
+
+				out += "totOdds="+totOdds.toFixed(3);
+				const usOdds = Math.round((100 / (totOdds-1)));
+				out += "\nUS Odds="+usOdds;
+				if (usOdds > 0) {
+					out += "\nProb="+((100 / (usOdds + 100)) * 100).toFixed(2)+"%";
+				} else {
+					out += "\nProb="+((-(usOdds) / (-(usOdds) + 100)) * 100).toFixed(2)+"%";
+				}
+				alert(out);
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const projFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				if (parseFloat(data.proj) >= parseFloat(data.line)) {
+					return "<div class='positive'>"+data.proj+"</div>";
+				}
+				return "<div class='negative'>"+data.proj+"</div>";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const propFormatter = function(cell, params, rendered) {
+				let prop = cell.getValue();
+				if (prop == "recv_yd") return "REC YDs";
+				else if (prop == "recv_rec") return "RECs";
+				else if (prop == "rush_att") return "RUSHs";
+				else if (prop == "rush_recv_yd") return "RUSH+REC YDs";
+				else if (prop == "rush_yd") return "RUSH YDs";
+				else if (prop == "pass_att") return "ATTEMPS";
+				else if (prop == "pass_comp") return "COMPs";
+				else if (prop == "pass_int") return "INTs";
+				else if (prop == "pass_td") return "PASS TDs";
+				else if (prop == "pass_yd") return "PASS YDs";
+				else if (prop == "recv_rec") return "REC";
+				else if (prop == "tackles_combined") return "TACKLES";
+				return prop;
+			}
+
+			function convertType(type) {
+				if (type == "pass_comp") return "pass_cmp";
+				else if (type == "recv_rec") return "rec";
+				else if (type == "recv_yd") return "rec_yds";
+				else if (type == "pass_comp") return "pass_cmp";
+				else if (type == "pass_yd") return "pass_yds";
+				else if (type == "rush_yd") return "rush_yds";
+				return type;
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const corsiFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const field = cell.getField();
+				const arr = [];
+				for (pct of cell.getValue().split(" // ")) {
+					let condition = false;
+					if (field.substr(0,3) == "opp") {
+						condition = parseFloat(pct.replace("%", "")) < 50;
+					} else {
+						condition = parseFloat(pct.replace("%", "")) >= 50;
+					}
+					if (condition) {
+						arr.push("<div class='positive'>"+pct+"</div>");
+					} else {
+						arr.push("<div class='negative'>"+pct+"</div>");
+					}
+				}
+				return "<div style='display:flex;'>"+arr.join(" // ")+"</div>";
+			}
+
+			const splitsFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const vals = cell.getValue().split(" - ");
+				let val1 = vals[0];
+				if (parseFloat(val1) >= parseFloat(data.line)) {
+					val1 = "<div class='positive'>"+val1+"</div>";
+				} else {
+					val1 = "<div class='negative'>"+val1+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "A") {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) < 0) {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				}
+				let val2 = vals[1];
+				if (parseFloat(val2) >= parseFloat(data.line)) {
+					val2 = "<div class='positive'>"+val2+"</div>";
+				} else {
+					val2 = "<div class='negative'>"+val2+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "H") {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) > 0) {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				}
+				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
+			}
+
+			function collapseFormatter(data) {
+				//data - an array of objects containing the column title and value for each cell
+				let table = document.createElement("table");
+				table.style.width = "100%";
+				const html = {};
+				for (col of data) {
+					//console.log(col);
+					if ((col.value.indexOf(" // ") >= 0 || col.value.indexOf(" &#x2F;&#x2F; ") >= 0)) {
+						html[col.title] = "<td><strong>"+col.title+"</strong></td><td>"+col.value+"</td>";
+					} else {
+						let row = document.createElement("tr");
+						row.innerHTML = "<td><strong>"+col.title+"</strong></td><td>"+col.value+"</td>";
+						table.appendChild(row);
+					}
+				}
+
+				for (title in html) {
+					if (title.toLowerCase().substr(0,3) != "opp") {
+						let row = document.createElement("tr");
+						row.innerHTML = html[title]+html["Opp "+title];
+						table.appendChild(row);
+					}
+				}
+
+				return Object.keys(data).length ? table : "";
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getNHLProps",
+					ajaxParams:{alt: "{{alt}}", date: "{{date}}", teams: "{{teams}}", players: "{{players}}"},
+					responsiveLayout:"collapse",
+					//responsiveLayoutCollapseStartOpen: "{{prop}}" == "sv" ? true : false,
+					responsiveLayoutCollapseStartOpen: false,
+					responsiveLayoutCollapseFormatter: function(data) {
+						return collapseFormatter(data);
+					},
+					//layout: "fitDataFill",
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					//groupBy: "team",
+					groupHeader: function(value, count, data, group){
+						const playerTxt = count == 1 ? "Player" : "Players"
+						return "<a href='https://www.espn.com/nfl/team/depth/_/name/"+value+"' target='_blank'>"+value+"</a>" + "<span style='color:black; margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+					},
+					initialSort: [
+						{column: "totalOverLast5", dir: "desc"},
+						{column: "totalOver", dir: "desc"},
+						//{column: "team", dir: "asc"},
+					],
+					columns: [
+						{formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
+                        {formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+                            cell.getRow().toggleSelect();
+                        }},
+                        {title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center"},
+						{title: "Player", field: "player", headerFilter: "input"},
+						{title: "Avg Min", field: "avgMin", hozAlign: "center", width: 70},
+						{title: "PP Line", field: "ppLine",  hozAlign: "center", width: 70},
+						{title: "ML", field: "gameLine",  hozAlign: "center", width: 70, visible: false},
+						{title: "A/H", field: "awayHome",  hozAlign: "center", width: 50, visible: false},
+						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+						//{title: "PTS/G", field: "ptsPerGame", hozAlign: "center", width: 70},
+						//{title: "L5 PTS/G", field: "ptsPerGameLast5", hozAlign: "center", width: 70},
+						{title: "S/G", field: "shotsPerGame", hozAlign: "center", width: 70, visible: false},
+						{title: "L5 S/G", field: "shotsPerGameLast5", hozAlign: "center", width: 70, visible: false},
+						{title: "Proj", field: "savesProj", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+						{title: "Proj L5", field: "savesProjLast5", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+						{title: "Proj L3", field: "savesProjLast3", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+						{title: "SV/G", field: "savesPer60", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "L5 SV/G", field: "savesPer60Last5", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "L3 SV/G", field: "savesPer60Last3", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "L1 SV/G", field: "savesPer60Last1", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+						{title: "Proj", field: "oppSavesAgainstProj", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+						{title: "ProjL5", field: "oppSavesAgainstProjLast5", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+						{title: "ProjL3", field: "oppSavesAgainstProjLast3", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+						{title: "Opp Saves_A/G", field: "oppSavesAgainstPer60", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "L5 Opp Saves_A/G", field: "oppSavesAgainstPer60Last5", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "L3 Opp Saves_A/G", field: "oppSavesAgainstPer60Last3", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "L1 Opp Saves_A/G", field: "oppSavesAgainstPer60Last1", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+						{title: "Opp SA/G", field: "oppShotsAgainstPerGame", hozAlign: "center", width: 70, visible: false},
+						{title: "L5 Opp SA/G", field: "oppShotsAgainstPerGameLast5", hozAlign: "center", width: 70, visible: false},
+						{title: "Team % Over", field: "teamOver", hozAlign: "center", width: 70, formatter: percentFormatter, visible: false},
+						{title: "% Over Against", field: "oppOver", hozAlign: "center", width: 70, formatter: percentFormatter, visible: false},
+						{title: "Prop", field: "propType", formatter: propFormatter, hozAlign: "center"},
+						{title: "Line", field: "line", hozAlign: "center"},
+						{title: "SZN AVG", field: "avg", hozAlign: "center", width: 80, formatter: colorFormatter},
+						{title: "GSAA", field: "gsaa", hozAlign: "center", width: 80, visible: true, sorter: "number"},
+						//{title: "Sv Above Exp", field: "savesAboveExp", hozAlign: "center", width: 80, visible: true, sorter: "number"},
+						{title: "W-L Splits", field: "winLossSplits", hozAlign: "center", visible: true, formatter:splitsFormatter, responsive: 0},
+						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter, responsive: 0},
+						{title: "Total Over", field: "totalOver", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number", visible: true},
+						{title: "L15 Total Over", field: "totalOverLast15", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number", visible: true},
+						{title: "L5 Total Over", field: "totalOverLast5", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number", visible: true},
+						{title: "Last", field: "last5", hozAlign: "center", visible: true},
+						{title: "Last YR AVG", field: "lastAvg", hozAlign: "center", width: 80, formatter: colorFormatter, visible: true},
+						{title: "Last YR Total Over", field: "lastTotalOver", width: 80, hozAlign: "center", formatter: percentFormatter, visible: true},
+						{title: "Played Yesterday", field: "playedYesterday", hozAlign: "center", width: 70, visible: false},
+						{title: "+/-", field: "+/-", hozAlign: "center", responsive: 2, width: 70},
+						{title: "L5 +/-", field: "L5_+/-", hozAlign: "center", responsive: 2, width: 70},
+						{title: "Over/Under", field: "overUnder", hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Prev Matchup", field: "prevMatchup", hozAlign: "center", responsive: 2},
+						{title: "Corsi (A/10/5/3)", field: "corsi", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Fenwick", field: "fenwick", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Shots", field: "shots", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Scoring", field: "scoring", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Corsi Against", field: "corsiAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Fenwick Against", field: "fenwickAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Shots Against", field: "shotsAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Scoring Against", field: "scoringAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Corsi (A/10/5/3)", field: "oppCorsi", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Fenwick", field: "oppFenwick", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Shots", field: "oppShots", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Scoring", field: "oppScoring", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Corsi Against", field: "oppCorsiAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Fenwick Against", field: "oppFenwickAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Shots Against", field: "oppShotsAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Opp Scoring Against", field: "oppScoringAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						//{title: "Over", field: "overOdds", hozAlign: "center", sorter: "number", visible: true},
+						//{title: "Under", field: "underOdds", hozAlign: "center", sorter: "number", visible: true},
+					]
+				})
+			}
+
+			renderTable();
+
+			//TABLE.setFilter("propType", "=", "3ptm");
+			TABLE.setFilter([
+				//{field:"avgMin", type:">=", value:5},
+				//{field:"line", type:">", value:1},
+				
+                //{field:"propType", type:"!=", value:"goals"},
+                //{field:"propType", type:"=", value:"pts"},
+			]);
+		</script>
+		{% if prop != "" %}
+			<script>
+				TABLE.setFilter([{field:"propType", type:"=", value:"{{prop}}"}]);
+			</script>
+		{% endif %}
+		{% if prop == "sv" %}
+			<script>
+				TABLE.getColumn("savesProj").show();
+				TABLE.getColumn("savesProjLast5").show();
+				TABLE.getColumn("savesProjLast3").show();
+				TABLE.getColumn("oppSavesAgainstProj").show();
+				TABLE.getColumn("oppSavesAgainstProjLast5").show();
+				TABLE.getColumn("oppSavesAgainstProjLast3").show();
+				TABLE.getColumn("savesPer60").show();
+				TABLE.getColumn("savesPer60Last1").show();
+				TABLE.getColumn("savesPer60Last3").show();
+				TABLE.getColumn("savesPer60Last5").show();
+				TABLE.getColumn("oppSavesAgainstPer60").show();
+				TABLE.getColumn("oppSavesAgainstPer60Last1").show();
+				TABLE.getColumn("oppSavesAgainstPer60Last3").show();
+				TABLE.getColumn("oppSavesAgainstPer60Last5").show();
+				TABLE.getColumn("teamOver").show();
+				TABLE.getColumn("oppOver").show();
+				TABLE.getColumn("playedYesterday").show();
+
+				TABLE.getColumn("propType").hide();
+			</script>
+		{% endif %}
+		<script>
+			const bets = "{{bets}}".split(",");
+
+			setTimeout(function() {
+				let rows = TABLE.getRows("active");
+				if ("{{prop}}" != "pts") {
+					return;
+				}
+				for (row of rows) {
+					const data = row.getData();
+					if (bets.indexOf(data.player.toLowerCase()) >= 0) {
+						row.select();
+						const cells = row.getCells();
+						if (cells.length > 0) {
+							//cells[0].getElement().getElementsByTagName("span")[0].click();
+						}
+					}
+				}
+			}, 7500);
+		</script>
+		{% if date == "" %}
+			<script>
+				TABLE.getColumn("hit").hide();
+			</script>
+		{% endif %}
+	</body>
+
+</html>

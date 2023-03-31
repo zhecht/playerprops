@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{sport.upper()}} Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		{% if not sport or sport == "nhl" %}
+			<link rel="stylesheet" href="/static/css/nhlteams.css" type="text/css">
+		{% elif sport == "nba" %}
+			<link rel="stylesheet" href="/static/css/nbateams.css" type="text/css">
+		{% endif %}
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator_midnight.min.css" rel="stylesheet">
+		<!--
+			<link href="https://unpkg.com/tabulator-tables/dist/css/tabulator_midnight.min.css" rel="stylesheet">
+			<script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+		-->
+	</head>
+	<style>
+		input, select, button {
+			background-color: #181a1b;
+			border-color: #736b5e;
+			color: #e8e6e3;
+		}
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+			background-color: #131516;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#propLinks {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 5%;
+			position: relative;
+		}
+		#tipjar {
+			position: absolute;
+			left: 1rem;
+			font-size: 1rem;
+		}
+		#updated {
+			position: absolute;
+			right: 1rem;
+			font-size: 1rem;	
+		}
+		a {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+			text-decoration: none;
+			color: #3391ff;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 90%;
+		}
+		#header {
+			height: 5%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+		}
+		#header a {
+			font-size: 2rem;
+		}
+		#tipjar a {
+			font-size: 1rem;
+		}
+		a.active {
+			font-weight: bold;
+			text-decoration: underline;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: rgb(255, 26, 26); }
+		.positive { color: rgb(114, 255, 114); }
+
+		.tabulator {
+			background-color: rgb(26, 28, 29);
+			border-color: rgb(123, 114, 101);
+		}
+		.tabulator .tabulator-tableholder .tabulator-table {
+			color: rgb(232, 230, 227);
+		}
+		.tabulator .tabulator-header {
+			border-bottom-color: rgb(77, 83, 86);
+			background-color: rgb(38, 42, 43);
+			color: rgb(232, 230, 227);
+		}
+		.tabulator-row {
+			background-color: rgb(77, 83, 86);
+		}
+		.tabulator-row.tabulator-row-even { 
+			background-color: rgb(51, 55, 58);
+		}
+		.tabulator-row .tabulator-cell {
+			border-right-color: rgb(111, 103, 91);
+		}
+	</style>
+	<body>
+		<div id="header">
+			<div id="tipjar">
+				Tipjars: 
+				<a href="https://cash.app/$intersectinglines" target="_blank">Cash App</a>
+				<a href="https://www.buymeacoffee.com/interlines" target="_blank">Coffee</a>
+			</div>
+			<a class="active" href="/betting?sport=nhl">NHL</a>
+			<a href="/betting?sport=nba">NBA</a>
+			<div id="updated">
+				updated: {{updated}}
+			</div>
+		</div>
+		<div id="propLinks">
+			{% if sport == "nhl" %}
+			<a class="active" href="/betting?sport=nhl">FULL</a>
+			<a href="/betting?sport=nhl&prop=pts">PTS</a>
+			<a href="/betting?sport=nhl&prop=sog">SOG</a>
+			<a href="/betting?sport=nhl&prop=ast">AST</a>
+			<a href="/betting?sport=nhl&prop=g">G</a>
+			{% elif sport == "nba" %}
+			<a class="active" href="/betting?sport=nba">FULL</a>
+			<a href="/betting?sport=nba&prop=pts">PTS</a>
+			<a href="/betting?sport=nba&prop=reb">REB</a>
+			<a href="/betting?sport=nba&prop=ast">AST</a>
+			<a href="/betting?sport=nba&prop=pts+reb+ast">PTS+REB+AST</a>
+			<a href="/betting?sport=nba&prop=pts+reb">PTS+REB</a>
+			<a href="/betting?sport=nba&prop=pts+ast">PTS+AST</a>
+			<a href="/betting?sport=nba&prop=reb+ast">REB+AST</a>
+			<a href="/betting?sport=nba&prop=3ptm">3PTM</a>
+			<a href="/betting?sport=nba&prop=blk">BLK</a>
+			<a href="/betting?sport=nba&prop=stl">STL</a>
+			{% endif %}
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<script>
+			const sport = "{{sport}}";
+			const propArg = "{{prop}}";
+			let TABLE;
+			const teamNames = ["All", "ANA", "ARI", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI", "COL", "DAL", "DET", "EDM", "FLA", "LA", "MIN", "MTL", "NJ", "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA", "SJ", "STL", "TB", "TOR", "VAN", "VGK", "WPG", "WSH"];
+
+            function hideExtras() {
+            	if (sport === "nhl") {
+            		TABLE.getColumn("position").hide();
+            		TABLE.getColumn("overOdds").hide();
+            		TABLE.getColumn("underOdds").hide();
+            		TABLE.getColumn("gsaa").show();
+            		TABLE.getColumn("overUnder").show();
+            		TABLE.getColumn("ppLine").show();
+            	} else if (sport === "nba") {
+            		TABLE.getColumn("oppRank").show();
+            		TABLE.getColumn("oppOver").show();
+            		TABLE.getColumn("prevMatchup").hide();
+            	}
+            }
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const projFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				if (parseFloat(data.proj) >= parseFloat(data.line)) {
+					return "<div class='positive'>"+data.proj+"</div>";
+				}
+				return "<div class='negative'>"+data.proj+"</div>";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const propFormatter = function(cell, params, rendered) {
+				let prop = cell.getValue();
+				if (prop == "recv_yd") return "REC YDs";
+				else if (prop == "recv_rec") return "RECs";
+				else if (prop == "rush_att") return "RUSHs";
+				else if (prop == "rush_recv_yd") return "RUSH+REC YDs";
+				else if (prop == "rush_yd") return "RUSH YDs";
+				else if (prop == "pass_att") return "ATTEMPS";
+				else if (prop == "pass_comp") return "COMPs";
+				else if (prop == "pass_int") return "INTs";
+				else if (prop == "pass_td") return "PASS TDs";
+				else if (prop == "pass_yd") return "PASS YDs";
+				else if (prop == "recv_rec") return "REC";
+				else if (prop == "tackles_combined") return "TACKLES";
+				return prop;
+			}
+
+			function convertType(type) {
+				if (type == "pass_comp") return "pass_cmp";
+				else if (type == "recv_rec") return "rec";
+				else if (type == "recv_yd") return "rec_yds";
+				else if (type == "pass_comp") return "pass_cmp";
+				else if (type == "pass_yd") return "pass_yds";
+				else if (type == "rush_yd") return "rush_yds";
+				return type;
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const corsiFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const field = cell.getField();
+				const arr = [];
+				for (pct of cell.getValue().split(" // ")) {
+					let condition = false;
+					if (field.substr(0,3) == "opp") {
+						condition = parseFloat(pct.replace("%", "")) < 50;
+					} else {
+						condition = parseFloat(pct.replace("%", "")) >= 50;
+					}
+					if (condition) {
+						arr.push("<div class='positive'>"+pct+"</div>");
+					} else {
+						arr.push("<div class='negative'>"+pct+"</div>");
+					}
+				}
+				return "<div style='display:flex;'>"+arr.join(" // ")+"</div>";
+			}
+
+			const splitsFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const vals = cell.getValue().split(" - ");
+				let val1 = vals[0];
+				if (parseFloat(val1) >= parseFloat(data.line)) {
+					val1 = "<div class='positive'>"+val1+"</div>";
+				} else {
+					val1 = "<div class='negative'>"+val1+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "A") {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) < 0) {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				}
+				let val2 = vals[1];
+				if (parseFloat(val2) >= parseFloat(data.line)) {
+					val2 = "<div class='positive'>"+val2+"</div>";
+				} else {
+					val2 = "<div class='negative'>"+val2+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "H") {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) > 0) {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				}
+				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
+			}
+
+			function collapseFormatter(data) {
+				//data - an array of objects containing the column title and value for each cell
+				let table = document.createElement("table");
+				table.style.width = "100%";
+				const html = {};
+				for (col of data) {
+					//console.log(col);
+					if ((col.value.indexOf(" // ") >= 0 || col.value.indexOf(" &#x2F;&#x2F; ") >= 0)) {
+						html[col.title] = "<td><strong>"+col.title+"</strong></td><td>"+col.value+"</td>";
+					} else {
+						let row = document.createElement("tr");
+						row.innerHTML = "<td><strong>"+col.title+"</strong></td><td>"+col.value+"</td>";
+						table.appendChild(row);
+					}
+				}
+
+				for (title in html) {
+					if (title.toLowerCase().substr(0,3) != "opp") {
+						let row = document.createElement("tr");
+						row.innerHTML = html[title]+html["Opp "+title];
+						table.appendChild(row);
+					}
+				}
+
+				return Object.keys(data).length ? table : "";
+			}
+
+			function addNumSuffix(val) {
+				const a = val % 10;
+				const b = val % 100;
+				if (val == 0) {
+					return "";
+				}
+				if (a == 1 && b != 11) {
+					return val+"st";
+				} else if (a == 2 && b != 12) {
+					return val+"nd";
+				} else if (a == 3 && b != 13) {
+					return val+"rd";
+				} else {
+					return val+"th";
+				}
+			}
+
+			const rankFormatter = function(cell, params, rendered) {
+				const field = cell.getField();
+				const val = cell.getValue();
+				const suffix = addNumSuffix(val);
+				if (field == "oppRank") {
+					if (val >= 20) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val <= 10) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				} else {
+					if (val <= 10) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val >= 20) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				}
+			}
+
+			const tableSettings = {
+				ajaxURL: "/getBettingJSON",
+				ajaxParams:{alt: "{{alt}}", date: "{{date}}", sport: "{{sport}}"},
+				//responsiveLayout: "collapse",
+				//responsiveLayoutCollapseStartOpen: false,
+				//responsiveLayoutCollapseFormatter: function(data) { return collapseFormatter(data); },
+				//layout: "fitDataFill",
+				//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+				//groupBy: "team",
+				groupHeader: function(value, count, data, group){
+					const playerTxt = count == 1 ? "Player" : "Players"
+					return "<a href='https://www.espn.com/nfl/team/depth/_/name/"+value+"' target='_blank'>"+value+"</a>" + "<span style='color:black; margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+				},
+				initialSort: [
+					{column: "totalOverLast5", dir: "desc"},
+					{column: "totalOver", dir: "desc"},
+					//{column: "team", dir: "asc"},
+				],
+				columnDefaults: {
+					headerTooltip: function(e, cell, onRendered) {
+						const el = document.createElement("div");
+						const header = document.createElement("h3");
+						header.innerText = cell.getDefinition().title;
+						el.appendChild(header);
+
+						const field = cell.getField();
+
+						if (field === "oppRank") {
+							const extra = document.createElement("span");
+							extra.innerText = "How well the defense plays against the player's position and specific prop";
+							
+							const a = document.createElement("a");
+							a.innerText = "(Source: Fanduel's Def vs Pos)";
+							a.href = "https://www.fantasypros.com/daily-fantasy/nba/fanduel-defense-vs-position.php";
+							el.appendChild(extra);
+							el.appendChild(a);
+						} else if (field === "oppOver") {
+							const extra = document.createElement("span");
+							extra.innerText = "How many players (25 minutes played minimum) throughout the year have went over the line for this player's position";
+							el.appendChild(extra);
+						} else if (field === "winLossSplits") {
+							const extra = document.createElement("span");
+							extra.innerText = "The underlined split indicates whether the player's team is favored or the underdog";
+							el.appendChild(extra);
+						} else if (field === "awayHomeSplits") {
+							const extra = document.createElement("span");
+							extra.innerText = "The underlined split indicates whether the player's team is away or home";
+							el.appendChild(extra);
+						} else if (field === "last5") {
+							const extra = document.createElement("span");
+							extra.innerText = "Player stats over previous games reading from left (most recent) to right";
+							el.appendChild(extra);
+						}
+						return el;
+					}
+				},
+				columns: [
+                    {formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+                        cell.getRow().toggleSelect();
+                    }},
+                    {title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center", visible: false},
+					{title: "Player", field: "player", headerFilter: "input"},
+					{title: "Pos", field: "position", hozAlign: "center", width: 50},
+					{title: "Avg Min", field: "avgMin", hozAlign: "center", width: 70},
+					{title: "PP Line", field: "ppLine",  hozAlign: "center", width: 70, visible: false},
+					//{title: "ML", field: "gameLine",  hozAlign: "center", width: 70},
+					{title: "A/H", field: "awayHome",  hozAlign: "center", width: 50, visible: false},
+					{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+					{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+					{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70, responsive: 0, visible: false},
+					{title: "S/G", field: "shotsPerGame", hozAlign: "center", width: 70, visible: false},
+					{title: "L5 S/G", field: "shotsPerGameLast5", hozAlign: "center", width: 70, visible: false},
+					{title: "Proj", field: "savesProj", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+					{title: "Proj L5", field: "savesProjLast5", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+					{title: "Proj L3", field: "savesProjLast3", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+					{title: "SV/G", field: "savesPer60", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "L5 SV/G", field: "savesPer60Last5", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "L3 SV/G", field: "savesPer60Last3", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "L1 SV/G", field: "savesPer60Last1", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "Proj", field: "oppSavesAgainstProj", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+					{title: "ProjL5", field: "oppSavesAgainstProjLast5", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+					{title: "ProjL3", field: "oppSavesAgainstProjLast3", formatter: colorFormatter, hozAlign: "center", width: 70, sorter:"number", visible: false},
+					{title: "Opp Saves_A/G", field: "oppSavesAgainstPer60", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "L5 Opp Saves_A/G", field: "oppSavesAgainstPer60Last5", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "L3 Opp Saves_A/G", field: "oppSavesAgainstPer60Last3", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "L1 Opp Saves_A/G", field: "oppSavesAgainstPer60Last1", hozAlign: "center", width: 70, formatter: colorFormatter, sorter:"number", visible: false},
+					{title: "Opp SA/G", field: "oppShotsAgainstPerGame", hozAlign: "center", width: 70, visible: false},
+					{title: "L5 Opp SA/G", field: "oppShotsAgainstPerGameLast5", hozAlign: "center", width: 70, visible: false},
+					{title: "Team % Over", field: "teamOver", hozAlign: "center", width: 70, formatter: percentFormatter, visible: false},
+					{title: "% Over Against", field: "oppOver", hozAlign: "center", width: 70, formatter: percentFormatter, visible: false},
+					{title: "Prop", field: "propType", formatter: propFormatter, hozAlign: "center"},
+					{title: "Line", field: "line", hozAlign: "center"},
+					{title: "SZN AVG", field: "avg", hozAlign: "center", width: 80, formatter: colorFormatter},
+					{title: "GSAA", field: "gsaa", hozAlign: "center", width: 80, visible: false, sorter: "number"},
+					{title: "W-L Splits", field: "winLossSplits", hozAlign: "center", visible: true, formatter:splitsFormatter, responsive: 0},
+					{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter, responsive: 0},
+					{title: "Total Over", field: "totalOver", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number", visible: true},
+					{title: "L5 Total Over", field: "totalOverLast5", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number", visible: true},
+					{title: "Last ➡️", field: "last5", hozAlign: "center", visible: true, width: 200},
+					{title: "Last YR AVG", field: "lastAvg", hozAlign: "center", width: 80, formatter: colorFormatter, visible: true},
+					{title: "Last YR Total Over", field: "lastTotalOver", width: 80, hozAlign: "center", formatter: percentFormatter, visible: true},
+					{title: "Played Yesterday", field: "playedYesterday", hozAlign: "center", width: 70, visible: false},
+					//{title: "Prev Matchup", field: "prevMatchup", hozAlign: "center", responsive: 2},
+					{title: "Over/Under", field: "overUnder", hozAlign: "center", sorter: "number", visible: false},
+					{title: "Prev Matchup", field: "prevMatchup", hozAlign: "center", responsive: 2},
+					{title: "Over", field: "overOdds", hozAlign: "center", sorter: "number", visible: true},
+					{title: "Under", field: "underOdds", hozAlign: "center", sorter: "number", visible: true},
+				]
+			};
+
+			const corsiFenwickCols = [
+				{title: "Corsi (A/10/5/3)", field: "corsi", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Fenwick", field: "fenwick", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Shots", field: "shots", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Scoring", field: "scoring", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Corsi Against", field: "corsiAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Fenwick Against", field: "fenwickAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Shots Against", field: "shotsAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Scoring Against", field: "scoringAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Corsi (A/10/5/3)", field: "oppCorsi", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Fenwick", field: "oppFenwick", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Shots", field: "oppShots", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Scoring", field: "oppScoring", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Corsi Against", field: "oppCorsiAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Fenwick Against", field: "oppFenwickAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Shots Against", field: "oppShotsAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+				{title: "Opp Scoring Against", field: "oppScoringAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+			];
+
+			function renderTable() {
+				if (sport === "nhl") {
+					tableSettings["responsiveLayout"] = "collapse";
+					tableSettings["responsiveLayoutCollapseStartOpen"] = false;
+					tableSettings["responsiveLayoutCollapseFormatter"] = function(data) { return collapseFormatter(data); }
+
+					tableSettings["columns"].unshift({formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false});
+					tableSettings["columns"].push(...corsiFenwickCols);
+				}
+
+
+				TABLE = new Tabulator("#propsTable", tableSettings);
+			}
+
+			renderTable();
+
+			setTimeout(function() {
+				hideExtras();
+			}, 100);
+			
+
+			if (sport !== "nhl") {
+				for (const a of document.getElementById("header").getElementsByTagName("a")) {
+					if (a.classList.contains("active")) {
+						a.classList.remove("active");
+					} else if (a.innerText.toLowerCase() === sport) {
+						a.classList.add("active");
+					}
+				}
+			}
+
+			if (propArg !== "") {
+				for (const a of document.getElementById("propLinks").getElementsByTagName("a")) {
+					if (a.classList.contains("active")) {
+						a.classList.remove("active");
+					} else if (a.innerText.toLowerCase() === propArg) {
+						a.classList.add("active");
+					}
+				}
+			}
+
+		</script>
+		{% if prop != "" %}
+			<script>
+				TABLE.setFilter([{field:"propType", type:"=", value:"{{prop}}"}]);
+			</script>
+		{% endif %}
+		{% if prop == "sv" %}
+			<script>
+				TABLE.getColumn("savesProj").show();
+				TABLE.getColumn("savesProjLast5").show();
+				TABLE.getColumn("savesProjLast3").show();
+				TABLE.getColumn("oppSavesAgainstProj").show();
+				TABLE.getColumn("oppSavesAgainstProjLast5").show();
+				TABLE.getColumn("oppSavesAgainstProjLast3").show();
+				TABLE.getColumn("savesPer60").show();
+				TABLE.getColumn("savesPer60Last1").show();
+				TABLE.getColumn("savesPer60Last3").show();
+				TABLE.getColumn("savesPer60Last5").show();
+				TABLE.getColumn("oppSavesAgainstPer60").show();
+				TABLE.getColumn("oppSavesAgainstPer60Last1").show();
+				TABLE.getColumn("oppSavesAgainstPer60Last3").show();
+				TABLE.getColumn("oppSavesAgainstPer60Last5").show();
+				TABLE.getColumn("teamOver").show();
+				TABLE.getColumn("oppOver").show();
+				TABLE.getColumn("playedYesterday").show();
+
+				TABLE.getColumn("propType").hide();
+			</script>
+		{% endif %}
+		{% if date != "" %}
+			<script>
+				TABLE.getColumn("hit").show();
+			</script>
+		{% endif %}
+	</body>
+
+</html>

@@ -1,0 +1,652 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="button_div">
+	<div id="title_div">
+		{% if is_all_weeks %}
+			<span id="title">{{pos}}</span> Ranking Stats (Week All)
+		{% else %}
+			<span id="title">{{pos}}</span> Ranking Stats (Week {{curr_week}})
+		{% endif %}
+	</div>
+	<div id="position_button_div">
+		<button id="qb_button" onclick="onChangePos('QB');">QB</button>
+		<button id="rb_button" onclick="onChangePos('RB');">RB</button>
+		<button id="wr_button" onclick="onChangePos('WR');">WR</button>
+		<button id="te_button" onclick="onChangePos('TE');">TE</button>
+	</div>
+	<div id="week_button_div">
+		<button onclick="onChangeWeek('All');">All</button>
+		{% for week in all_weeks %}
+			{% if week == curr_week %}
+				<button class="active" onclick="onChangeWeek({{week}});">W{{week}}</button>
+			{% elif week >= real_week %}
+				<button class="disabled" onclick="onChangeWeek({{week}});">W{{week}}</button>
+			{% else %}
+				<button onclick="onChangeWeek({{week}});">W{{week}}</button>
+			{% endif %}
+		{% endfor %}
+	</div>
+</div>
+<div id="plot_div"></div>
+
+
+<div id="stats_table_div">
+	<div id="stats_options">
+	</div>
+	<table id="stats_table">
+		<tr>
+			<th rowspan="2"></th>
+			<th id="avg_abs_err_header" colspan="6">Average Absolute Rank Error</th>
+			<th class="sep" rowspan="6"></th>
+			<th id="predicted_correct_header" colspan="5">Predicted Correct</th>
+		</tr>
+		<tr>
+			<th>All <span class="position_span"></span>s</th>
+			<th class="sep" rowspan="5"></th>
+			<th><span class="position_span"></span>1 - <span class="position_span"></span>10</th>
+			<th class="web_only"><span class="position_span"></span>11 - <span class="position_span"></span>20</th>
+			<th class="web_only"><span class="position_span"></span>21 - <span class="position_span"></span>30</th>
+			<th class="not-qb web_only"><span class="position_span"></span>31 - <span class="position_span"></span>40</th>
+			<th>Exactly</th>
+			<th>within +/- 2 Ranks</th>
+			<th class="web_only">within +/- 5 Ranks</th>
+			<th class="web_only">within +/- 10 Ranks</th>
+		</tr>
+		{% for site in sites %}
+			<tr>
+				<td>{{site.upper()}}</td>
+				<td id="{{site}}_avg_abs_err_col"></td>
+				<td id="{{site}}_avg_abs_err_1_10_col"></td>
+				<td id="{{site}}_avg_abs_err_11_20_col" class="web_only"></td>
+				<td id="{{site}}_avg_abs_err_21_30_col" class="web_only"></td>
+				<td id="{{site}}_avg_abs_err_31_40_col" class="not-qb web_only"></td>
+				<td id="{{site}}_plus_minus_0_col"></td>
+				<td id="{{site}}_plus_minus_2_col"></td>
+				<td id="{{site}}_plus_minus_5_col" class="web_only"></td>
+				<td id="{{site}}_plus_minus_10_col" class="web_only"></td>
+			</tr>
+		{% endfor %}
+
+	</table>
+</div>
+
+{% for site in sites %}
+<div id="{{site}}_error_plot_div" style="width:100%;margin-left:0;float:left;"></div>
+{% endfor %}
+<!-- 
+<div class="error_table_div" style="width:20%;margin-left:0;float:left;">
+	<div class="error_table_sub_div">
+		<table class="error_table">
+			<tr>
+				<th>Range</th>
+				<th>Avg Abs Error</th>
+			</tr>
+			<tr id="yahoo_avg_abs_err_row">
+				<td>All <span class="position_span"></span></td>
+				<td id="yahoo_avg_abs_err_col"></td>
+			</tr>
+			<tr id="yahoo_avg_abs_err_1_10_row">
+				<td><span class="position_span"></span>1 - <span class="position_span"></span>5</td>
+				<td id="yahoo_avg_abs_err_1_10_col"></td>
+			</tr>
+			<tr id="yahoo_avg_abs_err_31_40_row">
+				<td><span class="position_span"></span>5 - <span class="position_span"></span>10</td>
+				<td id="yahoo_avg_abs_err_31_40_col"></td>
+			</tr>
+			<tr id="yahoo_avg_abs_err_11_20_row">
+				<td><span class="position_span"></span>10 - <span class="position_span"></span>15</td>
+				<td id="yahoo_avg_abs_err_11_20_col"></td>
+			</tr>
+			<tr id="yahoo_avg_abs_err_21_30_row">
+				<td><span class="position_span"></span>15 - <span class="position_span"></span>20</td>
+				<td id="yahoo_avg_abs_err_21_30_col"></td>
+			</tr>
+		</table>
+		<div class="accurate_range_header">Most Accurate Range</div>
+		<ul>
+			<li>- 5 Players: <span id="yahoo_best_5_avg_range_col"></span></li>
+			<li>- 10 Players: <span id="yahoo_best_10_avg_range_col"></span></li>
+		</ul>
+	</div>
+</div>
+<div id="yahoo_error_plot_div" style="width:80%;margin-left:0;float:left;"></div>
+<div id="espn_error_plot_div" style="width:100%;margin-left:0;float:left;"></div>
+<div id="fantasypros_error_plot_div" style="width:100%;margin-left:0;float:left;"></div>
+-->
+<input type="hidden" id="curr_week" value="{{curr_week}}" />
+
+
+{% for graph in graphs %}
+<input type="hidden" id="names_{{graph.position}}" value="{{graph.name}}" />
+<input type="hidden" id="actual_ranks_{{graph.position}}" value="{{graph.actual}}" />
+<input type="hidden" id="yahoo_ranks_{{graph.position}}" value="{{graph.yahoo}}" />
+<input type="hidden" id="espn_ranks_{{graph.position}}" value="{{graph.espn}}" />
+<input type="hidden" id="fantasypros_ranks_{{graph.position}}" value="{{graph.fantasypros}}" />
+{% endfor %}
+
+{% for graph in error_graphs %}
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_names_{{graph.position}}" value="{{graph.name}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_actual_ranks_{{graph.position}}" value="{{graph.actual}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_err_{{graph.position}}" value="{{graph.err}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_avg_perc_err_{{graph.position}}" value="{{graph.avg_err}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_avg_abs_err_{{graph.position}}" value="{{graph.avg_abs_err}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_best_5_avg_range_{{graph.position}}" value="{{graph.best_5_avg_range}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_best_10_avg_range_{{graph.position}}" value="{{graph.best_10_avg_range}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_avg_abs_err_1_10_{{graph.position}}" value="{{graph.avg_abs_err_1_10}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_avg_abs_err_31_40_{{graph.position}}" value="{{graph.avg_abs_err_31_40}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_avg_abs_err_11_20_{{graph.position}}" value="{{graph.avg_abs_err_11_20}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_avg_abs_err_21_30_{{graph.position}}" value="{{graph.avg_abs_err_21_30}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_plus_minus_0_{{graph.position}}" value="{{graph.exact}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_plus_minus_2_{{graph.position}}" value="{{graph.within_2}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_plus_minus_5_{{graph.position}}" value="{{graph.within_5}}" />
+<input type="hidden" id="{{graph.site}}_{{graph.week}}_plus_minus_10_{{graph.position}}" value="{{graph.within_10}}" />
+{% endfor %}
+
+<script>
+	var curr_week = {{curr_week}};
+	var espn_data = {
+		x: [],
+		y: [],
+		mode: "markers+text",
+		name: "ESPN",
+		text: [],
+		textposition: 'top center',
+		textfont: {
+			family: 'Raleway, sans-serif'
+		},
+		marker: {
+			size: 14,
+			color: "#d00"
+		},
+		type: 'scatter'
+	};
+	var yahoo_data = {
+		x: [],
+		y: [],
+		mode: "markers+text",
+		name: "Yahoo",
+		text: [],
+		textposition: 'top center',
+		textfont: {
+			family: 'Raleway, sans-serif'
+		},
+		marker: {
+			size: 14,
+			color: "green"
+		},
+		type: 'scatter'
+	};
+	var fantasypros_data = {
+		x: [],
+		y: [],
+		mode: "markers+text",
+		name: "FantasyPros",
+		text: [],
+		textposition: 'top center',
+		textfont: {
+			family: 'Raleway, sans-serif'
+		},
+		marker: {
+			size: 14,
+			color: "blue"
+		},
+		type: 'scatter'
+	};
+	var layout = {
+		title: "Projected Vs. Actual Rank",
+		xaxis: {
+			title: "Week {{curr_week}} Rank",
+			titlefont: {
+				family: 'Courier New, monospace',
+				size: 18,
+				color: '#7f7f7f'
+			}
+		},
+		yaxis: {
+			title: "Projected Rank",
+			titlefont: {
+				family: 'Courier New, monospace',
+				size: 18,
+				color: '#7f7f7f'
+			}
+		}
+	};
+
+	var all_positions = ["qb", "rb", "wr", "te"];
+	var sites = ["Yahoo", "ESPN", "FantasyPros", "Borischen"];
+
+	String.prototype.format = function () {
+		var i = 0, args = arguments;
+		return this.replace(/{}/g, function () {
+			return typeof args[i] != 'undefined' ? args[i++] : '';
+		});
+	};
+
+	function format_reddit(hash, site, key) {
+		var str = site.toUpperCase()+"|";
+		for (var i = 0; i < all_positions.length; ++i) {
+			var hash_key = site+"_"+key+"_"+all_positions[i];
+			if (hash[hash_key][1]) {
+				str += ("**"+hash[hash_key][0]+"**");
+			} else {
+				str += hash[hash_key][0];
+			}
+			if (i != all_positions.length - 1) {
+				str += "|";
+			}
+		}
+		return str;
+	}
+
+	function print_reddit() {
+		var hash = {};
+		for (var i = 0; i < all_positions.length; ++i) {
+			
+			onChangePos(all_positions[i].toUpperCase());
+			for (var s = 0; s < sites.length; ++s) {
+
+				var keys = ["_avg_abs_err_", "_avg_abs_err_1_10_", "_plus_minus_0_", "_plus_minus_2_"];
+				for (var k = 0; k < keys.length; ++k) {
+
+					var id = sites[s].toLowerCase()+keys[k];
+					var el = $("#"+id+"col");
+					var val = el.text();
+					if (val.slice(-1) == "%") {
+						val = val.slice(0,-1);
+					}
+					val = parseFloat(val);
+					hash[id+all_positions[i]] = [val, el.hasClass("best")];
+				}
+			}
+		}
+		//yahoo  
+		console.log([
+			"You might remember my last post [](). Some people suggested that rankings were a better indicator over projection points.\n",
+			"This week, I made a site that lists the accuracy of rankings from Yahoo/Espn/FantasyPros/Borischen. [This is the site](http://zhecht.pythonanywhere.com/rankings?week=All) which is definitely a work in progress.\n",
+			"#Method:",
+			"- Scraped top 30 QB/TE and 40 WR/RB Projected Rankings from Yahoo, ESPN, FantasyPros, Borischen\n",
+			"- Yahoo & ESPN I sorted half-point ppr projections by points and then ranked them that way\n",
+			"- I know FantasyPros is averages from a lot of experts and Boris Chen pulls their data from FantasyPros\n",
+			"- Rank Error = projected_rank - actual_rank, Data is the average absolute value of all ranking errors.\n",
+
+			"#Interesting:",
+			"- **ESPN**: Really accurate on **TE** rankings. *20% (12/60)* rankings were within +/- 2, *5%* higher than the next highest (**borischen**)\n",
+			"- **FantasyPros**: First in **QB** and **WR** accuracy. Shockingly predicting *10.53%* of qb rankings exact.\n",
+			"- **Yahoo**: **RB**. All sites had very similar average rank errors but yahoo led accuracy with *12.5%* of rankings within +/- 2\n",
+			"- **Yahoo**: **RB**. Week 2, Yahoo had green across the board. Predicting *7.5% (6/80)* rankings exact, *5%* higher than the next leading. They projected *50%* of RB rankings withing +/- 10, while the next leading (**FantasyPros**) projected *37.5%*\n",
+
+			"\n#Average Absolute Error (Rankings)\n",
+			"|All QBs|All RBs|All WRs|All TEs",
+			":--|:--|:--|:--|:--",
+			format_reddit(hash, "yahoo", "avg_abs_err"),
+			format_reddit(hash, "espn", "avg_abs_err"),
+			format_reddit(hash, "fantasypros", "avg_abs_err"),
+			format_reddit(hash, "borischen", "avg_abs_err"),
+
+			"\n#Predicted Correct Within +/- 2\n",
+			"|All QBs|All RBs|All WRs|All TEs",
+			":--|:--|:--|:--|:--",
+			format_reddit(hash, "yahoo", "plus_minus_2"),
+			format_reddit(hash, "espn", "plus_minus_2"),
+			format_reddit(hash, "fantasypros", "plus_minus_2"),
+			format_reddit(hash, "borischen", "plus_minus_2"),
+
+		].join("\n"));
+	}
+
+	function highlight_table(key, yahoo_val, espn_val, fantasypros_val, borischen_val, perc) {
+		var rank_data = [yahoo_val, espn_val, fantasypros_val, borischen_val];
+		for (var i = 0; i < sites.length; ++i) {
+			var idx2 = (i + 1) % sites.length;
+			var idx3 = (i + 2) % sites.length;
+			var idx4 = (i + 3) % sites.length;
+
+
+			// 1 >= 2 && 1 >= 3 && 1 >= 4
+			var el = $("#"+sites[i].toLowerCase()+key+"col");
+			el.removeClass("best worst middle");
+			if (rank_data[i] >= rank_data[idx2] && rank_data[i] >= rank_data[idx3] && rank_data[i] >= rank_data[idx4]) {
+				if (perc === "%") {
+					el.addClass("best");
+				} else {
+					el.addClass("worst");
+				}
+				
+			}
+			if (rank_data[i] <= rank_data[idx2] && rank_data[i] <= rank_data[idx3] && rank_data[i] <= rank_data[idx4]) {
+				if (perc === "%") {
+					el.addClass("worst");
+				} else {
+					el.addClass("best");
+				}
+			}
+		}
+
+		if ((key !== "_avg_abs_err_" && key !== "_avg_abs_err_1_10_" && key.indexOf("avg_abs_err") >= 0) || 
+			(key.indexOf("plus_minus") >= 0 && (key != "_plus_minus_0_" && key != "_plus_minus_2_"))) {
+			$("#yahoo"+key+"col").addClass("web_only");
+			$("#espn"+key+"col").addClass("web_only");
+			$("#fantasypros"+key+"col").addClass("web_only");
+			$("#borischen"+key+"col").addClass("web_only");
+		}
+		$("#yahoo"+key+"col").text(yahoo_val+perc);
+		$("#espn"+key+"col").text(espn_val+perc);
+		$("#fantasypros"+key+"col").text(fantasypros_val+perc);
+		$("#borischen"+key+"col").text(borischen_val+perc);
+	}
+
+	function clear_arrays() {
+		espn_data["x"] = [];
+		espn_data["y"] = [];
+		yahoo_data["x"] = [];
+		yahoo_data["y"] = [];
+		fantasypros_data["x"] = [];
+		fantasypros_data["y"] = [];
+		borischen_data["x"] = [];
+		borischen_data["y"] = [];
+	}
+
+	function fill_table(site, position) {
+		var keys = ["_avg_abs_err_", "_avg_abs_err_1_10_", "_avg_abs_err_31_40_", "_avg_abs_err_11_20_", "_avg_abs_err_21_30_", "_plus_minus_0_", "_plus_minus_2_", "_plus_minus_5_", "_plus_minus_10_"];
+		var ranges = [[1,10], [11,20], [21,30], [31,40]];
+		if (window.location.search.indexOf("week=All") >= 0) {
+			var my_data = {
+				"yahoo": {
+					"tot_abs_err": 0,
+					"tot_abs_err_1_10": 0,
+					"tot_abs_err_31_40": 0,
+					"tot_abs_err_11_20": 0,
+					"tot_abs_err_21_30": 0,
+					"exact": 0,
+					"tot_within_2": 0,
+					"tot_within_5": 0,
+					"tot_within_10": 0,
+					"tot_length": 0
+				},
+				"espn": {
+					"tot_abs_err": 0,
+					"tot_abs_err_1_10": 0,
+					"tot_abs_err_31_40": 0,
+					"tot_abs_err_11_20": 0,
+					"tot_abs_err_21_30": 0,
+					"exact": 0,
+					"tot_within_2": 0,
+					"tot_within_5": 0,
+					"tot_within_10": 0,
+					"tot_length": 0
+				},
+				"fantasypros": {
+					"tot_abs_err": 0,
+					"tot_abs_err_1_10": 0,
+					"tot_abs_err_31_40": 0,
+					"tot_abs_err_11_20": 0,
+					"tot_abs_err_21_30": 0,
+					"exact": 0,
+					"tot_within_2": 0,
+					"tot_within_5": 0,
+					"tot_within_10": 0,
+					"tot_length": 0
+				},
+				"borischen": {
+					"tot_abs_err": 0,
+					"tot_abs_err_1_10": 0,
+					"tot_abs_err_31_40": 0,
+					"tot_abs_err_11_20": 0,
+					"tot_abs_err_21_30": 0,
+					"exact": 0,
+					"tot_within_2": 0,
+					"tot_within_5": 0,
+					"tot_within_10": 0,
+					"tot_length": 0
+				}
+			};
+			for (var s = 0; s < sites.length; ++s) {
+				site = sites[s].toLowerCase();
+
+				for (var week = 1; week < {{real_week}}; ++week) {
+					var err_arr = $("#"+site+"_"+week+"_err_"+position).val().split(",");
+					var proj_rank_arr = $("#"+site+"_"+week+"_actual_ranks_"+position).val().split(",");
+
+					for (var i = 0; i < err_arr.length; ++i) {
+						var err = Math.abs(parseFloat(err_arr[i]));
+						my_data[site]["tot_abs_err"] += err;
+
+						if (err <= 10) {
+							my_data[site]["tot_within_10"] += 1;
+							if (err <= 5) {
+								my_data[site]["tot_within_5"] += 1;
+								if (err <= 2) {
+									my_data[site]["tot_within_2"] += 1;
+									if (err === 0) {
+										my_data[site]["exact"] += 1;
+									}
+								}
+
+							}
+						}
+					}
+					for (var r = 0; r < ranges.length; ++r) {
+						var start = ranges[r][0];
+						var end = ranges[r][1];
+						var avg = parseFloat($("#"+site+"_"+week+"_avg_abs_err_"+start+"_"+end+"_"+position).val());
+						my_data[site]["tot_abs_err_"+start+"_"+end] += (avg * (end - start + 1));
+						//if (parseInt(proj_rank_arr[i]) >= start && parseInt(proj_rank_arr[i]) <= end) {
+						//	my_data[site]["tot_abs_err_"+start+"_"+end] += err;
+						//}
+					}
+					my_data[site]["tot_length"] += err_arr.length;
+				}
+			}
+
+			var data_keys = Object.keys(my_data["yahoo"]);
+			for (var i = 0; i < keys.length; ++i) {
+				var yahoo_val = my_data["yahoo"][data_keys[i]] / my_data["yahoo"]["tot_length"];
+				var espn_val = my_data["espn"][data_keys[i]] / my_data["espn"]["tot_length"];
+				var fantasypros_val = my_data["fantasypros"][data_keys[i]] / my_data["fantasypros"]["tot_length"];
+				var borischen_val = my_data["borischen"][data_keys[i]] / my_data["borischen"]["tot_length"];
+				
+				if (i >= 1 && i <= 4) {
+					yahoo_val = my_data["yahoo"][data_keys[i]] / (10 * ({{real_week}} - 1));
+					espn_val = my_data["espn"][data_keys[i]] / (10 * ({{real_week}} - 1));
+					fantasypros_val = my_data["fantasypros"][data_keys[i]] / (10 * ({{real_week}} - 1));
+					borischen_val = my_data["borischen"][data_keys[i]] / (10 * ({{real_week}} - 1));
+				}
+				
+				var perc = (keys[i].indexOf("plus_minus") >= 0) ? "%" : "";
+				if (perc === "%") {
+					yahoo_val = yahoo_val * 100;
+					espn_val = espn_val * 100;
+					fantasypros_val = fantasypros_val * 100;
+					borischen_val = borischen_val * 100;
+				}
+				highlight_table(keys[i], +(yahoo_val).toFixed(2), +(espn_val).toFixed(2), +(fantasypros_val).toFixed(2), +(borischen_val).toFixed(2), perc);
+				
+			}
+
+		} else {
+			for (var k = 0; k < keys.length; ++k) {
+				var perc = (keys[k].indexOf("plus_minus") >= 0) ? "%" : "";
+				var yahoo_val = parseFloat($("#yahoo_"+curr_week+keys[k]+position).val());
+				var espn_val = parseFloat($("#espn_"+curr_week+keys[k]+position).val());
+				var fantasypros_val = parseFloat($("#fantasypros_"+curr_week+keys[k]+position).val());
+				var borischen_val = parseFloat($("#borischen_"+curr_week+keys[k]+position).val());
+
+				highlight_table(keys[k], yahoo_val, espn_val, fantasypros_val, borischen_val, perc);
+			}
+		}
+	}
+
+	/*function highlight_table(site, position) {
+		var my_data = [];
+		var keys = ["_avg_abs_err_", "_avg_abs_err_1_10_", "_avg_abs_err_31_40_", "_avg_abs_err_11_20_", "_avg_abs_err_21_30_", "_plus_minus_2_", "_plus_minus_5_", "_plus_minus_10_"];
+
+		for (var j = 0; j < keys.length; ++j) {
+			var data_arr = [];
+			for (var i = 0; i < sites.length; ++i) {
+				var val = parseFloat($("#"+sites[i].toLowerCase()+"_"+curr_week+keys[j]+position).val());
+				data_arr.push(val);
+			}
+			my_data.push(data_arr);
+		}
+
+		for (var j = 0; j < keys.length; ++j) {
+			var classes = [];
+			for (var i = 0; i < sites.length; ++i) {
+				var idx2 = 1, idx3 = 2;
+				if (i === 1) {
+					idx2 = 0; idx3 = 2;
+				} else if (i === 2) {
+					idx2 = 0; idx3 = 1;
+				}
+				//console.log(my_data[j], j, my_data[j][i]);
+				if (keys[j].indexOf("plus_minus") >= 0) {
+					if (my_data[j][i] >= my_data[j][idx2] && my_data[j][i] >= my_data[j][idx3]) {
+						$("#"+sites[i].toLowerCase()+keys[j]+"col").removeClass().addClass("best");
+					} else if (my_data[j][i] < my_data[j][idx2] && my_data[j][i] < my_data[j][idx3]) {
+						$("#"+sites[i].toLowerCase()+keys[j]+"col").removeClass().addClass("worst");
+					} else {
+						$("#"+sites[i].toLowerCase()+keys[j]+"col").removeClass().addClass("middle");
+					}
+				} else {
+					if (my_data[j][i] <= my_data[j][idx2] && my_data[j][i] <= my_data[j][idx3]) {
+						$("#"+sites[i].toLowerCase()+keys[j]+"col").removeClass().addClass("best");
+					} else if (my_data[j][i] > my_data[j][idx2] && my_data[j][i] > my_data[j][idx3]) {
+						$("#"+sites[i].toLowerCase()+keys[j]+"col").removeClass().addClass("worst");
+					} else {
+						$("#"+sites[i].toLowerCase()+keys[j]+"col").removeClass().addClass("middle");
+					}
+				}
+			}
+		}
+	}*/
+	function change_position_err(position) {
+		
+		for (var i = 0; i < sites.length; ++i) {
+			var name_arr = $("#"+sites[i].toLowerCase()+curr_week+"_names_"+position).val().split(",");
+			var actual_rank_arr = $("#"+sites[i].toLowerCase()+"_actual_ranks_"+position).val().split(",");
+			//var perc_err_arr = $("#"+sites[i].toLowerCase()+"_perc_err_"+position).val().split(",");
+			var err_arr = $("#"+sites[i].toLowerCase()+curr_week+"_err_"+position).val().split(",");
+			var d = {
+				x: name_arr,
+				y: err_arr,
+				mode: "markers+text",
+				name: sites[i],
+				text: [],
+				textposition: 'top center',
+				textfont: {
+					family: 'Raleway, sans-serif'
+				},
+				marker: {
+					size: 14,
+					color: "black"
+				},
+				type: 'scatter'
+			};
+			var l = {
+				title: "Rank Error Vs. "+sites[i]+" Projected Rank",
+				xaxis: {
+					title: "Week {{curr_week}} Projected Rank",
+					titlefont: {
+						family: 'Courier New, monospace',
+						size: 18,
+						color: '#7f7f7f'
+					}
+				},
+				yaxis: {
+					title: "Rank Error",
+					titlefont: {
+						family: 'Courier New, monospace',
+						size: 18,
+						color: '#7f7f7f'
+					}
+				}
+			}
+			
+			Plotly.newPlot(sites[i].toLowerCase()+"_error_plot_div", [d], l);
+		}
+	}
+	function change_position(position) {
+		
+		var name_arr = $("#names_"+position).val().split(",");
+		var actual_rank_arr = $("#actual_ranks_"+position).val().split(",");
+		var espn_rank_arr = $("#espn_ranks_"+position).val().split(",");
+		var yahoo_rank_arr = $("#yahoo_ranks_"+position).val().split(",");
+		var fantasypros_rank_arr = $("#fantasypros_ranks_"+position).val().split(",");
+
+		clear_arrays();
+		for (var i = 0; i < actual_rank_arr.length; ++i) {
+
+			var cutoff = position === "qb" ? 30 : 40;
+			cutoff = 50;
+			if (parseFloat(actual_rank_arr[i]) <= cutoff) {
+				var espn_name = "", yahoo_name = "", fantasypros_name = "";
+				if (parseFloat(espn_rank_arr[i]) > parseFloat(yahoo_rank_arr[i]) && parseFloat(espn_rank_arr[i]) > parseFloat(fantasypros_rank_arr[i])) {
+					espn_name = name_arr[i];
+				} else if (parseFloat(yahoo_rank_arr[i]) > parseFloat(espn_rank_arr[i]) && parseFloat(yahoo_rank_arr[i]) > parseFloat(fantasypros_rank_arr[i])) {
+					yahoo_name = name_arr[i];
+				} else {
+					fantasypros_name = name_arr[i];
+				}
+				espn_data["text"].push(espn_name);
+				yahoo_data["text"].push(yahoo_name);
+				fantasypros_data["text"].push(fantasypros_name);
+
+				espn_data["x"].push(parseFloat(actual_rank_arr[i]));
+				yahoo_data["x"].push(parseFloat(actual_rank_arr[i]));
+				fantasypros_data["x"].push(parseFloat(actual_rank_arr[i]));
+
+				espn_data["y"].push(parseFloat(espn_rank_arr[i]));
+				yahoo_data["y"].push(parseFloat(yahoo_rank_arr[i]));
+				fantasypros_data["y"].push(parseFloat(fantasypros_rank_arr[i]));
+			}
+		}
+
+		layout["title"] = "Week "+curr_week+" Projected Rank Vs. Actual Rank ["+position.toUpperCase()+"]";
+		var data = [yahoo_data, espn_data, fantasypros_data];
+		Plotly.newPlot("plot_div", data, layout);
+	}
+
+	function onChangeWeek(week) {
+		if (week >= {{real_week}}) {
+			return;
+		}
+		window.location.href = "/rankings?week="+week;
+	}
+	function onChangePos(pos) {
+		//change_position(pos.toLowerCase());
+		//change_position_err(pos.toLowerCase());
+		
+		fill_table("", pos.toLowerCase());
+		//	highlight_table(sites[i], pos.toLowerCase());
+		$(".position_span,#title").text(pos);
+		$("#"+pos.toLowerCase()+"_button").addClass("active").siblings().removeClass("active");
+
+		var display = "table-cell";
+		var colspan = 6;
+		if (pos === "QB" || pos === "TE") {
+			display = "none";
+			colspan = 5;
+		}
+		$(".not-qb").css("display", display);
+		$("#avg_abs_err_header").attr("colspan", colspan);
+	}
+
+
+	onChangePos("{{pos}}");
+	$(".error_table_div").css("height", $("#yahoo_error_plot_div").css("height"));
+	if (window.location.search.indexOf("week=All") >= 0) {
+		$("#week_button_div button:nth-child(1)").addClass("active").siblings().removeClass("active");
+	}
+
+	/*
+	if ($(window).width() <= 950) {
+		$("#avg_abs_err_header, #predicted_correct_header").attr("colspan", 2);
+		$("#week_button_div button:nth-child(1)").css("margin-left", "calc((100% - (100% / 5) * {{real_week}}) / 2)");
+	}
+	*/
+	//$("body").hide();
+
+</script>
+{% endblock %}
+

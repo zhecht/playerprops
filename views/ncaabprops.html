@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NCAAB Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/ncaabteams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+			<button onclick="print();">Print</button>
+			<button onclick="print('csv');">PRINT CSV</button>
+		</div>
+		<script>
+			let TABLE;
+			const teamNames = ["All", "ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SA", "SAC", "TOR", "UTAH", "WSH"];
+
+			function print(output = "") {
+				const args = [];
+				let s = "";
+				const joinChar = (output == "csv") ? "\t" : "|";
+				//s += ["NAME","TEAM","PROP","LINE","SZN AVG","% OVER","LAST 7 GAMES","LAST YR % OVER","OVER", "UNDER"].join(joinChar);
+				s += ["NAME","POS","ML","A/H","TEAM","OPP","PROP","LINE","SZN AVG","W-L Splits","A-H Splits","% OVER","L5 % OVER","LAST 7 GAMES ➡️","OVER","UNDER"].join(joinChar);
+				s += "\n";
+                if (output != "csv") {
+                    s += ":--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--\n";
+                }
+				let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+				for (row of rows) {
+					const data = row.getData();
+					let overOdds = data.overOdds;
+					let underOdds = data.underOdds;
+					let gameLine = data.gameLine;
+					if (output == "csv") {
+						if (parseInt(overOdds) > 0) {
+							overOdds = "'"+overOdds;
+						}
+						if (parseInt(underOdds) > 0) {
+							underOdds = "'"+underOdds;
+						}
+						if (parseInt(gameLine) > 0) {
+							gameLine = "'"+gameLine;
+						}
+					}
+					s += [data.player, data.pos, gameLine, data.awayHome, data.team, data.opponent, data.propType, data.line, data.avg, data.winLossSplits, data.awayHomeSplits, data.totalOver+"%", data.totalOverLast5+"%", data.last5, overOdds, underOdds].join(joinChar);
+					s += "\n";
+				}
+				console.log(s);
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const projFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				if (parseFloat(data.proj) >= parseFloat(data.line)) {
+					return "<div class='positive'>"+data.proj+"</div>";
+				}
+				return "<div class='negative'>"+data.proj+"</div>";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				const data = cell.getRow().getData();
+				div.classList.add(cell.getValue().toLowerCase());
+				div.classList.add(data.display);
+				div.classList.add(data.display.split("-").splice(0, data.display.split("-").length-1).join("-"));
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const splitsFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const vals = cell.getValue().split(" - ");
+				let val1 = vals[0];
+				if (parseFloat(val1) >= parseFloat(data.line)) {
+					val1 = "<div class='positive'>"+val1+"</div>";
+				} else {
+					val1 = "<div class='negative'>"+val1+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "A") {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) < 0) {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				}
+				let val2 = vals[1];
+				if (parseFloat(val2) >= parseFloat(data.line)) {
+					val2 = "<div class='positive'>"+val2+"</div>";
+				} else {
+					val2 = "<div class='negative'>"+val2+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "H") {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) > 0) {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				}
+				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getNCAABProps",
+					ajaxParams:{teams: "{{teams}}", date: "{{date}}"},
+					//responsiveLayout:"collapse",
+					//layout: "fitDataFill",
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					//groupBy: "team",
+					groupHeader: function(value, count, data, group){
+						const playerTxt = count == 1 ? "Player" : "Players"
+						return "<a href='https://www.espn.com/nfl/team/depth/_/name/"+value+"' target='_blank'>"+value+"</a>" + "<span style='color:black; margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+					},
+					initialSort: [
+						{column: "totalOverLast5", dir: "desc"},
+						{column: "totalOver", dir: "desc"},
+					],
+					columns: [
+						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+							cell.getRow().toggleSelect();
+						}},
+						{title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center"},
+						{title: "Player", field: "player", headerFilter: "input"},
+						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
+						{title: "Avg Min", field: "avgMin", hozAlign: "center", width: 70},
+						//{title: "A/H", field: "awayHome", hozAlign: "center", width: 50},
+						{title: "ML", field: "gameLine", hozAlign: "center", width: 70},
+						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "Opp % Over", field: "oppOver", hozAlign: "center", formatter: percentFormatter, width: 70},
+						{title: "Prop", field: "propType", hozAlign: "center"},
+						{title: "Line", field: "line", hozAlign: "center"},
+						{title: "SZN AVG", field: "avg", hozAlign: "center", width: 80, formatter: colorFormatter},
+						{title: "W-L Splits", field: "winLossSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
+						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
+						{title: "Total Over", field: "totalOver", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
+						{title: "L5 % Over", field: "totalOverLast5", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
+						{title: "Last", field: "last5", hozAlign: "center"},
+						{title: "Last Yr % Over", field: "lastTotalOver", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
+						{title: "Over", field: "overOdds", hozAlign: "center"},
+						{title: "Under", field: "underOdds", hozAlign: "center"},
+					]
+				})
+			}
+
+			renderTable();
+		</script>
+		{% if prop != "" %}
+			<script>
+				TABLE.setFilter([{field:"propType", type:"=", value:"{{prop}}"}]);
+			</script>
+		{% endif %}
+		{% if date == "" %}
+			<script>
+				TABLE.getColumn("hit").hide();
+			</script>
+		{% endif %}
+	</body>
+
+</html>

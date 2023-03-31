@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Redzone Look Trends</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/teams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		.positive { color: green; }
+		.negative { color: red;}
+		#redzoneTable {
+			width: max-content;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 90%;
+		}
+		#team_click_div { width:50%; margin-left: 25%;}
+		.team_click { text-decoration: none; }
+		table { width: 50%;margin-left: 25%;margin-top: 20px;text-align: center;border:1px solid;border-collapse: collapse;}
+		table tr { border-bottom: 1px solid; }
+		table tr:nth-child(even) { background-color: #f1f1f1; }
+		table td, table th { border: 1px solid; }
+		#header { width: 100%; text-align: center; }
+		#nav { padding: 10px; }
+		#nav a { text-decoration: none; }
+		#nav a.active { text-decoration: underline; }
+		@media (max-width: 450px) {
+			table {width:100%; margin-left:0;}
+			body { font-size: 14px; }
+		}
+	</style>
+	<body>
+		<div id="header">
+			<div id="nav">
+				<a href="#">Defensive Ranks</a>
+				/
+				<a href="#">RBBC Trends</a>
+				/
+				<a href="#" class="active">Redzone Look Trends</a>
+			</div>
+		</div>
+		<div id="tableDiv">
+			<div id="redzoneTable"></div>
+		</div>
+		<script>
+			const percentFormatter = function(cell, params, rendered) {
+				const val = cell.getValue().toFixed(1)+"%";
+				return val;
+			}
+
+			const trendFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				const val = cell.getValue();
+				if (val.indexOf("-") == 0) {
+					div.classList.add("negative");
+				} else {
+					div.classList.add("positive");
+				}
+				div.innerText = val;
+				return div;
+			}
+
+			const decimalFormatter = function(cell, params, rendered) {
+				const val = cell.getValue().toFixed(1);
+				return val;
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue();
+				return div;
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue == headerValue;
+			}
+
+			const teamNames = ["All", "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LAR", "LV", "MIA", "MIN", "NO", "NE", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
+			function renderTable() {
+				TABLE = new Tabulator("#redzoneTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getRedzone",
+					groupBy: "position",
+					groupHeader: function(value, count, data, group){
+						const playerTxt = count == 1 ? "Player" : "Players"
+						return value + "<span style=' margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+					},
+					initialSort: [
+						{column: "looksPerc", dir: "desc"},
+						{column: "looksPerGame", dir: "desc"},
+					],
+					columns: [
+						{title: "Player", field: "player", headerFilterPlaceholder:"Filter Name", headerFilter: "input"},
+						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "RZ Looks Per Game", field: "looksPerGame", hozAlign: "center"},
+						{title: "1 Week Trend", field: "delta", formatter: trendFormatter, hozAlign: "center"},
+						{title: "3 Week Trend", field: "delta3", formatter: trendFormatter, hozAlign: "center"},
+						{title: "Team RZ Share", field: "looksPerc", formatter: percentFormatter, hozAlign: "center"},
+
+					]
+				});
+			}
+
+			renderTable();
+		</script>
+		<script>
+			var links = document.getElementById("nav").getElementsByTagName("a");
+			for (var i in links) {
+				if (typeof(links[i]) === "object") {
+					links[i].addEventListener("click", function(event){
+						show_data(event);
+					}, false);
+				}
+			}
+
+			function show_data(el) {
+				var link;
+				var txt = el.target.innerText;
+				if (txt == "Defensive Ranks") {
+					link = "defense?over_expected=true";
+				} else if (txt == "RBBC Trends") {
+					link = "rbbc";
+				} else if (txt == "Redzone Look Trends") {
+					link = "redzone";
+				}
+				window.location.href = "/"+link;
+				el.preventDefault();
+				return false;
+			}
+		</script>
+
+	</body>
+
+</html>

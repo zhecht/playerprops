@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/nbateams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+			<button onclick="print();">PRINT</button>
+			<button onclick="print('csv');">PRINT CSV</button>
+		</div>
+		<script>
+			let TABLE;
+			const teamNames = ["All", "ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SA", "SAC", "TOR", "UTAH", "WSH"];
+
+			function print(output = "") {
+				const args = [];
+				let s = "";
+				const joinChar = (output == "csv") ? "\t" : "|";
+                s += ["NAME","TEAM","LINE","SZN AVG","% OVER","LAST 7 GAMES","LAST YR % OVER","ODDs"].join(joinChar);
+                s += "\n";
+                if (output != "csv") {
+                    s += ":--|:--|:--|:--|:--|:--|:--|:--\n";
+                }
+				let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+				for (row of rows) {
+					const data = row.getData();
+					let line = "";
+					if (!data.isOver) {
+						line += "u";
+					}
+					line += Math.round(data.line);
+					if (data.isOver) {
+						line += "+";
+					}
+					line += " "+data.propType;
+					s += [data.player, data.team, line, data.avg, data.totalOver+"%", data.last5, data.lastTotalOver+"%",data.odds].join(joinChar);
+					s += "\n";
+				}
+				console.log(s);
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const projFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				if (parseFloat(data.proj) >= parseFloat(data.line)) {
+					return "<div class='positive'>"+data.proj+"</div>";
+				}
+				return "<div class='negative'>"+data.proj+"</div>";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const propFormatter = function(cell, params, rendered) {
+				let prop = cell.getValue();
+				if (prop == "recv_yd") return "REC YDs";
+				else if (prop == "recv_rec") return "RECs";
+				else if (prop == "rush_att") return "RUSHs";
+				else if (prop == "rush_recv_yd") return "RUSH+REC YDs";
+				else if (prop == "rush_yd") return "RUSH YDs";
+				else if (prop == "pass_att") return "ATTEMPS";
+				else if (prop == "pass_comp") return "COMPs";
+				else if (prop == "pass_int") return "INTs";
+				else if (prop == "pass_td") return "PASS TDs";
+				else if (prop == "pass_yd") return "PASS YDs";
+				else if (prop == "recv_rec") return "REC";
+				else if (prop == "tackles_combined") return "TACKLES";
+				return prop;
+			}
+
+			function convertType(type) {
+				if (type == "pass_comp") return "pass_cmp";
+				else if (type == "recv_rec") return "rec";
+				else if (type == "recv_yd") return "rec_yds";
+				else if (type == "pass_comp") return "pass_cmp";
+				else if (type == "pass_yd") return "pass_yds";
+				else if (type == "rush_yd") return "rush_yds";
+				return type;
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getAltProps",
+					groupBy: "game",
+					/*groupHeader: function(value, count, data, group){
+						const playerTxt = count == 1 ? "Player" : "Players"
+						return "<a href='https://www.espn.com/nfl/team/depth/_/name/"+value+"' target='_blank'>"+value+"</a>" + "<span style='color:black; margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+					},
+					*/
+					initialSort: [
+						//{column: "pos", dir: "asc"},
+						//{column: "team", dir: "asc"},
+					],
+					columns: [
+						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+							cell.getRow().toggleSelect();
+						}},
+						{title: "Player", field: "player", headerFilter: "input"},
+						{title: "Avg Min", field: "avgMin", hozAlign: "center", width: 70},
+						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "Prop", field: "propType", formatter: propFormatter, hozAlign: "center"},
+						{title: "Line", field: "line", hozAlign: "center"},
+						{title: "SZN AVG", field: "avg", hozAlign: "center", width: 80},
+						{title: "Last YR AVG", field: "lastAvg", hozAlign: "center", width: 80},
+						{title: "Total Over", field: "totalOver", width: 80, hozAlign: "center", formatter: percentFormatter},
+						{title: "Last", field: "last5", hozAlign: "center"},
+						{title: "Last YR Total Over", field: "lastTotalOver", width: 80, hozAlign: "center", formatter: percentFormatter},
+						{title: "ODDS", field: "odds", hozAlign: "center", width: 70},
+						{title: "OVER", field: "overOdds", hozAlign: "center", width: 70},
+						{title: "UNDER", field: "underOdds", hozAlign: "center", width: 70},
+					]
+				})
+			}
+
+			renderTable();
+
+			//TABLE.setFilter("propType", "=", "3ptm");
+			TABLE.setFilter([
+				//{field:"avgMin", type:">=", value:15},
+				
+				//{field:"isOver", type:"=", value:true},
+				//{field:"propType", type:"=", value:"ast"},
+			]);
+		</script>
+
+	</body>
+
+</html>

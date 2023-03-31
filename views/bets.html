@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Bets</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/nbateams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#tableDiv {
+			position: relative;
+			height: 100%;
+			display: flex;
+			justify-content: space-evenly;
+			align-items: center;
+			flex-wrap: wrap;
+		}
+		.bet {
+			padding: 0 10px;
+			margin: 20px;
+		}
+		.odds {
+			width: 100%;
+			text-align: center;
+			border: 1px solid;
+		}
+		.line {
+			width: 100px;
+		}
+		.row {
+			display: flex;
+			border: 1px solid;
+		}
+		.row div {
+			padding: 10px;
+			border-right: 1px solid;
+		}
+		.row div:nth-child(1) {
+			min-width: 120px;
+		}
+		#record {
+			width: 100%;
+			text-align: center;
+		}
+		.scored {
+			width: 25px;
+			text-align: center;
+		}
+		#timer {
+			position: absolute;
+			top: 25px; right:5%;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="tableDiv">
+			<h2 id="record">0W-OL (0u)</h2>
+			<div id="timer">90</div>
+			{% for bet in bets %}
+				<div class="bet" id="{{bet.sport}}">
+					<div class="odds">{{bet.odds}} <span class="timeLeft"></span></div>
+					{% for team in bet["players"] %}
+						<div class="odds">{{team}}</div>
+						{% for player in bet["players"][team] %}
+							{% set last = player.split("\t")[0].replace(" jr", "").replace(" iii", "").replace(" iv", "").split(" ")[-1] %}
+							{% set line = player.split("\t")[1] %}
+							{% set prop = line.split(" ")[1] %}
+							<div class="row {{team}}_{{last}}_{{prop}}">
+								<div>{{last}}</div>
+								<div class="line">{{line}}</div>
+								<div class="scored">0</div>
+							</div>
+						{% endfor %}
+					{% endfor %}
+				</div>
+			{% endfor %}
+		</div>
+	</body>
+	<script>
+		let seconds = 90;
+		function update() {
+			let xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState === 4 && this.status === 200) {
+					const j = JSON.parse(this.responseText);
+					updateRows(j);
+				}
+			};
+			xhttp.open("POST", "/updatebets?date={{date}}");
+			xhttp.send();
+		}
+
+		function updateRows(data) {
+			for (sport in data) {
+				for (team in data[sport]["scores"]) {
+					for (player in data[sport]["scores"][team]) {
+						const sp = player.replace(" jr", "").replace(" iii", "").replace(" iv", "").split(" ");
+						const last = sp[sp.length - 1];
+						for (prop in data[sport]["scores"][team][player]) {
+							const rows = document.getElementsByClassName([team, last, prop].join("_"));
+							for (row of rows) {
+								const lineSp = row.getElementsByClassName("line")[0].innerText.split(" ");
+								const line = parseInt(lineSp[0].replace("+", ""));
+								const scored = parseInt(data[sport]["scores"][team][player][prop]);
+								row.getElementsByClassName("scored")[0].innerText = scored;
+								if (scored >= line) {
+									row.classList.add("positive");
+								}
+							}
+						}
+					}
+				}
+			}
+
+			let record = {"nba": [0,0], "nhl": [0,0]};
+			let units = {"nba": 0, "nhl": 0};
+			for (bet of document.getElementsByClassName("bet")) {
+				let won = false;
+				const odds = parseInt(bet.getElementsByClassName("odds")[0].innerText);
+				const sport = bet.id;
+				const rows = bet.getElementsByClassName("row");
+				const allWon = rows.length == bet.getElementsByClassName("positive").length;
+				if (allWon) {
+					record[sport][0] += 1;
+					if (odds < 0) {
+						units[sport] += -(100 / odds);
+					} else {
+						units[sport] += (odds / 100);
+					}
+				} else {
+					let lost = false;
+					for (row of rows) {
+						const team = row.className.split("_")[0].split(" ")[1];
+						const timeLeft = data[sport]["timeLeft"][team];
+						if (timeLeft == "final" && !row.classList.contains("positive")) {
+							lost = true;
+							row.classList.add("negative");
+						}
+					}
+					if (lost) {
+						record[sport][1] += 1;
+						units[sport] -= 1;
+					}
+				}
+			}
+			let recordStr = "NBA: "+record["nba"][0]+"W-"+record["nba"][1]+"L (";
+			if (units["nba"] > 0) {
+				recordStr += "+";
+			}
+			recordStr += units["nba"].toFixed(2)+"u) // ";
+			recordStr += "NHL: "+record["nhl"][0]+"W-"+record["nhl"][1]+"L (";
+			if (units["nhl"] > 0) {
+				recordStr += "+";
+			}
+			recordStr += units["nhl"].toFixed(2)+"u)";
+			document.getElementById("record").innerText = recordStr;
+			seconds = 90;
+		}
+
+		update();
+
+		const timer = setInterval(function() {
+			document.getElementById("timer").innerText = seconds;
+			seconds -= 1;
+		}, 1000);
+		setInterval(function() {
+			update();
+		}, 90*1000);
+	</script>
+</html>

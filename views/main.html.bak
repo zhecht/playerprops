@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="teams_col">
+  {% for team in teams %}
+    <button class="teamButton" id="{{team.id}}">{{team.name}}</button>
+  {% endfor %}
+</div>
+<div id="lineup_col" class="mainCol">
+  <table id="lineup_table">
+    <tr>
+      
+        <th colspan="9" id="teamname_th">
+          <select id="team_select" onchange="changeTeam(this.selectedIndex);">
+            {% for team in teams %}
+              {% if team.id == curr_team %}
+                <option id="team_{{team.id}}" class="teamname" selected>{{team.name}}</option>
+              {% else %}
+                <option id="team_{{team.id}}" class="teamname">{{team.name}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </th>
+    </tr>
+    <tr class="playerRow headerRow">
+      <th>Pos</th>
+      <th style="text-align:left">Full Name</th>
+      <th style="text-align:right">Snap %</th>
+      <th style="text-align:right">FPPG</th>
+      <th style="text-align:right">Proj</th>
+      <th style="text-align:right">Accuracy</th>
+      <th style="text-align:right">ESPN Proj</th>
+      <th style="text-align:right">ESPN Accuracy</th>
+      <th style="text-align:right">Proj O/U</th>
+    </tr>
+  {% for player in players %}
+    {% if loop.index == 8 %}
+      <tr class="playerRow benchRow">
+        <td colspan="9" style="font-size:18px;">BENCH</td>
+      </tr>
+    {% endif %}
+    <tr id="{{player.id}}" class="playerRow">
+      <td class="pos">{{player.pos}}</td>
+      <td class="name">{{player.full}}</td>
+      <td align="right">{{player.last_week_snaps}}% <span class="{{player.snap_trend_class}}">({{player.snap_trend}}%)</span></td>
+      <td align="right">{{player.fppg}}</td>
+      <td align="right">{{player.yahoo_proj}}</td>
+      <td align="right">{{player.yahoo_acc}}%</td>
+      <td align="right">{{player.espn_proj}}</td>
+      <td align="right">{{player.espn_acc}}%</td>
+      <td align="right">
+        <span style="font-weight:bold;color:green;">{{player.proj_over}}</span>
+        /
+        <span style="font-weight:bold;color:red;">{{player.proj_under}}</span>
+      </td>
+
+      {% for news in player.news %}
+        <input type="hidden" value="{{news.headline}}" />
+      {% endfor %}
+      <input type="hidden" id="weekly_proj_{{player.id}}" value="{{player.weekly_proj}}" />
+      <input type="hidden" id="weekly_act_{{player.id}}" value="{{player.weekly_act}}" />
+      <input type="hidden" id="weekly_proj_espn_{{player.id}}" value="{{player.weekly_proj_espn}}" />
+      <input type="hidden" id="snap_counts_{{player.id}}" value="{{player.snap_counts}}" />
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+<div class="mainCol" id="plot_col">
+  <div id="player_name"></div>
+  <div id="plot_div"></div>
+  <div id="snaps_plot"></div>
+</div>
+<script>
+  $("#team_{{curr_team}}").css("display", "block");       
+</script>
+{% endblock %}
+

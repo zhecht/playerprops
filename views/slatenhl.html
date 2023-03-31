@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NHL Slate</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/nhlteams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+			<button onclick="hideExtras()">Hide Extras</button>
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+			<button onclick="print();">PRINT</button>
+            <button onclick="print('csv');">PRINT CSV</button>
+            <button onclick="printExcerpt();">EXCERPT</button>
+		</div>
+		<script>
+			let TABLE;
+			const teamNames = ["All", "ANA", "ARI", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI", "COL", "DAL", "DET", "EDM", "FLA", "LA", "MIN", "MTL", "NJ", "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA", "SJ", "STL", "TB", "TOR", "VAN", "VGK", "WPG", "WSH"];
+
+			function print(output = "") {
+                let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+                const args = [];
+                let s = "";
+                const joinChar = (output == "csv") ? "\t" : "|";
+                s += ["Team","Opp","Moneyline","Puckline","Goalie","GSAA","GAA","GPG","GPGA","Scoring Chances Per 60m","L5 Scoring Chances Per 60m","O/U","Total Avg","SZN % Over Total","L10 % Over Total","L5 % Over Total","L10 Overs ➡️"].join(joinChar);
+                s += "\n";
+                if (output != "csv") {
+                    s += ":--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--\n";
+                }
+                for (row of rows) {
+                    const data = row.getData();
+                    let mlOdds = data.moneylineOdds;
+					if (output == "csv") {
+						if (parseInt(mlOdds) > 0) {
+							mlOdds = "'"+mlOdds;
+						}
+					}
+                    s += [data.team.toUpperCase(), data.opp.toUpperCase(), mlOdds, data.puckline, data.goalie, data.gsaa, data.gaa, data.gpg, data.gpga, data.scoring.split(" // ")[0], data.scoring.split(" // ")[2], data.total, data.oversAvg, data.totalOver+"%", data.totalOverL10+"%", data.totalOverL5+"%", data.oversL10].join(joinChar);
+                    s += "\n";
+                }
+                console.log(s);
+            }
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.tt)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const corsiFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const field = cell.getField();
+				const arr = [];
+				for (pct of cell.getValue().split(" // ")) {
+					let condition = false;
+					if (field.substr(0,3) == "opp") {
+						condition = parseFloat(pct.replace("%", "")) < 50;
+					} else {
+						condition = parseFloat(pct.replace("%", "")) >= 50;
+					}
+					if (condition) {
+						arr.push("<div class='positive'>"+pct+"</div>");
+					} else {
+						arr.push("<div class='negative'>"+pct+"</div>");
+					}
+				}
+				return "<div style='display:flex;'>"+arr.join(" // ")+"</div>";
+			}
+
+			const splitsFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const vals = cell.getValue().split(" - ");
+				let val1 = vals[0];
+				if (parseFloat(val1) >= parseFloat(data.tt)) {
+					val1 = "<div class='positive'>"+val1+"</div>";
+				} else {
+					val1 = "<div class='negative'>"+val1+"</div>";
+				}
+				if (data.awayHome == "A") {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				}
+				let val2 = vals[1];
+				if (parseFloat(val2) >= parseFloat(data.tt)) {
+					val2 = "<div class='positive'>"+val2+"</div>";
+				} else {
+					val2 = "<div class='negative'>"+val2+"</div>";
+				}
+				if (data.awayHome == "H") {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				}
+				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
+			}
+
+			function collapseFormatter(data) {
+				//data - an array of objects containing the column title and value for each cell
+				let table = document.createElement("table");
+				table.style.width = "100%";
+				const html = {};
+				for (col of data) {
+					//console.log(col);
+					if ((col.value.indexOf(" // ") >= 0 || col.value.indexOf(" &#x2F;&#x2F; ") >= 0)) {
+						html[col.title] = "<td><strong>"+col.title+"</strong></td><td>"+col.value+"</td>";
+					} else {
+						let row = document.createElement("tr");
+						row.innerHTML = "<td><strong>"+col.title+"</strong></td><td>"+col.value+"</td>";
+						table.appendChild(row);
+					}
+				}
+
+				for (title in html) {
+					if (title.toLowerCase().substr(0,3) != "opp") {
+						let row = document.createElement("tr");
+						row.innerHTML = html[title];
+						table.appendChild(row);
+					}
+				}
+
+				return Object.keys(data).length ? table : "";
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getNHLSlate",
+					ajaxParams:{alt: "{{alt}}", date: "{{date}}", teams: "{{teams}}", players: "{{players}}"},
+					responsiveLayout:"collapse",
+					responsiveLayoutCollapseStartOpen: "{{collapse}}" == "true" ? false : true,
+					responsiveLayoutCollapseFormatter: function(data) {
+						return collapseFormatter(data);
+					},
+					groupBy: "game",
+					initialSort: [
+						//{column: "totalOverLast5", dir: "desc"},
+					],
+					columns: [
+						{formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
+                        {formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+                            cell.getRow().toggleSelect();
+                        }},
+						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+						{title: "Opp", field: "opp", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}, responsive: 0},
+						{title: "ML", field: "moneylineOdds",  hozAlign: "center", width: 70},
+						{title: "PL", field: "puckline",  hozAlign: "center", width: 150},
+						{title: "OU", field: "total",  hozAlign: "center", width: 150},
+						{title: "TT", field: "tt",  hozAlign: "center", width: 80},
+						{title: "TT O/U", field: "ttOU",  hozAlign: "center", width: 150},
+						{title: "GPG", field: "gpg",  hozAlign: "center", width: 80, formatter: colorFormatter, responsive: 0},
+						{title: "GPG Splits", field: "gpgSplits",  hozAlign: "center", width: 120, responsive: 0, formatter: splitsFormatter},
+						{title: "GPGA", field: "gpga",  hozAlign: "center", width: 80, responsive: 0},
+						{title: "GPGA Splits", field: "gpgaSplits",  hozAlign: "center", width: 120, responsive: 0},
+						{title: "Overs Avg", field: "oversAvg",  hozAlign: "center", width: 80, responsive: 0},
+						{title: "Confirmed", field: "goalieStatus", formatter:"tickCross", width: 20, hozAlign: "center"},
+						{title: "Goalie", field: "goalie", width: 200},
+						{title: "W-L", field: "goalieRecord",  hozAlign: "center", width: 80},
+						{title: "W-L A/H Splits", field: "goalieSplits",  hozAlign: "center", width: 80},
+						{title: "QS%", field: "qs",  hozAlign: "center", width: 80},
+						{title: "GSAA", field: "gsaa",  hozAlign: "center", width: 80},
+						{title: "GAA", field: "gaa",  hozAlign: "center", width: 80},
+						{title: "TT Overs", field: "ttOvers",  hozAlign: "center", responsive: 1},
+						{title: "Opp TT Overs", field: "opp_ttOvers",  hozAlign: "center", responsive: 1},
+						{title: "Overs", field: "overs",  hozAlign: "center", responsive: 1},
+						{title: "Last Played", field: "lastPlayed", responsive: 1},
+						{title: "Team % Over", field: "teamOver", responsive: 1},
+						,
+						{title: "Goalie % Over", field: "goalieOver", responsive: 1},
+						,
+						{title: "Prev Matchup", field: "prevMatchup",  hozAlign: "center", responsive: 1},
+						{title: "Corsi (A/10/5/3/1)", field: "corsi", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Fenwick", field: "fenwick", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Shots", field: "shots", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Scoring", field: "scoring", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Corsi Against", field: "corsiAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Fenwick Against", field: "fenwickAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Shots Against", field: "shotsAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2},
+						{title: "Scoring Against", field: "scoringAgainst", width: 80, hozAlign: "center", sorter: "number", visible: true, responsive: 2}
+					]
+				})
+			}
+
+			renderTable();
+
+			//TABLE.setFilter("propType", "=", "3ptm");
+			TABLE.setFilter([
+			]);
+		</script>
+	</body>
+
+</html>

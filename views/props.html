@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NFL Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/teams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+			<button onclick="print();">Print</button>
+			<button onclick="print('csv');">PRINT CSV</button>
+			<button onclick="calculateParlayOdds();">Parlay Odds</button>
+			<button onclick="addLast();">Add</button>
+		</div>
+		<script>
+			const CURR_WEEK = {{curr_week}};
+			const line = {{line}};
+			const spread = {{spread}};
+
+			let TABLE;
+			const teamNames = ["All", "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LAR", "LV", "MIA", "MIN", "NO", "NE", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
+
+			function print(output = "") {
+				const args = [];
+				let s = "";
+				const joinChar = (output == "csv") ? "\t" : "|";
+				s += ["NAME","ML","A/H","TEAM","OPP","OPP RANK","PROP","LINE","SZN AVG","W-L Splits","A-H Splits","% OVER","L3 % OVER","LAST GAMES ➡️","LAST YR % OVER","OVER","UNDER"].join(joinChar);
+				s += "\n";
+                if (output != "csv") {
+                    s += ":--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--\n";
+                }
+				let rows = TABLE.getSelectedRows();
+                if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+				for (row of rows) {
+					const data = row.getData();
+					let overOdds = data.overOdds;
+					let underOdds = data.underOdds;
+					let gameLine = data.gameLine;
+					if (output == "csv") {
+						if (parseInt(overOdds) > 0) {
+							overOdds = "'"+overOdds;
+						}
+						if (parseInt(underOdds) > 0) {
+							underOdds = "'"+underOdds;
+						}
+						if (parseInt(gameLine) > 0) {
+							gameLine = "'"+gameLine;
+						}
+					}
+					s += [data.player, gameLine, data.awayHome, data.team, data.opponent, addNumSuffix(data.oppRank), parseProp(data.propType), data.line, data.avg, data.winLossSplits, data.awayHomeSplits, data.totalOver+"%", data.totalOverLast3+"%", data.last5, data.lastTotalOver+"%", overOdds, underOdds].join(joinChar);
+					s += "\n";
+				}
+				console.log(s);
+			}
+
+			function addLast() {
+				let rows = TABLE.getSelectedRows();
+				if (rows.length == 0) {
+                    rows = TABLE.getRows("active");
+                }
+                let arr = [];
+                let tot = [];
+                let diff = [];
+                let firstRow = true;
+				for (row of rows) {
+					const data = row.getData();
+					let idx = 0;
+					arr.push(data.last5.join(","));
+					for (val of data.last5) {
+						if (firstRow) {
+							tot.push(val);
+							diff.push(val);
+						} else {
+							tot[idx] += val;
+							diff[idx] -= val;
+						}
+						idx++;
+					}
+					firstRow = false;
+				}
+
+				let over = pairs = 0;
+				for (r1 of rows[0].getData().last5) {
+					for (r2 of rows[1].getData().last5) {
+						if (rows.length > 2) {
+							for (r3 of rows[2].getData().last5) {
+								if (r1+r2+r3 > line) {
+									over += 1;
+								}
+								pairs += 1;	
+							}	
+						} else {
+							if (r1+r2 > line) {
+								over += 1;
+							}
+							pairs += 1;
+						}
+					}
+				}
+				const pairsOver = (over * 100 / pairs).toFixed(1);
+
+				let out = "";
+				out += "Line: "+line+" -- Spread: "+spread+"\n\n";
+				out += rows[0].getData().player+": "+rows[0].getData().last5.join(",")+"\n";
+				out += rows[1].getData().player+": "+rows[1].getData().last5.join(",")+"\n\n";
+				out += "Tot Pairs Over: "+pairsOver+"%\n";
+				out += "Tot: "+tot.join(",")+"\n\n";
+
+				over = pairs = 0;
+				for (r1 of rows[0].getData().last5) {
+					for (r2 of rows[1].getData().last5) {
+						if (r1+spread > r2) {
+							over += 1;
+						}
+						pairs += 1;
+					}
+				}
+				out += "Diff Pairs Over: "+(over * 100 / pairs).toFixed(1)+"%\n";
+				out += "Diff: "+diff.join(",")+"\n\n";
+
+				over = pairs = 0;
+				for (r1 of rows[0].getData().last5) {
+					for (r2 of rows[1].getData().last5) {
+						if (r1 >= r2) {
+							over += 1;
+						}
+						pairs += 1;
+					}
+				}
+				const avg = over * 100 / pairs;
+				let odds = 0;
+				if (avg == 100) {
+					odds = -100000;
+				} else {
+					odds = (100 * avg) / (-100 + avg);
+				}
+				out += "ML Pairs Over: "+avg.toFixed(1)+"% ("+parseInt(odds)+")\n";
+				alert(out);
+			}
+
+			function save() {
+				const args = [];
+				for (row of TABLE.getSelectedRows()) {
+					const data = row.getData();
+					args.push(data.player+"*"+data.propType);
+				}
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState === 4 && this.status === 200) {
+						var j = JSON.parse(this.responseText);
+
+					}
+				};
+				var url = "/props?favorites="+args.join(";");
+				xhttp.open("POST", url);
+				xhttp.send();
+			}
+
+			function calculateParlayOdds() {
+				const rows = TABLE.getSelectedRows();
+				let totOdds = 1;
+				let out = "";
+				for (row of rows) {
+					const data = row.getData();
+					const overLast3 = data.totalOverLast3;
+					const totalOver = data.totalOver;
+					const avg = (overLast3 + totalOver) / 2;
+
+					let odds = 0;
+					if (avg == 100) {
+						odds = -100000;
+					} else {
+						odds = (100 * avg) / (-100 + avg);
+					}
+					const decOdds = (100 / odds) + 1;
+
+					totOdds *= decOdds;
+					out += [data.player, parseProp(data.propType), "avg="+avg+"%", odds].join(", ");
+					out += "\n";
+				}
+
+				out += "totOdds="+totOdds.toFixed(3);
+				const usOdds = Math.round((100 / (totOdds-1)));
+				out += "\nUS Odds="+usOdds;
+				if (usOdds > 0) {
+					out += "\nProb="+((100 / (usOdds + 100)) * 100).toFixed(2)+"%";
+				} else {
+					out += "\nProb="+((-(usOdds) / (-(usOdds) + 100)) * 100).toFixed(2)+"%";
+				}
+				alert(out);
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const projFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				if (parseFloat(data.proj) >= parseFloat(data.line)) {
+					return "<div class='positive'>"+data.proj+"</div>";
+				}
+				return "<div class='negative'>"+data.proj+"</div>";
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const propFormatter = function(cell, params, rendered) {
+				let prop = cell.getValue();
+				return parseProp(prop);
+			}
+
+			function parseProp(prop) {
+				if (prop == "rec_yds") return "REC YDs";
+				else if (prop == "rush_att") return "RUSHs";
+				else if (prop == "rush_+_rec_yds") return "RUSH+REC YDs";
+				else if (prop == "rush_yds") return "RUSH YDs";
+				else if (prop == "pass_att") return "ATTEMPS";
+				else if (prop == "pass_cmp") return "COMPs";
+				else if (prop == "pass_int") return "INTs";
+				else if (prop == "pass_td") return "PASS TDs";
+				else if (prop == "pass_yds") return "PASS YDs";
+				else if (prop == "rec") return "REC";
+				else if (prop == "tackles_combined") return "TACKLES";
+				return prop;
+			}
+
+			const splitsFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const vals = cell.getValue().split(" - ");
+				let val1 = vals[0];
+				if (parseFloat(val1) >= parseFloat(data.line)) {
+					val1 = "<div class='positive'>"+val1+"</div>";
+				} else {
+					val1 = "<div class='negative'>"+val1+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "A") {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) < 0) {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				}
+				let val2 = vals[1];
+				if (parseFloat(val2) >= parseFloat(data.line)) {
+					val2 = "<div class='positive'>"+val2+"</div>";
+				} else {
+					val2 = "<div class='negative'>"+val2+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "H") {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) > 0) {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				}
+				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
+			}
+
+			const overFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const stats = data.stats;
+				const propType = data.propType;
+				if (stats.tot && stats.tot.gamesPlayed) {
+					let gamesOver = 0;
+					let gamesPlayed = 0;
+					for (wk in stats) {
+						if (wk != "tot" && parseInt(wk.substring(2)) <= CURR_WEEK) {
+							let val = 0;
+							gamesPlayed += 1;
+							if (propType == "rush_recv_yd") {
+								val = stats[wk].rush_yds + stats[wk].rec_yds;
+							} else {
+								val = stats[wk][propType];
+							}
+							if (val >= parseFloat(data.line)) {
+								gamesOver += 1;
+							}
+						}
+					}
+					const over = ((gamesOver / gamesPlayed) * 100).toFixed(0);
+					if (over >= 50) {
+						return "<div class='positive'>"+over+"%</div>";
+					}
+					return "<div class='negative'>"+over+"%</div>";
+				}
+				return "-";
+			}
+
+			const lastOverFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const stats = data.stats;
+				const propType = data.propType;
+				if (stats.tot && stats.tot.gamesPlayed && stats["wk"+CURR_WEEK]) {
+					let val = 0;
+					if (propType == "rush_recv_yd") {
+						val = stats["wk"+CURR_WEEK].rush_yds + stats["wk"+CURR_WEEK].rec_yds;
+					} else {
+						val = stats["wk"+CURR_WEEK][propType];
+					}
+					if (val >= parseFloat(data.line)) {
+						return "<div class='positive'>Yes</div>";
+					}
+					return "<div class='negative'>No</div>";
+				}
+				return "-";
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const scoredFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const stats = data.stats;
+				const propType = data.propType;
+				if (stats.tot && stats["wk"+(CURR_WEEK+1)] && stats["wk"+(CURR_WEEK+1)]["snap_counts"]) {
+					let scored = 0;
+					if (propType == "rush_recv_yd") {
+						scored = stats["wk"+(CURR_WEEK+1)].rush_yds + stats["wk"+(CURR_WEEK+1)].rec_yds;
+					} else {
+						scored = stats["wk"+(CURR_WEEK+1)][propType];
+					}
+					if (!scored) {
+						scored = 0;
+					}
+					if (scored > parseFloat(data.line)) {
+						return "<div class='positive'>"+scored+"</div>";
+					}
+					return "<div class='negative'>"+scored+"</div>";
+				}
+				return "-";
+			}
+
+			function addNumSuffix(val) {
+				const a = val % 10;
+				const b = val % 100;
+				if (val == 0) {
+					return "";
+				}
+				if (a == 1 && b != 11) {
+					return val+"st";
+				} else if (a == 2 && b != 12) {
+					return val+"nd";
+				} else if (a == 3 && b != 13) {
+					return val+"rd";
+				} else {
+					return val+"th";
+				}
+			}
+
+			const rankFormatter = function(cell, params, rendered) {
+				const field = cell.getField();
+				const val = cell.getValue();
+				const suffix = addNumSuffix(val);
+				if (field == "oppRank") {
+					if (val >= 22) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val <= 12) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				} else {
+					if (val <= 12) {
+						return "<div class='positive'>"+suffix+"</div>";
+					} else if (val >= 22) {
+						return "<div class='negative'>"+suffix+"</div>";
+					} else {
+						return suffix;
+					}
+				}
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getProps",
+					ajaxParams:{teams: "{{teams}}", prop: "{{prop}}", players: "{{players}}"},
+					//responsiveLayout:"collapse",
+					//layout: "fitDataFill",
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					//groupBy: "team",
+					groupHeader: function(value, count, data, group){
+						const playerTxt = count == 1 ? "Player" : "Players"
+						return "<a href='https://www.espn.com/nfl/team/depth/_/name/"+value+"' target='_blank'>"+value+"</a>" + "<span style='color:black; margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+					},
+					initialSort: [
+						{column: "totalOver", dir: "desc"},
+						{column: "totalOverLast3", dir: "desc"},
+					],
+					columns: [
+						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+							cell.getRow().toggleSelect();
+						}},
+						{title: "Player", field: "player", headerFilter: "input"},
+						//{title: "O/U Odds", field: "overUnderOdds", hozAlign: "center"},
+						{title: "ML", field: "gameLine",  hozAlign: "center", width: 70},
+						{title: "A/H", field: "awayHome",  hozAlign: "center", width: 50},
+						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
+						{title: "Prop", field: "propType", formatter: propFormatter, hozAlign: "center"},
+						{title: "Line", field: "line", hozAlign: "center"},
+						{title: "SZN AVG", field: "avg", hozAlign: "center", width: 80, formatter: colorFormatter},
+						{title: "W-L Splits", field: "winLossSplits", hozAlign: "center", formatter: splitsFormatter},
+						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", formatter: splitsFormatter},
+						{title: "% Over", field: "totalOver", formatter: percentFormatter, hozAlign: "center", width:80, sorter: "number"},
+						{title: "L3 % Over", field: "totalOverLast3", formatter: percentFormatter, hozAlign: "center", width:80, sorter: "number"},
+						{title: "Last", field: "last5", hozAlign: "center", width:250},
+						{title: "Last YR AVG", field: "lastAvg", hozAlign: "center", width: 80, formatter: colorFormatter},
+						{title: "Last YR Total Over", field: "lastTotalOver", width: 80, hozAlign: "center", formatter: percentFormatter},
+						{title: "Over", field: "overOdds", hozAlign: "center"},
+						{title: "Under", field: "underOdds", hozAlign: "center"},
+					]
+				})
+			}
+
+			renderTable();
+		</script>
+
+	</body>
+
+</html>
