@@ -307,7 +307,7 @@ def writeCsvs(props):
 		csvs["full"] += "\n" + "\t".join([str(x) for x in [row["player"], row["pos"], row["bats"], row["battingNumber"], row["awayHome"], row["team"], row["opponent"], addNumSuffix(row["oppRank"]), row["oppRankVal"], row["pitcher"], row["pitcherThrows"], row["prop"], row["line"], row["lastDisplay"], avg, f"{row['lastYearTotalOver']}%", f"{row['lastYearTeamMatchupOver']}%", f"{row['matchups']}", overOdds, underOdds]])
 
 	# add top 4 to reddit
-	for prop in ["h", "h+r+rbi", "so", "k", "hits_allowed"]:
+	for prop in ["h", "h+r+rbi", "hr", "so"]:
 		if prop in splitProps:
 			rows = sorted(splitProps[prop], key=lambda k: (k["lastYearTotalOver"]), reverse=True)
 			for row in rows[:3]:
@@ -481,7 +481,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 				if lastTotalGames:
 					lastYearTotalOver = round(lastYearTotalOver * 100 / lastTotalGames)
-					lastYrAwayHomeSplits = f"{round(sum(lastYrAwayHomeSplits[0]) / lastTotalGames, 2)} - {round(sum(lastYrAwayHomeSplits[1]) / lastTotalGames, 2)}"
+					awayGames = len(lastYrAwayHomeSplits[0])
+					homeGames = len(lastYrAwayHomeSplits[1])
+					if awayGames:
+						awayGames = round(sum(lastYrAwayHomeSplits[0]) / awayGames, 2)
+					if homeGames:
+						homeGames = round(sum(lastYrAwayHomeSplits[1]) / homeGames, 2)
+					lastYrAwayHomeSplits = f"{awayGames} - {homeGames}"
 
 				lastYearTeamMatchupOver = 0
 				if prevMatchup:
@@ -564,7 +570,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 							winLossSplits[1].append(val)
 
 				if gamesPlayed:
-					awayHomeSplits = f"{round(sum(awayHomeSplits[0]) / gamesPlayed, 2)} - {round(sum(awayHomeSplits[1]) / gamesPlayed, 2)}"
+					awayGames = len(awayHomeSplits[0])
+					homeGames = len(awayHomeSplits[1])
+					if awayGames:
+						awayGames = round(sum(awayHomeSplits[0]) / awayGames, 2)
+					if homeGames:
+						homeGames = round(sum(awayHomeSplits[1]) / homeGames, 2)
+					awayHomeSplits = f"{awayGames} - {homeGames}"
 					totalOver = round(totalOver * 100 / gamesPlayed)
 
 

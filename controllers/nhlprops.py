@@ -1054,7 +1054,7 @@ def teamTotals():
 def writeCsvs(props):
 	csvs = {}
 	splitProps = {"full": []}
-	headers = "\t".join(["NAME","TEAM","ML","A/H","PROP","LINE","SZN AVG","W-L Splits","A-H Splits","% OVER","L15 % OVER","L5 % OVER","LAST 10 GAMES","LAST YR % OVER","OVER","UNDER"])
+	headers = "\t".join(["NAME","TEAM","ML","A/H","PROP","LINE","SZN AVG","W-L Splits","A-H Splits","% OVER","L15 % OVER","L5 % OVER","LAST 10 GAMES ➡️","LAST YR % OVER","OVER","UNDER"])
 	reddit = "|".join(headers.split("\t"))
 	reddit += "\n:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--"
 

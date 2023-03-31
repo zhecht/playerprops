@@ -227,6 +227,11 @@
 		{% if prop != "" %}
 			<script>
 				TABLE.setFilter([{field:"prop", type:"=", value:"{{prop}}"}]);
+
+				if (["k", "outs", "win", "hits_allowed", "walks_allowed", "er"].indexOf("{{prop}}") >= 0) {
+					TABLE.getColumn("pitcher").hide();
+					TABLE.getColumn("pitcherThrows").hide();
+				}
 			</script>
 		{% endif %}
 		{% if pitchers %}
