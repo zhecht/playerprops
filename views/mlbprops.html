@@ -145,6 +145,30 @@
 				}
 			}
 
+			const splitsFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				const vals = cell.getValue().split(" - ");
+				let val1 = vals[0];
+				if (parseFloat(val1) >= parseFloat(data.line)) {
+					val1 = "<div class='positive'>"+val1+"</div>";
+				} else {
+					val1 = "<div class='negative'>"+val1+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "away") {
+					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
+				}
+				let val2 = vals[1];
+				if (parseFloat(val2) >= parseFloat(data.line)) {
+					val2 = "<div class='positive'>"+val2+"</div>";
+				} else {
+					val2 = "<div class='negative'>"+val2+"</div>";
+				}
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "home") {
+					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
+				}
+				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
+			}
+
 			function renderTable() {
 				TABLE = new Tabulator("#propsTable", {
 					tooltipsHeader: true,
@@ -157,7 +181,8 @@
 					initialSort: [
 						//{column: "pos", dir: "asc"},
 						{column: "totalOverLast5", dir: "desc"},
-						{column: "diff", dir: "desc"},
+						//{column: "diff", dir: "desc"},
+						{column: "lastYearTotalOver", dir: "desc"},
 						//{column: "team", dir: "asc"},
 					],
 					columns: [
@@ -170,16 +195,22 @@
 						{title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center", visible: false},
 						{title: "Player", field: "player", headerFilter: "input"},
 						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
+						{title: "Bats", field: "bats", width: 40, hozAlign: "center"},
 						{title: "GP", field: "gamesPlayed", hozAlign: "center", width: 50},
-						{title: "#", field: "battingNumber", hozAlign: "center", width: 50},
+						{title: "# Batting", field: "battingNumber", hozAlign: "center", width: 40},
 						{title: "Avg IP", field: "avgIP", hozAlign: "center", width: 80, visible: false},
+						{title: "A/H", field: "awayHome", hozAlign: "center", width: 60},
 						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
+						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
+						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
 						{title: "Line", field: "line", hozAlign: "center"},
+						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
 						{title: "LYR Avg", field: "lastYearAvg", hozAlign: "center", width: 80, formatter: colorFormatter, sorter: "number"},
+						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
 						{title: "LYR % Over", field: "lastYearTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "LYR vs Opp % Over", field: "lastYearTeamMatchupOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "# Matchups", field: "matchups", hozAlign: "center", width: 60},

@@ -32,6 +32,114 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
+def write_stats(date):
+	with open(f"{prefix}static/baseballreference/boxscores.json") as fh:
+		boxscores = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
+		playerIds = json.load(fh)
+
+	if date not in boxscores:
+		print("No games found for this date")
+		exit()
+
+	allStats = {}
+	for game in boxscores[date]:
+		away, home = map(str, game.split(" @ "))
+
+		if away not in allStats:
+			allStats[away] = {}
+		if home not in allStats:
+			allStats[home] = {}
+
+
+		gameId = boxscores[date][game].split("/")[-1].split("=")[-1]
+		url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
+		outfile = "outmlb"
+		time.sleep(0.3)
+		call(["curl", "-k", url, "-o", outfile])
+
+		with open("outmlb") as fh:
+			data = json.load(fh)
+
+		if "code" in data and data["code"] == 400:
+			continue
+
+		if "players" not in data["boxscore"]:
+			continue
+		for teamRow in data["boxscore"]["players"]:
+			team = teamRow["team"]["abbreviation"].lower()
+			if team not in playerIds:
+				playerIds[team] = {}
+
+			for statRow in teamRow["statistics"]:
+				title = statRow["type"]
+
+				headers = [h.lower() for h in statRow["labels"]]
+
+				for playerRow in statRow["athletes"]:
+					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "")
+					playerId = int(playerRow["athlete"]["id"])
+
+					playerIds[team][player] = playerId
+					if player not in allStats[team]:
+						allStats[team][player] = {}
+
+					for header, stat in zip(headers, playerRow["stats"]):
+						if header == "h-ab":
+							continue
+						if header in ["pc-st"]:
+							pc, st = map(float, stat.split("-"))
+							allStats[team][player]["pc"] = pc
+							allStats[team][player]["st"] = st
+						elif header == "k" and title == "batting":
+							allStats[team][player][header] = float(stat)
+						elif header in ["bb", "hr", "r", "h"] and title == "pitching":
+							allStats[team][player][header+"_allowed"] = float(stat)
+						else:
+							val = stat
+							try:
+								val = float(val)
+							except:
+								val = 0.0
+							allStats[team][player][header] = val
+
+	for team in allStats:
+		if not os.path.isdir(f"{prefix}static/baseballreference/{team}"):
+			os.mkdir(f"{prefix}static/baseballreference/{team}")
+		with open(f"{prefix}static/baseballreference/{team}/{date}.json", "w") as fh:
+			json.dump(allStats[team], fh, indent=4)
+
+	write_totals()
+
+	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
+		json.dump(playerIds, fh, indent=4)
+
+def write_totals():
+	totals = {}
+	for team in os.listdir(f"{prefix}static/baseballreference/"):
+		if team not in totals:
+			totals[team] = {}
+
+		for file in glob(f"{prefix}static/baseballreference/{team}/*.json"):
+			with open(file) as fh:
+				stats = json.load(fh)
+			for player in stats:
+				if player not in totals[team]:
+					totals[team][player] = stats[player]
+				else:
+					for header in stats[player]:
+						if header not in totals[team][player]:
+							totals[team][player][header] = 0
+						totals[team][player][header] += stats[player][header]
+
+				if "gamesPlayed" not in totals[team][player]:
+					totals[team][player]["gamesPlayed"] = 0
+				totals[team][player]["gamesPlayed"] += 1
+
+	with open(f"{prefix}static/baseballreference/totals.json", "w") as fh:
+		json.dump(totals, fh, indent=4)
+
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
 	outfile = "out2"
@@ -141,16 +249,26 @@ def write_averages():
 							val = "-"
 						averages[team][player][header] = val
 					averages[team][player]["gamesPlayed"] = gamesPlayed
+					if "ab" in averages[team][player]:
+						_3b = averages[team][player]["3b"]
+						_2b = averages[team][player]["2b"]
+						hr = averages[team][player]["hr"]
+						h = averages[team][player]["h"]
+						_1b = h - (_3b+_2b+hr)
+						averages[team][player]["1b"] = _1b
+						averages[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 				else:
 					tds = row.findAll("td")
 					if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
 						date = str(datetime.datetime.strptime(tds[0].text.strip(), "%a %m/%d")).split(" ")[0][6:]
 						gamesPlayed += 1
+						isAway = "@" in tds[1].text
 						try:
 							vs = tds[1].findAll("a")[-1].get("href").split("/")[-2]
 						except:
 							continue
 						lastYearStats[team][player][date] = {
+							"isAway": isAway,
 							"vs": vs
 						}
 						for idx, td in enumerate(tds[3:]):
@@ -165,6 +283,14 @@ def write_averages():
 								except:
 									val = "-"
 							lastYearStats[team][player][date][header] = val
+						if "ab" in lastYearStats[team][player][date]:
+							_3b = lastYearStats[team][player][date]["3b"]
+							_2b = lastYearStats[team][player][date]["2b"]
+							hr = lastYearStats[team][player][date]["hr"]
+							h = lastYearStats[team][player][date]["h"]
+							_1b = h - (_3b+_2b+hr)
+							lastYearStats[team][player][date]["1b"] = _1b
+							lastYearStats[team][player][date]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
 	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
 		json.dump(averages, fh, indent=4)
@@ -190,7 +316,7 @@ def write_roster():
 		roster[team] = {}
 		time.sleep(0.2)
 		url = f"https://www.espn.com/mlb/team/roster/_/name/{team}/"
-		outfile = "out"
+		outfile = "outmlb"
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -233,7 +359,7 @@ def write_rankings():
 	rankings = {}
 	for idx, page in enumerate(pages):
 		url = baseUrl+page+"?date=2022-11-06"
-		outfile = "out"
+		outfile = "outmlb"
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -314,4 +440,8 @@ if __name__ == "__main__":
 		write_roster()
 	elif args.cron:
 		write_rankings()
+		write_stats(date)
 		write_schedule(date)
+
+	#write_stats(date)
+	#write_totals()
