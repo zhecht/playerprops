@@ -56,12 +56,14 @@
 	<body>
 		<div id="header">
 			<a id="full" class="active" href="/mlbprops">Batting</a>
-			<a id="hr" href="/mlbprops?prop=hr">HR</a>
 			<a id="h" href="/mlbprops?prop=h">Hits</a>
 			<a id="tb" href="/mlbprops?prop=tb">Bases</a>
-			<a id="rbi" href="/mlbprops?prop=rbi">RBIs</a>
+			<a id="hr" href="/mlbprops?prop=hr">HR</a>
 			<a id="r" href="/mlbprops?prop=r">Runs</a>
+			<a id="rbi" href="/mlbprops?prop=rbi">RBIs</a>
 			<a id="h+r+rbis" href="/mlbprops?prop=h+r+rbi">H+R+RBI</a>
+			<a id="tb" href="/mlbprops?prop=tb">TB</a>
+			<a id="sb" href="/mlbprops?prop=sb">SB</a>
 			<a id="so" href="/mlbprops?prop=so">SO</a>
 			<a id="1b" href="/mlbprops?prop=1b">1B</a>
 			<a id="2b" href="/mlbprops?prop=2b">2B</a>
@@ -154,7 +156,7 @@
 				} else {
 					val1 = "<div class='negative'>"+val1+"</div>";
 				}
-				if (cell.getField() == "awayHomeSplits" && data.awayHome == "away") {
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "@") {
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
 				}
 				let val2 = vals[1];
@@ -163,7 +165,7 @@
 				} else {
 					val2 = "<div class='negative'>"+val2+"</div>";
 				}
-				if (cell.getField() == "awayHomeSplits" && data.awayHome == "home") {
+				if (cell.getField() == "awayHomeSplits" && data.awayHome == "v") {
 					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
 				}
 				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
@@ -199,23 +201,27 @@
 						{title: "GP", field: "gamesPlayed", hozAlign: "center", width: 50},
 						{title: "# Batting", field: "battingNumber", hozAlign: "center", width: 40},
 						{title: "Avg IP", field: "avgIP", hozAlign: "center", width: 80, visible: false},
-						{title: "A/H", field: "awayHome", hozAlign: "center", width: 60},
 						{title: "Team", field: "team", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "A/H", field: "awayHome", hozAlign: "center", width: 30},
 						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
-						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
-						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
 						{title: "Line", field: "line", hozAlign: "center"},
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
+						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
+						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
+						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
+						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
+						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 130},
 						{title: "LYR Avg", field: "lastYearAvg", hozAlign: "center", width: 80, formatter: colorFormatter, sorter: "number"},
-						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
+						//{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
 						{title: "LYR % Over", field: "lastYearTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
-						{title: "LYR vs Opp % Over", field: "lastYearTeamMatchupOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "# Matchups", field: "matchups", hozAlign: "center", width: 60},
-						{title: "Diff", field: "diff", hozAlign: "center", width: 80, sorter: "number"},
-						{title: "Hit Rate Odds", field: "hitRateOdds", hozAlign: "center", width: 80},
+						{title: "LYR vs Opp % Over", field: "lastYearTeamMatchupOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
+						{title: "vs Team LYR", field: "againstTeamStats", hozAlign: "center", width: 140},
+						//{title: "Diff", field: "diff", hozAlign: "center", width: 80, sorter: "number"},
+						//{title: "Hit Rate Odds", field: "hitRateOdds", hozAlign: "center", width: 80},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
 						{title: "Under", field: "underOdds", hozAlign: "center"},
 					]

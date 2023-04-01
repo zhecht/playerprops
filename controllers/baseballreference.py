@@ -55,11 +55,11 @@ def write_stats(date):
 
 		gameId = boxscores[date][game].split("/")[-1].split("=")[-1]
 		url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
-		outfile = "outmlb"
+		outfile = "outmlb2"
 		time.sleep(0.3)
 		call(["curl", "-k", url, "-o", outfile])
 
-		with open("outmlb") as fh:
+		with open(outfile) as fh:
 			data = json.load(fh)
 
 		if "code" in data and data["code"] == 400:
@@ -103,6 +103,14 @@ def write_stats(date):
 							except:
 								val = 0.0
 							allStats[team][player][header] = val
+					if "ab" in allStats[team][player]:
+						_3b = allStats[team][player].get("3b", 0)
+						_2b = allStats[team][player].get("2b", 0)
+						hr = allStats[team][player]["hr"]
+						h = allStats[team][player]["h"]
+						_1b = h - (_3b+_2b+hr)
+						allStats[team][player]["1b"] = _1b
+						allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
 	for team in allStats:
 		if not os.path.isdir(f"{prefix}static/baseballreference/{team}"):
@@ -142,7 +150,7 @@ def write_totals():
 
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
-	outfile = "out2"
+	outfile = "outmlb"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -210,7 +218,18 @@ def write_averages():
 	with open(f"{prefix}static/baseballreference/lastYearStats.json") as fh:
 		lastYearStats = json.load(fh)
 
+	currYear = "2023"
+
+	#year = "2022"
+	yearStats = {}
+	for year in os.listdir(f"{prefix}static/mlbprops/stats/"):
+		if os.path.exists(f"{prefix}static/mlbprops/stats/{year}.json"):
+			with open(f"{prefix}static/mlbprops/stats/{year}.json") as fh:
+				stats = json.load(fh)
+			yearStats[year] = stats
+
 	for team in ids:
+		print(team)
 		if team not in averages:
 			averages[team] = {}
 		if team not in lastYearStats:
@@ -220,84 +239,175 @@ def write_averages():
 			pId = ids[team][player]
 			if player in averages[team]:
 				pass
-				continue
+				#continue
 			
 			gamesPlayed = 0
 			averages[team][player] = {}
 			lastYearStats[team][player] = {}
 
 			time.sleep(0.175)
-			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}/type/mlb/year/2022"
-			outfile = "out2"
+			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
+			outfile = "outmlb"
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
+			#print(url)
+			select = soup.find("div", class_="gamelog").find("select", class_="dropdown__select")
+			if not select:
+				continue
+			years = [y.text for y in select.findAll("option")]
 
-			headers = []
-			for row in soup.findAll("tr"):
-				if not headers and row.text.lower().startswith("date"):
-					tds = row.findAll("td")[3:]
-					if not tds:
-						tds = row.findAll("th")[3:]
-					for td in tds:
-						headers.append(td.text.strip().lower())
-				elif row.text.startswith("Totals"):
-					for idx, td in enumerate(row.findAll("td")[1:]):
-						header = headers[idx]
-						try:
-							val = float(td.text.strip())
-						except:
-							val = "-"
-						averages[team][player][header] = val
-					averages[team][player]["gamesPlayed"] = gamesPlayed
-					if "ab" in averages[team][player]:
-						_3b = averages[team][player]["3b"]
-						_2b = averages[team][player]["2b"]
-						hr = averages[team][player]["hr"]
-						h = averages[team][player]["h"]
-						_1b = h - (_3b+_2b+hr)
-						averages[team][player]["1b"] = _1b
-						averages[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
-				else:
-					tds = row.findAll("td")
-					if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
-						date = str(datetime.datetime.strptime(tds[0].text.strip(), "%a %m/%d")).split(" ")[0][6:]
-						gamesPlayed += 1
-						isAway = "@" in tds[1].text
-						try:
-							vs = tds[1].findAll("a")[-1].get("href").split("/")[-2]
-						except:
-							continue
-						lastYearStats[team][player][date] = {
-							"isAway": isAway,
-							"vs": vs
-						}
-						for idx, td in enumerate(tds[3:]):
+			for year in years:
+				if len(year) != 4:
+					print(year)
+					continue
+				if year not in yearStats:
+					yearStats[year] = {}
+				if team not in yearStats[year]:
+					yearStats[year][team] = {}
+				
+				if player not in yearStats[year][team]:
+					yearStats[year][team][player] = {}
+				elif year != currYear:
+					continue
+
+				yearStats[year][team][player] = {}
+
+				time.sleep(0.175)
+				url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}/type/mlb/year/{year}"
+				#print(url)
+				outfile = "outmlb"
+				call(["curl", "-k", url, "-o", outfile])
+				soup = BS(open(outfile, 'rb').read(), "lxml")
+
+				headers = []
+				for row in soup.findAll("tr"):
+					try:
+						title = row.findPrevious("div", class_="Table__Title").text.lower()
+					except:
+						title = ""
+					if "regular season" not in title:
+						continue
+					if not headers and row.text.lower().startswith("date"):
+						tds = row.findAll("td")[3:]
+						if not tds:
+							tds = row.findAll("th")[3:]
+						for td in tds:
+							headers.append(td.text.strip().lower())
+					elif row.text.startswith("Totals"):
+						yearStats[year][team][player]["tot"] = {}
+						for idx, td in enumerate(row.findAll("td")[1:]):
 							header = headers[idx]
-
-							val = 0.0
-							if header in ["dec", "rel"]:
-								val = td.text.strip()
-							else:
-								try:
-									val = float(td.text.strip())
-								except:
-									val = "-"
-							lastYearStats[team][player][date][header] = val
-						if "ab" in lastYearStats[team][player][date]:
-							_3b = lastYearStats[team][player][date]["3b"]
-							_2b = lastYearStats[team][player][date]["2b"]
-							hr = lastYearStats[team][player][date]["hr"]
-							h = lastYearStats[team][player][date]["h"]
+							try:
+								val = float(td.text.strip())
+							except:
+								val = "-"
+							yearStats[year][team][player]["tot"][header] = val
+						yearStats[year][team][player]["tot"]["gamesPlayed"] = gamesPlayed
+						if "ab" in yearStats[year][team][player]["tot"]:
+							_3b = yearStats[year][team][player]["tot"]["3b"]
+							_2b = yearStats[year][team][player]["tot"]["2b"]
+							hr = yearStats[year][team][player]["tot"]["hr"]
+							h = yearStats[year][team][player]["tot"]["h"]
 							_1b = h - (_3b+_2b+hr)
-							lastYearStats[team][player][date]["1b"] = _1b
-							lastYearStats[team][player][date]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
+							yearStats[year][team][player]["tot"]["1b"] = _1b
+							yearStats[year][team][player]["tot"]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
+					else:
+						tds = row.findAll("td")
+						if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
+							date = str(datetime.datetime.strptime(tds[0].text.strip()+"/"+year, "%a %m/%d/%Y")).split(" ")[0]
+							gamesPlayed += 1
+							isAway = "@" in tds[1].text
+							try:
+								vs = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+							except:
+								continue
+
+							if date not in yearStats[year][team][player]:
+								yearStats[year][team][player][date] = {}
+							else:
+								date = date + " gm2"
+
+							yearStats[year][team][player][date] = {
+								"isAway": isAway,
+								"vs": vs
+							}
+							for idx, td in enumerate(tds[3:]):
+								header = headers[idx]
+
+								val = 0.0
+								if header in ["dec", "rel"]:
+									val = td.text.strip()
+								else:
+									try:
+										val = float(td.text.strip())
+									except:
+										val = "-"
+
+								yearStats[year][team][player][date][header] = val
+							if "ab" in yearStats[year][team][player][date]:
+								_3b = yearStats[year][team][player][date]["3b"]
+								_2b = yearStats[year][team][player][date]["2b"]
+								hr = yearStats[year][team][player][date]["hr"]
+								h = yearStats[year][team][player][date]["h"]
+								_1b = h - (_3b+_2b+hr)
+								yearStats[year][team][player][date]["1b"] = _1b
+								yearStats[year][team][player][date]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
+
+				with open(f"{prefix}static/mlbprops/stats/{year}.json", "w") as fh:
+					json.dump(yearStats[year], fh, indent=4)
+
+	writeYearAverages()
+
+def writeYearAverages():
+	averages = {}
+	for file in os.listdir(f"{prefix}static/mlbprops/stats/"):
+		year = file[:4]
+
+		with open(f"{prefix}static/mlbprops/stats/{file}") as fh:
+			yearStats = json.load(fh)
+
+		for team in yearStats:
+			if team not in averages:
+				averages[team] = {}
+			for player in yearStats[team]:
+				tot = {}
+				playerStats = yearStats[team][player]
+				if player not in averages[team]:
+					averages[team][player] = {"tot": {}}
+				if True or "tot" not in playerStats:
+					gamesPlayed = 0
+					for dt in playerStats:
+						if dt == "tot":
+							continue
+						gamesPlayed += 1
+						gameStats = playerStats[dt]
+						for header in gameStats:
+							if header not in ["isAway", "vs"]:
+								if header not in tot:
+									tot[header] = 0
+								try:
+									tot[header] += gameStats[header]
+								except:
+									pass
+					tot["gamesPlayed"] = gamesPlayed
+					yearStats[team][player]["tot"] = tot
+				else:
+					tot = playerStats["tot"]
+				
+				averages[team][player][year] = tot
+				for header in tot:
+					if header not in averages[team][player]["tot"]:
+						averages[team][player]["tot"][header] = 0
+					try:
+						averages[team][player]["tot"][header] += tot[header]
+					except:
+						pass
+
+		with open(f"{prefix}static/mlbprops/stats/{file}", "w") as fh:
+			json.dump(yearStats, fh, indent=4)
 
 	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
 		json.dump(averages, fh, indent=4)
-
-	if lastYearStats:
-		with open(f"{prefix}static/baseballreference/lastYearStats.json", "w") as fh:
-			json.dump(lastYearStats, fh, indent=4)
 
 def write_roster():
 
@@ -353,13 +463,13 @@ def convertTeamRankingsTeam(team):
 
 def write_rankings():
 	baseUrl = "https://www.teamrankings.com/mlb/stat/"
-	pages = ["strikeouts-per-game", "walks-per-game", "runs-per-game", "hits-per-game", "home-runs-per-game", "singles-per-game", "doubles-per-game", "rbis-per-game", "total-bases-per-game", "earned-run-average", "earned-runs-against-per-game", "strikeouts-per-9", "home-runs-per-9", "hits-per-9", "walks-per-9"]
-	ids = ["so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "hits_allowed", "bb_allowed"]
+	pages = ["at-bats-per-game", "strikeouts-per-game", "walks-per-game", "runs-per-game", "hits-per-game", "home-runs-per-game", "singles-per-game", "doubles-per-game", "rbis-per-game", "total-bases-per-game", "earned-run-average", "earned-runs-against-per-game", "strikeouts-per-9", "home-runs-per-9", "hits-per-9", "walks-per-9", "opponent-stolen-bases-per-game", "opponent-total-bases-per-game", "opponent-rbis-per-game", "opponent-at-bats-per-game"]
+	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "hits_allowed", "bb_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab"]
 
 	rankings = {}
 	for idx, page in enumerate(pages):
 		url = baseUrl+page+"?date=2022-11-06"
-		outfile = "outmlb"
+		outfile = "outmlb2"
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -407,9 +517,92 @@ def write_rankings():
 	with open(f"{prefix}static/baseballreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
 
+def write_pitching():
+	with open(f"{prefix}static/baseballreference/pitching.json") as fh:
+		pitching = json.load(fh)
+
+	pitchingData = {}
+	with open(f"{prefix}static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	for file in os.listdir(f"{prefix}static/mlbprops/stats/"):
+		year = file[:4]
+
+		with open(f"{prefix}static/mlbprops/stats/{file}") as fh:
+			yearStats = json.load(fh)
+
+		for team in yearStats:
+			if team not in pitching:
+				pitching[team] = {}
+			if team not in pitchingData:
+				pitchingData[team] = {}
+			for player in yearStats[team]:
+				pos = roster[team].get(player, "")
+				if "P" in pos:
+					for d in yearStats[team][player]:
+						if d not in pitchingData[team]:
+							pitchingData[team][d] = yearStats[team][player][d]
+							pitching[team][d] = player
+						else:
+							ip = pitchingData[team][d]["ip"]
+							if yearStats[team][player][d]["ip"] > ip:
+								pitchingData[team][d] = yearStats[team][player][d]
+								pitching[team][d] = player
+
+	with open(f"{prefix}static/baseballreference/pitching.json", "w") as fh:
+		json.dump(pitching, fh, indent=4)
+
+def convertRotoTeam(team):
+	team = team.lower()
+	if team == "cws":
+		return "chw"
+	return team
+
+# write batter vs pitcher
+def writeBVP():
+
+	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
+		bvp = json.load(fh)
+
+	date = str(datetime.datetime.now())[:10]
+	if False:
+		date = str(datetime.datetime.now() + datetime.timedelta(days=1))[:10]
+
+	for hotCold in ["hot", "cold"]:
+		outfile = "outmlb2"
+		time.sleep(0.2)
+		url = f"https://www.rotowire.com/baseball/tables/matchup.php?type={hotCold}batter&bab=1&bhothr=1&bhotavg=1&bhottops=1&start={date}&end={date}"
+		call(["curl", "-k", url, "-o", outfile])
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		for row in data:
+			pitcher = row["pitcher"].lower()
+			team = convertRotoTeam(row["team"])
+			opp = convertRotoTeam(row["opponent"])
+			player = row["player"].lower()
+
+			matchup = f"{player} v {pitcher}"
+
+			if team not in bvp:
+				bvp[team] = {}
+			if matchup not in bvp[team]:
+				bvp[team][matchup] = {}
+
+			for key, hdr in [("atbats", "ab"), ("hits", "h"), ("hr", "hr"), ("rbi", "rbi"), ("bb", "bb"), ("k", "so")]:
+				bvp[team][matchup][hdr] = int(row[key])
+
+
+	with open(f"{prefix}static/baseballreference/bvp.json", "w") as fh:
+		json.dump(bvp, fh, indent=4)
+
+
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
+	parser.add_argument("--bvp", action="store_true", help="Batter Vs Pitcher")
 	parser.add_argument("-d", "--date", help="Date")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
@@ -418,6 +611,7 @@ if __name__ == "__main__":
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
 	parser.add_argument("--stats", help="Stats", action="store_true")
+	parser.add_argument("--pitching", help="Pitching", action="store_true")
 	parser.add_argument("--ttoi", help="Team TTOI", action="store_true")
 	parser.add_argument("-e", "--end", help="End Week", type=int)
 	parser.add_argument("-w", "--week", help="Week", type=int)
@@ -434,14 +628,21 @@ if __name__ == "__main__":
 
 	if args.averages:
 		write_averages()
+	elif args.bvp:
+		writeBVP()
 	elif args.rankings:
 		write_rankings()
 	elif args.roster:
 		write_roster()
+	elif args.pitching:
+		write_pitching()
 	elif args.cron:
 		write_rankings()
+		writeBVP()
 		write_stats(date)
 		write_schedule(date)
 
+	#write_pitching()
+	#writeYearAverages()
 	#write_stats(date)
 	#write_totals()
