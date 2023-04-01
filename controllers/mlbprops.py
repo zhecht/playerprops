@@ -733,7 +733,7 @@ def getProps_route():
 	pitchers = False
 	if request.args.get("pitchers"):
 		pitchers = True
-	if True or request.args.get("teams") or request.args.get("players") or request.args.get("date"):
+	if request.args.get("teams") or request.args.get("players") or request.args.get("date"):
 		teams = ""
 		if request.args.get("teams"):
 			teams = request.args.get("teams").lower().split(",")

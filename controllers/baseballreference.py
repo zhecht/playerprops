@@ -112,6 +112,15 @@ def write_stats(date):
 						allStats[team][player]["1b"] = _1b
 						allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
+		for rosterRow in data["rosters"]:
+			team = rosterRow["team"]["abbreviation"].lower()
+			for playerRow in rosterRow["roster"]:
+				player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "")
+				for statRow in playerRow["stats"]:
+					hdr = statRow["shortDisplayName"].lower()
+					if hdr not in allStats[team][player]:
+						allStats[team][player][hdr] = statRow["value"]
+
 	for team in allStats:
 		if not os.path.isdir(f"{prefix}static/baseballreference/{team}"):
 			os.mkdir(f"{prefix}static/baseballreference/{team}")
