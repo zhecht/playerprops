@@ -128,7 +128,7 @@
 				const field = cell.getField();
 				const val = cell.getValue();
 				const suffix = addNumSuffix(val);
-				if (field == "oppRank" && propArg != "hits_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
+				if ((field == "oppRank" || field == "oppABRank") && propArg != "hits_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
 					if (val >= 20) {
 						return "<div class='positive'>"+suffix+"</div>";
 					} else if (val <= 10) {
@@ -196,6 +196,7 @@
 						}},
 						{title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center", visible: false},
 						{title: "Player", field: "player", headerFilter: "input"},
+						{title: "Over", field: "overOdds", hozAlign: "center"},
 						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
 						{title: "Bats", field: "bats", width: 40, hozAlign: "center"},
 						{title: "GP", field: "gamesPlayed", hozAlign: "center", width: 50},
@@ -206,20 +207,25 @@
 						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
+						//{title: "Opp AB", field: "oppABRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
 						{title: "Line", field: "line", hozAlign: "center"},
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
 						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
+						{title: "L10 % Over", field: "last10Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
 						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
 						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 130},
+						{title: "Career % Over", field: "careerTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
+						{title: "% Over vs Team", field: "againstTeamTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
+						{title: "vs Team", field: "againstTeamStats", hozAlign: "center", width: 140},
+						{title: "LYR % Over", field: "lastYearTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "LYR Avg", field: "lastYearAvg", hozAlign: "center", width: 80, formatter: colorFormatter, sorter: "number"},
 						//{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
-						{title: "LYR % Over", field: "lastYearTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "# Matchups", field: "matchups", hozAlign: "center", width: 60},
 						{title: "LYR vs Opp % Over", field: "lastYearTeamMatchupOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
-						{title: "vs Team LYR", field: "againstTeamStats", hozAlign: "center", width: 140},
+						{title: "vs Team LYR", field: "againstTeamLastYearStats", hozAlign: "center", width: 140},
 						//{title: "Diff", field: "diff", hozAlign: "center", width: 80, sorter: "number"},
 						//{title: "Hit Rate Odds", field: "hitRateOdds", hozAlign: "center", width: 80},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
@@ -229,15 +235,15 @@
 			}
 
 			renderTable();
+
+			if (["k", "outs", "win", "hits_allowed", "walks_allowed", "er"].indexOf(propArg) >= 0) {
+				TABLE.getColumn("pitcher").hide();
+				TABLE.getColumn("pitcherThrows").hide();
+			}
 		</script>
 		{% if prop != "" %}
 			<script>
 				TABLE.setFilter([{field:"prop", type:"=", value:"{{prop}}"}]);
-
-				if (["k", "outs", "win", "hits_allowed", "walks_allowed", "er"].indexOf("{{prop}}") >= 0) {
-					TABLE.getColumn("pitcher").hide();
-					TABLE.getColumn("pitcherThrows").hide();
-				}
 			</script>
 		{% endif %}
 		{% if pitchers %}

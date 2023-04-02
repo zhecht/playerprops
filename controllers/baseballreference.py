@@ -227,7 +227,7 @@ def write_averages():
 	with open(f"{prefix}static/baseballreference/lastYearStats.json") as fh:
 		lastYearStats = json.load(fh)
 
-	currYear = "2023"
+	currYear = str(datetime.datetime.now()[:4])
 
 	#year = "2022"
 	yearStats = {}
@@ -238,7 +238,6 @@ def write_averages():
 			yearStats[year] = stats
 
 	for team in ids:
-		print(team)
 		if team not in averages:
 			averages[team] = {}
 		if team not in lastYearStats:
@@ -248,9 +247,8 @@ def write_averages():
 			pId = ids[team][player]
 			if player in averages[team]:
 				pass
-				#continue
+				continue
 			
-			gamesPlayed = 0
 			averages[team][player] = {}
 			lastYearStats[team][player] = {}
 
@@ -280,6 +278,7 @@ def write_averages():
 					continue
 
 				yearStats[year][team][player] = {}
+				gamesPlayed = 0
 
 				time.sleep(0.175)
 				url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}/type/mlb/year/{year}"
@@ -369,6 +368,7 @@ def write_averages():
 
 def writeYearAverages():
 	averages = {}
+	statsVsTeam = {}
 	for file in os.listdir(f"{prefix}static/mlbprops/stats/"):
 		year = file[:4]
 
@@ -376,28 +376,57 @@ def writeYearAverages():
 			yearStats = json.load(fh)
 
 		for team in yearStats:
+
 			if team not in averages:
 				averages[team] = {}
+			if team not in statsVsTeam:
+				statsVsTeam[team] = {}
+
 			for player in yearStats[team]:
 				tot = {}
 				playerStats = yearStats[team][player]
 				if player not in averages[team]:
 					averages[team][player] = {"tot": {}}
 				if True or "tot" not in playerStats:
-					gamesPlayed = 0
+					gamesPlayed = totalHitGames = total2HitGames = 0
 					for dt in playerStats:
 						if dt == "tot":
 							continue
 						gamesPlayed += 1
 						gameStats = playerStats[dt]
+						currOpp = gameStats["vs"]
+						if currOpp not in statsVsTeam[team]:
+							statsVsTeam[team][currOpp] = {}
+						if player not in statsVsTeam[team][currOpp]:
+							statsVsTeam[team][currOpp][player] = {"gamesPlayed": 0}
+
+						statsVsTeam[team][currOpp][player]["gamesPlayed"] += 1
 						for header in gameStats:
 							if header not in ["isAway", "vs"]:
+								if header not in statsVsTeam[team][currOpp][player]:
+									statsVsTeam[team][currOpp][player][header] = 0
 								if header not in tot:
 									tot[header] = 0
 								try:
-									tot[header] += gameStats[header]
+									val = gameStats[header]
+									tot[header] += val
+									statsVsTeam[team][currOpp][player][header] += val
+									if header in ["h", "1b", "rbi", "bb", "hr", "sb", "so", "k", "er"]:
+										if header+"Overs" not in statsVsTeam[team][currOpp][player]:
+											statsVsTeam[team][currOpp][player][header+"Overs"] = {}
+										if header+"Overs" not in tot:
+											tot[header+"Overs"] = {}
+										for i in range(1, int(val)+1):
+											if i not in tot[header+"Overs"]:
+												tot[header+"Overs"][i] = 0
+											if i not in statsVsTeam[team][currOpp][player][header+"Overs"]:
+												statsVsTeam[team][currOpp][player][header+"Overs"][i] = 0
+
+											statsVsTeam[team][currOpp][player][header+"Overs"][i] += 1
+											tot[header+"Overs"][i] += 1
 								except:
 									pass
+
 					tot["gamesPlayed"] = gamesPlayed
 					yearStats[team][player]["tot"] = tot
 				else:
@@ -417,6 +446,9 @@ def writeYearAverages():
 
 	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
 		json.dump(averages, fh, indent=4)
+
+	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
+		json.dump(statsVsTeam, fh, indent=4)
 
 def write_roster():
 

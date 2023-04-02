@@ -307,6 +307,11 @@ def writeCsvs(props):
 		csvs["full"] += "\n" + "\t".join([str(x) for x in [row["player"], row["pos"], row["bats"], row["battingNumber"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["oppRankVal"], row["pitcher"], row["pitcherThrows"], row["againstPitcherStats"], row["prop"], row["line"], row["lastDisplay"], f"{row['totalOver']}%", avg, f"{row['lastYearTotalOver']}%", f"{row['matchups']}", f"{row['lastYearTeamMatchupOver']}%", overOdds, underOdds]])
 
 	# add top 4 to reddit
+	headerList = ["NAME","POS","Batting #","TEAM","A/H","OPP","OPP RANK","PROP","LINE","LAST ➡️","% OVER", "CAREER % OVER", "% OVER VS TEAM", "VS TEAM", "PITCHER", "VS PITCHER", "OVER","UNDER"]
+	headers = "\t".join(headerList)
+	reddit = "|".join(headers.split("\t"))
+	reddit += "\n"+"|".join([":--"]*len(headerList))
+
 	for prop in ["h", "h+r+rbi", "hr", "so"]:
 		if prop in splitProps:
 			rows = sorted(splitProps[prop], key=lambda k: (k["lastYearTotalOver"]), reverse=True)
@@ -316,7 +321,7 @@ def writeCsvs(props):
 				avg = row["lastYearAvg"]
 				if avg >= row["line"]:
 					avg = f"**{avg}**"
-				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["pos"], row["bats"], row["battingNumber"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["oppRankVal"], row["pitcher"], row["pitcherThrows"], row["againstPitcherStats"], row["prop"], row["line"], row["lastDisplay"], f"{row['totalOver']}%", avg, f"{row['lastYearTotalOver']}%", f"{row['matchups']}", f"{row['lastYearTeamMatchupOver']}%", overOdds, underOdds]])
+				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["pos"], row["battingNumber"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["prop"], row["line"], row["lastDisplay"], f"{row['totalOver']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["againstPitcherStats"], overOdds, underOdds]])
 			reddit += "\n"+"|".join(["-"]*len(headerList))
 
 	with open(f"{prefix}static/mlbprops/csvs/reddit", "w") as fh:
@@ -404,6 +409,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 		leftOrRight = json.load(fh)
 	with open(f"{prefix}static/baseballreference/pitching.json") as fh:
 		pitching = json.load(fh)
+	with open(f"{prefix}static/baseballreference/statsVsTeam.json") as fh:
+		statsVsTeam = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
 		gameLines = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
@@ -472,10 +479,45 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 						lastYearAvg = round(lastYearAvg / lastYrGamesPlayed, 2)
 
 				prevMatchup = []
-				lastTotalGames = 0
+				lastTotalGames = careerTotalGames = careerTotalOver = careerAvg = againstTeamTotalOver = 0
 				lastYrAwayHomeSplits = [[], []]
 				lastYrLast20 = []
-				againstTeamStats = {"ab": 0, "h": 0, "hr": 0, "rbi": 0, "bb": 0, "so": 0}
+				againstTeamLastYearStats = {"ab": 0, "h": 0, "hr": 0, "rbi": 0, "bb": 0, "so": 0}
+				againstTeamStats = {}
+
+				try:
+					againstTeamStats = statsVsTeam[team][opp][player]
+					over = 0
+					for p in prop.split("+"):
+						over += againstTeamStats[p]
+					againstTeamTotalOver = round(againstTeamStats[prop+"Overs"][str(math.ceil(line))] * 100 / againstTeamStats["gamesPlayed"])
+				except:
+					pass
+
+				if player in averages[team]:
+					for yr in averages[team][player]:
+						if yr == "tot":
+							continue
+						overLine = math.ceil(line)
+						try:
+							over = averages[team][player][yr][f"{prop}Overs"][str(overLine)]
+							careerTotalGames += averages[team][player][yr]["gamesPlayed"]
+							careerTotalOver += over
+						except:
+							pass
+
+				if careerTotalGames:
+					careerTotalOver = round(careerTotalOver * 100 / careerTotalGames)
+					try:
+						careerAvg = 0
+						for p in prop.split("+"):
+							careerAvg += averages[team][player]["tot"][p]
+						careerAvg = round(careerAvg / averages[team][player]["gamesPlayed"])
+
+					except:
+						pass
+
+
 				if team in lastYearStats and player in lastYearStats[team]:
 					l = [d.replace(" gm2", "") for d in lastYearStats[team][player] if d != "tot"]
 					seen = {}
@@ -498,8 +540,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 						if currOpp == opp:
 							prevMatchup.append(val)
-							for hdr in againstTeamStats:
-								againstTeamStats[hdr] += lastYearStats[team][player][d].get(hdr, 0)
+							for hdr in againstTeamLastYearStats:
+								againstTeamLastYearStats[hdr] += lastYearStats[team][player][d].get(hdr, 0)
 
 						if lastYearStats[team][player][d]["isAway"]:
 							lastYrAwayHomeSplits[0].append(val)
@@ -605,13 +647,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					totalOver = round(totalOver * 100 / gamesPlayed)
 
 
-				oppRank = ""
-				oppRankVal = ""
+				oppRank = oppRankVal = oppABRank = ""
 				rankingsProp = convertRankingsProp(propName)
 				
 				if rankingsProp in rankings[opp]:
 					oppRankVal = str(rankings[opp][rankingsProp]["season"])
 					oppRank = rankings[opp][rankingsProp]['rank']
+					oppABRank = rankings[opp]["opp_ab"]["rank"]
 
 				hitRateOdds = diff = 0
 				if lastYearTotalOver != 100:
@@ -620,20 +662,33 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 				againstPitcherStats = ""
 				try:
-					againstPitcherStats = f"{int(bvp[team][player+' v '+pitcher]['h'])}-{int(bvp[team][player+' v '+pitcher]['ab'])}, {int(bvp[team][player+' v '+pitcher]['hr'])} HR, {int(bvp[team][player+' v '+pitcher]['bb'])} BB, {int(bvp[team][player+' v '+pitcher]['rbi'])} RBI, {int(bvp[team][player+' v '+pitcher]['so'])} SO"
+					againstPitcherStats = f"{str(round(bvp[team][player+' v '+pitcher]['h']/bvp[team][player+' v '+pitcher]['ab'], 3))[1:]} {int(bvp[team][player+' v '+pitcher]['h'])}-{int(bvp[team][player+' v '+pitcher]['ab'])}, {int(bvp[team][player+' v '+pitcher]['hr'])} HR, {int(bvp[team][player+' v '+pitcher]['rbi'])} RBI, {int(bvp[team][player+' v '+pitcher]['bb'])} BB, {int(bvp[team][player+' v '+pitcher]['so'])} SO"
 				except:
 					pass
 
 				try:
-					if againstTeamStats["ab"]:
-						againstTeamStats = f"{int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])}, {int(againstTeamStats['hr'])} HR, {int(againstTeamStats['bb'])} BB, {int(againstTeamStats['rbi'])} RBI, {int(againstTeamStats['so'])} SO"
+					if againstTeamLastYearStats["ab"]:
+						againstTeamLastYearStats = f"{str(round(againstTeamLastYearStats['h']/againstTeamLastYearStats['ab'], 3))[1:]} {int(againstTeamLastYearStats['h'])}-{int(againstTeamLastYearStats['ab'])}, {int(againstTeamLastYearStats['hr'])} HR, {int(againstTeamLastYearStats['rbi'])} RBI, {int(againstTeamLastYearStats['bb'])} BB, {int(againstTeamLastYearStats['so'])} SO"
 					else:
-						againstTeamStats = ""
-					#againstTeamStats = f"{int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])} ({round(againstTeamStats['h']/againstTeamStats['ab'], 3)}), {int(againstTeamStats['hr'])} HR, {int(againstTeamStats['bb'])} BB, {int(againstTeamStats['rbi'])} RBI, {int(againstTeamStats['so'])} SO"
+						againstTeamLastYearStats = ""
+					#againstTeamLastYearStats = f"{int(againstTeamLastYearStats['h'])}-{int(againstTeamLastYearStats['ab'])} ({round(againstTeamLastYearStats['h']/againstTeamLastYearStats['ab'], 3)}), {int(againstTeamLastYearStats['hr'])} HR, {int(againstTeamLastYearStats['bb'])} BB, {int(againstTeamLastYearStats['rbi'])} RBI, {int(againstTeamLastYearStats['so'])} SO"
+				except:
+					againstTeamLastYearStats = ""
+
+				try:
+					if againstTeamStats["ab"]:
+						againstTeamStats = f"{str(round(againstTeamStats['h']/againstTeamStats['ab'], 3))[1:]} {int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])}, {int(againstTeamStats['hr'])} HR, {int(againstTeamStats['rbi'])} RBI, {int(againstTeamStats['bb'])} BB, {int(againstTeamStats['so'])} SO"
+					else:
+						againstTeamLastYearStats = ""
 				except:
 					againstTeamStats = ""
 
-				last20Over = 0
+				last20Over = last10Over = 0
+				arr = lastAll.copy()
+				if len(arr) < 10:
+					arr.extend(lastYrLast20[:10-len(lastAll)])
+				if arr:
+					last10Over = round(len([x for x in arr if x > line]) * 100 / len(arr))
 				arr = lastAll.copy()
 				if len(arr) < 20:
 					arr.extend(lastYrLast20[:20-len(lastAll)])
@@ -658,6 +713,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"pos": pos,
 					"againstPitcherStats": againstPitcherStats,
 					"againstTeamStats": againstTeamStats,
+					"againstTeamLastYearStats": againstTeamLastYearStats,
 					"pitcher": pitcher.split(" ")[-1].title(),
 					"pitcherThrows": pitcherThrows,
 					"prop": propName,
@@ -668,13 +724,17 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"avg": avg,
 					"diff": diff,
 					"hitRateOdds": hitRateOdds,
+					"careerTotalOver": careerTotalOver,
+					"againstTeamTotalOver": againstTeamTotalOver,
 					"totalOver": totalOver,
+					"last10Over": last10Over,
 					"last20Over": last20Over,
 					"lastYearAvg": lastYearAvg,
 					"lastYearTotalOver": lastYearTotalOver,
 					"lastYearTeamMatchupOver": lastYearTeamMatchupOver,
 					"lastDisplay": ",".join([str(x) for x in lastAll[:10]]),
 					"lastAll": ",".join([str(x) for x in lastAll]),
+					"oppABRank": oppABRank,
 					"oppRank": oppRank,
 					"oppRankVal": oppRankVal,
 					"overOdds": overOdds,
@@ -733,7 +793,7 @@ def getProps_route():
 	pitchers = False
 	if request.args.get("pitchers"):
 		pitchers = True
-	if request.args.get("teams") or request.args.get("players") or request.args.get("date"):
+	if True or request.args.get("teams") or request.args.get("players") or request.args.get("date"):
 		teams = ""
 		if request.args.get("teams"):
 			teams = request.args.get("teams").lower().split(",")
