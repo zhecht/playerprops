@@ -92,7 +92,7 @@
 			const teamNames = ["All", "ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SA", "SAC", "TOR", "UTAH", "WSH"];
 
 			function groupBy() {
-				if (TABLE.options.groupBy === undefined) {
+				if (TABLE.options.groupBy === undefined || TABLE.options.groupBy === false) {
 					TABLE.setGroupBy("game");
 				} else {
 					TABLE.setGroupBy();
@@ -187,26 +187,27 @@
 					tooltipsHeader: true,
 					ajaxURL: "/getMLBProps",
 					ajaxParams:{date: "{{date}}", teams: "{{teams}}", players: "{{players}}"},
-					//responsiveLayout:"collapse",
+					responsiveLayout:"collapse",
+					responsiveLayoutCollapseStartOpen: false,
 					//layout: "fitDataFill",
 					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
 					
 					initialSort: [
 						//{column: "pos", dir: "asc"},
-						{column: "totalOverLast5", dir: "desc"},
+						//{column: "totalOverLast5", dir: "desc"},
 						//{column: "diff", dir: "desc"},
-						{column: "lastYearTotalOver", dir: "desc"},
+						{column: "againstTeamTotalOver", dir: "desc"},
+						{column: "careerTotalOver", dir: "desc"},
 						//{column: "team", dir: "asc"},
 					],
 					columns: [
-					/*
 						{formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
-						*/
 						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
 							cell.getRow().toggleSelect();
 						}},
 						{title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center", visible: false},
 						{title: "Player", field: "player", headerFilter: "input"},
+						{title: "Player", field: "game", visible: false},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
 						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
 						{title: "Bats", field: "bats", width: 40, hozAlign: "center"},
@@ -227,10 +228,10 @@
 						{title: "L10 % Over", field: "last10Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
 						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
-						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 130},
+						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150},
 						{title: "Career % Over", field: "careerTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "% Over vs Team", field: "againstTeamTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
-						{title: "vs Team", field: "againstTeamStats", hozAlign: "center", width: 140},
+						{title: "vs Team", field: "againstTeamStats", hozAlign: "center", width: 150},
 						{title: "LYR % Over", field: "lastYearTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "LYR Avg", field: "lastYearAvg", hozAlign: "center", width: 80, formatter: colorFormatter, sorter: "number"},
 						//{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},

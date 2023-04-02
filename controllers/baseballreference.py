@@ -227,11 +227,12 @@ def write_averages():
 	with open(f"{prefix}static/baseballreference/lastYearStats.json") as fh:
 		lastYearStats = json.load(fh)
 
-	currYear = str(datetime.datetime.now()[:4])
+	currYear = str(datetime.datetime.now())[:4]
 
 	#year = "2022"
 	yearStats = {}
 	for year in os.listdir(f"{prefix}static/mlbprops/stats/"):
+		year = year[:4]
 		if os.path.exists(f"{prefix}static/mlbprops/stats/{year}.json"):
 			with open(f"{prefix}static/mlbprops/stats/{year}.json") as fh:
 				stats = json.load(fh)
@@ -265,8 +266,11 @@ def write_averages():
 
 			for year in years:
 				if len(year) != 4:
-					print(year)
-					continue
+					for title in soup.find("div", class_="gamelog").findAll("div", class_="Table__Title"):
+						if "regular" in title.text.lower():
+							year = title.text.lower()[:4]
+					if len(year) != 4:
+						continue
 				if year not in yearStats:
 					yearStats[year] = {}
 				if team not in yearStats[year]:
@@ -401,6 +405,8 @@ def writeYearAverages():
 							statsVsTeam[team][currOpp][player] = {"gamesPlayed": 0}
 
 						statsVsTeam[team][currOpp][player]["gamesPlayed"] += 1
+						if "ab" in gameStats and "h+r+rbi" not in gameStats:
+							gameStats["h+r+rbi"] = 0
 						for header in gameStats:
 							if header not in ["isAway", "vs"]:
 								if header not in statsVsTeam[team][currOpp][player]:
@@ -408,14 +414,18 @@ def writeYearAverages():
 								if header not in tot:
 									tot[header] = 0
 								try:
-									val = gameStats[header]
+									val = 0
+									for p in header.split("+"):
+										val += gameStats[p]
 									tot[header] += val
 									statsVsTeam[team][currOpp][player][header] += val
-									if header in ["h", "1b", "rbi", "bb", "hr", "sb", "so", "k", "er"]:
+									if header in ["h", "1b", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
+
 										if header+"Overs" not in statsVsTeam[team][currOpp][player]:
 											statsVsTeam[team][currOpp][player][header+"Overs"] = {}
 										if header+"Overs" not in tot:
 											tot[header+"Overs"] = {}
+
 										for i in range(1, int(val)+1):
 											if i not in tot[header+"Overs"]:
 												tot[header+"Overs"][i] = 0

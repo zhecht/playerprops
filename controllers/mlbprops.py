@@ -276,7 +276,7 @@ def writeCsvs(props):
 
 	for prop in splitProps:
 		csvs[prop] = headers
-		rows = sorted(splitProps[prop], key=lambda k: (k["lastYearTotalOver"]), reverse=True)
+		rows = sorted(splitProps[prop], key=lambda k: (k["careerTotalOver"]), reverse=True)
 		for row in rows:
 			overOdds = row["overOdds"]
 			underOdds = row["underOdds"]
@@ -314,7 +314,7 @@ def writeCsvs(props):
 
 	for prop in ["h", "h+r+rbi", "hr", "so"]:
 		if prop in splitProps:
-			rows = sorted(splitProps[prop], key=lambda k: (k["lastYearTotalOver"]), reverse=True)
+			rows = sorted(splitProps[prop], key=lambda k: (k["careerTotalOver"]), reverse=True)
 			for row in rows[:3]:
 				overOdds = row["overOdds"]
 				underOdds = row["underOdds"]
@@ -662,13 +662,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 				againstPitcherStats = ""
 				try:
-					againstPitcherStats = f"{str(round(bvp[team][player+' v '+pitcher]['h']/bvp[team][player+' v '+pitcher]['ab'], 3))[1:]} {int(bvp[team][player+' v '+pitcher]['h'])}-{int(bvp[team][player+' v '+pitcher]['ab'])}, {int(bvp[team][player+' v '+pitcher]['hr'])} HR, {int(bvp[team][player+' v '+pitcher]['rbi'])} RBI, {int(bvp[team][player+' v '+pitcher]['bb'])} BB, {int(bvp[team][player+' v '+pitcher]['so'])} SO"
+					againstPitcherStats = f"{str(format(round(bvp[team][player+' v '+pitcher]['h']/bvp[team][player+' v '+pitcher]['ab'], 3), '.3f'))[1:]} {int(bvp[team][player+' v '+pitcher]['h'])}-{int(bvp[team][player+' v '+pitcher]['ab'])}, {int(bvp[team][player+' v '+pitcher]['hr'])} HR, {int(bvp[team][player+' v '+pitcher]['rbi'])} RBI, {int(bvp[team][player+' v '+pitcher]['bb'])} BB, {int(bvp[team][player+' v '+pitcher]['so'])} SO"
 				except:
 					pass
 
 				try:
 					if againstTeamLastYearStats["ab"]:
-						againstTeamLastYearStats = f"{str(round(againstTeamLastYearStats['h']/againstTeamLastYearStats['ab'], 3))[1:]} {int(againstTeamLastYearStats['h'])}-{int(againstTeamLastYearStats['ab'])}, {int(againstTeamLastYearStats['hr'])} HR, {int(againstTeamLastYearStats['rbi'])} RBI, {int(againstTeamLastYearStats['bb'])} BB, {int(againstTeamLastYearStats['so'])} SO"
+						againstTeamLastYearStats = f"{str(format(round(againstTeamLastYearStats['h']/againstTeamLastYearStats['ab'], 3), '.3f'))[1:]} {int(againstTeamLastYearStats['h'])}-{int(againstTeamLastYearStats['ab'])}, {int(againstTeamLastYearStats['hr'])} HR, {int(againstTeamLastYearStats['rbi'])} RBI, {int(againstTeamLastYearStats['bb'])} BB, {int(againstTeamLastYearStats['so'])} SO"
 					else:
 						againstTeamLastYearStats = ""
 					#againstTeamLastYearStats = f"{int(againstTeamLastYearStats['h'])}-{int(againstTeamLastYearStats['ab'])} ({round(againstTeamLastYearStats['h']/againstTeamLastYearStats['ab'], 3)}), {int(againstTeamLastYearStats['hr'])} HR, {int(againstTeamLastYearStats['bb'])} BB, {int(againstTeamLastYearStats['rbi'])} RBI, {int(againstTeamLastYearStats['so'])} SO"
@@ -676,10 +676,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					againstTeamLastYearStats = ""
 
 				try:
-					if againstTeamStats["ab"]:
-						againstTeamStats = f"{str(round(againstTeamStats['h']/againstTeamStats['ab'], 3))[1:]} {int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])}, {int(againstTeamStats['hr'])} HR, {int(againstTeamStats['rbi'])} RBI, {int(againstTeamStats['bb'])} BB, {int(againstTeamStats['so'])} SO"
+					if againstTeamStats.get("ab", 0):
+						againstTeamStats = f"{str(format(round(againstTeamStats['h']/againstTeamStats['ab'], 3), '.3f'))[1:]} {int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])}, {int(againstTeamStats['hr'])} HR, {int(againstTeamStats['rbi'])} RBI, {int(againstTeamStats['bb'])} BB, {int(againstTeamStats['so'])} SO"
+					elif againstTeamStats.get("ip"):
+						againstTeamStats = f"{round(againstTeamStats['ip'], 1)} IP {int(againstTeamStats['k'])} K, {int(againstTeamStats['h'])} H"
 					else:
-						againstTeamLastYearStats = ""
+						againstTeamStats = ""
 				except:
 					againstTeamStats = ""
 
@@ -688,12 +690,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				if len(arr) < 10:
 					arr.extend(lastYrLast20[:10-len(lastAll)])
 				if arr:
-					last10Over = round(len([x for x in arr if x > line]) * 100 / len(arr))
+					last10Over = round(len([x for x in arr if float(str(x).replace("'", "")) > line]) * 100 / len(arr))
 				arr = lastAll.copy()
 				if len(arr) < 20:
 					arr.extend(lastYrLast20[:20-len(lastAll)])
 				if arr:
-					last20Over = round(len([x for x in arr if x > line]) * 100 / len(arr))
+					last20Over = round(len([x for x in arr if float(str(x).replace("'", "")) > line]) * 100 / len(arr))
 
 				if True:
 					awayHomeSplits = lastYrAwayHomeSplits
