@@ -78,6 +78,9 @@
 			<a id="bb" href="/mlbprops?prop=bb_allowed">Walks</a>
 			<a id="er" href="/mlbprops?prop=er">ER</a>
 		</div>
+		<div>
+			<button onclick="groupBy();">Toggle Group By Game</button>
+		</div>
 		<div id="tableDiv">
 			<div id="propsTable">
 				<!-- {{table|safe}} -->
@@ -87,6 +90,14 @@
 			let TABLE;
 			const propArg = "{{prop}}";
 			const teamNames = ["All", "ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SA", "SAC", "TOR", "UTAH", "WSH"];
+
+			function groupBy() {
+				if (TABLE.options.groupBy === undefined) {
+					TABLE.setGroupBy("game");
+				} else {
+					TABLE.setGroupBy();
+				}
+			}
 
 			function teamFilter(headerValue, rowValue, rowData, filterParams){
 				if (headerValue == "All") {
