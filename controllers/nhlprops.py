@@ -1710,7 +1710,11 @@ if __name__ == "__main__":
 		writeGoalieStats()
 		writeExpectations()
 		writeGameLines(date)
-		writeOpportunities()
+		try:
+			writeOpportunities()
+		except:
+			print("no opps")
+			pass
 		#writeExpectedGoalies(date)
 		writeLineups()
 		writeStaticProps()

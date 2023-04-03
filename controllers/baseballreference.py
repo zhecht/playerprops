@@ -88,12 +88,12 @@ def write_stats(date):
 					for header, stat in zip(headers, playerRow["stats"]):
 						if header == "h-ab":
 							continue
+						if header == "k" and title == "batting":
+							header = "so"
 						if header in ["pc-st"]:
 							pc, st = map(float, stat.split("-"))
 							allStats[team][player]["pc"] = pc
 							allStats[team][player]["st"] = st
-						elif header == "k" and title == "batting":
-							allStats[team][player][header] = float(stat)
 						elif header in ["bb", "hr", "r", "h"] and title == "pitching":
 							allStats[team][player][header+"_allowed"] = float(stat)
 						else:
@@ -632,7 +632,7 @@ def writeBVP():
 			pitcher = row["pitcher"].lower()
 			team = convertRotoTeam(row["team"])
 			opp = convertRotoTeam(row["opponent"])
-			player = row["player"].lower()
+			player = row["player"].lower().replace(".", "").replace("'", "")
 
 			matchup = f"{player} v {pitcher}"
 

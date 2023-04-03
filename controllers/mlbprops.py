@@ -315,7 +315,7 @@ def writeCsvs(props):
 	for prop in ["h", "h+r+rbi", "hr", "so"]:
 		if prop in splitProps:
 			rows = sorted(splitProps[prop], key=lambda k: (k["careerTotalOver"]), reverse=True)
-			for row in rows[:3]:
+			for row in [r for r in rows if int(str(r["battingNumber"]).replace('-', '10')) <= 5][:3]:
 				overOdds = row["overOdds"]
 				underOdds = row["underOdds"]
 				avg = row["lastYearAvg"]
