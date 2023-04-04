@@ -750,7 +750,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 def writeLineups():
 	url = f"https://www.rotowire.com/baseball/daily-lineups.php"
-	url += "?date=tomorrow"
+	#url += "?date=tomorrow"
 	outfile = "outmlb2"
 	time.sleep(0.2)
 	call(["curl", "-k", url, "-o", outfile])

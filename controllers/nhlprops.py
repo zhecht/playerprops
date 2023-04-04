@@ -1124,20 +1124,12 @@ def writeCsvs(props):
 				if avg >= row["line"]:
 					avg = f"**{avg}**"
 				winLossSplits = row["winLossSplits"].split(" - ")
-				if float(winLossSplits[0]) >= row["line"]:
-					winLossSplits[0] = f"**{winLossSplits[0]}**"
-				if float(winLossSplits[1]) >= row["line"]:
-					winLossSplits[1] = f"**{winLossSplits[1]}**"
 				if gameLine < 0:
 					winLossSplits[0] = f"'{winLossSplits[0]}'"
 				else:
 					winLossSplits[1] = f"'{winLossSplits[1]}'"
 				winLossSplits = " - ".join(winLossSplits)
 				awayHomeSplits = row["awayHomeSplits"].split(" - ")
-				if float(awayHomeSplits[0]) >= row["line"]:
-					awayHomeSplits[0] = f"**{awayHomeSplits[0]}**"
-				if float(awayHomeSplits[1]) >= row["line"]:
-					awayHomeSplits[1] = f"**{awayHomeSplits[1]}**"
 				if row["awayHome"] == "A":
 					awayHomeSplits[0] = f"'{awayHomeSplits[0]}'"
 				else:

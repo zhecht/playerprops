@@ -72,7 +72,28 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,600i,700,700i,800&display=swap" />
 	</noscript>
 
-	<link href="/frontend/assets/css/deposit-offers.css?v=1" rel="stylesheet" type="text/css"><link href="/frontend/assets/css/rotowire.min.css?v=154" rel="stylesheet" type="text/css">    <style>
+	<link href="/frontend/assets/css/deposit-offers.css?v=1" rel="stylesheet" type="text/css"><link href="/frontend/assets/css/rotowire.min.css?v=154" rel="stylesheet" type="text/css">    <!-- Freestar -->
+    <link rel="stylesheet" href="https://a.pub.network/core/pubfig/cls.css">
+    <script data-cfasync="false" type="text/javascript">
+        var freestar = freestar || {};
+        window.addEventListener('load', function () {
+
+            freestar.hitTime = Date.now();
+            freestar.queue = freestar.queue || [];
+            freestar.config = freestar.config || {};
+            freestar.debug = window.location.search.indexOf('fsdebug') === -1 ? false : true;
+            freestar.config.enabled_slots = [];
+
+            
+            freestar.queue.push(function(){
+                googletag.pubads().setTargeting("Sport", "NHL").setTargeting("page", "hockey nhl-lineups");            });
+
+            !function(a,b){var c=b.getElementsByTagName("script")[0],d=b.createElement("script"),e="https://a.pub.network/rotowire-com";e+=freestar.debug?"/qa/pubfig.min.js":"/pubfig.min.js",d.async=!0,d.src=e,c.parentNode.insertBefore(d,c)}(window,document);
+            freestar.initCallback = function () { (freestar.config.enabled_slots.length === 0) ? freestar.initCallbackCalled = false : freestar.newAdSlots(freestar.config.enabled_slots) }
+        });
+    </script>
+    <!-- End Freestar -->
+        <style>
         /* Limits GDC offers to a maximum of 4 */
         .operator-item:nth-child(n+5) {
             display: none !important;
@@ -87,7 +108,7 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     
-    <header class="site-header" data-num-ads="0">
+    <header class="site-header" data-num-ads="2">
         
 	<div class="rwnav-top logo-bar">
         <div class="rwnav-top__left">
@@ -358,7 +379,7 @@
                         <div class="rwnav-top-title">
                 <a href="/betting">More Betting Sports<img src="/images/circle-arrow.svg" alt="">
                 </a></div><hr>
-                        <a title="College Football Betting" href="/betting/college-football/">College Football Betting</a><a title="College Basketball Betting" href="/betting/college-basketball/">College Basketball Betting</a><a title="Golf Betting" href="/betting/golf/">Golf Betting</a><a title="Soccer Betting" href="/betting/soccer/">Soccer Betting</a><a title="UFC Betting" href="/betting/mma/">MMA Betting</a><a title="Tennis Betting" href="/betting/tennis/">Tennis Betting</a><a title="My Bets - Track My Sports Betting Picks" href="/mybets/">My Bets</a><a title="Betting Promotions" href="/betting/promos/">Latest Betting Promos</a><a title="All Sports Betting Pages" href="/betting/portal.php">All Sports Betting Pages</a><a title="March Madness Betting Promos" href="https://www.rotowire.com/betting/march-madness-betting-promos">March Madness Betting Promos</a><a title="College Basketball National Championship Odds" href="/betting/college-basketball/cbb-championship-odds.php">CBB National Championship Odds</a><a title="Credit Card Betting Sites" href="https://www.rotowire.com/betting/credit-card-betting-sites">Credit Card Betting Sites</a>
+                        <a title="College Football Betting" href="/betting/college-football/">College Football Betting</a><a title="College Basketball Betting" href="/betting/college-basketball/">College Basketball Betting</a><a title="Golf Betting" href="/betting/golf/">Golf Betting</a><a title="Soccer Betting" href="/betting/soccer/">Soccer Betting</a><a title="UFC Betting" href="/betting/mma/">MMA Betting</a><a title="Tennis Betting" href="/betting/tennis/">Tennis Betting</a><a title="My Bets - Track My Sports Betting Picks" href="/mybets/">My Bets</a><a title="Betting Promotions" href="/betting/promos/">Latest Betting Promos</a><a title="All Sports Betting Pages" href="/betting/portal.php">All Sports Betting Pages</a><a title="Credit Card Betting Sites" href="https://www.rotowire.com/betting/credit-card-betting-sites">Credit Card Betting Sites</a>
             <a class="rwnav-index" href="/betting">More Betting Sports<img src="/images/circle-arrow.svg" alt="">
             </a>
                     </div><div class="rwnav-screen" data-list="410">
@@ -391,7 +412,7 @@
         </a></nav>            <div class="page-title">
                 <div class="page-title__main">
                     <h1 class="page-title__primary">NHL Daily Lineups</h1>
-                    <div class="page-title__secondary">Starting NHL lineups for April 3, 2023<div class="lineup__partner-top"><b>Like a lineup?</b> <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-wide.png">Try it on DraftKings!</a></div></div>
+                    <div class="page-title__secondary">Starting NHL lineups for April 4, 2023<div class="lineup__partner-top"><b>Like a lineup?</b> <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-wide.png">Try it on DraftKings!</a></div></div>
                 </div>
             </div>
                         <div class="ckeditor ck-content bg-white" style="" id="page-content-top">
@@ -448,8 +469,1049 @@
 					
                         <div class="lineup is-nhl">
                             <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">7:00 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/carolina-hurricanes-tickets/hurricanes-4-4-4012380.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/senators-depth-chart-ott" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100OTT.png?v=1" alt="OTT">
+                                            <div class="lineup__abbr">OTT</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/hurricanes-depth-chart-car" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100CAR.png?v=1" alt="CAR">
+                                            <div class="lineup__abbr">CAR</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/senators-depth-chart-ott" class="lineup__mteam is-visit white">
+                                        Senators                                        <span class="lineup__wl">(37-34-6)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/hurricanes-depth-chart-car" class="lineup__mteam is-home white">
+                                        Hurricanes                                        <span class="lineup__wl">(49-18-9)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/mads-sogaard-6005">Mads Sogaard</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Tim Stutzle" href="/hockey/player/tim-stutzle-6189">Tim Stutzle</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Brady Tkachuk" href="/hockey/player/brady-tkachuk-5695">B. Tkachuk</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Drake Batherson" href="/hockey/player/drake-batherson-5604">D. Batherson</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Alex DeBrincat" href="/hockey/player/alex-debrincat-5149">A. DeBrincat</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Jake Sanderson" href="/hockey/player/jake-sanderson-6207">J. Sanderson</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Shane Pinto" href="/hockey/player/shane-pinto-5993">Shane Pinto</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Mathieu Joseph" href="/hockey/player/mathieu-joseph-5328">M. Joseph</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Ridly Greig" href="/hockey/player/ridly-greig-6289">Ridly Greig</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Claude Giroux" href="/hockey/player/claude-giroux-2578">C. Giroux</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Erik Brannstrom" href="/hockey/player/erik-brannstrom-5535">E. Brannstrom</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Julien Gauthier" href="/hockey/player/julien-gauthier-5140">J. Gauthier</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Travis Hamonic" href="/hockey/player/travis-hamonic-3067">T. Hamonic</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Mads Sogaard" href="/hockey/player/mads-sogaard-6005">Mads Sogaard</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Derick Brassard" href="/hockey/player/derick-brassard-2558">D. Brassard</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Thomas Chabot" href="/hockey/player/thomas-chabot-4784">T. Chabot</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Jakob Chychrun" href="/hockey/player/jakob-chychrun-5134">J. Chychrun</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Alex Formenton" href="/hockey/player/alex-formenton-5433">A. Formenton</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Parker Kelly" href="/hockey/player/parker-kelly-5597">Parker Kelly</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Anton Forsberg" href="/hockey/player/anton-forsberg-4051">A. Forsberg</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Josh Norris" href="/hockey/player/josh-norris-5423">Josh Norris</a>
+            <span class="lineup__inj">IR</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/frederik-andersen-4054">F. Andersen</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Sebastian Aho" href="/hockey/player/sebastian-aho-4900">S. Aho</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Jordan Staal" href="/hockey/player/jordan-staal-2556">Jordan Staal</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Martin Necas" href="/hockey/player/martin-necas-5412">Martin Necas</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Stefan Noesen" href="/hockey/player/stefan-noesen-3780">S. Noesen</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Brent Burns" href="/hockey/player/brent-burns-1931">Brent Burns</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Jesperi Kotkaniemi" href="/hockey/player/jesperi-kotkaniemi-5696">J. Kotkaniemi</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Seth Jarvis" href="/hockey/player/seth-jarvis-6202">Seth Jarvis</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jesse Puljujarvi" href="/hockey/player/jesse-puljujarvi-5128">J. Puljujarvi</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Shayne Gostisbehere" href="/hockey/player/shayne-gostisbehere-4362">S. Gostisbehere</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Brady Skjei" href="/hockey/player/brady-skjei-3994">Brady Skjei</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Teuvo Teravainen" href="/hockey/player/teuvo-teravainen-3980">T. Teravainen</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Jake Gardiner" href="/hockey/player/jake-gardiner-3027">J. Gardiner</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Ondrej Kase" href="/hockey/player/ondrej-kase-4891">Ondrej Kase</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Max Pacioretty" href="/hockey/player/max-pacioretty-2809">M. Pacioretty</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Andrei Svechnikov" href="/hockey/player/andrei-svechnikov-5607">A. Svechnikov</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; CAR -275</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.5 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">7:00 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/florida-panthers-tickets/panthers-4-4-4013222.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/sabres-depth-chart-buf" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100BUF.png?v=1" alt="BUF">
+                                            <div class="lineup__abbr">BUF</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/panthers-depth-chart-fla" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100FLA.png?v=1" alt="FLA">
+                                            <div class="lineup__abbr">FLA</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/sabres-depth-chart-buf" class="lineup__mteam is-visit white">
+                                        Sabres                                        <span class="lineup__wl">(37-31-7)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/panthers-depth-chart-fla" class="lineup__mteam is-home white">
+                                        Panthers                                        <span class="lineup__wl">(39-31-7)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/devon-levi-6575">Devon Levi</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Jeff Skinner" href="/hockey/player/jeff-skinner-3527">Jeff Skinner</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Alex Tuch" href="/hockey/player/alex-tuch-4399">Alex Tuch</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Dylan Cozens" href="/hockey/player/dylan-cozens-5965">Dylan Cozens</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Tage Thompson" href="/hockey/player/tage-thompson-5172">T. Thompson</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Rasmus Dahlin" href="/hockey/player/rasmus-dahlin-5689">R. Dahlin</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Casey Mittelstadt" href="/hockey/player/casey-mittelstadt-5407">C. Mittelstadt</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Peyton Krebs" href="/hockey/player/peyton-krebs-5970">Peyton Krebs</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="John-Jason Peterka" href="/hockey/player/john-jason-peterka-6276">J. Peterka</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Jack Quinn" href="/hockey/player/jack-quinn-6206">Jack Quinn</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Owen Power" href="/hockey/player/owen-power-6454">Owen Power</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Tage Thompson" href="/hockey/player/tage-thompson-5172">T. Thompson</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Craig Anderson" href="/hockey/player/craig-anderson-1816">C. Anderson</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Ben Bishop" href="/hockey/player/ben-bishop-2862">Ben Bishop</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/alex-lyon-5087">Alex Lyon</a>
+            </div>
+            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Aleksander Barkov" href="/hockey/player/aleksander-barkov-4147">A. Barkov</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Matthew Tkachuk" href="/hockey/player/matthew-tkachuk-5129">M. Tkachuk</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Sam Reinhart" href="/hockey/player/sam-reinhart-4385">Sam Reinhart</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Brandon Montour" href="/hockey/player/brandon-montour-4459">B. Montour</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Aaron Ekblad" href="/hockey/player/aaron-ekblad-4383">Aaron Ekblad</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Eetu Luostarinen" href="/hockey/player/eetu-luostarinen-5539">E. Luostarinen</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Carter Verhaeghe" href="/hockey/player/carter-verhaeghe-4230">C. Verhaeghe</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Anthony Duclair" href="/hockey/player/anthony-duclair-4228">A. Duclair</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Gustav Forsling" href="/hockey/player/gustav-forsling-4725">G. Forsling</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Radko Gudas" href="/hockey/player/radko-gudas-4096">Radko Gudas</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Sergei Bobrovsky" href="/hockey/player/sergei-bobrovsky-3632">S. Bobrovsky</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Sam Bennett" href="/hockey/player/sam-bennett-4384">Sam Bennett</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Patric Hornqvist" href="/hockey/player/patric-hornqvist-2760">P. Hornqvist</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Spencer Knight" href="/hockey/player/spencer-knight-6003">S. Knight</a>
+            <span class="lineup__inj">IR-NR</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; FLA -195</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 7.0 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">7:00 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/montreal-canadiens-tickets/canadiens-4-4-4013325.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/red-wings-depth-chart-det" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100DET.png?v=1" alt="DET">
+                                            <div class="lineup__abbr">DET</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/canadiens-depth-chart-mon" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100MON.png?v=1" alt="MON">
+                                            <div class="lineup__abbr">MON</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/red-wings-depth-chart-det" class="lineup__mteam is-visit white">
+                                        Red Wings                                        <span class="lineup__wl">(34-33-9)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/canadiens-depth-chart-mon" class="lineup__mteam is-home white">
+                                        Canadiens                                        <span class="lineup__wl">(30-41-6)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/ville-husso-4730">Ville Husso</a>
+            </div>
+            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Dylan Larkin" href="/hockey/player/dylan-larkin-4396">Dylan Larkin</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Alex Chiasson" href="/hockey/player/alex-chiasson-3309">A. Chiasson</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Lucas Raymond" href="/hockey/player/lucas-raymond-6192">L. Raymond</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="David Perron" href="/hockey/player/david-perron-2801">David Perron</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Moritz Seider" href="/hockey/player/moritz-seider-6029">M. Seider</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Marco Kasper" href="/hockey/player/marco-kasper-6683">Marco Kasper</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Andrew Copp" href="/hockey/player/andrew-copp-4564">Andrew Copp</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jonatan Berggren" href="/hockey/player/jonatan-berggren-5707">J. Berggren</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Jake Walman" href="/hockey/player/jake-walman-4483">Jake Walman</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Dominik Kubalik" href="/hockey/player/dominik-kubalik-5585">D. Kubalik</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Marco Kasper" href="/hockey/player/marco-kasper-6683">Marco Kasper</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Robby Fabbri" href="/hockey/player/robby-fabbri-4402">Robby Fabbri</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Filip Zadina" href="/hockey/player/filip-zadina-5690">Filip Zadina</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Mark Pysyk" href="/hockey/player/mark-pysyk-3518">Mark Pysyk</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Michael Rasmussen" href="/hockey/player/michael-rasmussen-5410">M. Rasmussen</a>
+            <span class="lineup__inj">IR</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/cayden-primeau-5912">Cayden Primeau</a>
+            </div>
+            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Nick Suzuki" href="/hockey/player/nick-suzuki-5419">Nick Suzuki</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Brendan Gallagher" href="/hockey/player/brendan-gallagher-3684">B. Gallagher</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Sean Farrell" href="/hockey/player/sean-farrell-6216">Sean Farrell</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Mike Matheson" href="/hockey/player/mike-matheson-3995">M. Matheson</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Mike Hoffman" href="/hockey/player/mike-hoffman-3602">Mike Hoffman</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Jonathan Drouin" href="/hockey/player/jonathan-drouin-4073">J. Drouin</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Jesse Ylonen" href="/hockey/player/jesse-ylonen-5723">Jesse Ylonen</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Denis Gurianov" href="/hockey/player/denis-gurianov-4887">D. Gurianov</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Justin Barron" href="/hockey/player/justin-barron-6203">J. Barron</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Chris Wideman" href="/hockey/player/chris-wideman-4451">C. Wideman</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Rafael Harvey-Pinard" href="/hockey/player/rafael-harvey-pinard-6437">R. Harvey-Pinard</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Josh Anderson" href="/hockey/player/josh-anderson-4296">J. Anderson</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Alex Belzile" href="/hockey/player/alex-belzile-6115">Alex Belzile</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Kirby Dach" href="/hockey/player/kirby-dach-5964">Kirby Dach</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Christian Dvorak" href="/hockey/player/christian-dvorak-4460">C. Dvorak</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Kaiden Guhle" href="/hockey/player/kaiden-guhle-6214">Kaiden Guhle</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="David Savard" href="/hockey/player/david-savard-3459">David Savard</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Paul Byron" href="/hockey/player/paul-byron-3245">Paul Byron</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Cole Caufield" href="/hockey/player/cole-caufield-5976">C. Caufield</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Sean Monahan" href="/hockey/player/sean-monahan-4072">Sean Monahan</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Carey Price" href="/hockey/player/carey-price-2300">Carey Price</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Juraj Slafkovsky" href="/hockey/player/juraj-slafkovsky-6676">J. Slafkovsky</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Arber Xhekaj" href="/hockey/player/arber-xhekaj-6588">Arber Xhekaj</a>
+            <span class="lineup__inj">IR</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; DET -120</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.5 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gdc-ad is-betting is-list lineup is-nhl is-tools" style="margin-top:28px;"><div class="gdcg-oplist" data-gdcg_rankid="5"></div></div>
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">7:00 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/new-jersey-devils-tickets/devils-4-4-4012925.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/penguins-depth-chart-pit" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100PIT.png?v=1" alt="PIT">
+                                            <div class="lineup__abbr">PIT</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/devils-depth-chart-nj" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100NJ.png?v=1" alt="NJ">
+                                            <div class="lineup__abbr">NJ</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/penguins-depth-chart-pit" class="lineup__mteam is-visit white">
+                                        Penguins                                        <span class="lineup__wl">(38-29-10)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/devils-depth-chart-nj" class="lineup__mteam is-home white">
+                                        Devils                                        <span class="lineup__wl">(48-21-8)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/tristan-jarry-4198">Tristan Jarry</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Sidney Crosby" href="/hockey/player/sidney-crosby-2086">S. Crosby</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Rickard Rakell" href="/hockey/player/rickard-rakell-3766">R. Rakell</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jake Guentzel" href="/hockey/player/jake-guentzel-4225">J. Guentzel</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Kris Letang" href="/hockey/player/kris-letang-2682">Kris Letang</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Evgeni Malkin" href="/hockey/player/evgeni-malkin-2160">E. Malkin</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Jeff Carter" href="/hockey/player/jeff-carter-1918">Jeff Carter</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Bryan Rust" href="/hockey/player/bryan-rust-4717">Bryan Rust</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jason Zucker" href="/hockey/player/jason-zucker-3556">Jason Zucker</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Jeff Petry" href="/hockey/player/jeff-petry-2598">Jeff Petry</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Mikael Granlund" href="/hockey/player/mikael-granlund-3512">M. Granlund</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Jan Rutta" href="/hockey/player/jan-rutta-5531">Jan Rutta</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Nick Bonino" href="/hockey/player/nick-bonino-3449">Nick Bonino</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Dmitry Kulikov" href="/hockey/player/dmitry-kulikov-3257">D. Kulikov</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Marcus Pettersson" href="/hockey/player/marcus-pettersson-4421">M. Pettersson</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/vitek-vanecek-4454">Vitek Vanecek</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Nico Hischier" href="/hockey/player/nico-hischier-5404">N. Hischier</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Timo Meier" href="/hockey/player/timo-meier-4781">Timo Meier</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jesper Bratt" href="/hockey/player/jesper-bratt-5439">Jesper Bratt</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Dougie Hamilton" href="/hockey/player/dougie-hamilton-3751">D. Hamilton</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Jack Hughes" href="/hockey/player/jack-hughes-5963">Jack Hughes</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Erik Haula" href="/hockey/player/erik-haula-3288">Erik Haula</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Ondrej Palat" href="/hockey/player/ondrej-palat-3892">Ondrej Palat</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Tomas Tatar" href="/hockey/player/tomas-tatar-3297">Tomas Tatar</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Damon Severson" href="/hockey/player/damon-severson-4044">D. Severson</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Dawson Mercer" href="/hockey/player/dawson-mercer-6195">D. Mercer</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Nathan Bastian" href="/hockey/player/nathan-bastian-5155">N. Bastian</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Curtis Lazar" href="/hockey/player/curtis-lazar-4149">Curtis Lazar</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Jonathan Bernier" href="/hockey/player/jonathan-bernier-2567">J. Bernier</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; NJ -160</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.5 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="lineup is-ad">
+        <div align="center" data-freestar-ad="__336x280 __336x280" id="rotowire_rail_right_1">
+                <script data-cfasync="false" type="text/javascript">
+                window.addEventListener("load", function () {
+                    freestar.config.enabled_slots.push({ placementName: "rotowire_rail_right_1", slotId: "rotowire_rail_right_1" });
+                });
+                </script>
+            </div>    </div>
+    
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">7:00 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/toronto-maple-leafs-tickets/maple-leafs-4-4-4013382.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/blue-jackets-depth-chart-cls" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100CLS.png?v=1" alt="CLS">
+                                            <div class="lineup__abbr">CLS</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/maple-leafs-depth-chart-tor" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100TOR.png?v=1" alt="TOR">
+                                            <div class="lineup__abbr">TOR</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/blue-jackets-depth-chart-cls" class="lineup__mteam is-visit white">
+                                        Blue Jackets                                        <span class="lineup__wl">(24-44-8)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/maple-leafs-depth-chart-tor" class="lineup__mteam is-home white">
+                                        Maple Leafs                                        <span class="lineup__wl">(45-21-10)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/michael-hutchinson-3082">M. Hutchinson</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Boone Jenner" href="/hockey/player/boone-jenner-3781">Boone Jenner</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Emil Bemstrom" href="/hockey/player/emil-bemstrom-5482">E. Bemstrom</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Johnny Gaudreau" href="/hockey/player/johnny-gaudreau-4080">J. Gaudreau</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Kirill Marchenko" href="/hockey/player/kirill-marchenko-5745">K. Marchenko</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Gavin Bayreuther" href="/hockey/player/gavin-bayreuther-5344">G. Bayreuther</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Hunter McKown" href="/hockey/player/hunter-mckown-6874">H. McKown</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Joona Luoto" href="/hockey/player/joona-luoto-6130">Joona Luoto</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Kent Johnson" href="/hockey/player/kent-johnson-6461">Kent Johnson</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Marcus Bjork" href="/hockey/player/marcus-bjork-6671">Marcus Bjork</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Jake Christiansen" href="/hockey/player/jake-christiansen-6222">J. Christiansen</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Nick Blankenburg" href="/hockey/player/nick-blankenburg-6643">N. Blankenburg</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Adam Boqvist" href="/hockey/player/adam-boqvist-5693">Adam Boqvist</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Elvis Merzlikins" href="/hockey/player/elvis-merzlikins-4475">E. Merzlikins</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Lane Pederson" href="/hockey/player/lane-pederson-5325">L. Pederson</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jack Roslovic" href="/hockey/player/jack-roslovic-4923">J. Roslovic</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Erik Gudbranson" href="/hockey/player/erik-gudbranson-3507">E. Gudbranson</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Patrik Laine" href="/hockey/player/patrik-laine-5127">Patrik Laine</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Mathieu Olivier" href="/hockey/player/mathieu-olivier-6044">M. Olivier</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Alexandre Texier" href="/hockey/player/alexandre-texier-5540">A. Texier</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Jake Bean" href="/hockey/player/jake-bean-5141">Jake Bean</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Justin Danforth" href="/hockey/player/justin-danforth-6426">J. Danforth</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Zach Werenski" href="/hockey/player/zach-werenski-4776">Z. Werenski</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/ilya-samsonov-4815">Ilya Samsonov</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="John Tavares" href="/hockey/player/john-tavares-2787">John Tavares</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="William Nylander" href="/hockey/player/william-nylander-4388">W. Nylander</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Alex Kerfoot" href="/hockey/player/alex-kerfoot-5586">Alex Kerfoot</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Auston Matthews" href="/hockey/player/auston-matthews-5003">A. Matthews</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Morgan Rielly" href="/hockey/player/morgan-rielly-3974">M. Rielly</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Sam Lafferty" href="/hockey/player/sam-lafferty-5631">Sam Lafferty</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Michael Bunting" href="/hockey/player/michael-bunting-5000">M. Bunting</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Calle Jarnkrok" href="/hockey/player/calle-jarnkrok-3530">C. Jarnkrok</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Conor Timmins" href="/hockey/player/conor-timmins-5430">C. Timmins</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Timothy Liljegren" href="/hockey/player/timothy-liljegren-5408">T. Liljegren</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Noel Acciari" href="/hockey/player/noel-acciari-4931">Noel Acciari</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Mark Giordano" href="/hockey/player/mark-giordano-2457">M. Giordano</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Erik Gustafsson" href="/hockey/player/erik-gustafsson-4854">E. Gustafsson</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Mitchell Marner" href="/hockey/player/mitchell-marner-4774">M. Marner</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Jake McCabe" href="/hockey/player/jake-mccabe-4027">Jake McCabe</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Matt Murray" href="/hockey/player/matt-murray-4539">Matt Murray</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Mac Hollowell" href="/hockey/player/mac-hollowell-5924">M. Hollowell</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Rodion Amirov" href="/hockey/player/rodion-amirov-6200">R. Amirov</a>
+            <span class="lineup__inj">IR-NR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Bobby McMann" href="/hockey/player/bobby-mcmann-6653">Bobby McMann</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Victor Mete" href="/hockey/player/victor-mete-5169">Victor Mete</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Jake Muzzin" href="/hockey/player/jake-muzzin-3630">Jake Muzzin</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Ryan O'Reilly" href="/hockey/player/ryan-oreilly-3379">R. O'Reilly</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Nick Robertson" href="/hockey/player/nick-robertson-5988">N. Robertson</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; TOR -400</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 7.0 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
                                 <div class="lineup__time">8:00 PM ET</div>
-                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/minnesota-wild-tickets/wild-4-3-4012909.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/nashville-predators-tickets/predators-4-4-4012404.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
                                                             </div>
                             <div class="lineup__box">
                                 <div class="lineup__top">
@@ -458,9 +1520,9 @@
                                             <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100VGK.png?v=1" alt="VGK">
                                             <div class="lineup__abbr">VGK</div>
                                         </a>
-                                        <a href="/hockey/nhl-depth-charts/wild-depth-chart-min" class="lineup__team is-home">
-                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100MIN.png?v=1" alt="MIN">
-                                            <div class="lineup__abbr">MIN</div>
+                                        <a href="/hockey/nhl-depth-charts/predators-depth-chart-nsh" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100NSH.png?v=1" alt="NSH">
+                                            <div class="lineup__abbr">NSH</div>
                                         </a>
                                     </div>
                                 </div>
@@ -468,15 +1530,15 @@
 									<a href="/hockey/nhl-depth-charts/golden-knights-depth-chart-vgk" class="lineup__mteam is-visit white">
                                         Golden Knights                                        <span class="lineup__wl">(48-22-7)</span>
 									</a>
-                                    <a href="/hockey/nhl-depth-charts/wild-depth-chart-min" class="lineup__mteam is-home white">
-                                        Wild                                        <span class="lineup__wl">(44-23-10)</span>
+                                    <a href="/hockey/nhl-depth-charts/predators-depth-chart-nsh" class="lineup__mteam is-home white">
+                                        Predators                                        <span class="lineup__wl">(38-30-8)</span>
                                     </a>
                                 </div>
                                 <div class="lineup__main">
                                                                             <ul class="lineup__list is-visit">
                                                     <li class="lineup__player-highlight">
             <div class="lineup__player-highlight-name">
-                <a href="/hockey/player/laurent-brossoit-4334">Laurent Brossoit</a>
+                <a href="/hockey/player/jonathan-quick-2358">Jonathan Quick</a>
             </div>
             <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
 									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
@@ -522,20 +1584,20 @@
                     </li>
         											<li class="lineup__title is-middle">INJURIES</li>
                                                     <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Chandler Stephenson" href="/hockey/player/chandler-stephenson-4359">C. Stephenson</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Shea Theodore" href="/hockey/player/shea-theodore-4192">S. Theodore</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
             <div class="lineup__pos">LW</div>
             <a title="William Carrier" href="/hockey/player/william-carrier-4206">W. Carrier</a>
             <span class="lineup__inj">OUT</span>         </li>
                 <li class="lineup__player">
             <div class="lineup__pos">G</div>
             <a title="Adin Hill" href="/hockey/player/adin-hill-4810">Adin Hill</a>
-            <span class="lineup__inj">OUT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Chandler Stephenson" href="/hockey/player/chandler-stephenson-4359">C. Stephenson</a>
-            <span class="lineup__inj">OUT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">D</div>
-            <a title="Shea Theodore" href="/hockey/player/shea-theodore-4192">S. Theodore</a>
             <span class="lineup__inj">OUT</span>         </li>
                 <li class="lineup__player">
             <div class="lineup__pos">G</div>
@@ -557,122 +1619,10 @@
                                         <ul class="lineup__list is-home">
 											        <li class="lineup__player-highlight">
             <div class="lineup__player-highlight-name">
-                <a href="/hockey/player/filip-gustavsson-5165">Filip Gustavsson</a>
+                <a href="/hockey/player/kevin-lankinen-5824">Kevin Lankinen</a>
             </div>
-            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
-									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
-				            </div>
-        </li>
-        											<li class="lineup__title">POWER PLAY #1</li>
-											        <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Joel Eriksson Ek" href="/hockey/player/joel-eriksson-ek-4903">J. Eriksson Ek</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Mats Zuccarello" href="/hockey/player/mats-zuccarello-3495">M. Zuccarello</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RW</div>
-            <a title="Marcus Johansson" href="/hockey/player/marcus-johansson-3276">M. Johansson</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LD</div>
-            <a title="Matthew Boldy" href="/hockey/player/matthew-boldy-5968">M. Boldy</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RD</div>
-            <a title="John Klingberg" href="/hockey/player/john-klingberg-4135">J. Klingberg</a>
-                    </li>
-        											<li class="lineup__title is-middle">POWER PLAY #2</li>
-                                                    <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Ryan Hartman" href="/hockey/player/ryan-hartman-4168">Ryan Hartman</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Oskar Sundqvist" href="/hockey/player/oskar-sundqvist-4444">O. Sundqvist</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RW</div>
-            <a title="Marcus Foligno" href="/hockey/player/marcus-foligno-3649">M. Foligno</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LD</div>
-            <a title="Frederick Gaudreau" href="/hockey/player/frederick-gaudreau-4633">F. Gaudreau</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RD</div>
-            <a title="Jared Spurgeon" href="/hockey/player/jared-spurgeon-3645">J. Spurgeon</a>
-                    </li>
-        											<li class="lineup__title is-middle">INJURIES</li>
-                                                    <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Kirill Kaprizov" href="/hockey/player/kirill-kaprizov-5278">K. Kaprizov</a>
-            <span class="lineup__inj">OUT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Mason Shaw" href="/hockey/player/mason-shaw-5509">Mason Shaw</a>
-            <span class="lineup__inj">OUT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RW</div>
-            <a title="Pavel Novak" href="/hockey/player/pavel-novak-6342">Pavel Novak</a>
-            <span class="lineup__inj">IR-NR</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RW</div>
-            <a title="Gustav Nyquist" href="/hockey/player/gustav-nyquist-3625">G. Nyquist</a>
-            <span class="lineup__inj">IR</span>         </li>
-                                                </ul>
-                                                                        </div>
-                                <div class="lineup__bottom">
-                                    <div class="lineup__extra pad-top-0">
-                                        <div class="lineup__odds is-row">
-                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; MIN -135</div>
-                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 5.5 Goals</div>
-                                        </div>
-                                    </div>
-                                    <div class="lineup__partner">
-                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        
-                        <div class="lineup is-nhl">
-                            <div class="lineup__meta flex-row" style="align-items:baseline;">
-                                <div class="lineup__time">8:30 PM ET</div>
-                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/dallas-stars-tickets/stars-4-3-4012889.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
-                                                            </div>
-                            <div class="lineup__box">
-                                <div class="lineup__top">
-                                    <div class="lineup__teams">
-                                        <a href="/hockey/nhl-depth-charts/predators-depth-chart-nsh" class="lineup__team is-visit">
-                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100NSH.png?v=1" alt="NSH">
-                                            <div class="lineup__abbr">NSH</div>
-                                        </a>
-                                        <a href="/hockey/nhl-depth-charts/stars-depth-chart-dal" class="lineup__team is-home">
-                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100DAL.png?v=1" alt="DAL">
-                                            <div class="lineup__abbr">DAL</div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="lineup__matchup">
-									<a href="/hockey/nhl-depth-charts/predators-depth-chart-nsh" class="lineup__mteam is-visit white">
-                                        Predators                                        <span class="lineup__wl">(38-30-8)</span>
-									</a>
-                                    <a href="/hockey/nhl-depth-charts/stars-depth-chart-dal" class="lineup__mteam is-home white">
-                                        Stars                                        <span class="lineup__wl">(42-21-14)</span>
-                                    </a>
-                                </div>
-                                <div class="lineup__main">
-                                                                            <ul class="lineup__list is-visit">
-                                                    <li class="lineup__player-highlight">
-            <div class="lineup__player-highlight-name">
-                <a href="/hockey/player/juuse-saros-4729">Juuse Saros</a>
-            </div>
-            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
-									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
 				            </div>
         </li>
         											<li class="lineup__title">POWER PLAY #1</li>
@@ -720,6 +1670,10 @@
         											<li class="lineup__title is-middle">INJURIES</li>
                                                     <li class="lineup__player">
             <div class="lineup__pos">D</div>
+            <a title="Roman Josi" href="/hockey/player/roman-josi-3037">Roman Josi</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
             <a title="Alexandre Carrier" href="/hockey/player/alexandre-carrier-4924">A. Carrier</a>
             <span class="lineup__inj">OUT</span>         </li>
                 <li class="lineup__player">
@@ -729,10 +1683,6 @@
                 <li class="lineup__player">
             <div class="lineup__pos">C</div>
             <a title="Ryan Johansen" href="/hockey/player/ryan-johansen-3514">R. Johansen</a>
-            <span class="lineup__inj">OUT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">D</div>
-            <a title="Roman Josi" href="/hockey/player/roman-josi-3037">Roman Josi</a>
             <span class="lineup__inj">OUT</span>         </li>
                 <li class="lineup__player">
             <div class="lineup__pos">D</div>
@@ -755,72 +1705,377 @@
             <a title="Filip Forsberg" href="/hockey/player/filip-forsberg-3971">F. Forsberg</a>
             <span class="lineup__inj">IR</span>         </li>
                                                 </ul>
-                                        <ul class="lineup__list is-home">
-											        <li class="lineup__player-highlight">
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; VGK -135</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.0 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">8:00 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/st-louis-blues-tickets/blues-4-4-4012892.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/flyers-depth-chart-phi" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100PHI.png?v=1" alt="PHI">
+                                            <div class="lineup__abbr">PHI</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/blues-depth-chart-stl" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100STL.png?v=1" alt="STL">
+                                            <div class="lineup__abbr">STL</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/flyers-depth-chart-phi" class="lineup__mteam is-visit white">
+                                        Flyers                                        <span class="lineup__wl">(29-34-13)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/blues-depth-chart-stl" class="lineup__mteam is-home white">
+                                        Blues                                        <span class="lineup__wl">(35-35-7)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
             <div class="lineup__player-highlight-name">
-                <a href="/hockey/player/scott-wedgewood-3926">Scott Wedgewood</a>
+                <a href="/hockey/player/carter-hart-5156">Carter Hart</a>
             </div>
-            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
-									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
 				            </div>
         </li>
         											<li class="lineup__title">POWER PLAY #1</li>
 											        <li class="lineup__player">
             <div class="lineup__pos">C</div>
-            <a title="Jamie Benn" href="/hockey/player/jamie-benn-3113">Jamie Benn</a>
+            <a title="Noah Cates" href="/hockey/player/noah-cates-6626">Noah Cates</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">LW</div>
-            <a title="Joe Pavelski" href="/hockey/player/joe-pavelski-2630">Joe Pavelski</a>
+            <a title="Travis Konecny" href="/hockey/player/travis-konecny-4795">T. Konecny</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">RW</div>
-            <a title="Jason Robertson" href="/hockey/player/jason-robertson-5503">J. Robertson</a>
+            <a title="Owen Tippett" href="/hockey/player/owen-tippett-5406">Owen Tippett</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">LD</div>
-            <a title="Roope Hintz" href="/hockey/player/roope-hintz-4885">Roope Hintz</a>
+            <a title="Tony DeAngelo" href="/hockey/player/tony-deangelo-4432">T. DeAngelo</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">RD</div>
-            <a title="Miro Heiskanen" href="/hockey/player/miro-heiskanen-5534">M. Heiskanen</a>
+            <a title="Kevin Hayes" href="/hockey/player/kevin-hayes-3546">Kevin Hayes</a>
                     </li>
         											<li class="lineup__title is-middle">POWER PLAY #2</li>
                                                     <li class="lineup__player">
             <div class="lineup__pos">C</div>
-            <a title="Max Domi" href="/hockey/player/max-domi-4155">Max Domi</a>
+            <a title="Morgan Frost" href="/hockey/player/morgan-frost-5495">Morgan Frost</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">LW</div>
-            <a title="Evgenii Dadonov" href="/hockey/player/evgenii-dadonov-3462">E. Dadonov</a>
+            <a title="James van Riemsdyk" href="/hockey/player/james-van-riemsdyk-2782">J. van Riemsdyk</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">RW</div>
-            <a title="Tyler Seguin" href="/hockey/player/tyler-seguin-3476">Tyler Seguin</a>
+            <a title="Joel Farabee" href="/hockey/player/joel-farabee-5697">Joel Farabee</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">LD</div>
-            <a title="Ryan Suter" href="/hockey/player/ryan-suter-1908">Ryan Suter</a>
+            <a title="Cam York" href="/hockey/player/cam-york-5973">Cam York</a>
                     </li>
                 <li class="lineup__player">
             <div class="lineup__pos">RD</div>
-            <a title="Wyatt Johnston" href="/hockey/player/wyatt-johnston-6542">W. Johnston</a>
+            <a title="Travis Sanheim" href="/hockey/player/travis-sanheim-4403">T. Sanheim</a>
                     </li>
         											<li class="lineup__title is-middle">INJURIES</li>
                                                     <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Matej Blumel" href="/hockey/player/matej-blumel-6716">Matej Blumel</a>
+            <div class="lineup__pos">G</div>
+            <a title="Carter Hart" href="/hockey/player/carter-hart-5156">Carter Hart</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Rasmus Ristolainen" href="/hockey/player/rasmus-ristolainen-4162">R. Ristolainen</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Ivan Fedotov" href="/hockey/player/ivan-fedotov-6660">Ivan Fedotov</a>
             <span class="lineup__inj">OUT</span>         </li>
                 <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Cam Atkinson" href="/hockey/player/cam-atkinson-3699">Cam Atkinson</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Sean Couturier" href="/hockey/player/sean-couturier-3746">S. Couturier</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Ryan Ellis" href="/hockey/player/ryan-ellis-3263">Ryan Ellis</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/jordan-binnington-3851">J. Binnington</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Brayden Schenn" href="/hockey/player/brayden-schenn-3252">B. Schenn</a>
+                    </li>
+                <li class="lineup__player">
             <div class="lineup__pos">LW</div>
-            <a title="Mason Marchment" href="/hockey/player/mason-marchment-5639">M. Marchment</a>
-            <span class="lineup__inj">OUT</span>         </li>
+            <a title="Kasperi Kapanen" href="/hockey/player/kasperi-kapanen-4392">K. Kapanen</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jakub Vrana" href="/hockey/player/jakub-vrana-4401">Jakub Vrana</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Jordan Kyrou" href="/hockey/player/jordan-kyrou-5190">Jordan Kyrou</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Torey Krug" href="/hockey/player/torey-krug-3929">Torey Krug</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Brandon Saad" href="/hockey/player/brandon-saad-3755">Brandon Saad</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Josh Leivo" href="/hockey/player/josh-leivo-3849">Josh Leivo</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Sammy Blais" href="/hockey/player/sammy-blais-4647">Sammy Blais</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Jake Neighbours" href="/hockey/player/jake-neighbours-6209">J. Neighbours</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Justin Faulk" href="/hockey/player/justin-faulk-3547">Justin Faulk</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Robert Bortuzzo" href="/hockey/player/robert-bortuzzo-3900">R. Bortuzzo</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Pavel Buchnevich" href="/hockey/player/pavel-buchnevich-4223">P. Buchnevich</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Thomas Greiss" href="/hockey/player/thomas-greiss-2762">T. Greiss</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Marco Scandella" href="/hockey/player/marco-scandella-3077">M. Scandella</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Robert Thomas" href="/hockey/player/robert-thomas-5428">R. Thomas</a>
+            <span class="lineup__inj">DTD</span>         </li>
                                                 </ul>
                                                                         </div>
                                 <div class="lineup__bottom">
                                     <div class="lineup__extra pad-top-0">
                                         <div class="lineup__odds is-row">
-                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; DAL -200</div>
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; STL -130</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.5 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">9:00 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/calgary-flames-tickets/flames-4-4-4012770.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/blackhawks-depth-chart-chi" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100CHI.png?v=1" alt="CHI">
+                                            <div class="lineup__abbr">CHI</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/flames-depth-chart-cgy" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100CGY.png?v=1" alt="CGY">
+                                            <div class="lineup__abbr">CGY</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/blackhawks-depth-chart-chi" class="lineup__mteam is-visit white">
+                                        Blackhawks                                        <span class="lineup__wl">(24-46-6)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/flames-depth-chart-cgy" class="lineup__mteam is-home white">
+                                        Flames                                        <span class="lineup__wl">(36-26-15)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/alex-stalock-3232">Alex Stalock</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Lukas Reichel" href="/hockey/player/lukas-reichel-6211">L. Reichel</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Taylor Raddysh" href="/hockey/player/taylor-raddysh-5160">T. Raddysh</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Andreas Athanasiou" href="/hockey/player/andreas-athanasiou-4000">A. Athanasiou</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Seth Jones" href="/hockey/player/seth-jones-4074">Seth Jones</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Tyler Johnson" href="/hockey/player/tyler-johnson-3686">T. Johnson</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Jonathan Toews" href="/hockey/player/jonathan-toews-2507">J. Toews</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Boris Katchouk" href="/hockey/player/boris-katchouk-5157">B. Katchouk</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Jujhar Khaira" href="/hockey/player/jujhar-khaira-4255">J. Khaira</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Caleb Jones" href="/hockey/player/caleb-jones-5037">Caleb Jones</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Jason Dickinson" href="/hockey/player/jason-dickinson-4175">J. Dickinson</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Jarred Tinordi" href="/hockey/player/jarred-tinordi-3524">J. Tinordi</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Colin Blackwell" href="/hockey/player/colin-blackwell-5873">C. Blackwell</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Cole Guttman" href="/hockey/player/cole-guttman-6824">Cole Guttman</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Philipp Kurashev" href="/hockey/player/philipp-kurashev-5724">P. Kurashev</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/jacob-markstrom-3008">Jacob Markstrom</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Elias Lindholm" href="/hockey/player/elias-lindholm-4145">E. Lindholm</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Mikael Backlund" href="/hockey/player/mikael-backlund-2804">M. Backlund</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Andrew Mangiapane" href="/hockey/player/andrew-mangiapane-4663">A. Mangiapane</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Tyler Toffoli" href="/hockey/player/tyler-toffoli-3542">T. Toffoli</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Rasmus Andersson" href="/hockey/player/rasmus-andersson-4922">R. Andersson</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Nazem Kadri" href="/hockey/player/nazem-kadri-3254">Nazem Kadri</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Dillon Dube" href="/hockey/player/dillon-dube-5166">Dillon Dube</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Nick Ritchie" href="/hockey/player/nick-ritchie-4391">Nick Ritchie</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="MacKenzie Weegar" href="/hockey/player/mackenzie-weegar-4703">M. Weegar</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Jonathan Huberdeau" href="/hockey/player/jonathan-huberdeau-3742">J. Huberdeau</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Chris Tanev" href="/hockey/player/chris-tanev-3500">Chris Tanev</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Oliver Kylington" href="/hockey/player/oliver-kylington-4882">O. Kylington</a>
+            <span class="lineup__inj">IR</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; CGY -430</div>
                                             <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.0 Goals</div>
                                         </div>
                                     </div>
@@ -835,110 +2090,37 @@
                         <div class="lineup is-nhl">
                             <div class="lineup__meta flex-row" style="align-items:baseline;">
                                 <div class="lineup__time">10:00 PM ET</div>
-                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/seattle-kraken-tickets/seattle-kraken-4-3-4013276.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/vancouver-canucks-tickets/canucks-4-4-4013055.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
                                                             </div>
                             <div class="lineup__box">
                                 <div class="lineup__top">
                                     <div class="lineup__teams">
-                                        <a href="/hockey/nhl-depth-charts/coyotes-depth-chart-ari" class="lineup__team is-visit">
-                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100ARI.png?v=1" alt="ARI">
-                                            <div class="lineup__abbr">ARI</div>
-                                        </a>
-                                        <a href="/hockey/nhl-depth-charts/kraken-depth-chart-sea" class="lineup__team is-home">
+                                        <a href="/hockey/nhl-depth-charts/kraken-depth-chart-sea" class="lineup__team is-visit">
                                             <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100SEA.png?v=1" alt="SEA">
                                             <div class="lineup__abbr">SEA</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/canucks-depth-chart-van" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100VAN.png?v=1" alt="VAN">
+                                            <div class="lineup__abbr">VAN</div>
                                         </a>
                                     </div>
                                 </div>
                                 <div class="lineup__matchup">
-									<a href="/hockey/nhl-depth-charts/coyotes-depth-chart-ari" class="lineup__mteam is-visit white">
-                                        Coyotes                                        <span class="lineup__wl">(27-37-13)</span>
+									<a href="/hockey/nhl-depth-charts/kraken-depth-chart-sea" class="lineup__mteam is-visit white">
+                                        Kraken                                        <span class="lineup__wl">(42-26-8)</span>
 									</a>
-                                    <a href="/hockey/nhl-depth-charts/kraken-depth-chart-sea" class="lineup__mteam is-home white">
-                                        Kraken                                        <span class="lineup__wl">(41-26-8)</span>
+                                    <a href="/hockey/nhl-depth-charts/canucks-depth-chart-van" class="lineup__mteam is-home white">
+                                        Canucks                                        <span class="lineup__wl">(34-35-7)</span>
                                     </a>
                                 </div>
                                 <div class="lineup__main">
                                                                             <ul class="lineup__list is-visit">
                                                     <li class="lineup__player-highlight">
             <div class="lineup__player-highlight-name">
-                <a href="/hockey/player/ivan-prosvetov-6015">Ivan Prosvetov</a>
+                <a href="/hockey/player/martin-jones-3690">Martin Jones</a>
             </div>
-            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
-									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
-				            </div>
-        </li>
-        											<li class="lineup__title">POWER PLAY #1</li>
-											        <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Barrett Hayton" href="/hockey/player/barrett-hayton-5711">B. Hayton</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Travis Boyd" href="/hockey/player/travis-boyd-5332">Travis Boyd</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RW</div>
-            <a title="Clayton Keller" href="/hockey/player/clayton-keller-5137">C. Keller</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LD</div>
-            <a title="Nick Schmaltz" href="/hockey/player/nick-schmaltz-4413">N. Schmaltz</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RD</div>
-            <a title="Juuso Valimaki" href="/hockey/player/juuso-valimaki-5413">J. Valimaki</a>
-                    </li>
-        											<li class="lineup__title is-middle">POWER PLAY #2</li>
-                                                    <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Jack McBain" href="/hockey/player/jack-mcbain-5709">Jack McBain</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Lawson Crouse" href="/hockey/player/lawson-crouse-4775">L. Crouse</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RW</div>
-            <a title="Matias Maccelli" href="/hockey/player/matias-maccelli-6055">M. Maccelli</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LD</div>
-            <a title="Victor Soderstrom" href="/hockey/player/victor-soderstrom-6012">V. Soderstrom</a>
-                    </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">RD</div>
-            <a title="Janis Moser" href="/hockey/player/janis-moser-6558">Janis Moser</a>
-                    </li>
-        											<li class="lineup__title is-middle">INJURIES</li>
-                                                    <li class="lineup__player">
-            <div class="lineup__pos">RW</div>
-            <a title="Zack Kassian" href="/hockey/player/zack-kassian-3262">Zack Kassian</a>
-            <span class="lineup__inj">OUT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Andrew Ladd" href="/hockey/player/andrew-ladd-2162">Andrew Ladd</a>
-            <span class="lineup__inj">IR-LT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Bryan Little" href="/hockey/player/bryan-little-2251">Bryan Little</a>
-            <span class="lineup__inj">IR-LT</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">LW</div>
-            <a title="Jakub Voracek" href="/hockey/player/jakub-voracek-2755">J. Voracek</a>
-            <span class="lineup__inj">IR</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">D</div>
-            <a title="Shea Weber" href="/hockey/player/shea-weber-1954">Shea Weber</a>
-            <span class="lineup__inj">IR-LT</span>         </li>
-                                                </ul>
-                                        <ul class="lineup__list is-home">
-											        <li class="lineup__player-highlight">
-            <div class="lineup__player-highlight-name">
-                <a href="/hockey/player/philipp-grubauer-3549">Philipp Grubauer</a>
-            </div>
-            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
-									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
 				            </div>
         </li>
         											<li class="lineup__title">POWER PLAY #1</li>
@@ -1001,11 +2183,104 @@
             <a title="Joonas Donskoi" href="/hockey/player/joonas-donskoi-4913">J. Donskoi</a>
             <span class="lineup__inj">IR</span>         </li>
                                                 </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/thatcher-demko-4410">Thatcher Demko</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="J.T. Miller" href="/hockey/player/jt-miller-3800">J.T. Miller</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Andrei Kuzmenko" href="/hockey/player/andrei-kuzmenko-6654">A. Kuzmenko</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Brock Boeser" href="/hockey/player/brock-boeser-4797">Brock Boeser</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Quinn Hughes" href="/hockey/player/quinn-hughes-5691">Quinn Hughes</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Elias Pettersson" href="/hockey/player/elias-pettersson-5418">E. Pettersson</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Sheldon Dries" href="/hockey/player/sheldon-dries-5871">S. Dries</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Conor Garland" href="/hockey/player/conor-garland-5040">C. Garland</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Anthony Beauvillier" href="/hockey/player/anthony-beauvillier-4878">A. Beauvillier</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Ethan Bear" href="/hockey/player/ethan-bear-4949">Ethan Bear</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Jack Rathbone" href="/hockey/player/jack-rathbone-5904">J. Rathbone</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Vasily Podkolzin" href="/hockey/player/vasily-podkolzin-6009">V. Podkolzin</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Filip Hronek" href="/hockey/player/filip-hronek-5204">Filip Hronek</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Noah Juulsen" href="/hockey/player/noah-juulsen-4867">Noah Juulsen</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Christian Wolanin" href="/hockey/player/christian-wolanin-5641">C. Wolanin</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Travis Dermott" href="/hockey/player/travis-dermott-4876">T. Dermott</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Oliver Ekman-Larsson" href="/hockey/player/oliver-ekman-larsson-3259">O. Ekman-Larsson</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Micheal Ferland" href="/hockey/player/micheal-ferland-3903">M. Ferland</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Ilya Mikheyev" href="/hockey/player/ilya-mikheyev-6045">I. Mikheyev</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Tanner Pearson" href="/hockey/player/tanner-pearson-4004">T. Pearson</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Tucker Poolman" href="/hockey/player/tucker-poolman-5367">T. Poolman</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
                                                                         </div>
                                 <div class="lineup__bottom">
                                     <div class="lineup__extra pad-top-0">
                                         <div class="lineup__odds is-row">
-                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; SEA -320</div>
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; SEA -115</div>
                                             <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.5 Goals</div>
                                         </div>
                                     </div>
@@ -1016,7 +2291,389 @@
                             </div>
                         </div>
 
-                        <div class="gdc-ad is-betting is-list lineup is-nhl is-tools" style="margin-top:28px;"><div class="gdcg-oplist" data-gdcg_rankid="5"></div></div>	<div class="lineup is-nhl is-tools">
+                        
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">10:30 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/los-angeles-kings-tickets/kings-4-4-4012600.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/oilers-depth-chart-edm" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100EDM.png?v=1" alt="EDM">
+                                            <div class="lineup__abbr">EDM</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/kings-depth-chart-la" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100LA.png?v=1" alt="LA">
+                                            <div class="lineup__abbr">LA</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/oilers-depth-chart-edm" class="lineup__mteam is-visit white">
+                                        Oilers                                        <span class="lineup__wl">(45-23-9)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/kings-depth-chart-la" class="lineup__mteam is-home white">
+                                        Kings                                        <span class="lineup__wl">(45-22-10)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/stuart-skinner-5559">Stuart Skinner</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Ryan Nugent-Hopkins" href="/hockey/player/ryan-nugent-hopkins-3743">R. Nugent-Hopkins</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Zach Hyman" href="/hockey/player/zach-hyman-4964">Zach Hyman</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Leon Draisaitl" href="/hockey/player/leon-draisaitl-4386">L. Draisaitl</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Connor McDavid" href="/hockey/player/connor-mcdavid-4712">C. McDavid</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Evan Bouchard" href="/hockey/player/evan-bouchard-5694">E. Bouchard</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Nick Bjugstad" href="/hockey/player/nick-bjugstad-3511">N. Bjugstad</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Evander Kane" href="/hockey/player/evander-kane-3251">Evander Kane</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Warren Foegele" href="/hockey/player/warren-foegele-4468">W. Foegele</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Darnell Nurse" href="/hockey/player/darnell-nurse-4148">D. Nurse</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Mattias Ekholm" href="/hockey/player/mattias-ekholm-3733">M. Ekholm</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Ryan McLeod" href="/hockey/player/ryan-mcleod-5717">Ryan McLeod</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Oscar Klefbom" href="/hockey/player/oscar-klefbom-3778">O. Klefbom</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Ryan Murray" href="/hockey/player/ryan-murray-3972">Ryan Murray</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Mike Smith" href="/hockey/player/mike-smith-2108">Mike Smith</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/pheonix-copley-4327">Pheonix Copley</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Anze Kopitar" href="/hockey/player/anze-kopitar-2305">Anze Kopitar</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Trevor Moore" href="/hockey/player/trevor-moore-5271">Trevor Moore</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Adrian Kempe" href="/hockey/player/adrian-kempe-4411">Adrian Kempe</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Drew Doughty" href="/hockey/player/drew-doughty-2991">Drew Doughty</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Alex Iafallo" href="/hockey/player/alex-iafallo-5384">Alex Iafallo</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Phillip Danault" href="/hockey/player/phillip-danault-3772">P. Danault</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Quinton Byfield" href="/hockey/player/quinton-byfield-5947">Q. Byfield</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Viktor Arvidsson" href="/hockey/player/viktor-arvidsson-4743">V. Arvidsson</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Sean Durzi" href="/hockey/player/sean-durzi-5759">Sean Durzi</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Arthur Kaliyev" href="/hockey/player/arthur-kaliyev-5917">A. Kaliyev</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Mikey Anderson" href="/hockey/player/mikey-anderson-5493">M. Anderson</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Alexander Edler" href="/hockey/player/alexander-edler-2674">A. Edler</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Kevin Fiala" href="/hockey/player/kevin-fiala-4395">Kevin Fiala</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Gabriel Vilardi" href="/hockey/player/gabriel-vilardi-5405">G. Vilardi</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Akil Thomas" href="/hockey/player/akil-thomas-5705">Akil Thomas</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Jacob Ingham" href="/hockey/player/jacob-ingham-6263">Jacob Ingham</a>
+            <span class="lineup__inj">IR-NR</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; EDM -125</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.5 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="lineup is-nhl">
+                            <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                <div class="lineup__time">10:30 PM ET</div>
+                                                                    <a class="text-75" target="_blank" href="https://www.vividseats.com/nhl-hockey/san-jose-sharks-tickets/sharks-4-4-4013322.html?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:20px">Tickets</a>
+                                                            </div>
+                            <div class="lineup__box">
+                                <div class="lineup__top">
+                                    <div class="lineup__teams">
+                                        <a href="/hockey/nhl-depth-charts/avalanche-depth-chart-col" class="lineup__team is-visit">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100COL.png?v=1" alt="COL">
+                                            <div class="lineup__abbr">COL</div>
+                                        </a>
+                                        <a href="/hockey/nhl-depth-charts/sharks-depth-chart-sj" class="lineup__team is-home">
+                                            <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/hockey/100SJ.png?v=1" alt="SJ">
+                                            <div class="lineup__abbr">SJ</div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="lineup__matchup">
+									<a href="/hockey/nhl-depth-charts/avalanche-depth-chart-col" class="lineup__mteam is-visit white">
+                                        Avalanche                                        <span class="lineup__wl">(45-24-6)</span>
+									</a>
+                                    <a href="/hockey/nhl-depth-charts/sharks-depth-chart-sj" class="lineup__mteam is-home white">
+                                        Sharks                                        <span class="lineup__wl">(22-39-15)</span>
+                                    </a>
+                                </div>
+                                <div class="lineup__main">
+                                                                            <ul class="lineup__list is-visit">
+                                                    <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/alexandar-georgiev-5580">A. Georgiev</a>
+            </div>
+            <div class="flex-row align-center is-expected" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="J.T. Compher" href="/hockey/player/jt-compher-4181">J.T. Compher</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Valeri Nichushkin" href="/hockey/player/valeri-nichushkin-4146">V. Nichushkin</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Mikko Rantanen" href="/hockey/player/mikko-rantanen-4883">M. Rantanen</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Nathan MacKinnon" href="/hockey/player/nathan-mackinnon-4075">N. MacKinnon</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Cale Makar" href="/hockey/player/cale-makar-5417">Cale Makar</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Alex Newhook" href="/hockey/player/alex-newhook-5977">Alex Newhook</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Evan Rodrigues" href="/hockey/player/evan-rodrigues-4773">E. Rodrigues</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Bowen Byram" href="/hockey/player/bowen-byram-5966">Bowen Byram</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Samuel Girard" href="/hockey/player/samuel-girard-5181">S. Girard</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Devon Toews" href="/hockey/player/devon-toews-5101">Devon Toews</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">G</div>
+            <a title="Pavel Francouz" href="/hockey/player/pavel-francouz-5678">P. Francouz</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Artturi Lehkonen" href="/hockey/player/artturi-lehkonen-4176">A. Lehkonen</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Josh Manson" href="/hockey/player/josh-manson-4335">Josh Manson</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Gabriel Landeskog" href="/hockey/player/gabriel-landeskog-3745">G. Landeskog</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                        <ul class="lineup__list is-home">
+											        <li class="lineup__player-highlight">
+            <div class="lineup__player-highlight-name">
+                <a href="/hockey/player/kaapo-kahkonen-4429">Kaapo Kahkonen</a>
+            </div>
+            <div class="flex-row align-center is-confirmed" style="padding:3px 0 2px;font-size:11px;">
+									<div class="dot is-medium is-green" style="margin-right:5px;"></div>Confirmed
+				            </div>
+        </li>
+        											<li class="lineup__title">POWER PLAY #1</li>
+											        <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Logan Couture" href="/hockey/player/logan-couture-2786">L. Couture</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Tomas Hertl" href="/hockey/player/tomas-hertl-3992">Tomas Hertl</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Fabian Zetterlund" href="/hockey/player/fabian-zetterlund-5500">F. Zetterlund</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Kevin Labanc" href="/hockey/player/kevin-labanc-4593">Kevin Labanc</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Erik Karlsson" href="/hockey/player/erik-karlsson-3049">E. Karlsson</a>
+                    </li>
+        											<li class="lineup__title is-middle">POWER PLAY #2</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Noah Gregor" href="/hockey/player/noah-gregor-5195">Noah Gregor</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Jacob Peterson" href="/hockey/player/jacob-peterson-6424">J. Peterson</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Thomas Bordeleau" href="/hockey/player/thomas-bordeleau-6205">T. Bordeleau</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LD</div>
+            <a title="Jacob MacDonald" href="/hockey/player/jacob-macdonald-5612">J. MacDonald</a>
+                    </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">RD</div>
+            <a title="Henry Thrun" href="/hockey/player/henry-thrun-5990">Henry Thrun</a>
+                    </li>
+        											<li class="lineup__title is-middle">INJURIES</li>
+                                                    <li class="lineup__player">
+            <div class="lineup__pos">RW</div>
+            <a title="Alexander Barabanov" href="/hockey/player/alexander-barabanov-6248">A. Barabanov</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="William Eklund" href="/hockey/player/william-eklund-6457">W. Eklund</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Andreas Johnsson" href="/hockey/player/andreas-johnsson-4932">A. Johnsson</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Jeffrey Viel" href="/hockey/player/jeffrey-viel-6120">Jeffrey Viel</a>
+            <span class="lineup__inj">OUT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">LW</div>
+            <a title="Jonah Gadjovich" href="/hockey/player/jonah-gadjovich-5544">J. Gadjovich</a>
+            <span class="lineup__inj">IR</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Luke Kunin" href="/hockey/player/luke-kunin-5146">Luke Kunin</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                <li class="lineup__player">
+            <div class="lineup__pos">D</div>
+            <a title="Markus Nutivaara" href="/hockey/player/markus-nutivaara-5115">M. Nutivaara</a>
+            <span class="lineup__inj">IR-LT</span>         </li>
+                                                </ul>
+                                                                        </div>
+                                <div class="lineup__bottom">
+                                    <div class="lineup__extra pad-top-0">
+                                        <div class="lineup__odds is-row">
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; COL -250</div>
+                                            <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 6.5 Goals</div>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__partner">
+                                        <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy hockey to win tonight</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        	<div class="lineup is-nhl is-tools">
 		<div class="lineup__meta">
 			<div class="lineup__time">You may also be interested in...</div>
 		</div>
@@ -1063,7 +2720,13 @@
 			</main>
 
 			    <div class="hide" style="width:1px;height:1px;">
-            </div>
+        <div align="center" data-freestar-ad="__1x1" id="rotowire_skinunit_oop">
+                <script data-cfasync="false" type="text/javascript">
+                window.addEventListener("load", function () {
+                    freestar.config.enabled_slots.push({ placementName: "rotowire_skinunit_oop", slotId: "rotowire_skinunit_oop" });
+                });
+                </script>
+            </div>    </div>
 
         <footer class="site-footer">
         <div class="ckeditor ck-content bg-white" style="padding: 18px 15px;" id="page-content-bottom">
