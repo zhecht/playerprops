@@ -518,52 +518,55 @@ def write_rankings():
 	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "hits_allowed", "bb_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab"]
 
 	rankings = {}
-	for idx, page in enumerate(pages):
-		url = baseUrl+page+"?date=2022-11-06"
-		outfile = "outmlb2"
-		time.sleep(0.2)
-		call(["curl", "-k", url, "-o", outfile])
-		soup = BS(open(outfile, 'rb').read(), "lxml")
+	for dt in ["", "?date=2022-11-06"]:
+		rankingPrefix = "ly_" if dt else ""
+		for idx, page in enumerate(pages):
+			url = baseUrl+page+dt
+			outfile = "outmlb2"
+			time.sleep(0.2)
+			call(["curl", "-k", url, "-o", outfile])
+			soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for row in soup.find("table").findAll("tr")[1:]:
-			tds = row.findAll("td")
-			team = convertTeamRankingsTeam(row.find("a").text.lower())
-			if team not in rankings:
-				rankings[team] = {}
-			if ids[idx] not in rankings[team]:
-				rankings[team][ids[idx]] = {}
+			for row in soup.find("table").findAll("tr")[1:]:
+				tds = row.findAll("td")
+				team = convertTeamRankingsTeam(row.find("a").text.lower())
+				if team not in rankings:
+					rankings[team] = {}
+				ranking = rankingPrefix+ids[idx]
+				if ranking not in rankings[team]:
+					rankings[team][ranking] = {}
 
-			rankings[team][ids[idx]] = {
-				"rank": int(tds[0].text),
-				"season": float(tds[2].text.replace("--", "0").replace("%", "")),
-				"last3": float(tds[3].text.replace("--", "0").replace("%", ""))
+				rankings[team][ranking] = {
+					"rank": int(tds[0].text),
+					"season": float(tds[2].text.replace("--", "0").replace("%", "")),
+					"last3": float(tds[3].text.replace("--", "0").replace("%", ""))
+				}
+
+		combined = []
+		for team in rankings:
+			combined.append({
+				"team": team,
+				"val": rankings[team][f"{rankingPrefix}h"]["season"]+rankings[team][f"{rankingPrefix}r"]["season"]+rankings[team][f"{rankingPrefix}rbi"]["season"]
+			})
+
+		for idx, x in enumerate(sorted(combined, key=lambda k: k["val"], reverse=True)):
+			rankings[x["team"]][f"{rankingPrefix}h+r+rbi"] = {
+				"rank": idx+1,
+				"season": x["val"]
 			}
 
-	combined = []
-	for team in rankings:
-		combined.append({
-			"team": team,
-			"val": rankings[team]["h"]["season"]+rankings[team]["r"]["season"]+rankings[team]["rbi"]["season"]
-		})
+		combined = []
+		for team in rankings:
+			combined.append({
+				"team": team,
+				"val": rankings[team][f"{rankingPrefix}hits_allowed"]["season"]+rankings[team][f"{rankingPrefix}er"]["season"]
+			})
 
-	for idx, x in enumerate(sorted(combined, key=lambda k: k["val"], reverse=True)):
-		rankings[x["team"]]["h+r+rbi"] = {
-			"rank": idx+1,
-			"season": x["val"]
-		}
-
-	combined = []
-	for team in rankings:
-		combined.append({
-			"team": team,
-			"val": rankings[team]["hits_allowed"]["season"]+rankings[team]["er"]["season"]
-		})
-
-	for idx, x in enumerate(sorted(combined, key=lambda k: k["val"], reverse=True)):
-		rankings[x["team"]]["h+r+rbi_allowed"] = {
-			"rank": idx+1,
-			"season": x["val"]
-		}
+		for idx, x in enumerate(sorted(combined, key=lambda k: k["val"], reverse=True)):
+			rankings[x["team"]][f"{rankingPrefix}h+r+rbi_allowed"] = {
+				"rank": idx+1,
+				"season": x["val"]
+			}
 
 	with open(f"{prefix}static/baseballreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)

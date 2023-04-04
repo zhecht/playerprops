@@ -431,11 +431,13 @@ def getPropData(date = None, playersArg = "", teams = ""):
 								valPerMin = float(val / minutes)
 								teamScore = scores[chkDate][currTeam]
 								oppScore = scores[chkDate][pastOpp]
-								winLossVal = valPerMin
-								if prop == "sv":
-									winLossVal *= 60
-								else:
-									winLossVal *= avgMin
+								winLossVal = val
+								if False:
+									winLossVal = valPerMin
+									if prop == "sv":
+										winLossVal *= 60
+									else:
+										winLossVal *= avgMin
 
 								if teamIsAway:
 									awayHomeSplits[0].append(val)
@@ -472,17 +474,21 @@ def getPropData(date = None, playersArg = "", teams = ""):
 
 				winSplitAvg = lossSplitAvg = 0
 				if len(winLossSplits[0]):
-					winSplitAvg = round(sum(winLossSplits[0]) / len(winLossSplits[0]),2)
+					arr = [x for x in winLossSplits[0] if x > line]
+					winSplitAvg = round(len(arr) * 100 / len(winLossSplits[0]))
 				if len(winLossSplits[1]):
-					lossSplitAvg = round(sum(winLossSplits[1]) / len(winLossSplits[1]),2)
-				winLoss = f"{winSplitAvg} - {lossSplitAvg}"
+					arr = [x for x in winLossSplits[1] if x > line]
+					lossSplitAvg = round(len(arr) * 100 / len(winLossSplits[1]))
+				winLoss = f"{winSplitAvg}% - {lossSplitAvg}%"
 
 				awaySplitAvg = homeSplitAvg = 0
 				if len(awayHomeSplits[0]):
-					awaySplitAvg = round(sum(awayHomeSplits[0]) / len(awayHomeSplits[0]),2)
+					arr = [x for x in awayHomeSplits[0] if x > line]
+					awaySplitAvg = round(len(arr) * 100 / len(awayHomeSplits[0]))
 				if len(awayHomeSplits[1]):
-					homeSplitAvg = round(sum(awayHomeSplits[1]) / len(awayHomeSplits[1]),2)
-				awayHome = f"{awaySplitAvg} - {homeSplitAvg}"
+					arr = [x for x in awayHomeSplits[1] if x > line]
+					homeSplitAvg = round(len(arr) * 100 / len(awayHomeSplits[1]))
+				awayHome = f"{awaySplitAvg}% - {homeSplitAvg}%"
 
 				oppOver = oppOverTot = 0
 				if prop == "sv":

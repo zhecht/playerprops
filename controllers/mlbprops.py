@@ -307,7 +307,7 @@ def writeCsvs(props):
 		csvs["full"] += "\n" + "\t".join([str(x) for x in [row["player"], row["pos"], row["bats"], row["battingNumber"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["oppRankVal"], row["pitcher"], row["pitcherThrows"], row["againstPitcherStats"], row["prop"], row["line"], row["lastDisplay"], f"{row['totalOver']}%", avg, f"{row['lastYearTotalOver']}%", f"{row['matchups']}", f"{row['lastYearTeamMatchupOver']}%", overOdds, underOdds]])
 
 	# add top 4 to reddit
-	headerList = ["NAME","POS","Batting #","TEAM","A/H","OPP","OPP RANK","PROP","LINE","LAST ➡️","% OVER", "CAREER % OVER", "% OVER VS TEAM", "VS TEAM", "PITCHER", "VS PITCHER", "OVER","UNDER"]
+	headerList = ["NAME","POS","Batting #","TEAM","A/H","OPP","OPP RANK","LYR OPP RANK","PROP","LINE","LAST ➡️","% OVER", "CAREER % OVER", "% OVER VS TEAM", "VS TEAM", "PITCHER", "VS PITCHER", "OVER","UNDER"]
 	headers = "\t".join(headerList)
 	reddit = "|".join(headers.split("\t"))
 	reddit += "\n"+"|".join([":--"]*len(headerList))
@@ -321,7 +321,7 @@ def writeCsvs(props):
 				avg = row["lastYearAvg"]
 				if avg >= row["line"]:
 					avg = f"**{avg}**"
-				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["pos"], row["battingNumber"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["prop"], row["line"], row["lastDisplay"], f"{row['totalOver']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["againstPitcherStats"], overOdds, underOdds]])
+				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["pos"], row["battingNumber"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"], f"{row['totalOver']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["againstPitcherStats"], overOdds, underOdds]])
 			reddit += "\n"+"|".join(["-"]*len(headerList))
 
 	with open(f"{prefix}static/mlbprops/csvs/reddit", "w") as fh:
@@ -648,11 +648,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 
 				oppRank = oppRankVal = oppABRank = ""
+				oppRankLastYear = ""
 				rankingsProp = convertRankingsProp(propName)
 				
 				if rankingsProp in rankings[opp]:
 					oppRankVal = str(rankings[opp][rankingsProp]["season"])
 					oppRank = rankings[opp][rankingsProp]['rank']
+					oppRankLastYear = rankings[opp]["ly_"+rankingsProp]['rank']
 					oppABRank = rankings[opp]["opp_ab"]["rank"]
 
 				hitRateOdds = diff = 0
@@ -737,6 +739,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"lastDisplay": ",".join([str(x) for x in lastAll[:10]]),
 					"lastAll": ",".join([str(x) for x in lastAll]),
 					"oppABRank": oppABRank,
+					"oppRankLastYear": oppRankLastYear,
 					"oppRank": oppRank,
 					"oppRankVal": oppRankVal,
 					"overOdds": overOdds,
@@ -795,7 +798,7 @@ def getProps_route():
 	pitchers = False
 	if request.args.get("pitchers"):
 		pitchers = True
-	if True or request.args.get("teams") or request.args.get("players") or request.args.get("date"):
+	if request.args.get("teams") or request.args.get("players") or request.args.get("date"):
 		teams = ""
 		if request.args.get("teams"):
 			teams = request.args.get("teams").lower().split(",")

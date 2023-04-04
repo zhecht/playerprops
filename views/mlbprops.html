@@ -21,6 +21,7 @@
 			display: flex;
 			justify-content: center;
 			height: 85%;
+			margin-top: 1rem;
 		}
 		#footer {
 			display: flex;
@@ -57,7 +58,6 @@
 		<div id="header">
 			<a id="full" class="active" href="/mlbprops">Batting</a>
 			<a id="h" href="/mlbprops?prop=h">Hits</a>
-			<a id="tb" href="/mlbprops?prop=tb">Bases</a>
 			<a id="hr" href="/mlbprops?prop=hr">HR</a>
 			<a id="r" href="/mlbprops?prop=r">Runs</a>
 			<a id="rbi" href="/mlbprops?prop=rbi">RBIs</a>
@@ -72,14 +72,16 @@
 		<div id="header">
 			<a id="full" class="active" href="/mlbprops">Pitching</a>
 			<a id="k" href="/mlbprops?prop=k">Strikeouts</a>
+			<!--
 			<a id="outs" href="/mlbprops?prop=outs">Outs</a>
 			<a id="win" href="/mlbprops?prop=win">Win</a>
+			-->
 			<a id="hits_allowed" href="/mlbprops?prop=hits_allowed">Hits</a>
 			<a id="bb" href="/mlbprops?prop=bb_allowed">Walks</a>
 			<a id="er" href="/mlbprops?prop=er">ER</a>
 		</div>
-		<div>
-			<button onclick="groupBy();">Toggle Group By Game</button>
+		<div style="display: flex;justify-content: center;">
+			<button style="padding:5px;" onclick="groupBy();">Toggle Group By Game</button>
 		</div>
 		<div id="tableDiv">
 			<div id="propsTable">
@@ -139,7 +141,7 @@
 				const field = cell.getField();
 				const val = cell.getValue();
 				const suffix = addNumSuffix(val);
-				if ((field == "oppRank" || field == "oppABRank") && propArg != "hits_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
+				if ((field == "oppRank" || field == "oppABRank" || field == "ly_oppRank") && propArg != "hits_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
 					if (val >= 20) {
 						return "<div class='positive'>"+suffix+"</div>";
 					} else if (val <= 10) {
@@ -218,6 +220,7 @@
 						{title: "A/H", field: "awayHome", hozAlign: "center", width: 30},
 						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
+						{title: "LYR Opp Rank", field: "oppRankLastYear", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
 						//{title: "Opp AB", field: "oppABRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Prop", field: "displayProp", hozAlign: "center"},

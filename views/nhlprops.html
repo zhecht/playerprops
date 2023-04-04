@@ -295,22 +295,12 @@
 				const data = cell.getRow().getData();
 				const vals = cell.getValue().split(" - ");
 				let val1 = vals[0];
-				if (parseFloat(val1) >= parseFloat(data.line)) {
-					val1 = "<div class='positive'>"+val1+"</div>";
-				} else {
-					val1 = "<div class='negative'>"+val1+"</div>";
-				}
 				if (cell.getField() == "awayHomeSplits" && data.awayHome == "A") {
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
 				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) < 0) {
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
 				}
 				let val2 = vals[1];
-				if (parseFloat(val2) >= parseFloat(data.line)) {
-					val2 = "<div class='positive'>"+val2+"</div>";
-				} else {
-					val2 = "<div class='negative'>"+val2+"</div>";
-				}
 				if (cell.getField() == "awayHomeSplits" && data.awayHome == "H") {
 					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
 				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) > 0) {
