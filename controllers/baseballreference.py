@@ -78,7 +78,7 @@ def write_stats(date):
 				headers = [h.lower() for h in statRow["labels"]]
 
 				for playerRow in statRow["athletes"]:
-					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "")
+					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ")
 					playerId = int(playerRow["athlete"]["id"])
 
 					playerIds[team][player] = playerId
@@ -115,8 +115,8 @@ def write_stats(date):
 		for rosterRow in data["rosters"]:
 			team = rosterRow["team"]["abbreviation"].lower()
 			for playerRow in rosterRow["roster"]:
-				player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "")
-				for statRow in playerRow["stats"]:
+				player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ")
+				for statRow in playerRow.get("stats", []):
 					hdr = statRow["shortDisplayName"].lower()
 					if hdr not in allStats[team][player]:
 						allStats[team][player][hdr] = statRow["value"]
@@ -635,7 +635,7 @@ def writeBVP():
 			pitcher = row["pitcher"].lower()
 			team = convertRotoTeam(row["team"])
 			opp = convertRotoTeam(row["opponent"])
-			player = row["player"].lower().replace(".", "").replace("'", "")
+			player = row["player"].lower().replace(".", "").replace("'", "").replace("-", " ")
 
 			matchup = f"{player} v {pitcher}"
 
