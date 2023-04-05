@@ -451,12 +451,24 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				pitcher = pitcherThrows = awayHomeSplits = ""
 
 				bats = leftOrRight[team].get(player, "")
-
+				hip = bbip = hrip = kip = 0
 				try:
 					pitcher = lineups[opp]["pitching"]
 					pitcherThrows = leftOrRight[opp][pitcher]
+					hip = round(stats[opp][pitcher]["h_allowed"] / stats[opp][pitcher]["ip"], 2)
+
+					hip = round(averages[opp][pitcher]["tot"]["h"] / averages[opp][pitcher]["tot"]["ip"], 2)
+					hrip = round(averages[opp][pitcher]["tot"]["hr"] / averages[opp][pitcher]["tot"]["ip"], 2)
+					kip = round(averages[opp][pitcher]["tot"]["k"] / averages[opp][pitcher]["tot"]["ip"], 2)
 				except:
 					pass
+
+				if "P" in pos:
+					try:
+						hip = round(averages[team][player]["tot"]["h"] / averages[team][player]["tot"]["ip"], 2)
+						bbip = round(averages[team][player]["tot"]["bb"] / averages[team][player]["tot"]["ip"], 2)
+					except:
+						pass
 
 				try:
 					battingNumber = lineups[team]["batting"].index(player)+1
@@ -668,11 +680,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					pass
 
 				try:
-					if againstTeamLastYearStats["ab"]:
+					if againstTeamLastYearStats.get("ab", 0):
 						againstTeamLastYearStats = f"{str(format(round(againstTeamLastYearStats['h']/againstTeamLastYearStats['ab'], 3), '.3f'))[1:]} {int(againstTeamLastYearStats['h'])}-{int(againstTeamLastYearStats['ab'])}, {int(againstTeamLastYearStats['hr'])} HR, {int(againstTeamLastYearStats['rbi'])} RBI, {int(againstTeamLastYearStats['bb'])} BB, {int(againstTeamLastYearStats['so'])} SO"
+					elif againstTeamLastYearStats.get("ip"):
+						againstTeamLastYearStats = f"{round(againstTeamLastYearStats['ip'], 1)} IP {int(againstTeamLastYearStats['k'])} K, {int(againstTeamLastYearStats['h'])} H, {int(againstTeamLastYearStats['bb'])} BB"
 					else:
 						againstTeamLastYearStats = ""
-					#againstTeamLastYearStats = f"{int(againstTeamLastYearStats['h'])}-{int(againstTeamLastYearStats['ab'])} ({round(againstTeamLastYearStats['h']/againstTeamLastYearStats['ab'], 3)}), {int(againstTeamLastYearStats['hr'])} HR, {int(againstTeamLastYearStats['bb'])} BB, {int(againstTeamLastYearStats['rbi'])} RBI, {int(againstTeamLastYearStats['so'])} SO"
 				except:
 					againstTeamLastYearStats = ""
 
@@ -680,7 +693,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					if againstTeamStats.get("ab", 0):
 						againstTeamStats = f"{str(format(round(againstTeamStats['h']/againstTeamStats['ab'], 3), '.3f'))[1:]} {int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])}, {int(againstTeamStats['hr'])} HR, {int(againstTeamStats['rbi'])} RBI, {int(againstTeamStats['bb'])} BB, {int(againstTeamStats['so'])} SO"
 					elif againstTeamStats.get("ip"):
-						againstTeamStats = f"{round(againstTeamStats['ip'], 1)} IP {int(againstTeamStats['k'])} K, {int(againstTeamStats['h'])} H"
+						againstTeamStats = f"{round(againstTeamStats['ip'], 1)} IP {int(againstTeamStats['k'])} K, {int(againstTeamStats['h'])} H, {int(againstTeamStats['bb'])} BB"
 					else:
 						againstTeamStats = ""
 				except:
@@ -719,6 +732,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"againstTeamLastYearStats": againstTeamLastYearStats,
 					"pitcher": pitcher.split(" ")[-1].title(),
 					"pitcherThrows": pitcherThrows,
+					"hip": hip,
+					"bbip": bbip,
+					"hrip": hrip,
+					"kip": kip,
 					"prop": propName,
 					"displayProp": prop,
 					"gamesPlayed": gamesPlayed,

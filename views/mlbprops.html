@@ -232,6 +232,10 @@
 						{title: "L10 % Over", field: "last10Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
 						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
+						{title: "H/IP", field: "hip", hozAlign: "center", width: 80},
+						{title: "BB/IP", field: "bbip", hozAlign: "center", width: 80, visible: false},
+						{title: "HR/IP", field: "hrip", hozAlign: "center", width: 80, visible: false},
+						{title: "K/IP", field: "kip", hozAlign: "center", width: 80, visible: false},
 						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150},
 						{title: "Career % Over", field: "careerTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "% Over vs Team", field: "againstTeamTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
@@ -252,10 +256,25 @@
 
 			renderTable();
 
-			if (["k", "outs", "win", "hits_allowed", "walks_allowed", "er"].indexOf(propArg) >= 0) {
-				TABLE.getColumn("pitcher").hide();
-				TABLE.getColumn("pitcherThrows").hide();
-			}
+			setTimeout(function() {
+				if (propArg === "hr") {
+					TABLE.hideColumn("hip");
+					TABLE.showColumn("hrip");
+				} else if (propArg === "so") {
+					TABLE.hideColumn("hip");
+					TABLE.showColumn("kip");
+				} else if (["k", "outs", "win", "hits_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+					TABLE.hideColumn("againstPitcherStats");
+					TABLE.hideColumn("pitcher");
+					TABLE.hideColumn("pitcherThrows");
+					TABLE.hideColumn("avg");
+					TABLE.hideColumn("battingNumber");
+					if (propArg === "bb_allowed") {
+						TABLE.hideColumn("hip");
+						TABLE.showColumn("bbip");
+					}
+				}
+			}, 500);
 		</script>
 		{% if prop != "" %}
 			<script>
