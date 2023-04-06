@@ -884,7 +884,7 @@ def props_route():
 		players = request.args.get("players")
 
 	# locks
-	bets = []
+	bets = ["ozzie albies", "ronald acuna", "matt olson", "mookie betts", "will smith", "alejandro kirk", "salvador perez", "riley greene", "justin turner", "charlie blackmon"]
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)

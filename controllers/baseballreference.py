@@ -561,7 +561,7 @@ def write_rankings():
 		for team in rankings:
 			combined.append({
 				"team": team,
-				"val": rankings[team][f"{rankingPrefix}hits_allowed"]["season"]+rankings[team][f"{rankingPrefix}er"]["season"]
+				"val": rankings[team][f"{rankingPrefix}h_allowed"]["season"]+rankings[team][f"{rankingPrefix}er"]["season"]
 			})
 
 		for idx, x in enumerate(sorted(combined, key=lambda k: k["val"], reverse=True)):

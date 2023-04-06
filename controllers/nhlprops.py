@@ -1576,6 +1576,9 @@ def writeExpectedGoalies(date):
 
 def writeLineups():
 	url = f"https://www.rotowire.com/hockey/nhl-lineups.php"
+	if datetime.now().hour >= 20 or datetime.now().hour < 3:
+		url += "?date=tomorrow"
+
 	outfile = "outnhl"
 	time.sleep(0.2)
 	call(["curl", "-k", url, "-o", outfile])

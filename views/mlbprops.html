@@ -311,6 +311,26 @@
 				}
 			}, 500);
 		</script>
+		<script>
+			const bets = "{{bets}}".split(",");
+
+			setTimeout(function() {
+				let rows = TABLE.getRows("active");
+				if ("{{prop}}" != "h") {
+					return;
+				}
+				for (row of rows) {
+					const data = row.getData();
+					if (bets.indexOf(data.player.toLowerCase()) >= 0) {
+						row.select();
+						const cells = row.getCells();
+						if (cells.length > 0) {
+							//cells[0].getElement().getElementsByTagName("span")[0].click();
+						}
+					}
+				}
+			}, 7500);
+		</script>
 		{% if prop != "" %}
 			<script>
 				TABLE.setFilter([{field:"prop", type:"=", value:"{{prop}}"}]);
