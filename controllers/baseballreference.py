@@ -517,7 +517,7 @@ def convertTeamRankingsTeam(team):
 def write_rankings():
 	baseUrl = "https://www.teamrankings.com/mlb/stat/"
 	pages = ["at-bats-per-game", "strikeouts-per-game", "walks-per-game", "runs-per-game", "hits-per-game", "home-runs-per-game", "singles-per-game", "doubles-per-game", "rbis-per-game", "total-bases-per-game", "earned-run-average", "earned-runs-against-per-game", "strikeouts-per-9", "home-runs-per-9", "hits-per-9", "walks-per-9", "opponent-stolen-bases-per-game", "opponent-total-bases-per-game", "opponent-rbis-per-game", "opponent-at-bats-per-game"]
-	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "hits_allowed", "bb_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab"]
+	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "h_allowed", "bb_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab"]
 
 	rankings = {}
 	for dt in ["", "?date=2022-11-06"]:
