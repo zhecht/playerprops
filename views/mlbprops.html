@@ -92,7 +92,7 @@
 		<script>
 			let TABLE;
 			const propArg = "{{prop}}";
-			const teamNames = ["All", "ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SA", "SAC", "TOR", "UTAH", "WSH"];
+			const teamNames = ["All", "ARI", "ATL", "BAL", "BOS", "CHC", "CHW", "CIN", "CIN", "CLE", "COL", "DET", "HOU", "KC", "LAA", "LAD", "MIA", "MIL", "MIN", "NYM", "NYY", "OAK", "PHI", "PIT", "SD", "SEA", "SF", "STL", "TB", "TEX", "TOR", "WSH"];
 
 			function groupBy() {
 				if (TABLE.options.groupBy === undefined || TABLE.options.groupBy === false) {
@@ -253,6 +253,7 @@
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
 						{title: "Line", field: "line", hozAlign: "center"},
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
+						{title: "Proj", field: "proj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},

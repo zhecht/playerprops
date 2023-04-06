@@ -412,6 +412,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 		rankings = json.load(fh)
 	with open(f"{prefix}static/baseballreference/scores.json") as fh:
 		scores = json.load(fh)
+	with open(f"{prefix}static/baseballreference/projections.json") as fh:
+		projections = json.load(fh)
 	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
@@ -471,6 +473,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					hip = round(averages[opp][pitcher]["tot"]["h"] / averages[opp][pitcher]["tot"]["ip"], 2)
 					hrip = round(averages[opp][pitcher]["tot"]["hr"] / averages[opp][pitcher]["tot"]["ip"], 2)
 					kip = round(averages[opp][pitcher]["tot"]["k"] / averages[opp][pitcher]["tot"]["ip"], 2)
+				except:
+					pass
+
+				proj = 0
+				try:
+					proj = projections[team][player][prop]
 				except:
 					pass
 
@@ -773,7 +781,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"displayProp": prop,
 					"gamesPlayed": gamesPlayed,
 					"matchups": len(prevMatchup),
-					"line": line or "-",
+					"line": line or 0,
+					"proj": proj,
 					"battingAvg": battingAvg,
 					"avg": avg,
 					"diff": diff,
@@ -884,7 +893,7 @@ def props_route():
 		players = request.args.get("players")
 
 	# locks
-	bets = ["ozzie albies", "ronald acuna", "matt olson", "mookie betts", "will smith", "alejandro kirk", "salvador perez", "riley greene", "justin turner", "charlie blackmon"]
+	bets = ["ozzie albies", "ronald acuna", "matt olson", "mookie betts", "will smith", "alejandro kirk", "salvador perez", "riley greene", "justin turner", "charlie blackmon", "keibert ruiz", "andrew vaughn", "matt chapman", "whit merrifield"]
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)

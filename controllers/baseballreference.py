@@ -7,6 +7,7 @@ import os
 import operator
 import re
 import time
+import csv
 
 from bs4 import BeautifulSoup as BS
 from bs4 import Comment
@@ -653,6 +654,38 @@ def writeBVP():
 	with open(f"{prefix}static/baseballreference/bvp.json", "w") as fh:
 		json.dump(bvp, fh, indent=4)
 
+def write_projections():
+	year = datetime.datetime.now().year
+
+	projections = {}
+	for HP in ["H", "P"]:
+		with open(f"{prefix}FantasyPros_{year}_Projections_{HP}.csv", newline="") as fh:
+			reader = csv.reader(fh)
+			#data = fh.readlines()
+
+			headers = []
+			for idx, row in enumerate(reader):
+				if idx == 0:
+					headers = [x.lower() for x in row[6:-1]]
+				else:
+					if len(row) < 2:
+						continue
+					player = row[1].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
+					team = row[2].lower()
+					if team == "cws":
+						team = "chw"
+					if team not in projections:
+						projections[team] = {}
+					if player not in projections[team]:
+						projections[team][player] = {}
+
+					for hdr, col in zip(headers, row[6:-1]):
+						projections[team][player][hdr] = float(col)
+
+					if "rbi" in projections[team][player]:
+						projections[team][player]["h+r+rbi"] = round(projections[team][player]["h"]+projections[team][player]["r"]+projections[team][player]["rbi"], 2)
+	with open(f"{prefix}static/baseballreference/projections.json", "w") as fh:
+		json.dump(projections, fh, indent=4)
 
 
 if __name__ == "__main__":
@@ -663,6 +696,7 @@ if __name__ == "__main__":
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
+	parser.add_argument("--projections", help="Projections", action="store_true")
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
@@ -684,6 +718,8 @@ if __name__ == "__main__":
 
 	if args.averages:
 		write_averages()
+	elif args.projections:
+		write_projections()
 	elif args.bvp:
 		writeBVP()
 	elif args.rankings:
@@ -695,6 +731,7 @@ if __name__ == "__main__":
 	elif args.cron:
 		write_rankings()
 		writeBVP()
+		write_projections()
 		write_stats(date)
 		write_schedule(date)
 
