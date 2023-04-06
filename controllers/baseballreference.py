@@ -78,7 +78,7 @@ def write_stats(date):
 				headers = [h.lower() for h in statRow["labels"]]
 
 				for playerRow in statRow["athletes"]:
-					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ")
+					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
 					playerId = int(playerRow["athlete"]["id"])
 
 					playerIds[team][player] = playerId
@@ -94,7 +94,7 @@ def write_stats(date):
 							pc, st = map(float, stat.split("-"))
 							allStats[team][player]["pc"] = pc
 							allStats[team][player]["st"] = st
-						elif header in ["bb", "hr", "r", "h"] and title == "pitching":
+						elif header in ["bb", "hr", "h"] and title == "pitching":
 							allStats[team][player][header+"_allowed"] = float(stat)
 						else:
 							val = stat
@@ -114,8 +114,10 @@ def write_stats(date):
 
 		for rosterRow in data["rosters"]:
 			team = rosterRow["team"]["abbreviation"].lower()
+			if "roster" not in rosterRow:
+				continue
 			for playerRow in rosterRow["roster"]:
-				player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ")
+				player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
 				for statRow in playerRow.get("stats", []):
 					hdr = statRow["shortDisplayName"].lower()
 					if hdr not in allStats[team][player]:
@@ -484,7 +486,7 @@ def write_roster():
 		for table in soup.findAll("table"):
 			for row in table.findAll("tr")[1:]:
 				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
-				fullName = row.findAll("td")[1].find("a").text.lower().replace("'", "").replace("-", " ").replace(".", "")
+				fullName = row.findAll("td")[1].find("a").text.lower().replace("'", "").replace("-", " ").replace(".", "").replace(" jr", "")
 				playerId = int(nameLink[-1])
 				playerIds[team][fullName] = playerId
 				roster[team][fullName] = row.findAll("td")[2].text.strip()
@@ -635,7 +637,7 @@ def writeBVP():
 			pitcher = row["pitcher"].lower()
 			team = convertRotoTeam(row["team"])
 			opp = convertRotoTeam(row["opponent"])
-			player = row["player"].lower().replace(".", "").replace("'", "").replace("-", " ")
+			player = row["player"].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "")
 
 			matchup = f"{player} v {pitcher}"
 

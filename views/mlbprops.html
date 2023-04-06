@@ -76,12 +76,13 @@
 			<a id="outs" href="/mlbprops?prop=outs">Outs</a>
 			<a id="win" href="/mlbprops?prop=win">Win</a>
 			-->
-			<a id="hits_allowed" href="/mlbprops?prop=hits_allowed">Hits</a>
+			<a id="h_allowed" href="/mlbprops?prop=h_allowed">Hits</a>
 			<a id="bb" href="/mlbprops?prop=bb_allowed">Walks</a>
 			<a id="er" href="/mlbprops?prop=er">ER</a>
 		</div>
 		<div style="display: flex;justify-content: center;">
 			<button style="padding:5px;" onclick="groupBy();">Toggle Group By Game</button>
+			<button style="padding:5px;margin-left:1rem;" onclick="togglePerABAvg();">Toggle Avg Per AB</button>
 		</div>
 		<div id="tableDiv">
 			<div id="propsTable">
@@ -99,6 +100,22 @@
 				} else {
 					TABLE.setGroupBy();
 				}
+			}
+
+			let showingPerAB = false;
+			function togglePerABAvg() {
+				if (!showingPerAB) {
+					TABLE.hideColumn("againstTeamStats");
+					TABLE.showColumn("againstTeamStatsPerAB");
+					TABLE.hideColumn("againstPitcherStats");
+					TABLE.showColumn("againstPitcherStatsPerAB");
+				} else {
+					TABLE.showColumn("againstTeamStats");
+					TABLE.hideColumn("againstTeamStatsPerAB");
+					TABLE.showColumn("againstPitcherStats");
+					TABLE.hideColumn("againstPitcherStatsPerAB");
+				}
+				showingPerAB = !showingPerAB;
 			}
 
 			function teamFilter(headerValue, rowValue, rowData, filterParams){
@@ -141,7 +158,7 @@
 				const field = cell.getField();
 				const val = cell.getValue();
 				const suffix = addNumSuffix(val);
-				if ((field == "oppRank" || field == "oppABRank" || field == "ly_oppRank") && propArg != "hits_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
+				if ((field == "oppRank" || field == "oppABRank" || field == "oppRankLastYear") && propArg != "h_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
 					if (val >= 20) {
 						return "<div class='positive'>"+suffix+"</div>";
 					} else if (val <= 10) {
@@ -202,6 +219,15 @@
 						{column: "careerTotalOver", dir: "desc"},
 						//{column: "team", dir: "asc"},
 					],
+					columnDefaults: {
+						headerTooltip: function(e, cell, onRendered) {
+							const el = document.createElement("div");
+							const header = document.createElement("h3");
+							header.innerText = cell.getDefinition().title;
+							el.appendChild(header);
+							return el;
+						}
+					},
 					columns: [
 						{formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
 						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
@@ -209,10 +235,11 @@
 						}},
 						{title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center", visible: false},
 						{title: "Player", field: "player", headerFilter: "input"},
-						{title: "Player", field: "game", visible: false},
+						{title: "Game", field: "game", visible: false},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
-						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
+						{title: "B. Avg", field: "battingAvg", hozAlign: "center", width: 60,  sorter: "number"},
 						{title: "Bats", field: "bats", width: 40, hozAlign: "center"},
+						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
 						{title: "GP", field: "gamesPlayed", hozAlign: "center", width: 50},
 						{title: "# Batting", field: "battingNumber", hozAlign: "center", width: 40},
 						{title: "Avg IP", field: "avgIP", hozAlign: "center", width: 80, visible: false},
@@ -221,12 +248,12 @@
 						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "LYR Opp Rank", field: "oppRankLastYear", hozAlign: "center", formatter: rankFormatter, width: 70},
-						{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
+						//{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
 						//{title: "Opp AB", field: "oppABRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
 						{title: "Line", field: "line", hozAlign: "center"},
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
-						{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number"},
+						{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L10 % Over", field: "last10Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
@@ -237,9 +264,11 @@
 						{title: "HR/IP", field: "hrip", hozAlign: "center", width: 80, visible: false},
 						{title: "K/IP", field: "kip", hozAlign: "center", width: 80, visible: false},
 						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150},
+						{title: "vs Pitcher (Per AB)", field: "againstPitcherStatsPerAB", hozAlign: "center", width: 150, visible: false},
 						{title: "Career % Over", field: "careerTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "% Over vs Team", field: "againstTeamTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "vs Team", field: "againstTeamStats", hozAlign: "center", width: 150},
+						{title: "vs Team (Per AB)", field: "againstTeamStatsPerAB", hozAlign: "center", width: 150, visible: false},
 						{title: "LYR % Over", field: "lastYearTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "LYR Avg", field: "lastYearAvg", hozAlign: "center", width: 80, formatter: colorFormatter, sorter: "number"},
 						//{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
@@ -257,13 +286,16 @@
 			renderTable();
 
 			setTimeout(function() {
+				if ("{{date}}" !== "") {
+					TABLE.showColumn("hit");
+				}
 				if (propArg === "hr") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("hrip");
 				} else if (propArg === "so") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
-				} else if (["k", "outs", "win", "hits_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+				} else if (["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
 					TABLE.hideColumn("againstPitcherStats");
 					TABLE.hideColumn("pitcher");
 					TABLE.hideColumn("pitcherThrows");
@@ -272,6 +304,9 @@
 					if (propArg === "bb_allowed") {
 						TABLE.hideColumn("hip");
 						TABLE.showColumn("bbip");
+					} else if (propArg === "k") {
+						TABLE.hideColumn("hip");
+						TABLE.showColumn("kip");
 					}
 				}
 			}, 500);
@@ -284,11 +319,6 @@
 		{% if pitchers %}
 			<script>
 				TABLE.getColumn("avgIP").show();
-			</script>
-		{% endif %}
-		{% if date == "" %}
-			<script>
-				TABLE.getColumn("hit").hide();
 			</script>
 		{% endif %}
 	</body>
