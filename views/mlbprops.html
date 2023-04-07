@@ -83,6 +83,7 @@
 		<div style="display: flex;justify-content: center;">
 			<button style="padding:5px;" onclick="groupBy();">Toggle Group By Game</button>
 			<button style="padding:5px;margin-left:1rem;" onclick="togglePerABAvg();">Toggle Avg Per AB</button>
+			<button style="padding:5px;margin-left:1rem;" onclick="sortByProjDiff();">Toggle Sort By Projected Diff</button>
 		</div>
 		<div id="tableDiv">
 			<div id="propsTable">
@@ -116,6 +117,17 @@
 					TABLE.hideColumn("againstPitcherStatsPerAB");
 				}
 				showingPerAB = !showingPerAB;
+			}
+
+			function sortByProjDiff() {
+				if (TABLE.getSorters().length == 1) {
+					TABLE.setSort([
+						{column: "careerTotalOver", dir: "desc"},
+						{column: "againstTeamTotalOver", dir: "desc"},
+					]);
+				} else {
+					TABLE.setSort("projDiff", "desc");
+				}
 			}
 
 			function teamFilter(headerValue, rowValue, rowData, filterParams){
@@ -254,6 +266,7 @@
 						{title: "Line", field: "line", hozAlign: "center"},
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
 						{title: "Proj", field: "proj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
+						{title: "Proj Diff", field: "projDiff", visible: false, sorter: "number"},
 						{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},

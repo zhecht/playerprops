@@ -410,6 +410,8 @@ def writeYearAverages():
 						statsVsTeam[team][currOpp][player]["gamesPlayed"] += 1
 						if "ab" in gameStats and "h+r+rbi" not in gameStats:
 							gameStats["h+r+rbi"] = 0
+						if "ab" in gameStats and "tb" not in gameStats:
+							gameStats["tb"] = 0
 						for header in gameStats:
 							if header not in ["isAway", "vs"]:
 								if header not in statsVsTeam[team][currOpp][player]:
@@ -418,11 +420,15 @@ def writeYearAverages():
 									tot[header] = 0
 								try:
 									val = 0
-									for p in header.split("+"):
-										val += gameStats[p]
+									if header == "tb" and "ab" in gameStats:
+										val = 4*gameStats["hr"] + 3*gameStats["3b"] + 2*gameStats["2b"] + gameStats["1b"]
+									else:
+										for p in header.split("+"):
+											val += gameStats[p]
+
 									tot[header] += val
 									statsVsTeam[team][currOpp][player][header] += val
-									if header in ["h", "1b", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
+									if header in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
 
 										if header+"Overs" not in statsVsTeam[team][currOpp][player]:
 											statsVsTeam[team][currOpp][player][header+"Overs"] = {}
@@ -654,39 +660,6 @@ def writeBVP():
 	with open(f"{prefix}static/baseballreference/bvp.json", "w") as fh:
 		json.dump(bvp, fh, indent=4)
 
-def write_projections():
-	year = datetime.datetime.now().year
-
-	projections = {}
-	for HP in ["H", "P"]:
-		with open(f"{prefix}FantasyPros_{year}_Projections_{HP}.csv", newline="") as fh:
-			reader = csv.reader(fh)
-			#data = fh.readlines()
-
-			headers = []
-			for idx, row in enumerate(reader):
-				if idx == 0:
-					headers = [x.lower() for x in row[6:-1]]
-				else:
-					if len(row) < 2:
-						continue
-					player = row[1].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
-					team = row[2].lower()
-					if team == "cws":
-						team = "chw"
-					if team not in projections:
-						projections[team] = {}
-					if player not in projections[team]:
-						projections[team][player] = {}
-
-					for hdr, col in zip(headers, row[6:-1]):
-						projections[team][player][hdr] = float(col)
-
-					if "rbi" in projections[team][player]:
-						projections[team][player]["h+r+rbi"] = round(projections[team][player]["h"]+projections[team][player]["r"]+projections[team][player]["rbi"], 2)
-	with open(f"{prefix}static/baseballreference/projections.json", "w") as fh:
-		json.dump(projections, fh, indent=4)
-
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -696,7 +669,6 @@ if __name__ == "__main__":
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
-	parser.add_argument("--projections", help="Projections", action="store_true")
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
@@ -718,8 +690,6 @@ if __name__ == "__main__":
 
 	if args.averages:
 		write_averages()
-	elif args.projections:
-		write_projections()
 	elif args.bvp:
 		writeBVP()
 	elif args.rankings:
@@ -731,7 +701,6 @@ if __name__ == "__main__":
 	elif args.cron:
 		write_rankings()
 		writeBVP()
-		write_projections()
 		write_stats(date)
 		write_schedule(date)
 

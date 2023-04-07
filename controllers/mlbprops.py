@@ -16,6 +16,7 @@ import operator
 import os
 import subprocess
 import re
+import csv
 
 mlbprops_blueprint = Blueprint('mlbprops', __name__, template_folder='views')
 
@@ -126,7 +127,7 @@ def convertDKProp(mainCat, prop):
 		return "tb"
 	elif prop in ["hits"]:
 		return "h"
-	elif prop == "hits_allowed":
+	elif prop == "hits allowed":
 		return "h_allowed"
 	elif prop == "rbis":
 		return "rbi"
@@ -412,7 +413,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 		rankings = json.load(fh)
 	with open(f"{prefix}static/baseballreference/scores.json") as fh:
 		scores = json.load(fh)
-	with open(f"{prefix}static/baseballreference/projections.json") as fh:
+	with open(f"{prefix}static/mlbprops/projections/{date}.json") as fh:
 		projections = json.load(fh)
 	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
@@ -491,8 +492,11 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 				try:
 					battingNumber = lineups[team]["batting"].index(player)+1
+					if False and not (1 <= battingNumber <= 5):
+						continue
 				except:
 					battingNumber = "-"
+
 
 				line = propData[game][player][propName]["line"]
 				if line == "-":
@@ -753,6 +757,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					awayHomeSplits = lastYrAwayHomeSplits
 					gamesPlayed = lastYrGamesPlayed
 
+				projDiff = round(proj - line, 3)
+
 				props.append({
 					"game": game,
 					"player": player.title(),
@@ -783,6 +789,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"matchups": len(prevMatchup),
 					"line": line or 0,
 					"proj": proj,
+					"projDiff": projDiff,
 					"battingAvg": battingAvg,
 					"avg": avg,
 					"diff": diff,
@@ -854,6 +861,42 @@ def writeLineups():
 	with open(f"{prefix}static/baseballreference/leftOrRight.json", "w") as fh:
 		json.dump(leftOrRight, fh, indent=4)
 
+def write_projections(date):
+
+	year = datetime.now().year
+
+	projections = {}
+	for HP in ["H", "P"]:
+		with open(f"{prefix}FantasyPros_{year}_Projections_{HP}.csv", newline="") as fh:
+			reader = csv.reader(fh)
+			#data = fh.readlines()
+
+			headers = []
+			for idx, row in enumerate(reader):
+				if idx == 0:
+					headers = [x.lower() for x in row[6:-1]]
+				else:
+					if len(row) < 2:
+						continue
+					player = row[1].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
+					team = row[2].lower()
+					if team == "cws":
+						team = "chw"
+					if team not in projections:
+						projections[team] = {}
+					if player not in projections[team]:
+						projections[team][player] = {}
+
+					for hdr, col in zip(headers, row[6:-1]):
+						projections[team][player][hdr] = float(col)
+
+					if "rbi" in projections[team][player]:
+						projections[team][player]["h+r+rbi"] = round(projections[team][player]["h"]+projections[team][player]["r"]+projections[team][player]["rbi"], 2)
+						projections[team][player]["1b"] = projections[team][player]["h"] - (projections[team][player]["hr"] + projections[team][player]["3b"] + projections[team][player]["2b"])
+						projections[team][player]["tb"] = round(projections[team][player]["hr"]*4 + projections[team][player]["3b"]*3 + projections[team][player]["2b"]*2 + projections[team][player]["1b"], 2)
+	with open(f"{prefix}static/mlbprops/projections/{date}.json", "w") as fh:
+		json.dump(projections, fh, indent=4)
+
 @mlbprops_blueprint.route('/getMLBProps')
 def getProps_route():
 	pitchers = False
@@ -893,7 +936,7 @@ def props_route():
 		players = request.args.get("players")
 
 	# locks
-	bets = ["ozzie albies", "ronald acuna", "matt olson", "mookie betts", "will smith", "alejandro kirk", "salvador perez", "riley greene", "justin turner", "charlie blackmon", "keibert ruiz", "andrew vaughn", "matt chapman", "whit merrifield"]
+	bets = ["nathaniel lowe", "marcus semien", "ty france", "steven kwan", "trea turner", "jt realmuto", "tyler stephenson", "kyle schwarber", "jose abreu", "yordan alvarez", "kyle tucker", "bryan reynolds", "salvador perez", "joc pederson", "starling marte", "xander bogaerts", "matt olson", "ronald acuna", "mike trout", "shohei ohtani", "taylor ward", "paul goldschmidt", "nolan arenado"]
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)
@@ -906,6 +949,7 @@ if __name__ == "__main__":
 	parser.add_argument("--lineups", help="Lineups", action="store_true")
 	parser.add_argument("--lines", action="store_true", help="Game Lines")
 	parser.add_argument("-p", "--props", action="store_true", help="Props")
+	parser.add_argument("--projections", help="Projections", action="store_true")
 	parser.add_argument("-w", "--week", help="Week", type=int)
 
 	args = parser.parse_args()
@@ -919,10 +963,40 @@ if __name__ == "__main__":
 		writeLineups()
 	elif args.props:
 		writeStaticProps()
+	elif args.projections:
+		write_projections(date)
+		writeStaticProps()
 	elif args.cron:
 		writeLineups()
 		writeProps(date)
+		write_projections(date)
 		writeGameLines(date)
 		writeStaticProps()
 
 	#writeStaticProps()
+
+	if False:
+		totHits = {}
+		games = {}
+		for team in os.listdir("static/baseballreference/"):
+			if team.endswith("json"):
+				continue
+
+			for dt in os.listdir(f"static/baseballreference/{team}/"):
+				with open(f"static/baseballreference/{team}/{dt}") as fh:
+					stats = json.load(fh)
+				dt = dt[:-5]
+				if dt not in totHits:
+					totHits[dt] = []
+				if dt not in games:
+					games[dt] = 0
+				games[dt] += 1
+
+				for player in stats:
+					if "ip" not in stats[player]:
+						totHits[dt].append(stats[player]["h"])
+
+
+		for dt in totHits:
+			avg = sum(totHits[dt]) / games[dt]
+			print(dt, avg)
