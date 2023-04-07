@@ -283,7 +283,7 @@ def writeCsvs(props):
 			csvs[prop] = "\t".join(["NAME","OVER","POS","R/L","TEAM","A/H","OPP","OPP RANK","OPP RANK LYR","PROP","LINE","LAST ➡️","AVG","% OVER","L10 % OVER","CAREER % OVER","% OVER VS TEAM","VS TEAM","UNDER"])
 		else:
 			csvs[prop] = headers
-		rows = sorted(splitProps[prop], key=lambda k: (k["careerTotalOver"]), reverse=True)
+		rows = sorted(splitProps[prop], key=lambda k: (k["totalOver"], k["careerTotalOver"]), reverse=True)
 		for row in rows:
 			overOdds = row["overOdds"]
 			underOdds = row["underOdds"]
@@ -326,7 +326,7 @@ def writeCsvs(props):
 
 	for prop in ["h", "h+r+rbi", "hr", "so"]:
 		if prop in splitProps:
-			rows = sorted(splitProps[prop], key=lambda k: (k["careerTotalOver"]), reverse=True)
+			rows = sorted(splitProps[prop], key=lambda k: (k["totalOver"], k["careerTotalOver"]), reverse=True)
 			for row in [r for r in rows if int(str(r["battingNumber"]).replace('-', '10')) <= 5][:3]:
 				overOdds = row["overOdds"]
 				underOdds = row["underOdds"]
@@ -998,5 +998,5 @@ if __name__ == "__main__":
 
 
 		for dt in totHits:
-			avg = sum(totHits[dt]) / games[dt]
-			print(dt, avg)
+			avg = sum(totHits[dt]) / (games[dt] / 2)
+			print(dt, avg, games[dt])
