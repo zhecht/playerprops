@@ -1166,8 +1166,8 @@ def writeGameLines(date):
 				continue
 			for offerRow in cRow["offerSubcategory"]["offers"]:
 				for row in offerRow:
-					game = events[row["eventId"]]
 					try:
+						game = events[row["eventId"]]
 						gameType = row["label"].lower().split(" ")[-1]
 						if gameType.startswith("o/u"):
 							gameType = "total"
