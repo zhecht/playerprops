@@ -761,7 +761,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					awayHomeSplits = lastYrAwayHomeSplits
 					gamesPlayed = lastYrGamesPlayed
 
-				projDiff = round(proj - line, 3)
+				if proj:
+					projDiff = round((proj - line) / proj, 3)
 
 				props.append({
 					"game": game,
@@ -901,6 +902,146 @@ def write_projections(date):
 	with open(f"{prefix}static/mlbprops/projections/{date}.json", "w") as fh:
 		json.dump(projections, fh, indent=4)
 
+def getSlateData(date = None, teams=""):
+	res = []
+
+	if teams:
+		teams = teams.lower().split(",")
+
+	if not date:
+		date = datetime.now()
+		date = str(date)[:10]
+
+	with open(f"{prefix}static/baseballreference/rankings.json") as fh:
+		rankings = json.load(fh)
+	with open(f"{prefix}static/baseballreference/scores.json") as fh:
+		scores = json.load(fh)
+	with open(f"{prefix}static/baseballreference/totals.json") as fh:
+		stats = json.load(fh)
+	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
+		schedule = json.load(fh)
+	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
+		leftOrRight = json.load(fh)
+	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
+		lineups = json.load(fh)
+	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
+		gameLines = json.load(fh)
+
+	for game in schedule[date]:
+		gameSp = game.split(" @ ")
+		isAway = True
+		for idx, team in enumerate(gameSp):
+			opp = gameSp[0] if idx == 1 else gameSp[1]
+			if idx == 1:
+				isAway = False
+
+			runline = gameLines[game]["line"]["line"]
+			totalLine = gameLines[game]["total"]["line"]
+			if idx == 1:
+				runline *= -1
+
+			if runline > 0:
+				runline = f"+{runline}"
+
+			pitcherStats = {}
+			pitcherRecord = pitcher = pitcherThrows = ""
+			try:
+				pitcher = lineups[team]["pitching"]
+				pitcherThrows = leftOrRight[team][pitcher]
+				pitcherStats = stats[team][pitcher]
+				pitcherRecord = f"{pitcherStats.get('w', 0)}W-{pitcherStats.get('l', 0)}L"
+				pitcherStats["era"] = round(9 * pitcherStats["er"] / pitcherStats["ip"], 2)
+				pitcherStats["whip"] = round((pitcherStats["h_allowed"]+pitcherStats["bb_allowed"]) / pitcherStats["ip"], 2)
+				pitcherStats["hip"] = round((pitcherStats["h_allowed"]) / pitcherStats["ip"], 2)
+				pitcherStats["kip"] = round((pitcherStats["k"]) / pitcherStats["ip"], 2)
+				pitcherStats["bbip"] = round((pitcherStats["bb_allowed"]) / pitcherStats["ip"], 2)
+			except:
+				pass
+
+			runline = f"{runline} ({gameLines[game]['line']['odds'].split(',')[idx]})"
+			moneyline = gameLines[game]["moneyline"]["odds"].split(",")[idx]
+			totalLine = gameLines[game]['total']['line']
+			total = f"{'o' if idx == 0 else 'u'}{gameLines[game]['total']['line']} ({gameLines[game]['total']['odds'].split(',')[idx]})"
+
+			prevMatchup = []
+			totals = {"rpg": [], "rpga": [], "overs": []}
+			for dt in sorted(schedule, key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
+				if dt == date or datetime.strptime(dt, "%Y-%m-%d") > datetime.strptime(date, "%Y-%m-%d"):
+					continue
+				for g in schedule[dt]:
+					gSp = g.split(" @ ")
+					if gSp[0] in scores[dt] and team in gSp:
+						score1 = scores[dt][gSp[0]]
+						score2 = scores[dt][gSp[1]]
+						wonLost = "Won"
+						currPitcher = []
+						score = f"{score1}-{score2}"
+						file = f"{prefix}static/baseballreference/{team}/{dt}.json"
+						with open(file) as fh:
+							gameStats = json.load(fh)
+
+						if score2 > score1:
+							score = f"{score2}-{score1}"
+							if team == gSp[0]:
+								wonLost = "Lost"
+						elif team == gSp[1]:
+							wonLost = "Lost"
+
+						if opp in gSp:
+							for p in gameStats:
+								if "ip" in gameStats[p]:
+									currPitcher.append(p)
+							prevMatchup.append(f"{dt} {wonLost} {score} ({','.join(currPitcher)})")
+
+						teamScore = score1
+						oppScore = score2
+						if team == gSp[1]:
+							teamScore, oppScore = oppScore, teamScore
+						totals["rpg"].append(teamScore)
+						totals["rpga"].append(oppScore)
+						totals["overs"].append(teamScore+oppScore)
+
+			if len(totals["overs"]):
+				totals["oversL10"] = ",".join([str(x) for x in totals["overs"][:10]])
+				totals["ttL10"] = ",".join([str(x) for x in totals["rpg"][:10]])
+				totals["totalOver"] = round(len([x for x in totals["overs"] if x > totalLine]) * 100 / len(totals["overs"]))
+				totals["teamOver"] = f"{round(len([x for x in totals['overs'] if int(x) > totalLine]) * 100 / len(totals['overs']))}% SZN • {round(len([x for x in totals['overs'][:15] if int(x) > totalLine]) * 100 / len(totals['overs'][:15]))}% L15 • {round(len([x for x in totals['overs'][:5] if int(x) > totalLine]) * 100 / len(totals['overs'][:5]))}% L5 • {round(len([x for x in totals['overs'][:3] if int(x) > totalLine]) * 100 / len(totals['overs'][:3]))}% L3"
+			for key in ["rpg", "rpga", "overs"]:
+				if len(totals[key]):
+					totals[key] = round(sum(totals[key]) / len(totals[key]), 1)
+				else:
+					totals[key] = 0
+
+			res.append({
+				"game": game,
+				"team": team,
+				"opp": opp,
+				"awayHome": "A" if isAway else "H",
+				"prevMatchup": " • ".join(prevMatchup),
+				"prevMatchupList": prevMatchup,
+				"runline": runline,
+				"moneylineOdds": moneyline,
+				"total": total,
+				"totals": totals,
+				"pitcher": pitcher,
+				"pitcherStats": pitcherStats,
+				"pitcherThrows": pitcherThrows,
+				"pitcherRecord": pitcherRecord,
+			})
+
+	return res
+
+@mlbprops_blueprint.route('/slatemlb')
+def slate_route():
+	data = getSlateData()
+	grouped = {}
+	for row in data:
+		if row["game"] not in grouped:
+			grouped[row["game"]] = {}
+		grouped[row["game"]][row["awayHome"]] = row
+
+	return render_template("slatemlb.html", data=grouped)
+
 @mlbprops_blueprint.route('/getMLBProps')
 def getProps_route():
 	pitchers = False
@@ -940,7 +1081,7 @@ def props_route():
 		players = request.args.get("players")
 
 	# locks
-	bets = []
+	bets = ["shohei ohtani", "julio rodriguez", "trea turner", "ty france", "steven kwan", "bryan reynolds", "ryan mountcastle", "wander franco", "jd martinez", "aaron judge", "dj lemahieu", "adley rutschman", "luis arraez", "mookie betts"]
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)

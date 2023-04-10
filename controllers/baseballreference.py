@@ -44,91 +44,106 @@ def write_stats(date):
 		print("No games found for this date")
 		exit()
 
-	allStats = {}
-	for game in boxscores[date]:
-		away, home = map(str, game.split(" @ "))
+	dates = [date]
+	#dates = ["2023-03-30", "2023-03-31", "2023-04-01", "2023-04-02", "2023-04-03", "2023-04-04", "2023-04-05", "2023-04-06", "2023-04-07", "2023-04-08", "2023-04-09"]
+	for date in dates:
+		allStats = {}
+		for game in boxscores[date]:
+			away, home = map(str, game.split(" @ "))
 
-		if away not in allStats:
-			allStats[away] = {}
-		if home not in allStats:
-			allStats[home] = {}
+			if away not in allStats:
+				allStats[away] = {}
+			if home not in allStats:
+				allStats[home] = {}
 
 
-		gameId = boxscores[date][game].split("/")[-1].split("=")[-1]
-		url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
-		outfile = "outmlb2"
-		time.sleep(0.3)
-		call(["curl", "-k", url, "-o", outfile])
+			gameId = boxscores[date][game].split("/")[-1].split("=")[-1]
+			url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
+			outfile = "outmlb2"
+			time.sleep(0.3)
+			call(["curl", "-k", url, "-o", outfile])
 
-		with open(outfile) as fh:
-			data = json.load(fh)
+			with open(outfile) as fh:
+				data = json.load(fh)
 
-		if "code" in data and data["code"] == 400:
-			continue
-
-		if "players" not in data["boxscore"]:
-			continue
-		for teamRow in data["boxscore"]["players"]:
-			team = teamRow["team"]["abbreviation"].lower()
-			if team not in playerIds:
-				playerIds[team] = {}
-
-			for statRow in teamRow["statistics"]:
-				title = statRow["type"]
-
-				headers = [h.lower() for h in statRow["labels"]]
-
-				for playerRow in statRow["athletes"]:
-					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
-					playerId = int(playerRow["athlete"]["id"])
-
-					playerIds[team][player] = playerId
-					if player not in allStats[team]:
-						allStats[team][player] = {}
-
-					for header, stat in zip(headers, playerRow["stats"]):
-						if header == "h-ab":
-							continue
-						if header == "k" and title == "batting":
-							header = "so"
-						if header in ["pc-st"]:
-							pc, st = map(float, stat.split("-"))
-							allStats[team][player]["pc"] = pc
-							allStats[team][player]["st"] = st
-						elif header in ["bb", "hr", "h"] and title == "pitching":
-							allStats[team][player][header+"_allowed"] = float(stat)
-						else:
-							val = stat
-							try:
-								val = float(val)
-							except:
-								val = 0.0
-							allStats[team][player][header] = val
-					if "ab" in allStats[team][player]:
-						_3b = allStats[team][player].get("3b", 0)
-						_2b = allStats[team][player].get("2b", 0)
-						hr = allStats[team][player]["hr"]
-						h = allStats[team][player]["h"]
-						_1b = h - (_3b+_2b+hr)
-						allStats[team][player]["1b"] = _1b
-						allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
-
-		for rosterRow in data["rosters"]:
-			team = rosterRow["team"]["abbreviation"].lower()
-			if "roster" not in rosterRow:
+			if "code" in data and data["code"] == 400:
 				continue
-			for playerRow in rosterRow["roster"]:
-				player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
-				for statRow in playerRow.get("stats", []):
-					hdr = statRow["shortDisplayName"].lower()
-					if hdr not in allStats[team][player]:
-						allStats[team][player][hdr] = statRow["value"]
 
-	for team in allStats:
-		if not os.path.isdir(f"{prefix}static/baseballreference/{team}"):
-			os.mkdir(f"{prefix}static/baseballreference/{team}")
-		with open(f"{prefix}static/baseballreference/{team}/{date}.json", "w") as fh:
-			json.dump(allStats[team], fh, indent=4)
+			if "players" not in data["boxscore"]:
+				continue
+			for teamRow in data["boxscore"]["players"]:
+				team = teamRow["team"]["abbreviation"].lower()
+				if team not in playerIds:
+					playerIds[team] = {}
+
+				for statRow in teamRow["statistics"]:
+					title = statRow["type"]
+
+					headers = [h.lower() for h in statRow["labels"]]
+
+					for playerRow in statRow["athletes"]:
+						player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
+						playerId = int(playerRow["athlete"]["id"])
+
+						playerIds[team][player] = playerId
+						if player not in allStats[team]:
+							allStats[team][player] = {}
+
+						pitchingDecision = ""
+						if "notes" in playerRow and playerRow["notes"][0]["type"] == "pitchingDecision":
+							pitchingDecision = playerRow["notes"][0]["text"][0].lower()
+							if pitchingDecision == "h":
+								pitchingDecision = "hold"
+							elif pitchingDecision == "s":
+								pitchingDecision = "sv"
+							try:
+								allStats[team][player][pitchingDecision] += 1
+							except:
+								allStats[team][player][pitchingDecision] = 1
+
+						for header, stat in zip(headers, playerRow["stats"]):
+							if header == "h-ab":
+								continue
+							if header == "k" and title == "batting":
+								header = "so"
+							if header in ["pc-st"]:
+								pc, st = map(float, stat.split("-"))
+								allStats[team][player]["pc"] = pc
+								allStats[team][player]["st"] = st
+							elif header in ["bb", "hr", "h"] and title == "pitching":
+								allStats[team][player][header+"_allowed"] = float(stat)
+							else:
+								val = stat
+								try:
+									val = float(val)
+								except:
+									val = 0.0
+								allStats[team][player][header] = val
+						if "ab" in allStats[team][player]:
+							_3b = allStats[team][player].get("3b", 0)
+							_2b = allStats[team][player].get("2b", 0)
+							hr = allStats[team][player]["hr"]
+							h = allStats[team][player]["h"]
+							_1b = h - (_3b+_2b+hr)
+							allStats[team][player]["1b"] = _1b
+							allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
+
+			for rosterRow in data["rosters"]:
+				team = rosterRow["team"]["abbreviation"].lower()
+				if "roster" not in rosterRow:
+					continue
+				for playerRow in rosterRow["roster"]:
+					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
+					for statRow in playerRow.get("stats", []):
+						hdr = statRow["shortDisplayName"].lower()
+						if hdr not in allStats[team][player]:
+							allStats[team][player][hdr] = statRow["value"]
+
+		for team in allStats:
+			if not os.path.isdir(f"{prefix}static/baseballreference/{team}"):
+				os.mkdir(f"{prefix}static/baseballreference/{team}")
+			with open(f"{prefix}static/baseballreference/{team}/{date}.json", "w") as fh:
+				json.dump(allStats[team], fh, indent=4)
 
 	write_totals()
 

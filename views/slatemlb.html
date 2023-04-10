@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MLB Slate</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/mlbteams.css" type="text/css">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		.game {
+			position: relative;
+			display: flex;
+			padding: 2rem 0;
+			border-bottom: 1px solid;
+			min-height: 100px;
+			justify-content: space-evenly;
+		}
+		.team {
+			display: flex;
+			flex-direction: column;
+			text-align: center;
+			width: calc(calc(100% - 500px) / 2);
+		}
+		.team h2 {
+			width: 100%;
+			margin: 0;
+		}
+		table {
+			border-collapse: collapse;
+			width: 500px;
+			height: min-content;
+			margin-top: auto;
+			margin-bottom: auto;
+		}
+		tr {
+			text-align: center;
+			border-bottom: 1px solid;
+		}
+		td:nth-child(2) {
+			padding: 0 1rem;
+		}
+		.row {
+			margin-top: 1rem;
+			display:flex;
+			flex-direction:column;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+
+		@media (max-width: 500px) {
+			.game {
+				flex-direction: column;
+
+			}
+			.team {
+				width: 100%;
+			}
+		}
+	</style>
+	<body>
+		<div style="text-align: center;margin-top:1rem">
+		</div>
+		{% for game in data %}
+		<div class="game">
+			<div class="team">
+				<h2 class="{{data[game]['A'].team}}">{{ data[game]["A"].team.upper() }}</h2>
+				<div>
+					{{ data[game]["A"].pitcher.title() }} ({{ data[game]["A"].pitcherThrows }})
+					&bull;
+					{{ data[game]["A"].pitcherRecord }}
+					&bull;
+					{{ data[game]["A"].pitcherStats.era }} ERA
+				</div>
+				<div>
+					{{ data[game]["A"].pitcherStats.ip }} IP
+					&bull;
+					{{ data[game]["A"].pitcherStats.h_allowed|int }} H
+					&bull;
+					{{ data[game]["A"].pitcherStats.k|int }} K
+					&bull;
+					{{ data[game]["A"].pitcherStats.bb_allowed|int }} BB
+					&bull;
+					{{ data[game]["A"].pitcherStats.er|int }} ER
+				</div>
+				<div>
+					{{ data[game]["A"].pitcherStats.whip }} WH/IP
+					&bull;
+					{{ data[game]["A"].pitcherStats.hip }} H/IP
+					&bull;
+					{{ data[game]["A"].pitcherStats.kip }} K/IP
+					&bull;
+					{{ data[game]["A"].pitcherStats.bbip }} BB/IP
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Team Totals</span>
+					<span>{{ data[game]["A"].totals.ttL10 }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Game Totals</span>
+					<span>{{ data[game]["A"].totals.oversL10 }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Team % Over</span>
+					<span>{{ data[game]["A"].totals.teamOver }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Prev Matchups</span>
+					{% for matchup in data[game]["A"].prevMatchupList %}
+					<span>{{matchup}}</span>
+					{% endfor %}
+				</div>
+			</div>
+			<table>
+				<tr>
+					<td>{{ data[game]["A"].team.upper() }}</td><td>TEAM</td><td>{{ data[game]["H"].team.upper() }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].moneylineOdds }}</td><td>ML</td><td>{{ data[game]["H"].moneylineOdds }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].runline }}</td><td>PL</td><td>{{ data[game]["H"].runline }}</div>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].total }}</td><td>O/U</td><td>{{ data[game]["H"].total }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].totals.totalOver }}%</td><td>% Over</td><td>{{ data[game]["H"].totals.totalOver }}%</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].totals.overs }}</td><td>Avg Overs</td><td>{{ data[game]["H"].totals.overs }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].totals.rpg }}</td><td>RPG</td><td>{{ data[game]["H"].totals.rpg }}</td>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].totals.rpga }}</td><td>RPGA</td><td>{{ data[game]["H"].totals.rpga }}</td>
+				</tr>
+			</table>
+			<div class="team">
+				<h2 class="{{data[game]['H'].team}}">{{ data[game]["H"].team.upper() }}</h2>
+				<div>
+					{{ data[game]["H"].pitcher.title() }} ({{ data[game]["H"].pitcherThrows }})
+					&bull;
+					{{ data[game]["H"].pitcherRecord }}
+					&bull;
+					{{ data[game]["H"].pitcherStats.era }} ERA
+				</div>
+				<div>
+					{{ data[game]["H"].pitcherStats.ip }} IP
+					&bull;
+					{{ data[game]["H"].pitcherStats.h_allowed|int }} H
+					&bull;
+					{{ data[game]["H"].pitcherStats.k|int }} K
+					&bull;
+					{{ data[game]["H"].pitcherStats.bb_allowed|int }} BB
+					&bull;
+					{{ data[game]["H"].pitcherStats.er|int }} ER
+				</div>
+				<div>
+					{{ data[game]["H"].pitcherStats.whip }} WH/IP
+					&bull;
+					{{ data[game]["H"].pitcherStats.hip }} H/IP
+					&bull;
+					{{ data[game]["H"].pitcherStats.kip }} K/IP
+					&bull;
+					{{ data[game]["H"].pitcherStats.bbip }} BB/IP
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Team Totals</span>
+					<span>{{ data[game]["H"].totals.ttL10 }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">L10 Game Totals</span>
+					<span>{{ data[game]["H"].totals.oversL10 }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Team % Over</span>
+					<span>{{ data[game]["H"].totals.teamOver }}</span>
+				</div>
+				<div class="row">
+					<span style="text-decoration: underline;">Prev Matchups</span>
+					{% for matchup in data[game]["H"].prevMatchupList %}
+					<span>{{matchup}}</span>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</body>
+
+</html>
