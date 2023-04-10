@@ -67,7 +67,7 @@
 			<a id="so" href="/mlbprops?prop=so">SO</a>
 			<a id="1b" href="/mlbprops?prop=1b">1B</a>
 			<a id="2b" href="/mlbprops?prop=2b">2B</a>
-			<a id="batter_bb" href="/mlbprops?prop=batter_bb">BB</a>
+			<a id="batter_bb" href="/mlbprops?prop=bb">BB</a>
 		</div>
 		<div id="header">
 			<a id="full" class="active" href="/mlbprops">Pitching</a>
@@ -322,6 +322,9 @@
 						TABLE.hideColumn("hip");
 						TABLE.showColumn("kip");
 					}
+				} else if (propArg == "bb") {
+					TABLE.hideColumn("hip");
+					TABLE.showColumn("bbip");
 				}
 			}, 500);
 		</script>
