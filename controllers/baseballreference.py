@@ -191,6 +191,49 @@ def write_stats(date):
 	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
 
+def write_year_averages():
+	year = datetime.datetime.now().year
+	with open(f"{prefix}static/baseballreference/averages.json") as fh:
+		averages = json.load(fh)
+
+	for team in os.listdir(f"{prefix}static/baseballreference/"):
+		if team.endswith("json"):
+			continue
+		
+		copy = True
+		for file in glob(f"{prefix}static/baseballreference/{team}/*.json"):
+			with open(file) as fh:
+				stats = json.load(fh)
+
+			for player in stats:
+				if player not in averages[team]:
+					averages[team][player] = {}
+				if year not in averages[team][player]:
+					averages[team][player][year] = {}
+				if copy:
+					averages[team][player][year] = stats[player].copy()
+				else:
+					for hdr in stats[player]:
+						if hdr not in averages[team][player][year]:
+							averages[team][player][year][hdr] = 0
+						averages[team][player][year][hdr] += stats[player][hdr]
+
+				for hdr in stats[player]:
+					val = stats[player][hdr]
+					if hdr in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
+						if hdr+"Overs" not in averages[team][player][year]:
+							averages[team][player][year][hdr+"Overs"] = {}
+						for i in range(1, int(val)+1):
+							if i not in averages[team][player][year][hdr+"Overs"]:
+								averages[team][player][year][hdr+"Overs"][i] = 0
+							averages[team][player][year][hdr+"Overs"][i] += 1
+
+			#only copy first time we see team stats
+			copy = False
+
+	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
+		json.dump(averages, fh, indent=4)
+
 def write_totals():
 	totals = {}
 	teamTotals = {}
@@ -234,6 +277,8 @@ def write_totals():
 
 	with open(f"{prefix}static/baseballreference/teamTotals.json", "w") as fh:
 		json.dump(teamTotals, fh, indent=4)
+
+	write_year_averages()
 
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
@@ -666,7 +711,10 @@ def write_rankings():
 
 			lastYearRanks.append({"team": team, "lastYear": float(tds[7].text.replace("--", "0").replace("%", ""))})
 
-		for idx, x in enumerate(sorted(lastYearRanks, key=lambda k: k["lastYear"], reverse=True)):
+		reverse=True
+		if "allowed" in ranking:
+			reverse=False
+		for idx, x in enumerate(sorted(lastYearRanks, key=lambda k: k["lastYear"], reverse=reverse)):
 			rankings[x["team"]][ranking]["lastYearRank"] = idx+1
 			rankClass = ""
 			if idx+1 <= 10:
@@ -843,3 +891,4 @@ if __name__ == "__main__":
 	#writeYearAverages()
 	#write_stats(date)
 	#write_totals()
+	#write_year_averages()

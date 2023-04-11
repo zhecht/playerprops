@@ -1160,6 +1160,7 @@ if __name__ == "__main__":
 	#writeStaticProps()
 
 	if False:
+
 		totHits = {}
 		games = {}
 		for team in os.listdir("static/baseballreference/"):
@@ -1169,18 +1170,29 @@ if __name__ == "__main__":
 			for dt in os.listdir(f"static/baseballreference/{team}/"):
 				with open(f"static/baseballreference/{team}/{dt}") as fh:
 					stats = json.load(fh)
+
+				if not stats:
+					continue
+
 				dt = dt[:-5]
 				if dt not in totHits:
-					totHits[dt] = []
+					totHits[dt] = {"h": 0, "hr": 0, "r": 0}
 				if dt not in games:
 					games[dt] = 0
+
 				games[dt] += 1
 
 				for player in stats:
 					if "ip" not in stats[player]:
-						totHits[dt].append(stats[player]["h"])
+						for hdr in totHits[dt]:
+							totHits[dt][hdr] += stats[player][hdr]
 
 
-		for dt in totHits:
-			avg = sum(totHits[dt]) / (games[dt] / 2)
-			print(dt, avg, games[dt])
+		for p in ["h", "hr", "r"]:
+			for dt in sorted(totHits, key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
+				for prop in totHits[dt]:
+					if p != prop:
+						continue
+					avg = round(totHits[dt][prop] / (games[dt] / 2), 2)
+					print(dt, prop, avg)
+			print("\n")
