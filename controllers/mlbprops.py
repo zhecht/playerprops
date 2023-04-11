@@ -1206,7 +1206,7 @@ if __name__ == "__main__":
 	#writeStaticProps()
 	#writeBallparks()
 
-	if True:
+	if False:
 		with open("static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 
@@ -1231,7 +1231,7 @@ if __name__ == "__main__":
 			print(f"{game}|{ballparks[game]}|{away}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
 
 
-	if False:
+	if True:
 
 		totHits = {}
 		games = {}
