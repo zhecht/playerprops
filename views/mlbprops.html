@@ -267,6 +267,7 @@
 						{title: "Line", field: "line", hozAlign: "center"},
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
 						{title: "Proj", field: "proj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
+						{title: "HR Factor", field: "hrFactor", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "Proj Diff", field: "projDiff", visible: false, sorter: "number"},
 						{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
@@ -307,6 +308,7 @@
 				if (propArg === "hr") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("hrip");
+					TABLE.showColumn("hrFactor");
 				} else if (propArg === "so") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");

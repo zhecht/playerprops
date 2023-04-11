@@ -424,6 +424,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 		leftOrRight = json.load(fh)
 	with open(f"{prefix}static/baseballreference/pitching.json") as fh:
 		pitching = json.load(fh)
+	with open(f"{prefix}static/baseballreference/playerHRFactors.json") as fh:
+		playerHRFactors = json.load(fh)
 	with open(f"{prefix}static/baseballreference/statsVsTeam.json") as fh:
 		statsVsTeam = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
@@ -483,7 +485,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 				proj = 0
 				try:
-					proj = round(projections[team][player][prop], 2)
+					if propName in projections[team][player]:
+						proj = round(projections[team][player][propName], 2)
+					else:
+						proj = round(projections[team][player][prop], 2)
 				except:
 					pass
 
@@ -764,6 +769,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				if proj:
 					projDiff = round((proj - line) / proj, 3)
 
+				hrFactor = ""
+				if team in playerHRFactors and player in playerHRFactors[team]:
+					hrFactor = playerHRFactors[team][player]
+
 				props.append({
 					"game": game,
 					"player": player.title(),
@@ -775,6 +784,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					#"winLossSplits": winLossSplits,
 					"bats": bats,
 					"battingNumber": battingNumber,
+					"hrFactor": hrFactor,
 					"pos": pos,
 					"againstPitcherStats": againstPitcherStats,
 					"againstPitcherStatsPerAB": againstPitcherStatsPerAB,
@@ -891,6 +901,10 @@ def write_projections(date):
 						projections[team] = {}
 					if player not in projections[team]:
 						projections[team][player] = {}
+
+					if player.startswith("shohei") and row[3] != "SP,DH":
+						continue
+						
 
 					for hdr, col in zip(headers, row[6:-1]):
 						suffix = ""
@@ -1051,6 +1065,37 @@ def getSlateData(date = None, teams=""):
 
 	return res
 
+def writeBallparks():
+	url = "https://ballparkpal.com/ParkFactors.php"
+
+	ballparks = {}
+	playerHRFactors = {}
+	outfile = "outmlb2"
+	time.sleep(0.2)
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	for row in soup.find("table", class_="parkFactorsTable").findAll("tr")[1:]:
+		game = row.find("div", class_="matchupText").text.strip().lower().replace("was", "wsh")
+		hr = row.find("td", class_="projectionText").text
+
+		ballparks[game] = hr
+
+	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
+		team = row.find("td").text.lower().replace("was", "wsh")
+		player = row.findAll("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+		hr = float(row.findAll("td")[3].text)
+
+		if team not in playerHRFactors:
+			playerHRFactors[team] = {}
+		playerHRFactors[team][player] = hr
+
+	with open(f"{prefix}static/baseballreference/ballparks.json", "w") as fh:
+		json.dump(ballparks, fh, indent=4)
+
+	with open(f"{prefix}static/baseballreference/playerHRFactors.json", "w") as fh:
+		json.dump(playerHRFactors, fh, indent=4)
+
 @mlbprops_blueprint.route('/slatemlb')
 def slate_route():
 	data = getSlateData()
@@ -1120,7 +1165,7 @@ def props_route():
 		bet = request.args.get("bet")
 
 	# locks
-	bets = ["shohei ohtani", "kyle tucker", "nathaniel lowe", "tyler stephenson", "wander franco", "trea turner", "garrett cooper", "gleyber torres"]
+	bets = ["shohei ohtani", "kyle tucker", "nathaniel lowe", "tyler stephenson", "wander franco", "trea turner", "garrett cooper", "gleyber torres", "xander bogaerts", "austin riley", "andrew benintendi", "jose ramirez", "randy arozarena", "willy adames"]
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)
@@ -1153,11 +1198,38 @@ if __name__ == "__main__":
 	elif args.cron:
 		writeLineups()
 		writeProps(date)
+		writeBallparks()
 		write_projections(date)
 		writeGameLines(date)
 		writeStaticProps()
 
 	#writeStaticProps()
+	#writeBallparks()
+
+	if True:
+		with open("static/baseballreference/schedule.json") as fh:
+			schedule = json.load(fh)
+
+		with open("static/baseballreference/rankings.json") as fh:
+			rankings = json.load(fh)
+
+		with open(f"{prefix}static/baseballreference/ballparks.json") as fh:
+			ballparks = json.load(fh)
+
+		headers = ["Game", "Park Factor", "Away", "Away HR/G", "Away Rank", "Away Opp HR/G", "Away Opp HR/G Rank", "Away A-H Splits", "Home", "Home HR/G", "Home Rank", "Home Opp HR/G", "Home Opp HR/G Rank", "Home A-H Splits"]
+
+		print("|".join(headers))
+		print("|".join([":--"]*len(headers)))
+		for game in schedule[date]:
+			away, home = map(str, game.split(" @ "))
+			awayRank, awayVal = addNumSuffix(rankings[away]["hr"]["rank"]), rankings[away]["hr"]["season"]
+			awayOppRank, awayOppVal = addNumSuffix(rankings[away]["hr_allowed"]["rank"]), rankings[away]["hr_allowed"]["season"]
+			awaySplits = f"**{rankings[away]['hr']['away']}** - {rankings[away]['hr']['home']}"
+			homeRank, homeVal = addNumSuffix(rankings[home]["hr"]["rank"]), rankings[home]["hr"]["season"]
+			homeOppRank, homeOppVal = addNumSuffix(rankings[home]["hr_allowed"]["rank"]), rankings[home]["hr_allowed"]["season"]
+			homeSplits = f"{rankings[home]['hr']['away']} - **{rankings[home]['hr']['home']}**"
+			print(f"{game}|{ballparks[game]}|{away}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
+
 
 	if False:
 
