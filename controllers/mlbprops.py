@@ -232,7 +232,7 @@ def writeProps(date):
 							except:
 								continue
 							try:
-								player = row["outcomes"][0]["participant"].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").split(" (")[0]
+								player = row["outcomes"][0]["participant"].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").split(" (")[0]
 							except:
 								continue
 							odds = ["+0","+0"]
@@ -702,7 +702,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				if rankingsProp in rankings[opp]:
 					oppRankVal = str(rankings[opp][rankingsProp]["season"])
 					oppRank = rankings[opp][rankingsProp]['rank']
-					oppRankLastYear = rankings[opp]["ly_"+rankingsProp]['rank']
+					oppRankLastYear = rankings[opp][rankingsProp].get('lastYearRank', 0)
 					oppABRank = rankings[opp]["opp_ab"]["rank"]
 
 				hitRateOdds = diff = 0
@@ -883,7 +883,7 @@ def write_projections(date):
 				else:
 					if len(row) < 2:
 						continue
-					player = row[1].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
+					player = row[1].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 					team = row[2].lower()
 					if team == "cws":
 						team = "chw"
@@ -922,6 +922,8 @@ def getSlateData(date = None, teams=""):
 		schedule = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
 		leftOrRight = json.load(fh)
+	with open(f"{prefix}static/baseballreference/teamTotals.json") as fh:
+		teamTotals = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
 		lineups = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
@@ -935,10 +937,14 @@ def getSlateData(date = None, teams=""):
 			if idx == 1:
 				isAway = False
 
+			if "line" not in gameLines[game]:
+				continue
 			runline = gameLines[game]["line"]["line"]
 			totalLine = gameLines[game]["total"]["line"]
 			if idx == 1:
 				runline *= -1
+
+			runlineSpread = runline
 
 			if runline > 0:
 				runline = f"+{runline}"
@@ -964,7 +970,7 @@ def getSlateData(date = None, teams=""):
 			total = f"{'o' if idx == 0 else 'u'}{gameLines[game]['total']['line']} ({gameLines[game]['total']['odds'].split(',')[idx]})"
 
 			prevMatchup = []
-			totals = {"rpg": [], "rpga": [], "overs": []}
+			totals = {"rpg": [], "rpga": [], "hpg": [], "hpga": [], "overs": [], "diff": []}
 			for dt in sorted(schedule, key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
 				if dt == date or datetime.strptime(dt, "%Y-%m-%d") > datetime.strptime(date, "%Y-%m-%d"):
 					continue
@@ -991,7 +997,7 @@ def getSlateData(date = None, teams=""):
 							for p in gameStats:
 								if "ip" in gameStats[p]:
 									currPitcher.append(p)
-							prevMatchup.append(f"{dt} {wonLost} {score} ({','.join(currPitcher)})")
+							prevMatchup.append(f"{dt} {wonLost} {score} (SP: {currPitcher[0].title()})")
 
 						teamScore = score1
 						oppScore = score2
@@ -1000,13 +1006,23 @@ def getSlateData(date = None, teams=""):
 						totals["rpg"].append(teamScore)
 						totals["rpga"].append(oppScore)
 						totals["overs"].append(teamScore+oppScore)
+						totals["diff"].append(teamScore-oppScore)
+
 
 			if len(totals["overs"]):
 				totals["oversL10"] = ",".join([str(x) for x in totals["overs"][:10]])
 				totals["ttL10"] = ",".join([str(x) for x in totals["rpg"][:10]])
 				totals["totalOver"] = round(len([x for x in totals["overs"] if x > totalLine]) * 100 / len(totals["overs"]))
+				totals["runlineOver"] = round(len([x for x in totals["diff"] if x+runlineSpread > 0]) * 100 / len(totals["diff"]))
 				totals["teamOver"] = f"{round(len([x for x in totals['overs'] if int(x) > totalLine]) * 100 / len(totals['overs']))}% SZN • {round(len([x for x in totals['overs'][:15] if int(x) > totalLine]) * 100 / len(totals['overs'][:15]))}% L15 • {round(len([x for x in totals['overs'][:5] if int(x) > totalLine]) * 100 / len(totals['overs'][:5]))}% L5 • {round(len([x for x in totals['overs'][:3] if int(x) > totalLine]) * 100 / len(totals['overs'][:3]))}% L3"
-			for key in ["rpg", "rpga", "overs"]:
+
+			for p in ["h", "r"]:
+				totals[f"{p}pg"] = rankings[team][f"{p}"]["season"]
+				totals[f"{p}pgL3"] = rankings[team][f"{p}"]["last3"]
+				totals[f"{p}pgRank"] = rankings[team][f"{p}"]["rank"]
+				totals[f"{p}pga"] = rankings[team][f"{p}_allowed"]["season"]
+				totals[f"{p}pgaRank"] = rankings[team][f"{p}_allowed"]["rank"]
+			for key in ["overs"]:
 				if len(totals[key]):
 					totals[key] = round(sum(totals[key]) / len(totals[key]), 1)
 				else:
@@ -1024,6 +1040,7 @@ def getSlateData(date = None, teams=""):
 				"total": total,
 				"totals": totals,
 				"pitcher": pitcher,
+				"rankings": rankings[team],
 				"pitcherStats": pitcherStats,
 				"pitcherThrows": pitcherThrows,
 				"pitcherRecord": pitcherRecord,
@@ -1047,10 +1064,7 @@ def getProps_route():
 	pitchers = False
 	if request.args.get("pitchers"):
 		pitchers = True
-	if request.args.get("teams") or request.args.get("players") or request.args.get("date"):
-		teams = ""
-		if request.args.get("teams"):
-			teams = request.args.get("teams").lower().split(",")
+	if request.args.get("players") or request.args.get("date"):
 		players = ""
 		if request.args.get("players"):
 			players = request.args.get("players").lower().split(",")
@@ -1061,11 +1075,31 @@ def getProps_route():
 	else:
 		with open(f"{prefix}static/betting/mlb.json") as fh:
 			props = json.load(fh)
+
+	if request.args.get("teams"):
+		arr = []
+		teams = request.args.get("teams").lower().split(",")
+		for row in props:
+			team1, team2 = map(str, row["game"].split(" @ "))
+			if team1 in teams or team2 in teams:
+				arr.append(row)
+		props = arr
+
+	if request.args.get("bet"):
+		arr = []
+		for row in props:
+			if "P" in row["pos"]:
+				arr.append(row)
+			else:
+				if int(str(row["battingNumber"]).replace("-", "10")) <= 5:
+					arr.append(row)
+		props = arr
+
 	return jsonify(props)
 
 @mlbprops_blueprint.route('/mlbprops')
 def props_route():
-	prop = date = teams = players = ""
+	prop = date = teams = players = bet = ""
 	if request.args.get("prop"):
 		prop = request.args.get("prop").replace(" ", "+")
 
@@ -1079,13 +1113,15 @@ def props_route():
 		teams = request.args.get("teams")
 	if request.args.get("players"):
 		players = request.args.get("players")
+	if request.args.get("bet"):
+		bet = request.args.get("bet")
 
 	# locks
-	bets = ["shohei ohtani", "julio rodriguez", "trea turner", "ty france", "steven kwan", "bryan reynolds", "ryan mountcastle", "wander franco", "jd martinez", "aaron judge", "dj lemahieu", "adley rutschman", "luis arraez", "mookie betts"]
+	bets = []
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)
-	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players)
+	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players, bet=bet)
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()

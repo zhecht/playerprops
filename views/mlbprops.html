@@ -70,6 +70,7 @@
 			<a id="batter_bb" href="/mlbprops?prop=bb">BB</a>
 		</div>
 		<div id="header">
+			<a style="text-decoration: underline;" href="/slatemlb">Slate</a>
 			<a id="full" class="active" href="/mlbprops">Pitching</a>
 			<a id="k" href="/mlbprops?prop=k">Strikeouts</a>
 			<!--
@@ -217,7 +218,7 @@
 				TABLE = new Tabulator("#propsTable", {
 					tooltipsHeader: true,
 					ajaxURL: "/getMLBProps",
-					ajaxParams:{date: "{{date}}", teams: "{{teams}}", players: "{{players}}"},
+					ajaxParams:{date: "{{date}}", teams: "{{teams}}", players: "{{players}}", bet: "{{bet}}"},
 					responsiveLayout:"collapse",
 					responsiveLayoutCollapseStartOpen: false,
 					//layout: "fitDataFill",

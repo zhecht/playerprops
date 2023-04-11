@@ -8,6 +8,7 @@ import operator
 import re
 import time
 import csv
+import unicodedata
 
 from bs4 import BeautifulSoup as BS
 from bs4 import Comment
@@ -22,9 +23,9 @@ except:
 	from functions import *
 
 try:
-  import urllib2 as urllib
+	import urllib2 as urllib
 except:
-  import urllib.request as urllib
+	import urllib.request as urllib
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -71,10 +72,14 @@ def write_stats(date):
 
 			if "players" not in data["boxscore"]:
 				continue
+
+			lastNames = {}
 			for teamRow in data["boxscore"]["players"]:
 				team = teamRow["team"]["abbreviation"].lower()
 				if team not in playerIds:
 					playerIds[team] = {}
+				if team not in lastNames:
+					lastNames[team] = {}
 
 				for statRow in teamRow["statistics"]:
 					title = statRow["type"]
@@ -82,8 +87,9 @@ def write_stats(date):
 					headers = [h.lower() for h in statRow["labels"]]
 
 					for playerRow in statRow["athletes"]:
-						player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
+						player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 						playerId = int(playerRow["athlete"]["id"])
+						lastNames[team][player.split(" ")[-1]] = player
 
 						playerIds[team][player] = playerId
 						if player not in allStats[team]:
@@ -119,25 +125,60 @@ def write_stats(date):
 								except:
 									val = 0.0
 								allStats[team][player][header] = val
-						if "ab" in allStats[team][player]:
-							_3b = allStats[team][player].get("3b", 0)
-							_2b = allStats[team][player].get("2b", 0)
-							hr = allStats[team][player]["hr"]
-							h = allStats[team][player]["h"]
-							_1b = h - (_3b+_2b+hr)
-							allStats[team][player]["1b"] = _1b
-							allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
+
+			for teamRow in data["boxscore"]["teams"]:
+				team = teamRow["team"]["abbreviation"].lower()
+				if not teamRow["details"]:
+					continue
+				for detailRow in teamRow["details"][0]["stats"]:
+					stat = detailRow["abbreviation"].lower()
+
+					if stat not in ["2b", "3b"]:
+						continue
+
+					for playerVal in detailRow["displayValue"].split("; "):
+						name = strip_accents(playerVal).split(" (")[0].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+						try:
+							val = int(name.split(" ")[-1])
+							name = " ".join(name.split(" ")[:-1])
+						except:
+							val = 1
+
+						if team == "tb" and name.endswith("lowe"):
+							player = name.replace("j ", "josh ").replace("b ", "brandon ")
+						elif team == "hou" and name.endswith("abreu"):
+							player = name.replace("j ", "jose ").replace("b ", "bryan ")
+						elif team == "nyy" and name.endswith("cordero"):
+							player = name.replace("f ", "franchy ").replace("j ", "jimmy ")
+						else:
+							try:
+								player = lastNames[team][name.split(" ")[-1]]
+							except:
+								print(team, name)
+								continue
+						allStats[team][player][stat] = val
 
 			for rosterRow in data["rosters"]:
 				team = rosterRow["team"]["abbreviation"].lower()
 				if "roster" not in rosterRow:
 					continue
 				for playerRow in rosterRow["roster"]:
-					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "")
+					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 					for statRow in playerRow.get("stats", []):
 						hdr = statRow["shortDisplayName"].lower()
 						if hdr not in allStats[team][player]:
 							allStats[team][player][hdr] = statRow["value"]
+
+			for team in allStats:
+				for player in allStats[team]:
+					if "ab" in allStats[team][player]:
+						_3b = allStats[team][player].get("3b", 0)
+						_2b = allStats[team][player].get("2b", 0)
+						hr = allStats[team][player]["hr"]
+						h = allStats[team][player]["h"]
+						_1b = h - (_3b+_2b+hr)
+						allStats[team][player]["1b"] = _1b
+						allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
 		for team in allStats:
 			if not os.path.isdir(f"{prefix}static/baseballreference/{team}"):
@@ -152,9 +193,14 @@ def write_stats(date):
 
 def write_totals():
 	totals = {}
+	teamTotals = {}
 	for team in os.listdir(f"{prefix}static/baseballreference/"):
+		if team.endswith("json"):
+			continue
 		if team not in totals:
 			totals[team] = {}
+		if team not in teamTotals:
+			teamTotals[team] = {}
 
 		for file in glob(f"{prefix}static/baseballreference/{team}/*.json"):
 			with open(file) as fh:
@@ -168,12 +214,26 @@ def write_totals():
 							totals[team][player][header] = 0
 						totals[team][player][header] += stats[player][header]
 
+				for header in stats[player]:
+					if header == "r" and "ip" in stats[player]:
+						continue
+					if header not in teamTotals[team]:
+						teamTotals[team][header] = 0
+					teamTotals[team][header] += stats[player][header]
+
 				if "gamesPlayed" not in totals[team][player]:
 					totals[team][player]["gamesPlayed"] = 0
 				totals[team][player]["gamesPlayed"] += 1
 
+			if "gamesPlayed" not in teamTotals[team]:
+				teamTotals[team]["gamesPlayed"] = 0
+			teamTotals[team]["gamesPlayed"] += 1
+
 	with open(f"{prefix}static/baseballreference/totals.json", "w") as fh:
 		json.dump(totals, fh, indent=4)
+
+	with open(f"{prefix}static/baseballreference/teamTotals.json", "w") as fh:
+		json.dump(teamTotals, fh, indent=4)
 
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
@@ -484,6 +544,17 @@ def writeYearAverages():
 	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
 		json.dump(statsVsTeam, fh, indent=4)
 
+
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
+
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+
+	return str(text)
+
 def write_roster():
 
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
@@ -508,7 +579,7 @@ def write_roster():
 		for table in soup.findAll("table"):
 			for row in table.findAll("tr")[1:]:
 				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
-				fullName = row.findAll("td")[1].find("a").text.lower().replace("'", "").replace("-", " ").replace(".", "").replace(" jr", "")
+				fullName = row.findAll("td")[1].find("a").text.lower().replace("'", "").replace("-", " ").replace(".", "").replace(" jr", "").replace(" ii", "")
 				playerId = int(nameLink[-1])
 				playerIds[team][fullName] = playerId
 				roster[team][fullName] = row.findAll("td")[2].text.strip()
@@ -536,61 +607,110 @@ def convertTeamRankingsTeam(team):
 		return "tb"
 	return team.replace(".", "").replace(" ", "")[:3]
 
+def addNumSuffix(val):
+	if not val:
+		return "-"
+	a = val % 10;
+	b = val % 100;
+	if val == 0:
+		return ""
+	if a == 1 and b != 11:
+		return f"{val}st"
+	elif a == 2 and b != 12:
+		return f"{val}nd"
+	elif a == 3 and b != 13:
+		return f"{val}rd"
+	else:
+		return f"{val}th"
+
 def write_rankings():
 	baseUrl = "https://www.teamrankings.com/mlb/stat/"
-	pages = ["at-bats-per-game", "strikeouts-per-game", "walks-per-game", "runs-per-game", "hits-per-game", "home-runs-per-game", "singles-per-game", "doubles-per-game", "rbis-per-game", "total-bases-per-game", "earned-run-average", "earned-runs-against-per-game", "strikeouts-per-9", "home-runs-per-9", "hits-per-9", "walks-per-9", "opponent-stolen-bases-per-game", "opponent-total-bases-per-game", "opponent-rbis-per-game", "opponent-at-bats-per-game"]
-	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "h_allowed", "bb_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab"]
+	pages = ["at-bats-per-game", "strikeouts-per-game", "walks-per-game", "runs-per-game", "hits-per-game", "home-runs-per-game", "singles-per-game", "doubles-per-game", "rbis-per-game", "total-bases-per-game", "earned-run-average", "earned-runs-against-per-game", "strikeouts-per-9", "home-runs-per-9", "hits-per-9", "walks-per-9", "opponent-runs-per-game", "opponent-stolen-bases-per-game", "opponent-total-bases-per-game", "opponent-rbis-per-game", "opponent-at-bats-per-game"]
+	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "h_allowed", "bb_allowed", "r_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab"]
 
 	rankings = {}
-	for dt in ["", "?date=2022-11-06"]:
-		rankingPrefix = "ly_" if dt else ""
-		for idx, page in enumerate(pages):
-			url = baseUrl+page+dt
-			outfile = "outmlb2"
-			time.sleep(0.2)
-			call(["curl", "-k", url, "-o", outfile])
-			soup = BS(open(outfile, 'rb').read(), "lxml")
+	for idx, page in enumerate(pages):
+		url = baseUrl+page
+		outfile = "outmlb2"
+		time.sleep(0.2)
+		call(["curl", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+		ranking = ids[idx]
+		lastYearRanks = []
 
-			for row in soup.find("table").findAll("tr")[1:]:
-				tds = row.findAll("td")
-				team = convertTeamRankingsTeam(row.find("a").text.lower())
-				if team not in rankings:
-					rankings[team] = {}
-				ranking = rankingPrefix+ids[idx]
-				if ranking not in rankings[team]:
-					rankings[team][ranking] = {}
+		for row in soup.find("table").findAll("tr")[1:]:
+			tds = row.findAll("td")
+			team = convertTeamRankingsTeam(row.find("a").text.lower())
+			if team not in rankings:
+				rankings[team] = {}
+			
+			if ranking not in rankings[team]:
+				rankings[team][ranking] = {}
 
-				rankings[team][ranking] = {
-					"rank": int(tds[0].text),
-					"season": float(tds[2].text.replace("--", "0").replace("%", "")),
-					"last3": float(tds[3].text.replace("--", "0").replace("%", ""))
-				}
-
-		combined = []
-		for team in rankings:
-			combined.append({
-				"team": team,
-				"val": rankings[team][f"{rankingPrefix}h"]["season"]+rankings[team][f"{rankingPrefix}r"]["season"]+rankings[team][f"{rankingPrefix}rbi"]["season"]
-			})
-
-		for idx, x in enumerate(sorted(combined, key=lambda k: k["val"], reverse=True)):
-			rankings[x["team"]][f"{rankingPrefix}h+r+rbi"] = {
-				"rank": idx+1,
-				"season": x["val"]
+			rankClass = ""
+			if int(tds[0].text) <= 10:
+				rankClass = "positive"
+			elif int(tds[0].text) >= 20:
+				rankClass = "negative"
+			rankings[team][ranking] = {
+				"rank": int(tds[0].text),
+				"rankSuffix": addNumSuffix(int(tds[0].text)),
+				"rankClass": rankClass,
+				"season": float(tds[2].text.replace("--", "0").replace("%", "")),
+				"last3": float(tds[3].text.replace("--", "0").replace("%", "")),
+				"last1": float(tds[4].text.replace("--", "0").replace("%", "")),
+				"home": float(tds[5].text.replace("--", "0").replace("%", "")),
+				"away": float(tds[6].text.replace("--", "0").replace("%", "")),
+				"lastYear": float(tds[7].text.replace("--", "0").replace("%", ""))
 			}
 
-		combined = []
-		for team in rankings:
-			combined.append({
-				"team": team,
-				"val": rankings[team][f"{rankingPrefix}h_allowed"]["season"]+rankings[team][f"{rankingPrefix}er"]["season"]
-			})
+			lastYearRanks.append({"team": team, "lastYear": float(tds[7].text.replace("--", "0").replace("%", ""))})
 
-		for idx, x in enumerate(sorted(combined, key=lambda k: k["val"], reverse=True)):
-			rankings[x["team"]][f"{rankingPrefix}h+r+rbi_allowed"] = {
-				"rank": idx+1,
-				"season": x["val"]
-			}
+		for idx, x in enumerate(sorted(lastYearRanks, key=lambda k: k["lastYear"], reverse=True)):
+			rankings[x["team"]][ranking]["lastYearRank"] = idx+1
+			rankClass = ""
+			if idx+1 <= 10:
+				rankClass = "positive"
+			elif idx+1 >= 20:
+				rankClass = "negative"
+			rankings[x["team"]][ranking]["lastYearRankClass"] = rankClass
+			rankings[x["team"]][ranking]["lastYearRankSuffix"] = addNumSuffix(idx+1)
+
+	combined = []
+	for team in rankings:
+		j = {"team": team}
+		for k in ["season", "last3", "last1", "home", "away", "lastYear"]:
+			j[k] = rankings[team][f"h"][k]+rankings[team][f"r"][k]+rankings[team][f"rbi"][k]
+		combined.append(j)
+
+	for idx, x in enumerate(sorted(combined, key=lambda k: k["season"], reverse=True)):
+		rankings[x["team"]][f"h+r+rbi"] = x.copy()
+		rankings[x["team"]][f"h+r+rbi"]["rank"] = idx+1
+		rankings[x["team"]][f"h+r+rbi"]["rankSuffix"] = addNumSuffix(idx+1)
+		rankClass = ""
+		if idx+1 <= 10:
+			rankClass = "positive"
+		elif idx+1 >= 20:
+			rankClass = "negative"
+		rankings[x["team"]][f"h+r+rbi"]["rankClass"] = rankClass
+
+	combined = []
+	for team in rankings:
+		j = {"team": team}
+		for k in ["season", "last3", "last1", "home", "away", "lastYear"]:
+			j[k] = rankings[team][f"h_allowed"][k]+rankings[team][f"er"][k]
+		combined.append(j)
+
+	for idx, x in enumerate(sorted(combined, key=lambda k: k["season"], reverse=True)):
+		rankings[x["team"]][f"h+r+rbi_allowed"] = x.copy()
+		rankings[x["team"]][f"h+r+rbi_allowed"]["rank"] = idx+1
+		rankings[x["team"]][f"h+r+rbi_allowed"]["rankSuffix"] = addNumSuffix(idx+1)
+		rankClass = ""
+		if idx+1 <= 10:
+			rankClass = "positive"
+		elif idx+1 >= 20:
+			rankClass = "negative"
+		rankings[x["team"]][f"h+r+rbi_allowed"]["rankClass"] = rankClass
 
 	with open(f"{prefix}static/baseballreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
@@ -659,7 +779,7 @@ def writeBVP():
 			pitcher = row["pitcher"].lower()
 			team = convertRotoTeam(row["team"])
 			opp = convertRotoTeam(row["opponent"])
-			player = row["player"].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "")
+			player = row["player"].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 
 			matchup = f"{player} v {pitcher}"
 

@@ -80,13 +80,13 @@
 				<div>
 					{{ data[game]["A"].pitcherStats.ip }} IP
 					&bull;
-					{{ data[game]["A"].pitcherStats.h_allowed|int }} H
+					{{ data[game]["A"].pitcherStats.get(h_allowed,0)|int }} H
 					&bull;
-					{{ data[game]["A"].pitcherStats.k|int }} K
+					{{ data[game]["A"].pitcherStats.get(k, 0)|int }} K
 					&bull;
-					{{ data[game]["A"].pitcherStats.bb_allowed|int }} BB
+					{{ data[game]["A"].pitcherStats.get(bb_allowed,0)|int }} BB
 					&bull;
-					{{ data[game]["A"].pitcherStats.er|int }} ER
+					{{ data[game]["A"].pitcherStats.get(er,0)|int }} ER
 				</div>
 				<div>
 					{{ data[game]["A"].pitcherStats.whip }} WH/IP
@@ -124,7 +124,10 @@
 					<td>{{ data[game]["A"].moneylineOdds }}</td><td>ML</td><td>{{ data[game]["H"].moneylineOdds }}</td>
 				</tr>
 				<tr>
-					<td>{{ data[game]["A"].runline }}</td><td>PL</td><td>{{ data[game]["H"].runline }}</div>
+					<td>{{ data[game]["A"].runline }}</td><td>RL</td><td>{{ data[game]["H"].runline }}</div>
+				</tr>
+				<tr>
+					<td>{{ data[game]["A"].totals.runlineOver }}%</td><td>RL % Over</td><td>{{ data[game]["H"].totals.runlineOver }}%</td>
 				</tr>
 				<tr>
 					<td>{{ data[game]["A"].total }}</td><td>O/U</td><td>{{ data[game]["H"].total }}</td>
@@ -136,10 +139,28 @@
 					<td>{{ data[game]["A"].totals.overs }}</td><td>Avg Overs</td><td>{{ data[game]["H"].totals.overs }}</td>
 				</tr>
 				<tr>
-					<td>{{ data[game]["A"].totals.rpg }}</td><td>RPG</td><td>{{ data[game]["H"].totals.rpg }}</td>
+					<td style='display:flex;justify-content: center;'>{{ data[game].A.rankings.r.season }} <div style='margin-left:0.5rem;' class="{{ data[game].A.rankings.r.rankClass }}">({{ data[game]["A"].rankings.r.rankSuffix }})</div></td><td>RPG</td><td style='display:flex;justify-content: center;'>{{ data[game].H.rankings.r.season }} <div style='margin-left:0.5rem;' class="{{ data[game].H.rankings.r.rankClass }}">({{ data[game]["H"].rankings.r.rankSuffix }})</div></td>
 				</tr>
 				<tr>
-					<td>{{ data[game]["A"].totals.rpga }}</td><td>RPGA</td><td>{{ data[game]["H"].totals.rpga }}</td>
+					<td>{{ data[game].A.rankings.r.away }} - {{ data[game].A.rankings.r.home }}</td><td>RPG (A-H)</td><td>{{ data[game].H.rankings.r.away }} - {{ data[game].H.rankings.r.home }}</td>
+				</tr>
+				<tr>
+					<td style='display:flex;justify-content: center;'>{{ data[game].A.rankings.r_allowed.season }} <div style='margin-left:0.5rem;' class="{{ data[game].A.rankings.r_allowed.rankClass }}">({{ data[game]["A"].rankings.r_allowed.rankSuffix }})</div></td><td>RPGA</td><td style='display:flex;justify-content: center;'>{{ data[game].H.rankings.r_allowed.season }} <div style='margin-left:0.5rem;' class="{{ data[game].H.rankings.r_allowed.rankClass }}">({{ data[game]["H"].rankings.r_allowed.rankSuffix }})</div></td>
+				</tr>
+				<tr>
+					<td>{{ data[game].A.rankings.r_allowed.away }} - {{ data[game].A.rankings.r_allowed.home }}</td><td>RPGA (A-H)</td><td>{{ data[game].H.rankings.r_allowed.away }} - {{ data[game].H.rankings.r_allowed.home }}</td>
+				</tr>
+				<tr>
+					<td style='display:flex;justify-content: center;'>{{ data[game].A.rankings.h.season }} <div style='margin-left:0.5rem;' class="{{ data[game].A.rankings.h.rankClass }}">({{ data[game]["A"].rankings.h.rankSuffix }})</div></td><td>HPG</td><td style='display:flex;justify-content: center;'>{{ data[game].H.rankings.h.season }} <div style='margin-left:0.5rem;' class="{{ data[game].H.rankings.h.rankClass }}">({{ data[game]["H"].rankings.h.rankSuffix }})</div></td>
+				</tr>
+				<tr>
+					<td>{{ data[game].A.rankings.h.away }} - {{ data[game].A.rankings.h.home }}</td><td>HPG (A-H)</td><td>{{ data[game].H.rankings.h.away }} - {{ data[game].H.rankings.h.home }}</td>
+				</tr>
+				<tr>
+					<td style='display:flex;justify-content: center;'>{{ data[game].A.rankings.h_allowed.season }} <div style='margin-left:0.5rem;' class="{{ data[game].A.rankings.h_allowed.rankClass }}">({{ data[game]["A"].rankings.h_allowed.rankSuffix }})</div></td><td>HPGA</td><td style='display:flex;justify-content: center;'>{{ data[game].H.rankings.h_allowed.season }} <div style='margin-left:0.5rem;' class="{{ data[game].H.rankings.h_allowed.rankClass }}">({{ data[game]["H"].rankings.h_allowed.rankSuffix }})</div></td>
+				</tr>
+				<tr>
+					<td>{{ data[game].A.rankings.h_allowed.away }} - {{ data[game].A.rankings.h_allowed.home }}</td><td>HPGA (A-H)</td><td>{{ data[game].H.rankings.h_allowed.away }} - {{ data[game].H.rankings.h_allowed.home }}</td>
 				</tr>
 			</table>
 			<div class="team">
@@ -154,13 +175,13 @@
 				<div>
 					{{ data[game]["H"].pitcherStats.ip }} IP
 					&bull;
-					{{ data[game]["H"].pitcherStats.h_allowed|int }} H
+					{{ data[game]["H"].pitcherStats.get(h_allowed,0)|int }} H
 					&bull;
-					{{ data[game]["H"].pitcherStats.k|int }} K
+					{{ data[game]["H"].pitcherStats.get(k,0)|int }} K
 					&bull;
-					{{ data[game]["H"].pitcherStats.bb_allowed|int }} BB
+					{{ data[game]["H"].pitcherStats.get(bb_allowed,0)|int }} BB
 					&bull;
-					{{ data[game]["H"].pitcherStats.er|int }} ER
+					{{ data[game]["H"].pitcherStats.get(er,0)|int }} ER
 				</div>
 				<div>
 					{{ data[game]["H"].pitcherStats.whip }} WH/IP
@@ -193,5 +214,4 @@
 		</div>
 		{% endfor %}
 	</body>
-
 </html>
