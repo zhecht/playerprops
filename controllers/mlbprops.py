@@ -1120,7 +1120,7 @@ def props_route():
 		bet = request.args.get("bet")
 
 	# locks
-	bets = []
+	bets = ["shohei ohtani", "kyle tucker", "nathaniel lowe", "tyler stephenson", "wander franco", "trea turner", "garrett cooper", "gleyber torres"]
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)
