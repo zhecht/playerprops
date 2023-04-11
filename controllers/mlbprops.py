@@ -893,7 +893,10 @@ def write_projections(date):
 						projections[team][player] = {}
 
 					for hdr, col in zip(headers, row[6:-1]):
-						projections[team][player][hdr] = float(col)
+						suffix = ""
+						if HP == "P" and hdr in ["h", "bb", "hr"]:
+							suffix = "_allowed"
+						projections[team][player][f"{hdr}{suffix}"] = float(col)
 
 					if "rbi" in projections[team][player]:
 						projections[team][player]["h+r+rbi"] = round(projections[team][player]["h"]+projections[team][player]["r"]+projections[team][player]["rbi"], 2)
