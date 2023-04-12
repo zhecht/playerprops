@@ -1114,7 +1114,7 @@ def getProps_route():
 		players = ""
 		if request.args.get("players"):
 			players = request.args.get("players").lower().split(",")
-		props = getPropData(date=request.args.get("date"), playersArg=players, teams=teams, pitchers=pitchers)
+		props = getPropData(date=request.args.get("date"), playersArg=players, teams="", pitchers=pitchers)
 	elif request.args.get("prop"):
 		with open(f"{prefix}static/betting/mlb_{request.args.get('prop')}.json") as fh:
 			props = json.load(fh)
@@ -1163,7 +1163,7 @@ def props_route():
 		bet = request.args.get("bet")
 
 	# locks
-	bets = []
+	bets = ["nathaniel lowe", "kyle tucker", "mike trout", "taylor ward", "adley rutschman", "tony kemp", "anthony santander", "wander franco", "alex verdugo", "jd martinez", "manny machado", "xander bogaerts", "luis arraez", "alejandro kirk", "george springer", "matt chapman", "trae turner", "garrett cooper", "ryan mcmahon"]
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)
