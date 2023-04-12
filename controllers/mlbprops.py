@@ -501,8 +501,6 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 
 				try:
 					battingNumber = lineups[team]["batting"].index(player)+1
-					if False and not (1 <= battingNumber <= 5):
-						continue
 				except:
 					battingNumber = "-"
 
@@ -832,7 +830,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 def writeLineups():
 	url = f"https://www.rotowire.com/baseball/daily-lineups.php"
 
-	if datetime.now().hour >= 20 or datetime.now().hour < 3:
+	if datetime.now().hour > 21 or datetime.now().hour < 3:
 		url += "?date=tomorrow"	
 	outfile = "outmlb2"
 	time.sleep(0.2)
@@ -954,7 +952,7 @@ def getSlateData(date = None, teams=""):
 			if idx == 1:
 				isAway = False
 
-			if "line" not in gameLines[game]:
+			if game not in gameLines or "line" not in gameLines[game]:
 				continue
 			runline = gameLines[game]["line"]["line"]
 			totalLine = gameLines[game]["total"]["line"]
@@ -1165,7 +1163,7 @@ def props_route():
 		bet = request.args.get("bet")
 
 	# locks
-	bets = ["shohei ohtani", "kyle tucker", "nathaniel lowe", "tyler stephenson", "wander franco", "trea turner", "garrett cooper", "gleyber torres", "xander bogaerts", "austin riley", "andrew benintendi", "jose ramirez", "randy arozarena", "willy adames"]
+	bets = []
 	# singles
 	bets.extend([])
 	bets = ",".join(bets)
@@ -1231,7 +1229,7 @@ if __name__ == "__main__":
 			print(f"{game}|{ballparks[game]}|{away}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
 
 
-	if True:
+	if False:
 
 		totHits = {}
 		games = {}

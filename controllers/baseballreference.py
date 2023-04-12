@@ -70,7 +70,7 @@ def write_stats(date):
 			if "code" in data and data["code"] == 400:
 				continue
 
-			if "players" not in data["boxscore"]:
+			if "boxscore" not in data or "players" not in data["boxscore"]:
 				continue
 
 			lastNames = {}
