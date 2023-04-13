@@ -199,7 +199,7 @@
 				} else {
 					val1 = "<div class='negative'>"+val1+"</div>";
 				}
-				if (cell.getField() == "awayHomeSplits" && data.awayHome == "@") {
+				if (cell.getField().indexOf("HomeSplits") >= 0 && data.awayHome == "@") {
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
 				}
 				let val2 = vals[1];
@@ -208,7 +208,7 @@
 				} else {
 					val2 = "<div class='negative'>"+val2+"</div>";
 				}
-				if (cell.getField() == "awayHomeSplits" && data.awayHome == "v") {
+				if (cell.getField().indexOf("HomeSplits") >= 0 && data.awayHome == "v") {
 					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
 				}
 				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
@@ -218,7 +218,7 @@
 				TABLE = new Tabulator("#propsTable", {
 					tooltipsHeader: true,
 					ajaxURL: "/getMLBProps",
-					ajaxParams:{date: "{{date}}", teams: "{{teams}}", players: "{{players}}", bet: "{{bet}}"},
+					ajaxParams:{date: "{{date}}", teams: "{{teams}}", players: "{{players}}", bet: "{{bet}}", line: "{{line}}"},
 					responsiveLayout:"collapse",
 					responsiveLayoutCollapseStartOpen: false,
 					//layout: "fitDataFill",
@@ -270,33 +270,38 @@
 						{title: "HR Factor", field: "hrFactor", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "Proj Diff", field: "projDiff", visible: false, sorter: "number"},
 						{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
+						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
 						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L10 % Over", field: "last10Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
 						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
+						{title: "Proj", field: "pitcherProj", width: 80, hozAlign: "center", sorter: "number"},
 						{title: "H/IP", field: "hip", hozAlign: "center", width: 80},
 						{title: "BB/IP", field: "bbip", hozAlign: "center", width: 80, visible: false},
 						{title: "HR/IP", field: "hrip", hozAlign: "center", width: 80, visible: false},
 						{title: "K/IP", field: "kip", hozAlign: "center", width: 80, visible: false},
-						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150},
+						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150, tooltip: true},
 						{title: "vs Pitcher (Per AB)", field: "againstPitcherStatsPerAB", hozAlign: "center", width: 150, visible: false},
 						{title: "Career % Over", field: "careerTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "% Over vs Team", field: "againstTeamTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
-						{title: "vs Team", field: "againstTeamStats", hozAlign: "center", width: 150},
+						{title: "vs Team", field: "againstTeamStats", hozAlign: "center", width: 150, tooltip: true},
 						{title: "vs Team (Per AB)", field: "againstTeamStatsPerAB", hozAlign: "center", width: 150, visible: false},
 						{title: "LYR % Over", field: "lastYearTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "LYR Avg", field: "lastYearAvg", hozAlign: "center", width: 80, formatter: colorFormatter, sorter: "number"},
-						//{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
 						{title: "# Matchups", field: "matchups", hozAlign: "center", width: 60},
 						{title: "LYR vs Opp % Over", field: "lastYearTeamMatchupOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "vs Team LYR", field: "againstTeamLastYearStats", hozAlign: "center", width: 140},
+						{title: "LYR A-H Splits", field: "lastYearAwayHomeSplits", hozAlign: "center", visible: true},
 						//{title: "Diff", field: "diff", hozAlign: "center", width: 80, sorter: "number"},
 						//{title: "Hit Rate Odds", field: "hitRateOdds", hozAlign: "center", width: 80},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
 						{title: "Under", field: "underOdds", hozAlign: "center"},
 					]
 				})
+				TABLE.on("rowClick", function(e, row) {
+					row.getElement().getElementsByClassName("tabulator-responsive-collapse-toggle")[0].click()
+				});
 			}
 
 			renderTable();

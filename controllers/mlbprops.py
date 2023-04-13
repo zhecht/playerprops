@@ -17,6 +17,7 @@ import os
 import subprocess
 import re
 import csv
+import unicodedata
 
 mlbprops_blueprint = Blueprint('mlbprops', __name__, template_folder='views')
 
@@ -196,6 +197,7 @@ def writeProps(date):
 				continue
 			if game not in props:
 				props[game] = {}
+
 			events[event["eventId"]] = game
 
 		subCats = {}
@@ -231,10 +233,10 @@ def writeProps(date):
 								game = events[row["eventId"]]
 							except:
 								continue
-							try:
-								player = row["outcomes"][0]["participant"].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").split(" (")[0]
-							except:
+							
+							if "participant" not in row["outcomes"][0]:
 								continue
+							player = strip_accents(row["outcomes"][0]["participant"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").split(" (")[0]
 							odds = ["+0","+0"]
 							try:
 								line = row["outcomes"][0]["line"]
@@ -393,7 +395,7 @@ def convertRankingsProp(prop):
 		return "h+r+rbi_allowed"
 	return prop
 
-def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
+def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineArg=""):
 	
 	if not date:
 		date = datetime.now()
@@ -492,6 +494,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				except:
 					pass
 
+				pitcherProj = 0
+				try:
+					pitcherProj = round(projections[opp][pitcher]["h_allowed"], 2)
+				except:
+					pass
+
 				if "P" in pos:
 					try:
 						hip = round(averages[team][player]["tot"]["h"] / averages[team][player]["tot"]["ip"], 2)
@@ -508,6 +516,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				line = propData[game][player][propName]["line"]
 				if line == "-":
 					line = 0
+
+				if lineArg:
+					line = float(lineArg)
+
 				overOdds = propData[game][player][propName]["over"]
 				underOdds = propData[game][player][propName]["under"]
 
@@ -595,10 +607,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				awayGames = len(lastYrAwayHomeSplits[0])
 				homeGames = len(lastYrAwayHomeSplits[1])
 				if awayGames:
-					awayGames = round(sum(lastYrAwayHomeSplits[0]) / awayGames, 2)
+					arr = [x for x in lastYrAwayHomeSplits[0] if x > line]
+					awayGames = round(len(arr) * 100 / awayGames)
 				if homeGames:
-					homeGames = round(sum(lastYrAwayHomeSplits[1]) / homeGames, 2)
-				lastYrAwayHomeSplits = f"{awayGames} - {homeGames}"
+					arr = [x for x in lastYrAwayHomeSplits[1] if x > line]
+					homeGames = round(len(arr) * 100 / homeGames)
+				lastYrAwayHomeSplits = f"{awayGames}% - {homeGames}%"
 
 				lastYearTeamMatchupOver = 0
 				if prevMatchup:
@@ -689,10 +703,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 				awayGames = len(awayHomeSplits[0])
 				homeGames = len(awayHomeSplits[1])
 				if awayGames:
-					awayGames = round(sum(awayHomeSplits[0]) / awayGames, 2)
+					arr = [x for x in awayHomeSplits[0] if x > line]
+					awayGames = round(len(arr) * 100 / awayGames)
 				if homeGames:
-					homeGames = round(sum(awayHomeSplits[1]) / homeGames, 2)
-				awayHomeSplits = f"{awayGames} - {homeGames}"
+					arr = [x for x in awayHomeSplits[1] if x > line]
+					homeGames = round(len(arr) * 100 / homeGames)
+				awayHomeSplits = f"{awayGames}% - {homeGames}%"
 
 				if gamesPlayed:
 					totalOver = round(totalOver * 100 / gamesPlayed)
@@ -761,7 +777,6 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					last20Over = round(len([x for x in arr if float(str(x).replace("'", "")) > line]) * 100 / len(arr))
 
 				if True:
-					awayHomeSplits = lastYrAwayHomeSplits
 					gamesPlayed = lastYrGamesPlayed
 
 				if proj:
@@ -779,6 +794,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"hit": hit,
 					"awayHome": "@" if awayTeam == team else "v",
 					"awayHomeSplits": awayHomeSplits,
+					"lastYearAwayHomeSplits": lastYrAwayHomeSplits,
 					#"winLossSplits": winLossSplits,
 					"bats": bats,
 					"battingNumber": battingNumber,
@@ -792,6 +808,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False):
 					"againstTeamLastYearStatsPerAB": againstTeamLastYearStatsPerAB,
 					"pitcher": pitcher.split(" ")[-1].title(),
 					"pitcherThrows": pitcherThrows,
+					"pitcherProj": pitcherProj,
 					"hip": hip,
 					"bbip": bbip,
 					"hrip": hrip,
@@ -1063,6 +1080,16 @@ def getSlateData(date = None, teams=""):
 
 	return res
 
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
+
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+
+	return str(text)
+
 def writeBallparks():
 	url = "https://ballparkpal.com/ParkFactors.php"
 
@@ -1110,11 +1137,11 @@ def getProps_route():
 	pitchers = False
 	if request.args.get("pitchers"):
 		pitchers = True
-	if request.args.get("players") or request.args.get("date"):
+	if request.args.get("players") or request.args.get("date") or request.args.get("line"):
 		players = ""
 		if request.args.get("players"):
 			players = request.args.get("players").lower().split(",")
-		props = getPropData(date=request.args.get("date"), playersArg=players, teams="", pitchers=pitchers)
+		props = getPropData(date=request.args.get("date"), playersArg=players, teams="", pitchers=pitchers, lineArg=request.args.get("line") or "")
 	elif request.args.get("prop"):
 		with open(f"{prefix}static/betting/mlb_{request.args.get('prop')}.json") as fh:
 			props = json.load(fh)
@@ -1145,7 +1172,7 @@ def getProps_route():
 
 @mlbprops_blueprint.route('/mlbprops')
 def props_route():
-	prop = date = teams = players = bet = ""
+	prop = date = teams = players = bet = line = ""
 	if request.args.get("prop"):
 		prop = request.args.get("prop").replace(" ", "+")
 
@@ -1161,13 +1188,14 @@ def props_route():
 		players = request.args.get("players")
 	if request.args.get("bet"):
 		bet = request.args.get("bet")
+	if request.args.get("line"):
+		line = request.args.get("line")
 
-	# locks
-	bets = ["nathaniel lowe", "kyle tucker", "mike trout", "taylor ward", "adley rutschman", "tony kemp", "anthony santander", "wander franco", "alex verdugo", "jd martinez", "manny machado", "xander bogaerts", "luis arraez", "alejandro kirk", "george springer", "matt chapman", "trae turner", "garrett cooper", "ryan mcmahon"]
-	# singles
-	bets.extend([])
+	with open(f"{prefix}bets") as fh:
+		bets = json.load(fh)["bets"]
+		
 	bets = ",".join(bets)
-	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players, bet=bet)
+	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players, bet=bet, line=line)
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
