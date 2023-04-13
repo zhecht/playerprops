@@ -191,48 +191,84 @@ def write_stats(date):
 	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
 
-def write_year_averages():
+def write_curr_year_averages():
 	year = datetime.datetime.now().year
 	with open(f"{prefix}static/baseballreference/averages.json") as fh:
 		averages = json.load(fh)
+	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
+		schedule = json.load(fh)
 
+	statsVsTeam = {}
 	for team in os.listdir(f"{prefix}static/baseballreference/"):
 		if team.endswith("json"):
 			continue
+
+		if team not in statsVsTeam:
+			statsVsTeam[team] = {}
 		
 		copy = True
 		for file in glob(f"{prefix}static/baseballreference/{team}/*.json"):
 			with open(file) as fh:
 				stats = json.load(fh)
 
+			date = file.split("/")[-1][:-5]
+			opp = ""
+			for game in schedule[date]:
+				if game.startswith(team):
+					opp = game.split(" @ ")[1]
+					break
+				elif game.endswith(team):
+					opp = game.split(" @ ")[0]
+					break
+
+			if opp not in statsVsTeam[team]:
+				statsVsTeam[team][opp] = {}
+
 			for player in stats:
 				if player not in averages[team]:
 					averages[team][player] = {}
 				if year not in averages[team][player]:
 					averages[team][player][year] = {}
+				if player not in statsVsTeam[team][opp]:
+					statsVsTeam[team][opp][player] = {}
 				if copy:
 					averages[team][player][year] = stats[player].copy()
+					statsVsTeam[team][opp][player] = stats[player].copy()
 				else:
 					for hdr in stats[player]:
 						if hdr not in averages[team][player][year]:
 							averages[team][player][year][hdr] = 0
 						averages[team][player][year][hdr] += stats[player][hdr]
 
+						if hdr not in statsVsTeam[team][opp][player]:
+							statsVsTeam[team][opp][player][hdr] = 0
+						statsVsTeam[team][opp][player][hdr] += stats[player][hdr]
+
 				for hdr in stats[player]:
 					val = stats[player][hdr]
 					if hdr in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
 						if hdr+"Overs" not in averages[team][player][year]:
 							averages[team][player][year][hdr+"Overs"] = {}
+						if hdr+"Overs" not in statsVsTeam[team][opp][player]:
+							statsVsTeam[team][opp][player][hdr+"Overs"] = {}
+
 						for i in range(1, int(val)+1):
 							if i not in averages[team][player][year][hdr+"Overs"]:
 								averages[team][player][year][hdr+"Overs"][i] = 0
 							averages[team][player][year][hdr+"Overs"][i] += 1
+
+							if i not in statsVsTeam[team][opp][player][hdr+"Overs"]:
+								statsVsTeam[team][opp][player][hdr+"Overs"][i] = 0
+							statsVsTeam[team][opp][player][hdr+"Overs"][i] += 1
 
 			#only copy first time we see team stats
 			copy = False
 
 	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
 		json.dump(averages, fh, indent=4)
+
+	with open(f"{prefix}static/baseballreference/statsVsTeamCurrYear.json", "w") as fh:
+		json.dump(statsVsTeam, fh, indent=4)
 
 def write_totals():
 	totals = {}
@@ -278,7 +314,7 @@ def write_totals():
 	with open(f"{prefix}static/baseballreference/teamTotals.json", "w") as fh:
 		json.dump(teamTotals, fh, indent=4)
 
-	write_year_averages()
+	write_curr_year_averages()
 
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
@@ -496,8 +532,12 @@ def write_averages():
 def writeYearAverages():
 	averages = {}
 	statsVsTeam = {}
+	currYear = datetime.datetime.now().year
 	for file in os.listdir(f"{prefix}static/mlbprops/stats/"):
 		year = file[:4]
+		isCurrYear = False
+		if year == currYear:
+			isCurrYear = True
 
 		with open(f"{prefix}static/mlbprops/stats/{file}") as fh:
 			yearStats = json.load(fh)
@@ -524,17 +564,18 @@ def writeYearAverages():
 						currOpp = gameStats["vs"]
 						if currOpp not in statsVsTeam[team]:
 							statsVsTeam[team][currOpp] = {}
-						if player not in statsVsTeam[team][currOpp]:
+						if not isCurrYear and player not in statsVsTeam[team][currOpp]:
 							statsVsTeam[team][currOpp][player] = {"gamesPlayed": 0}
 
-						statsVsTeam[team][currOpp][player]["gamesPlayed"] += 1
+						if not isCurrYear:
+							statsVsTeam[team][currOpp][player]["gamesPlayed"] += 1
 						if "ab" in gameStats and "h+r+rbi" not in gameStats:
 							gameStats["h+r+rbi"] = 0
 						if "ab" in gameStats and "tb" not in gameStats:
 							gameStats["tb"] = 0
 						for header in gameStats:
 							if header not in ["isAway", "vs"]:
-								if header not in statsVsTeam[team][currOpp][player]:
+								if not isCurrYear and header not in statsVsTeam[team][currOpp][player]:
 									statsVsTeam[team][currOpp][player][header] = 0
 								if header not in tot:
 									tot[header] = 0
@@ -547,10 +588,11 @@ def writeYearAverages():
 											val += gameStats[p]
 
 									tot[header] += val
-									statsVsTeam[team][currOpp][player][header] += val
+									if not isCurrYear:
+										statsVsTeam[team][currOpp][player][header] += val
 									if header in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
 
-										if header+"Overs" not in statsVsTeam[team][currOpp][player]:
+										if not isCurrYear and header+"Overs" not in statsVsTeam[team][currOpp][player]:
 											statsVsTeam[team][currOpp][player][header+"Overs"] = {}
 										if header+"Overs" not in tot:
 											tot[header+"Overs"] = {}
@@ -558,10 +600,11 @@ def writeYearAverages():
 										for i in range(1, int(val)+1):
 											if i not in tot[header+"Overs"]:
 												tot[header+"Overs"][i] = 0
-											if i not in statsVsTeam[team][currOpp][player][header+"Overs"]:
+											if not isCurrYear and i not in statsVsTeam[team][currOpp][player][header+"Overs"]:
 												statsVsTeam[team][currOpp][player][header+"Overs"][i] = 0
 
-											statsVsTeam[team][currOpp][player][header+"Overs"][i] += 1
+											if not isCurrYear:
+												statsVsTeam[team][currOpp][player][header+"Overs"][i] += 1
 											tot[header+"Overs"][i] += 1
 								except:
 									pass
@@ -891,4 +934,4 @@ if __name__ == "__main__":
 	#writeYearAverages()
 	#write_stats(date)
 	#write_totals()
-	#write_year_averages()
+	#write_curr_year_averages()
