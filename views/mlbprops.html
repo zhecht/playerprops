@@ -190,11 +190,14 @@
 				}
 			}
 
-			const expcetedFormatter = function(cell, params, rendered) {
+			const expectedFormatter = function(cell, params, rendered) {
 				const data = cell.getRow().getData();
 
-				const val = data.battingAvg;
-				const xVal = data.xBA;
+				let val = data.battingAvg;
+				if (cell.getField() == "babip") {
+					val = .300;
+				}
+				const xVal = cell.getValue();
 				let html = ""
 				if (parseFloat(xVal) >= parseFloat(val)) {
 					html = "<div class='positive'>"+xVal+"</div>";
@@ -265,7 +268,9 @@
 						{title: "Game", field: "game", visible: false},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
 						{title: "BA", field: "battingAvg", hozAlign: "center", width: 60,  sorter: "number"},
-						{title: "xBA", field: "xBA", hozAlign: "center", width: 60,  sorter: "number", formatter: expcetedFormatter},
+						{title: "xBA", field: "xBA", hozAlign: "center", width: 60,  sorter: "number", formatter: expectedFormatter},
+						{title: "vs R/L Avg", field: "leftRightAvg", hozAlign: "center", width: 60,  sorter: "number", formatter: expectedFormatter},
+						{title: "babip", field: "babip", hozAlign: "center", width: 60,  sorter: "number", formatter: expectedFormatter},
 						{title: "Bats", field: "bats", width: 40, hozAlign: "center"},
 						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
 						{title: "GP", field: "gamesPlayed", hozAlign: "center", width: 50},
@@ -277,6 +282,7 @@
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "LYR Opp Rank", field: "oppRankLastYear", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Hits Rank", field: "stadiumHitsRank", hozAlign: "center", formatter: rankFormatter, width: 70},
+						{title: "HR Rank", field: "stadiumHrRank", hozAlign: "center", formatter: rankFormatter, width: 70, visible: false},
 						//{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
 						//{title: "Opp AB", field: "oppABRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
@@ -331,11 +337,17 @@
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("hrip");
 					TABLE.showColumn("hrFactor");
+					TABLE.hideColumn("stadiumHitsRank");
+					TABLE.showColumn("stadiumHrRank");
 				} else if (propArg === "so") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
 				} else if (["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
 					TABLE.hideColumn("againstPitcherStats");
+					TABLE.hideColumn("pitcherProj");
+					TABLE.hideColumn("pitcherXBA");
+					TABLE.hideColumn("leftRightAvg");
+					TABLE.hideColumn("stadiumHitsRank");
 					TABLE.hideColumn("pitcher");
 					TABLE.hideColumn("pitcherThrows");
 					TABLE.hideColumn("avg");

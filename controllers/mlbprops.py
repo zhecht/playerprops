@@ -428,6 +428,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		bvp = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
 		leftOrRight = json.load(fh)
+	with open(f"{prefix}static/baseballreference/leftRightSplits.json") as fh:
+		leftRightSplits = json.load(fh)
 	with open(f"{prefix}static/baseballreference/pitching.json") as fh:
 		pitching = json.load(fh)
 	with open(f"{prefix}static/baseballreference/playerHRFactors.json") as fh:
@@ -627,7 +629,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				lastAll = []
 				awayHomeSplits = [[], []]
 				winLossSplits = [[], []]
-				totalOver = battingAvg = avg = 0
+				totalOver = battingAvg = avg = babip = 0
 				if player in stats[team]:
 					playerStats = stats[team][player]
 					gamesPlayed = playerStats["gamesPlayed"]
@@ -640,8 +642,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					avg = round(val / gamesPlayed, 2)
 
 					if "P" not in pos:
-						if playerStats['ab']:
-							battingAvg = str(format(round(playerStats['h']/playerStats['ab'], 3), '.3f'))[1:]
+						battingAvg = str(format(round(playerStats['h']/playerStats['ab'], 3), '.3f'))[1:]
+						babip = format((playerStats["h"] - playerStats["hr"]) / (playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)), '.3f')[1:]
 					
 
 				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
@@ -790,15 +792,26 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				if team in playerHRFactors and player in playerHRFactors[team]:
 					hrFactor = playerHRFactors[team][player]
 
+				# savant
 				pitcherXBA = xBA = xHr = 0
 				try:
 					xBA = format(expected[team][player]["est_ba"], '.3f')[1:]
-					pitcherXBA = format(expected[opp][pitcher]["est_ba"], '.3f')[1:]
+					if "P" in pos:
+						battingAvg = format(expected[team][player]["ba"], '.3f')[1:]
+					else:
+						pitcherXBA = format(expected[opp][pitcher]["est_ba"], '.3f')[1:]
 				except:
 					pass
 
 				stadiumHitsRank = parkFactors[homeTeam]["hitsRank"]
 				stadiumHrRank = parkFactors[homeTeam]["hrRank"]
+
+				# fangraphs
+				leftRightAvg = 0
+				try:
+					leftRightAvg = format(leftRightSplits[team][player][f"{pitcherThrows}HP"]["avg"], '.3f')[1:]
+				except:
+					pass
 
 				props.append({
 					"game": game,
@@ -813,8 +826,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"bats": bats,
 					"battingNumber": battingNumber,
 					"hrFactor": hrFactor,
+					"babip": babip,
 					"xBA": xBA,
 					"pitcherXBA": pitcherXBA,
+					"leftRightAvg": leftRightAvg,
 					"stadiumHitsRank": stadiumHitsRank,
 					"stadiumHrRank": stadiumHrRank,
 					"pos": pos,
@@ -1215,7 +1230,7 @@ def props_route():
 	if prop in bets:
 		bets = bets[prop]
 	else:
-		bets = bets["h"]
+		bets = []
 		
 	bets = ",".join(bets)
 	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players, bet=bet, line=line)

@@ -46,17 +46,11 @@ def write_stats(date):
 		exit()
 
 	dates = [date]
-	#dates = ["2023-03-30", "2023-03-31", "2023-04-01", "2023-04-02", "2023-04-03", "2023-04-04", "2023-04-05", "2023-04-06", "2023-04-07", "2023-04-08", "2023-04-09"]
+	#dates = ["2023-03-30", "2023-03-31", "2023-04-01", "2023-04-02", "2023-04-03", "2023-04-04", "2023-04-05", "2023-04-06", "2023-04-07", "2023-04-08", "2023-04-09", "2023-04-10", "2023-04-11", "2023-04-12"]
 	for date in dates:
 		allStats = {}
 		for game in boxscores[date]:
 			away, home = map(str, game.split(" @ "))
-
-			if away not in allStats:
-				allStats[away] = {}
-			if home not in allStats:
-				allStats[home] = {}
-
 
 			gameId = boxscores[date][game].split("/")[-1].split("=")[-1]
 			url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
@@ -72,6 +66,11 @@ def write_stats(date):
 
 			if "boxscore" not in data or "players" not in data["boxscore"]:
 				continue
+
+			if away not in allStats:
+				allStats[away] = {}
+			if home not in allStats:
+				allStats[home] = {}
 
 			lastNames = {}
 			for teamRow in data["boxscore"]["players"]:
@@ -133,7 +132,7 @@ def write_stats(date):
 				for detailRow in teamRow["details"][0]["stats"]:
 					stat = detailRow["abbreviation"].lower()
 
-					if stat not in ["2b", "3b"]:
+					if stat not in ["sf", "2b", "3b"]:
 						continue
 
 					for playerVal in detailRow["displayValue"].split("; "):
@@ -847,6 +846,16 @@ def convertRotoTeam(team):
 		return "chw"
 	elif team == "az":
 		return "ari"
+	elif team == "sfg":
+		return "sf"
+	elif team == "sdp":
+		return "sd"
+	elif team == "kcr":
+		return "kc"
+	elif team == "tbr":
+		return "tb"
+	elif team == "wsn":
+		return "wsh"
 	return team
 
 def convertSavantTeam(team):
@@ -985,8 +994,37 @@ def writeSavantExpected():
 		json.dump(expected, fh, indent=4)
 
 def writeLeftRightSplits():
-	writeSavantExpected()
-	pass
+	url = "https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=1&splitArrPitch=&position=B&autoPt=false&splitTeams=false&statType=player&statgroup=1&startDate=2023-03-01&endDate=2023-11-01&players=&filter=PA%7Cgt%7C10&groupBy=season&wxTemperature=&wxPressure=&wxAirDensity=&wxElevation=&wxWindSpeed=&sort=22,1&pg=0"
+
+	leftRightSplits = {}
+
+	for throws in ["LHP", "RHP"]:
+		with open(f"{prefix}Splits Leaderboard Data vs {throws}.csv", newline="") as fh:
+			reader = csv.reader(fh)
+
+			headers = []
+			for idx, row in enumerate(reader):
+				if idx == 0:
+					headers = [x.lower() for x in row]
+				else:
+					player = strip_accents(row[1]).lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+					team = convertRotoTeam(row[2].lower())
+					if team not in leftRightSplits:
+						leftRightSplits[team] = {}
+					if player not in leftRightSplits[team]:
+						leftRightSplits[team][player] = {}
+					if throws not in leftRightSplits[team][player]:
+						leftRightSplits[team][player][throws] = {}
+
+					for hdr, col in zip(headers, row):
+						try:
+							leftRightSplits[team][player][throws][f"{hdr}"] = float(col)
+						except:
+							leftRightSplits[team][player][throws][f"{hdr}"] = col
+
+	with open(f"{prefix}static/baseballreference/leftRightSplits.json", "w") as fh:
+		json.dump(leftRightSplits, fh, indent=4)
+
 
 # write batter vs pitcher
 def writeBVP():
@@ -1072,7 +1110,7 @@ if __name__ == "__main__":
 		write_schedule(date)
 		writeSavantExpected()
 		writeSavantParkFactors()
-		#writeLeftRightSplits()
+		writeLeftRightSplits()
 
 	#write_pitching()
 	#writeYearAverages()
