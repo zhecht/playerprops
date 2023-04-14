@@ -845,7 +845,148 @@ def convertRotoTeam(team):
 	team = team.lower()
 	if team == "cws":
 		return "chw"
+	elif team == "az":
+		return "ari"
 	return team
+
+def convertSavantTeam(team):
+	if team == "angels":
+		return "laa"
+	elif team == "orioles":
+		return "bal"
+	elif team == "red sox":
+		return "bos"
+	elif team == "white sox":
+		return "chw"
+	elif team == "guardians":
+		return "cle"
+	elif team == "royals":
+		return "kc"
+	elif team == "athletics":
+		return "oak"
+	elif team == "rays":
+		return "tb"
+	elif team == "blue jays":
+		return "tor"
+	elif team == "d-backs":
+		return "ari"
+	elif team == "cubs":
+		return "chc"
+	elif team == "rockies":
+		return "col"
+	elif team == "dodgers":
+		return "lad"
+	elif team == "pirates":
+		return "pit"
+	elif team == "brewers":
+		return "mil"
+	elif team == "reds":
+		return "cin"
+	elif team == "cardinals":
+		return "stl"
+	elif team == "marlins":
+		return "mia"
+	elif team == "astros":
+		return "hou"
+	elif team == "tigers":
+		return "det"
+	elif team == "giants":
+		return "sf"
+	elif team == "braves":
+		return "atl"
+	elif team == "padres":
+		return "sd"
+	elif team == "phillies":
+		return "phi"
+	elif team == "mariners":
+		return "sea"
+	elif team == "rangers":
+		return "tex"
+	elif team == "mets":
+		return "nym"
+	elif team == "nationals":
+		return "wsh"
+	elif team == "twins":
+		return "min"
+	elif team == "yankees":
+		return "nyy"
+	return team
+
+def writeSavantParkFactors():
+	url = "https://baseballsavant.mlb.com/leaderboard/statcast-park-factors?type=year&year=2023&batSide=&stat=index_wOBA&condition=All&rolling="
+	outfile = "outmlb2"
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	data = "{}"
+	for script in soup.findAll("script"):
+		if script.text.strip().startswith("var data"):
+			m = re.search(r"var data = \[{(.*?)}\];", script.text)
+			if m:
+				data = m.group(1).replace("false", "False").replace("true", "True")
+				data = f"{{{data}}}"
+				break
+
+	data = eval(data)
+
+	parkFactors = {}
+	arr = []
+	for row in data:
+		team = convertSavantTeam(row["name_display_club"].lower())
+		parkFactors[team] = {}
+
+		j = {"team": team}
+		for hdr in row:
+			parkFactors[team][hdr] = row[hdr]
+			j[hdr] = row[hdr]
+
+		arr.append(j)
+
+	for prop in ["hits", "hr"]:
+		for idx, row in enumerate(sorted(arr, key=lambda k: int(k[f"index_{prop}"]), reverse=True)):
+			parkFactors[row["team"]][f"{prop}Rank"] = idx+1
+
+	with open(f"{prefix}static/baseballreference/parkfactors.json", "w") as fh:
+		json.dump(parkFactors, fh, indent=4)
+
+
+def writeSavantExpected():
+	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics"
+	expected = {}
+	for t in ["", "?type=pitcher"]:
+		outfile = "outmlb2"
+		call(["curl", "-k", url+t, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		data = "{}"
+		for script in soup.findAll("script"):
+			if script.text.strip().startswith("var data"):
+				m = re.search(r"var data = \[{(.*?)}\];", script.text)
+				if m:
+					data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+					data = f"{{{data}}}"
+					break
+
+		data = eval(data)
+		
+		for row in data:
+			team = convertRotoTeam(row["entity_team_name_alt"].lower())
+			if team not in expected:
+				expected[team] = {}
+
+			player = strip_accents(row["entity_name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+			last, first = map(str, player.split(", "))
+			player = f"{first} {last}"
+
+			expected[team][player] = row.copy()
+
+
+	with open(f"{prefix}static/baseballreference/expected.json", "w") as fh:
+		json.dump(expected, fh, indent=4)
+
+def writeLeftRightSplits():
+	writeSavantExpected()
+	pass
 
 # write batter vs pitcher
 def writeBVP():
@@ -929,9 +1070,13 @@ if __name__ == "__main__":
 		writeBVP()
 		write_stats(date)
 		write_schedule(date)
+		writeSavantExpected()
+		writeSavantParkFactors()
+		#writeLeftRightSplits()
 
 	#write_pitching()
 	#writeYearAverages()
 	#write_stats(date)
 	#write_totals()
 	#write_curr_year_averages()
+	#writeLeftRightSplits()

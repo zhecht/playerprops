@@ -190,11 +190,25 @@
 				}
 			}
 
+			const expcetedFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				const val = data.battingAvg;
+				const xVal = data.xBA;
+				let html = ""
+				if (parseFloat(xVal) >= parseFloat(val)) {
+					html = "<div class='positive'>"+xVal+"</div>";
+				} else {
+					html = "<div class='negative'>"+xVal+"</div>";
+				}
+				return html
+			}
+
 			const splitsFormatter = function(cell, params, rendered) {
 				const data = cell.getRow().getData();
 				const vals = cell.getValue().split(" - ");
 				let val1 = vals[0];
-				if (parseFloat(val1) >= parseFloat(data.line)) {
+				if (parseFloat(val1) >= 50) {
 					val1 = "<div class='positive'>"+val1+"</div>";
 				} else {
 					val1 = "<div class='negative'>"+val1+"</div>";
@@ -203,7 +217,7 @@
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
 				}
 				let val2 = vals[1];
-				if (parseFloat(val2) >= parseFloat(data.line)) {
+				if (parseFloat(val2) >= 50) {
 					val2 = "<div class='positive'>"+val2+"</div>";
 				} else {
 					val2 = "<div class='negative'>"+val2+"</div>";
@@ -226,10 +240,10 @@
 					
 					initialSort: [
 						//{column: "pos", dir: "asc"},
-						//{column: "totalOverLast5", dir: "desc"},
 						//{column: "diff", dir: "desc"},
-						{column: "againstTeamTotalOver", dir: "desc"},
+						//{column: "againstTeamTotalOver", dir: "desc"},
 						{column: "careerTotalOver", dir: "desc"},
+						{column: "totalOver", dir: "desc"},
 						//{column: "team", dir: "asc"},
 					],
 					columnDefaults: {
@@ -250,7 +264,8 @@
 						{title: "Player", field: "player", headerFilter: "input"},
 						{title: "Game", field: "game", visible: false},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
-						{title: "B. Avg", field: "battingAvg", hozAlign: "center", width: 60,  sorter: "number"},
+						{title: "BA", field: "battingAvg", hozAlign: "center", width: 60,  sorter: "number"},
+						{title: "xBA", field: "xBA", hozAlign: "center", width: 60,  sorter: "number", formatter: expcetedFormatter},
 						{title: "Bats", field: "bats", width: 40, hozAlign: "center"},
 						{title: "Pos", field: "pos", hozAlign: "center", width: 50},
 						{title: "GP", field: "gamesPlayed", hozAlign: "center", width: 50},
@@ -261,6 +276,7 @@
 						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "LYR Opp Rank", field: "oppRankLastYear", hozAlign: "center", formatter: rankFormatter, width: 70},
+						{title: "Hits Rank", field: "stadiumHitsRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						//{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
 						//{title: "Opp AB", field: "oppABRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
@@ -276,6 +292,7 @@
 						{title: "L10 % Over", field: "last10Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
 						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
+						{title: "xBA", field: "pitcherXBA", width:60, hozAlign: "center", sorter: "number"},
 						{title: "Proj", field: "pitcherProj", width: 80, hozAlign: "center", sorter: "number"},
 						{title: "H/IP", field: "hip", hozAlign: "center", width: 80},
 						{title: "BB/IP", field: "bbip", hozAlign: "center", width: 80, visible: false},
@@ -341,7 +358,7 @@
 
 			setTimeout(function() {
 				let rows = TABLE.getRows("active");
-				if ("{{prop}}" != "h") {
+				if (bets.length === 0) {
 					return;
 				}
 				for (row of rows) {

@@ -407,6 +407,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		stats = json.load(fh)
 	with open(f"{prefix}static/baseballreference/averages.json") as fh:
 		averages = json.load(fh)
+	with open(f"{prefix}static/baseballreference/expected.json") as fh:
+		expected = json.load(fh)
+	with open(f"{prefix}static/baseballreference/parkFactors.json") as fh:
+		parkFactors = json.load(fh)
 	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 		schedule = json.load(fh)
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
@@ -786,6 +790,16 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				if team in playerHRFactors and player in playerHRFactors[team]:
 					hrFactor = playerHRFactors[team][player]
 
+				pitcherXBA = xBA = xHr = 0
+				try:
+					xBA = format(expected[team][player]["est_ba"], '.3f')[1:]
+					pitcherXBA = format(expected[opp][pitcher]["est_ba"], '.3f')[1:]
+				except:
+					pass
+
+				stadiumHitsRank = parkFactors[homeTeam]["hitsRank"]
+				stadiumHrRank = parkFactors[homeTeam]["hrRank"]
+
 				props.append({
 					"game": game,
 					"player": player.title(),
@@ -799,6 +813,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"bats": bats,
 					"battingNumber": battingNumber,
 					"hrFactor": hrFactor,
+					"xBA": xBA,
+					"pitcherXBA": pitcherXBA,
+					"stadiumHitsRank": stadiumHitsRank,
+					"stadiumHrRank": stadiumHrRank,
 					"pos": pos,
 					"againstPitcherStats": againstPitcherStats,
 					"againstPitcherStatsPerAB": againstPitcherStatsPerAB,
@@ -1192,7 +1210,12 @@ def props_route():
 		line = request.args.get("line")
 
 	with open(f"{prefix}bets") as fh:
-		bets = json.load(fh)["bets"]
+		bets = json.load(fh)
+
+	if prop in bets:
+		bets = bets[prop]
+	else:
+		bets = bets["h"]
 		
 	bets = ",".join(bets)
 	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players, bet=bet, line=line)
