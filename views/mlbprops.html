@@ -292,6 +292,7 @@
 						{title: "HR Factor", field: "hrFactor", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "Proj Diff", field: "projDiff", visible: false, sorter: "number"},
 						{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
+						{title: "HR-xHR", field: "xHR", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
 						{title: "% Over", field: "totalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
@@ -316,6 +317,7 @@
 						{title: "LYR vs Opp % Over", field: "lastYearTeamMatchupOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "vs Team LYR", field: "againstTeamLastYearStats", hozAlign: "center", width: 140},
 						{title: "LYR A-H Splits", field: "lastYearAwayHomeSplits", hozAlign: "center", visible: true},
+						{title: "BB/PG", field: "bbpg", hozAlign: "center", width: 60},
 						//{title: "Diff", field: "diff", hozAlign: "center", width: 80, sorter: "number"},
 						//{title: "Hit Rate Odds", field: "hitRateOdds", hozAlign: "center", width: 80},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
@@ -334,18 +336,22 @@
 					TABLE.showColumn("hit");
 				}
 				if (propArg === "hr") {
+					TABLE.hideColumn("avg");
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("hrip");
 					TABLE.showColumn("hrFactor");
 					TABLE.hideColumn("stadiumHitsRank");
 					TABLE.showColumn("stadiumHrRank");
+					TABLE.showColumn("xHR");
 				} else if (propArg === "so") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
 				} else if (["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
 					TABLE.hideColumn("againstPitcherStats");
 					TABLE.hideColumn("pitcherProj");
+					TABLE.hideColumn("bbpg");
 					TABLE.hideColumn("pitcherXBA");
+					TABLE.hideColumn("babip");
 					TABLE.hideColumn("leftRightAvg");
 					TABLE.hideColumn("stadiumHitsRank");
 					TABLE.hideColumn("pitcher");

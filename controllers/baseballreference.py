@@ -923,6 +923,7 @@ def convertSavantTeam(team):
 
 def writeSavantParkFactors():
 	url = "https://baseballsavant.mlb.com/leaderboard/statcast-park-factors?type=year&year=2023&batSide=&stat=index_wOBA&condition=All&rolling="
+	time.sleep(0.2)
 	outfile = "outmlb2"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -963,6 +964,7 @@ def writeSavantExpected():
 	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics"
 	expected = {}
 	for t in ["", "?type=pitcher"]:
+		time.sleep(0.2)
 		outfile = "outmlb2"
 		call(["curl", "-k", url+t, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -991,6 +993,39 @@ def writeSavantExpected():
 
 
 	with open(f"{prefix}static/baseballreference/expected.json", "w") as fh:
+		json.dump(expected, fh, indent=4)
+
+def writeSavantExpectedHR():
+	url = "https://baseballsavant.mlb.com/leaderboard/home-runs"
+	expected = {}
+	for t in ["", "?year=2023&team=&player_type=Pitcher&min=0"]:
+		time.sleep(0.2)
+		outfile = "outmlb2"
+		call(["curl", "-k", url+t, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		data = "{}"
+		for script in soup.findAll("script"):
+			if script.text.strip().startswith("var data"):
+				m = re.search(r"var data = \[{(.*?)}\];", script.text)
+				if m:
+					data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+					data = f"{{{data}}}"
+					break
+
+		data = eval(data)
+		
+		for row in data:
+			team = convertRotoTeam(row["team_abbrev"].lower())
+			if team not in expected:
+				expected[team] = {}
+
+			player = strip_accents(row["player"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+
+			expected[team][player] = row.copy()
+
+
+	with open(f"{prefix}static/baseballreference/expectedHR.json", "w") as fh:
 		json.dump(expected, fh, indent=4)
 
 def writeLeftRightSplits():
@@ -1111,6 +1146,7 @@ if __name__ == "__main__":
 		writeSavantExpected()
 		writeSavantParkFactors()
 		writeLeftRightSplits()
+		writeSavantExpectedHR()
 
 	#write_pitching()
 	#writeYearAverages()
@@ -1118,3 +1154,4 @@ if __name__ == "__main__":
 	#write_totals()
 	#write_curr_year_averages()
 	#writeLeftRightSplits()
+	#writeSavantExpectedHR()

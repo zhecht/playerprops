@@ -409,6 +409,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		averages = json.load(fh)
 	with open(f"{prefix}static/baseballreference/expected.json") as fh:
 		expected = json.load(fh)
+	with open(f"{prefix}static/baseballreference/expectedHR.json") as fh:
+		expectedHR = json.load(fh)
 	with open(f"{prefix}static/baseballreference/parkFactors.json") as fh:
 		parkFactors = json.load(fh)
 	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
@@ -629,10 +631,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				lastAll = []
 				awayHomeSplits = [[], []]
 				winLossSplits = [[], []]
-				totalOver = battingAvg = avg = babip = 0
+				totalOver = battingAvg = avg = babip = bbpg = 0
 				if player in stats[team]:
 					playerStats = stats[team][player]
 					gamesPlayed = playerStats["gamesPlayed"]
+
+					if gamesPlayed:
+						bbpg = round(playerStats.get("bb", 0) / gamesPlayed, 2)
 					val = 0
 					currProp = prop
 					if propName in stats[team][player]:
@@ -643,7 +648,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 
 					if "P" not in pos:
 						battingAvg = str(format(round(playerStats['h']/playerStats['ab'], 3), '.3f'))[1:]
-						babip = format((playerStats["h"] - playerStats["hr"]) / (playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)), '.3f')[1:]
+						dem = playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)
+						if dem:
+							babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
 					
 
 				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
@@ -793,7 +800,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					hrFactor = playerHRFactors[team][player]
 
 				# savant
-				pitcherXBA = xBA = xHr = 0
+				xHR = 0
+				try:
+					xHR = expectedHR[team][player]["xhr_diff"]
+				except:
+					pass
+				pitcherXBA = xBA = 0
 				try:
 					xBA = format(expected[team][player]["est_ba"], '.3f')[1:]
 					if "P" in pos:
@@ -827,7 +839,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"battingNumber": battingNumber,
 					"hrFactor": hrFactor,
 					"babip": babip,
+					"bbpg": bbpg,
 					"xBA": xBA,
+					"xHR": xHR,
 					"pitcherXBA": pitcherXBA,
 					"leftRightAvg": leftRightAvg,
 					"stadiumHitsRank": stadiumHitsRank,
