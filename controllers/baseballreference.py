@@ -170,7 +170,11 @@ def write_stats(date):
 
 			for team in allStats:
 				for player in allStats[team]:
-					if "ab" in allStats[team][player]:
+					if "ip" in allStats[team][player]:
+						ip = allStats[team][player]["ip"]
+						outs = int(ip)*3 + int(str(ip).split(".")[-1])
+						allStats[team][player]["outs"] = outs
+					elif "ab" in allStats[team][player]:
 						_3b = allStats[team][player].get("3b", 0)
 						_2b = allStats[team][player].get("2b", 0)
 						hr = allStats[team][player]["hr"]
@@ -189,6 +193,25 @@ def write_stats(date):
 
 	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
+
+def sumStat(header, target, source):
+	if header not in target:
+		target[header] = 0
+
+	if header == "ip":
+		ip = target["ip"]+source["ip"]
+		remainder = int(str(round(ip, 1)).split(".")[-1])
+
+		if remainder >= 3:
+			ip += remainder // 3
+			ip = int(ip) + (remainder%3)*0.1
+		target["ip"] = ip
+	else:
+		try:
+			target[header] += source[header]
+		except:
+			pass
+
 
 def write_curr_year_averages():
 	year = datetime.datetime.now().year
@@ -235,17 +258,12 @@ def write_curr_year_averages():
 					statsVsTeam[team][opp][player] = stats[player].copy()
 				else:
 					for hdr in stats[player]:
-						if hdr not in averages[team][player][year]:
-							averages[team][player][year][hdr] = 0
-						averages[team][player][year][hdr] += stats[player][hdr]
-
-						if hdr not in statsVsTeam[team][opp][player]:
-							statsVsTeam[team][opp][player][hdr] = 0
-						statsVsTeam[team][opp][player][hdr] += stats[player][hdr]
+						sumStat(hdr, averages[team][player][year], stats[player])
+						sumStat(hdr, statsVsTeam[team][opp][player], stats[player])
 
 				for hdr in stats[player]:
 					val = stats[player][hdr]
-					if hdr in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
+					if hdr in ["h", "1b", "tb", "r", "rbi", "outs", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
 						if hdr+"Overs" not in averages[team][player][year]:
 							averages[team][player][year][hdr+"Overs"] = {}
 						if hdr+"Overs" not in statsVsTeam[team][opp][player]:
@@ -288,16 +306,12 @@ def write_totals():
 					totals[team][player] = stats[player]
 				else:
 					for header in stats[player]:
-						if header not in totals[team][player]:
-							totals[team][player][header] = 0
-						totals[team][player][header] += stats[player][header]
+						sumStat(header, totals[team][player], stats[player])
 
 				for header in stats[player]:
 					if header == "r" and "ip" in stats[player]:
 						continue
-					if header not in teamTotals[team]:
-						teamTotals[team][header] = 0
-					teamTotals[team][header] += stats[player][header]
+					sumStat(header, teamTotals[team], stats[player])
 
 				if "gamesPlayed" not in totals[team][player]:
 					totals[team][player]["gamesPlayed"] = 0
@@ -406,14 +420,14 @@ def write_averages():
 			pId = ids[team][player]
 			if player in averages[team]:
 				pass
-				continue
+				#continue
 			
 			averages[team][player] = {}
 			lastYearStats[team][player] = {}
 
 			time.sleep(0.175)
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
-			outfile = "outmlb"
+			outfile = "outmlb3"
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 			#print(url)
@@ -445,7 +459,7 @@ def write_averages():
 				time.sleep(0.175)
 				url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}/type/mlb/year/{year}"
 				#print(url)
-				outfile = "outmlb"
+				outfile = "outmlb3"
 				call(["curl", "-k", url, "-o", outfile])
 				soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -473,6 +487,10 @@ def write_averages():
 								val = "-"
 							yearStats[year][team][player]["tot"][header] = val
 						yearStats[year][team][player]["tot"]["gamesPlayed"] = gamesPlayed
+						if "ip" in yearStats[year][team][player]["tot"]:
+							ip = yearStats[year][team][player]["tot"]["ip"]
+							outs = int(ip)*3 + int(str(ip).split(".")[-1])
+							yearStats[year][team][player]["tot"]["outs"] = outs
 						if "ab" in yearStats[year][team][player]["tot"]:
 							_3b = yearStats[year][team][player]["tot"]["3b"]
 							_2b = yearStats[year][team][player]["tot"]["2b"]
@@ -514,6 +532,10 @@ def write_averages():
 										val = "-"
 
 								yearStats[year][team][player][date][header] = val
+							if "ip" in yearStats[year][team][player][date]:
+								ip = yearStats[year][team][player][date]["ip"]
+								outs = int(ip)*3 + int(str(ip).split(".")[-1])
+								yearStats[year][team][player][date]["outs"] = outs
 							if "ab" in yearStats[year][team][player][date]:
 								_3b = yearStats[year][team][player][date]["3b"]
 								_2b = yearStats[year][team][player][date]["2b"]
@@ -589,7 +611,7 @@ def writeYearAverages():
 									tot[header] += val
 									if not isCurrYear:
 										statsVsTeam[team][currOpp][player][header] += val
-									if header in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
+									if header in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er", "outs"]:
 
 										if not isCurrYear and header+"Overs" not in statsVsTeam[team][currOpp][player]:
 											statsVsTeam[team][currOpp][player][header+"Overs"] = {}
@@ -615,12 +637,7 @@ def writeYearAverages():
 				
 				averages[team][player][year] = tot
 				for header in tot:
-					if header not in averages[team][player]["tot"]:
-						averages[team][player]["tot"][header] = 0
-					try:
-						averages[team][player]["tot"][header] += tot[header]
-					except:
-						pass
+					sumStat(header, averages[team][player]["tot"], tot)
 
 		with open(f"{prefix}static/mlbprops/stats/{file}", "w") as fh:
 			json.dump(yearStats, fh, indent=4)
