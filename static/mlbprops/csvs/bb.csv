@@ -1,6 +1,7 @@
 NAME	OVER	POS	R/L	Batting #	B. AVG	TEAM	A/H	OPP	OPP RANK	OPP RANK LYR	PROP	LINE	LAST ➡️	AVG	% OVER	L10 % OVER	CAREER % OVER	% OVER VS TEAM	VS TEAM	PITCHER	THROWS	VS PITCHER	UNDER
 Paul Goldschmidt	-105	1B	R	3	.327	STL	v	PIT	20th	28th	bb	0.5	1,1,0,1,1,1,0,0,1,2	0.8	73%	73%	42%	49%	.318 126-396, 21 HR, 70 RBI, 74 BB, 76 SO	Keller	R	.278 5-18, 0 HR, 1 RBI, 2 BB, 3 SO	-125
 Mike Trout	'+120	CF	R	2	.300	LAA	@	BOS	17th	21st	bb	0.5	1,1,1,0,0,1,1,0,2,0	0.93	71%	71%	50%	53%	.300 65-217, 10 HR, 30 RBI, 39 BB, 60 SO	Whitlock	R	.500 2-4, 1 HR, 2 RBI, 0 BB, 1 SO	-160
+Juan Soto	-120	LF	L	3	.182	SD	v	MIL	9th	19th	bb	0.5	3,1,0,0,1,2,1,1,1,1	0.94	69%	69%	57%	57%	.233 20-86, 5 HR, 16 RBI, 16 BB, 20 SO	Miley	L		-110
 Andrew Mccutchen	'+160	RF	R	3	.310	PIT	@	STL	16th	14th	bb	0.5	1,0,1,1,0,1,0,0,0,2	0.79	57%	57%	40%	33%	.266 182-684, 16 HR, 73 RBI, 74 BB, 143 SO	Mikolas	R	.125 2-16, 0 HR, 0 RBI, 0 BB, 3 SO	-220
 Jacob Stallings	'+235	C	R	8	.143	MIA	v	ARI	29th	16th	bb	0.5	0,1,1,0,1,1,0	0.57	57%	50%	30%	14%	.333 13-39, 0 HR, 8 RBI, 2 BB, 3 SO	Gallen	R	.000 0-2, 0 HR, 0 RBI, 0 BB, 0 SO	-330
 Hunter Renfroe	'+320	RF	R	5	.283	LAA	@	BOS	17th	21st	bb	0.5	1,0,1,2,1,0,0,1,1,0	0.64	57%	57%	24%	21%	.286 14-49, 5 HR, 14 RBI, 6 BB, 17 SO	Whitlock	R	.000 1-1, 0 HR, 0 RBI, 0 BB, 0 SO	-475
@@ -14,6 +15,7 @@ Kyle Schwarber	-115	LF	L	5	.211	PHI	@	CIN	23rd	30th	bb	0.5	1,2,1,1,1,1,1,0,0,0	0
 Ronald Acuna	'+155	RF	R	1	.365	ATL	@	KC	7th	29th	bb	0.5	1,0,0,2,0,1,0,1,1,0	0.6	47%	47%	40%	25%	.308 4-13, 1 HR, 2 RBI, 1 BB, 3 SO	Greinke	R	.000 0-9, 0 HR, 0 RBI, 0 BB, 2 SO	-210
 Matt Olson	'+100	1B	L	2	.317	ATL	@	KC	7th	29th	bb	0.5	1,0,0,0,3,1,0,3,1,0	0.73	47%	47%	38%	44%	.302 29-96, 11 HR, 27 RBI, 13 BB, 26 SO	Greinke	R	.100 2-20, 0 HR, 0 RBI, 1 BB, 7 SO	-135
 Pete Alonso	-105	1B	R	4	.268	NYM	@	OAK	30th	17th	bb	0.5	0,2,1,1,0,0,1,0,0,0	0.6	47%	47%	35%	50%	.500 8-16, 2 HR, 7 RBI, 4 BB, 2 SO	Sears	L	.500 1-2, 0 HR, 0 RBI, 0 BB, 0 SO	-125
+Trent Grisham	'+200	CF	L	8	.237	SD	v	MIL	9th	19th	bb	0.5	0,0,0,3,0,1,0,0,1,1	0.56	44%	44%	34%	18%	.333 13-39, 1 HR, 4 RBI, 3 BB, 8 SO	Miley	L	.000 0-3, 0 HR, 0 RBI, 0 BB, 0 SO	-275
 Sam Hilliard	'+175	CF	L	9	.348	ATL	@	KC	7th	29th	bb	0.5	2,1,1,0,0,0,0,0,1	0.56	44%	50%	25%	75%	.333 4-12, 3 HR, 7 RBI, 4 BB, 2 SO	Greinke	R	.200 1-5, 0 HR, 1 RBI, 0 BB, 2 SO	-235
 Luis Arraez	'+195	2B	L	1	.511	MIA	v	ARI	29th	16th	bb	0.5	0,0,0,1,1,1,1,0,1,0	0.43	43%	43%	30%	33%	.500 5-10, 0 HR, 0 RBI, 1 BB, 1 SO	Gallen	R	.000 0-3, 0 HR, 0 RBI, 0 BB, 2 SO	-265
 Taylor Ward	'+225	LF	R	1	.259	LAA	@	BOS	17th	21st	bb	0.5	0,0,1,0,1,2,0,1,1,1	0.5	43%	43%	27%	40%	.200 6-30, 1 HR, 3 RBI, 5 BB, 9 SO	Whitlock	R	.000 0-1, 0 HR, 0 RBI, 0 BB, 1 SO	-320
@@ -23,40 +25,51 @@ Geraldo Perdomo	'+230	SS	S	9	.409	ARI	@	MIA	19th	18th	bb	0.5	0,1,0,0,0,2,1,0,0,1
 Francisco Lindor	'+160	SS	S	3	.245	NYM	@	OAK	30th	17th	bb	0.5	0,1,0,1,0,0,0,2,0,0	0.6	40%	40%	31%	22%	.321 45-140, 6 HR, 24 RBI, 12 BB, 18 SO	Sears	L	.667 2-3, 0 HR, 2 RBI, 0 BB, 0 SO	-215
 Nolan Arenado	'+230	3B	R	4	.328	STL	v	PIT	20th	28th	bb	0.5	0,1,0,1,1,0,1,1,0,0	0.4	40%	40%	29%	30%	.292 85-291, 12 HR, 51 RBI, 25 BB, 42 SO	Keller	R	.273 3-11, 1 HR, 4 RBI, 0 BB, 2 SO	-320
 Austin Riley	'+150	3B	R	3	.316	ATL	@	KC	7th	29th	bb	0.5	0,0,1,1,0,0,0,2,1,0	0.6	40%	40%	26%	20%	.158 3-19, 1 HR, 1 RBI, 1 BB, 11 SO	Greinke	R		-200
-Jeff Mcneil	'+235	2B	L	6	.212	NYM	@	OAK	30th	17th	bb	0.5	0,1,3,1,0,2,1,2,0,0	0.67	40%	40%	24%	50%	.333 6-18, 0 HR, 1 RBI, 2 BB, 0 SO	Sears	L	.000 0-1, 0 HR, 0 RBI, 1 BB, 0 SO	-330
+Jeff Mcneil	'+245	2B	L	6	.212	NYM	@	OAK	30th	17th	bb	0.5	0,1,3,1,0,2,1,2,0,0	0.67	40%	40%	24%	50%	.333 6-18, 0 HR, 1 RBI, 2 BB, 0 SO	Sears	L	.000 0-1, 0 HR, 0 RBI, 1 BB, 0 SO	-350
 Nick Castellanos	'+225	RF	R	4	.286	PHI	@	CIN	23rd	30th	bb	0.5	0,1,0,0,1,0,0,2,1,1	0.53	40%	40%	23%	26%	.250 27-108, 6 HR, 14 RBI, 8 BB, 27 SO	Cessa	R	.000 2-2, 1 HR, 1 RBI, 0 BB, 0 SO	-320
 Jose Herrera	'+340	C	S	-	.286	ARI	@	MIA	19th	18th	bb	0.5	0,1,1,0,0	0.4	40%	30%	19%	0%	.000 0-7, 0 HR, 0 RBI, 0 BB, 4 SO	Alcantara	R		-525
 Jack Suwinski	'+175	CF	L	6	.148	PIT	@	STL	16th	14th	bb	0.5	0,0,0,1,0,2,1,0	0.5	38%	50%	31%	41%	.259 14-54, 4 HR, 8 RBI, 9 BB, 18 SO	Mikolas	R	.000 0-5, 0 HR, 0 RBI, 1 BB, 2 SO	-240
 Nolan Gorman	'+140	3B	L	7	.326	STL	v	PIT	20th	28th	bb	0.5	0,0,1,0,0,0,2,0,0,1	0.62	38%	38%	26%	42%	.317 13-41, 0 HR, 5 RBI, 5 BB, 10 SO	Keller	R	.250 1-4, 0 HR, 0 RBI, 1 BB, 1 SO	-190
+Tony Kemp	'+280	2B	L	1	.192	OAK	v	NYM	26th	5th	bb	0.5	0,1,0,1,0,0,0,2,0,0	0.54	38%	38%	26%	11%	.138 4-29, 0 HR, 2 RBI, 1 BB, 4 SO	Butto	R		-425
 Brandon Marsh	'+165	CF	L	7	.333	PHI	@	CIN	23rd	30th	bb	0.5	1,0,1,0,1,0,1,0,1,0	0.38	38%	38%	22%	43%	.312 5-16, 0 HR, 3 RBI, 3 BB, 4 SO	Cessa	R	.000 0-1, 0 HR, 0 RBI, 0 BB, 0 SO	-225
 Josh Rojas	'+200	3B	L	1	.390	ARI	@	MIA	19th	18th	bb	0.5	1,0,0,1,1,0,0,0,1,0	0.36	36%	36%	36%	25%	.256 11-43, 1 HR, 3 RBI, 3 BB, 14 SO	Alcantara	R	.167 1-6, 1 HR, 1 RBI, 2 BB, 2 SO	-275
 Mark Canha	'+150	LF	R	5	.204	NYM	@	OAK	30th	17th	bb	0.5	0,1,0,0,0,0,2,0,0,0	0.43	36%	36%	33%	0%	.385 5-13, 0 HR, 0 RBI, 0 BB, 3 SO	Sears	L	.333 1-3, 0 HR, 0 RBI, 0 BB, 0 SO	-200
 David Villar	'+200	3B	R	-	.186	SF	@	DET	15th	20th	bb	0.5	1,0,0,0,1,0,0,1,0,2	0.43	36%	36%	25%	0%	.000 0-5, 0 HR, 0 RBI, 0 BB, 1 SO	Boyd	L		-275
 Tommy Edman	'+245	SS	S	9	.250	STL	v	PIT	20th	28th	bb	0.5	1,0,0,0,1,1,0,2,0,0	0.43	36%	36%	22%	29%	.329 74-225, 7 HR, 32 RBI, 19 BB, 32 SO	Keller	R	.312 5-16, 0 HR, 3 RBI, 3 BB, 3 SO	-350
-Starling Marte	'+210	RF	R	2	.277	NYM	@	OAK	30th	17th	bb	0.5	0,3,1,0,0,1,1,0,0,0	0.5	36%	36%	20%	43%	.218 12-55, 1 HR, 8 RBI, 10 BB, 14 SO	Sears	L		-295
+Starling Marte	'+200	RF	R	2	.277	NYM	@	OAK	30th	17th	bb	0.5	0,3,1,0,0,1,1,0,0,0	0.5	36%	36%	20%	43%	.218 12-55, 1 HR, 8 RBI, 10 BB, 14 SO	Sears	L		-285
 Jake Cave	'+185	LF	L	9	.182	PHI	@	CIN	23rd	30th	bb	0.5	0,0,0,0,0,1,1,1,0,1	0.36	36%	36%	18%	44%	.059 1-17, 0 HR, 0 RBI, 4 BB, 6 SO	Cessa	R	.000 0-1, 0 HR, 0 RBI, 0 BB, 1 SO	-260
 Alec Bohm	'+245	3B	R	6	.333	PHI	@	CIN	23rd	30th	bb	0.5	2,1,0,0,0,0,0,0,0,1	0.4	33%	33%	22%	31%	.351 20-57, 1 HR, 10 RBI, 6 BB, 9 SO	Cessa	R	.000 3-3, 0 HR, 2 RBI, 0 BB, 0 SO	-360
+Brent Rooker	'+245	LF	R	-	.310	OAK	v	NYM	26th	5th	bb	0.5	1,0,0,0,1,1,0,0,0	0.33	33%	30%	21%	0%	.400 2-5, 1 HR, 2 RBI, 0 BB, 2 SO	Butto	R		-350
 Stone Garrett	'+330	LF	R	-	.583	WSH	v	CLE	4th	4th	bb	0.5	0,0,2	0.67	33%	10%	7%	0%		Bieber	R		-525
 Jorge Soler	'+165	LF	R	2	.208	MIA	v	ARI	29th	16th	bb	0.5	1,1,0,0,0,1,0,0,0,0	0.31	31%	31%	34%	22%	.215 17-79, 3 HR, 10 RBI, 6 BB, 17 SO	Gallen	R	.000 0-3, 0 HR, 0 RBI, 0 BB, 2 SO	-220
+Xander Bogaerts	'+150	SS	R	1	.361	SD	v	MIL	9th	19th	bb	0.5	0,0,0,0,0,1,1,2,0,2	0.5	31%	31%	30%	27%	.304 14-46, 0 HR, 4 RBI, 4 BB, 13 SO	Miley	L	.333 5-15, 1 HR, 2 RBI, 2 BB, 2 SO	-200
 Nicky Lopez	'+275	SS	L	-	.200	KC	v	ATL	21st	15th	bb	0.5	1,0,0,1,0,0,0,0,0,0	0.38	31%	31%	22%	0%	.263 5-19, 0 HR, 3 RBI, 0 BB, 4 SO	Wright	R		-400
-Thairo Estrada	'+240	2B	R	1	.365	SF	@	DET	15th	20th	bb	0.5	0,1,1,0,0,0,0,1,0,1	0.31	31%	31%	17%	17%	.143 3-21, 1 HR, 1 RBI, 1 BB, 5 SO	Boyd	L		-350
+Thairo Estrada	'+230	2B	R	1	.365	SF	@	DET	15th	20th	bb	0.5	0,1,1,0,0,0,0,1,0,1	0.31	31%	31%	17%	17%	.143 3-21, 1 HR, 1 RBI, 1 BB, 5 SO	Boyd	L		-330
 Kebryan Hayes	'+310	3B	R	5	.182	PIT	@	STL	16th	14th	bb	0.5	1,1,1,0,0,1,0,0,0,0	0.29	29%	29%	30%	33%	.240 31-129, 1 HR, 10 RBI, 13 BB, 27 SO	Mikolas	R	.400 4-10, 0 HR, 0 RBI, 0 BB, 2 SO	-475
+Ha Seong Kim	'+170	2B	R	6	.234	SD	v	MIL	9th	19th	bb	0.5	0,0,0,0,1,1,0,1,0,0	0.29	29%	29%	24%	0%	.115 6-52, 0 HR, 1 RBI, 0 BB, 12 SO	Miley	L		-235
 Tommy Pham	'+150	CF	R	7	.276	NYM	@	OAK	30th	17th	bb	0.5	0,1,0,0,0,1,0,1,0,0	0.27	27%	27%	38%	38%	.196 11-56, 3 HR, 5 RBI, 6 BB, 15 SO	Sears	L	.000 0-1, 0 HR, 0 RBI, 0 BB, 1 SO	-200
 Trea Turner	'+260	SS	R	2	.308	PHI	@	CIN	23rd	30th	bb	0.5	1,0,1,0,0,0,0,1,0,0	0.27	27%	27%	28%	41%	.331 48-145, 4 HR, 21 RBI, 15 BB, 32 SO	Cessa	R	.400 2-5, 0 HR, 0 RBI, 0 BB, 0 SO	-380
 Alec Burleson	'+195	RF	L	2	.293	STL	v	PIT	20th	28th	bb	0.5	0,0,0,1,0,1,1,0,0,0	0.27	27%	27%	25%	22%	.200 6-30, 0 HR, 2 RBI, 3 BB, 6 SO	Keller	R	.000 0-2, 0 HR, 0 RBI, 0 BB, 0 SO	-270
 Wilmer Flores	'+180	1B	R	2	.270	SF	@	DET	15th	20th	bb	0.5	0,0,0,0,0,0,0,1,0,1	0.27	27%	27%	21%	33%	.219 7-32, 0 HR, 4 RBI, 4 BB, 6 SO	Boyd	L	.667 2-3, 0 HR, 1 RBI, 0 BB, 0 SO	-250
+Manny Machado	'+180	3B	R	2	.254	SD	v	MIL	9th	19th	bb	0.5	0,1,0,1,0,0,0,0,1,0	0.25	25%	25%	30%	38%	.229 27-118, 4 HR, 11 RBI, 15 BB, 20 SO	Miley	L	.312 5-16, 2 HR, 2 RBI, 6 BB, 0 SO	-250
+Conner Capel	'+190	RF	L	8	.250	OAK	v	NYM	26th	5th	bb	0.5	0,1,0,0,0,1,0,0,0,1	0.25	25%	25%	24%	25%	.500 8-16, 2 HR, 7 RBI, 1 BB, 2 SO	Butto	R		-260
 Jd Davis	'+165	1B	R	4	.341	SF	@	DET	15th	20th	bb	0.5	1,1,0,0,0,0,0,0,0,0	0.23	23%	23%	27%	75%	.231 3-13, 1 HR, 3 RBI, 3 BB, 2 SO	Boyd	L		-225
+Jesus Aguilar	'+300	1B	R	4	.256	OAK	v	NYM	26th	5th	bb	0.5	0,0,0,0,0,0,1,0,0,1	0.23	23%	23%	26%	17%	.269 42-156, 5 HR, 24 RBI, 8 BB, 39 SO	Butto	R		-450
 Eduardo Escobar	'+215	3B	S	8	.114	NYM	@	OAK	30th	17th	bb	0.5	1,0,1,0,0,0,0,0,1,0	0.23	23%	23%	23%	21%	.277 33-119, 5 HR, 24 RBI, 7 BB, 25 SO	Sears	L	.000 2-2, 0 HR, 2 RBI, 0 BB, 0 SO	-310
 Keibert Ruiz	'+330	C	S	5	.265	WSH	v	CLE	4th	4th	bb	0.5	0,0,0,2,0,1,0,0,0,0	0.38	23%	23%	22%	0%	.250 1-4, 0 HR, 0 RBI, 0 BB, 0 SO	Bieber	R		-525
 Bryan De La Cruz	'+260	LF	R	6	.302	MIA	v	ARI	29th	16th	bb	0.5	0,0,0,1,0,2,1,0,0,0	0.31	23%	23%	20%	0%	.545 6-11, 0 HR, 2 RBI, 0 BB, 2 SO	Gallen	R		-380
+Shea Langeliers	'+330	C	R	7	.250	OAK	v	NYM	26th	5th	bb	0.5	0,0,1,0,0,0,0,1,0,0	0.23	23%	23%	18%	33%	.385 5-13, 1 HR, 3 RBI, 1 BB, 2 SO	Butto	R		-525
 Brendan Donovan	'+145	2B	L	1	.273	STL	v	PIT	20th	28th	bb	0.5	1,0,0,0,2,0,0,0,2,0	0.36	21%	21%	38%	19%	.348 24-69, 1 HR, 9 RBI, 3 BB, 8 SO	Keller	R	.143 1-7, 0 HR, 0 RBI, 0 BB, 0 SO	-195
 Willson Contreras	'+160	C	R	5	.174	STL	v	PIT	20th	28th	bb	0.5	0,0,2,0,2,0,0,0,1,0	0.36	21%	21%	33%	38%	.272 82-301, 9 HR, 42 RBI, 36 BB, 90 SO	Keller	R	.111 1-9, 0 HR, 0 RBI, 1 BB, 7 SO	-215
+Jace Peterson	'+175	3B	L	2	.217	OAK	v	NYM	26th	5th	bb	0.5	0,0,0,1,1,0,0,0,0,0	0.21	21%	21%	30%	20%	.257 45-175, 3 HR, 20 RBI, 15 BB, 45 SO	Butto	R		-245
 Christian Walker	'+260	1B	R	4	.173	ARI	@	MIA	19th	18th	bb	0.5	0,0,0,0,1,0,0,0,1,1	0.21	21%	21%	29%	21%	.309 17-55, 3 HR, 9 RBI, 5 BB, 11 SO	Alcantara	R	.375 3-8, 1 HR, 1 RBI, 1 BB, 1 SO	-380
 Jazz Chisholm	'+150	CF	L	4	.231	MIA	v	ARI	29th	16th	bb	0.5	0,1,0,0,0,0,0,0,0,0	0.29	21%	21%	28%	40%	.300 6-20, 1 HR, 7 RBI, 2 BB, 1 SO	Gallen	R	.000 0-3, 0 HR, 0 RBI, 0 BB, 0 SO	-200
 Joey Meneses	'+300	1B	R	4	.224	WSH	v	CLE	4th	4th	bb	0.5	0,0,0,1,0,0,2,0,0,1	0.29	21%	21%	27%	0%	.000 0-5, 0 HR, 0 RBI, 0 BB, 0 SO	Bieber	R		-450
+Ramon Laureano	'+270	RF	R	6	.235	OAK	v	NYM	26th	5th	bb	0.5	0,1,0,1,0,0,0,0,0,0	0.29	21%	21%	26%	100%	.333 1-3, 0 HR, 0 RBI, 1 BB, 0 SO	Butto	R		-400
 Jean Segura	'+350	3B	R	7	.176	MIA	v	ARI	29th	16th	bb	0.5	0,0,0,0,1,0,1,0,0,0	0.21	21%	21%	20%	22%	.325 54-166, 5 HR, 19 RBI, 10 BB, 22 SO	Gallen	R	.500 3-6, 1 HR, 2 RBI, 1 BB, 1 SO	-550
 Lane Thomas	'+310	RF	R	7	.310	WSH	v	CLE	4th	4th	bb	0.5	0,0,0,1,0,0,0,0,1,2	0.27	20%	20%	28%	33%	.400 2-5, 0 HR, 0 RBI, 1 BB, 3 SO	Bieber	R		-475
 Bobby Witt	'+300	SS	R	2	.298	KC	v	ATL	21st	15th	bb	0.5	0,0,0,0,1,0,0,0,0,0	0.27	20%	20%	17%	0%	.750 3-4, 0 HR, 0 RBI, 0 BB, 0 SO	Wright	R		-450
+Esteury Ruiz	'+360	CF	R	9	.326	OAK	v	NYM	26th	5th	bb	0.5	0,0,0,0,0,0,0,0,0,1	0.2	20%	20%	7%	0%	.375 3-8, 0 HR, 0 RBI, 0 BB, 0 SO	Butto	R		-575
 Franmil Reyes	'+290	OF	R	-	.188	KC	v	ATL	21st	15th	bb	0.5	0,0,0,0,0,0,0,1,0,2	0.27	18%	18%	30%	23%	.333 15-45, 4 HR, 5 RBI, 4 BB, 13 SO	Wright	R		-425
 Avisail Garcia	'+280	RF	R	5	.171	MIA	v	ARI	29th	16th	bb	0.5	0,0,0,0,0,0,0,0,1,0	0.18	18%	18%	21%	44%	.217 13-60, 3 HR, 9 RBI, 9 BB, 15 SO	Gallen	R	.000 0-4, 0 HR, 0 RBI, 0 BB, 1 SO	-425
 Edward Olivares	'+350	LF	R	8	.257	KC	v	ATL	21st	15th	bb	0.5	0,0,0,1,0,1,0,0,0,0	0.18	18%	18%	15%	0%	.250 1-4, 0 HR, 0 RBI, 0 BB, 1 SO	Wright	R		-550
@@ -69,12 +82,14 @@ Ketel Marte	'+210	2B	S	2	.218	ARI	@	MIA	19th	18th	bb	0.5	0,0,1,0,1,0,0,0,0,0	0.1
 Jeimer Candelario	'+330	3B	S	2	.242	WSH	v	CLE	4th	4th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.13	13%	13%	33%	22%	.196 50-255, 6 HR, 22 RBI, 18 BB, 72 SO	Bieber	R		-525
 Bryan Reynolds	'+215	LF	S	2	.322	PIT	@	STL	16th	14th	bb	0.5	0,0,0,0,0,0,0,0,0,1	0.13	13%	13%	33%	25%	.249 57-229, 6 HR, 29 RBI, 19 BB, 56 SO	Mikolas	R	.321 9-28, 0 HR, 3 RBI, 1 BB, 4 SO	-300
 Ozzie Albies	'+270	2B	S	5	.246	ATL	@	KC	7th	29th	bb	0.5	0,0,0,0,0,0,1,0,0,0	0.13	13%	13%	25%	20%	.300 6-20, 1 HR, 4 RBI, 2 BB, 6 SO	Greinke	R	.111 1-9, 0 HR, 0 RBI, 0 BB, 3 SO	-400
+Nelson Cruz	'+205	DH	R	4	.333	SD	v	MIL	9th	19th	bb	0.5	1,0,0,0,0,0,0,0,0,0	0.1	10%	10%	31%	38%	.349 30-86, 6 HR, 20 RBI, 11 BB, 21 SO	Miley	L	.500 4-8, 0 HR, 2 RBI, 5 BB, 3 SO	-290
 Jt Realmuto	'+220	C	R	3	.229	PHI	@	CIN	23rd	30th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.08	8%	8%	23%	30%	.325 55-169, 10 HR, 33 RBI, 17 BB, 37 SO	Cessa	R	.250 1-4, 0 HR, 0 RBI, 0 BB, 0 SO	-310
 Brandon Drury	'+330	2B	R	-	.182	LAA	@	BOS	17th	21st	bb	0.5	0,0,0,1,0,0,0,0,0,0	0.08	8%	8%	19%	24%	.273 21-77, 1 HR, 7 RBI, 7 BB, 20 SO	Whitlock	R	.667 2-3, 0 HR, 0 RBI, 0 BB, 0 SO	-500
 Lourdes Gurriel	'+330	LF	R	3	.250	ARI	@	MIA	19th	18th	bb	0.5	0,0,0,0,0,1,0,0,0,0	0.08	8%	8%	19%	18%	.326 14-43, 2 HR, 6 RBI, 2 BB, 11 SO	Alcantara	R	.333 2-6, 0 HR, 0 RBI, 0 BB, 1 SO	-525
-Mike Yastrzemski	'+275	CF	L	8	.255	SF	@	DET	15th	20th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.14	7%	7%	32%	20%	.316 6-19, 0 HR, 3 RBI, 2 BB, 5 SO	Boyd	L		-400
+Mike Yastrzemski	'+245	CF	L	8	.255	SF	@	DET	15th	20th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.14	7%	7%	32%	20%	.316 6-19, 0 HR, 3 RBI, 2 BB, 5 SO	Boyd	L		-350
 Bryson Stott	'+195	2B	L	1	.375	PHI	@	CIN	23rd	30th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.07	7%	7%	26%	18%	.311 14-45, 1 HR, 2 RBI, 2 BB, 8 SO	Cessa	R	.500 1-2, 1 HR, 1 RBI, 0 BB, 0 SO	-270
 Salvador Perez	'+360	C	R	3	.232	KC	v	ATL	21st	15th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.07	7%	7%	14%	0%	.303 10-33, 0 HR, 3 RBI, 0 BB, 2 SO	Wright	R		-575
 Jordan Walker	'+250	LF	R	8	.273	STL	v	PIT	20th	28th	bb	0.5	0,0,0,0,0,0,1,0,0,0	0.07	7%	7%	0%	0%		Keller	R		-360
 Corbin Carroll	'+255	CF	L	5	.273	ARI	@	MIA	19th	18th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.0	0%	0%	25%	0%	.500 2-4, 0 HR, 0 RBI, 0 BB, 1 SO	Alcantara	R		-370
+Luis Campusano	'+330	C	R	-	.238	SD	v	MIL	9th	19th	bb	0.5	0,0,0,0,0,0,0	0.0	0%	0%	19%	0%	.111 1-9, 1 HR, 1 RBI, 0 BB, 4 SO	Miley	L		-500
 Michael Massey	'+265	2B	L	7	.116	KC	v	ATL	21st	15th	bb	0.5	0,0,0,0,0,0,0,0,0,0	0.0	0%	0%	17%	0%	.000 0-3, 0 HR, 1 RBI, 0 BB, 1 SO	Wright	R		-390
