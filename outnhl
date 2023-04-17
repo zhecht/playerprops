@@ -31,7 +31,7 @@
 	
 	<title>NHL Daily Lineups | RotoWire</title>
 
-	  <link rel="canonical" href="https://www.rotowire.com/hockey/nhl-lineups.php?date=tomorrow"/>  
+	  <link rel="canonical" href="https://www.rotowire.com/hockey/nhl-lineups.php"/>  
 	<link rel="preconnect" href="https://content.rotowire.com" crossorigin>
 	<link rel="preconnect" href="http://bet.rotowire.com/" crossorigin>
 	<link rel="preconnect" href="http://objects2.kaxmedia.com" crossorigin>
@@ -409,8 +409,8 @@
 							<div class="filter-links-title">Date</div>
 							<div class="filter-links-wrapper">
                                     <div class="filter-links">
-                        				<a class="filter-link"  href="/hockey/nhl-lineups.php" data-level="1" data-val="Today">Today</a>
-								<a class="filter-link is-selected"  href="/hockey/nhl-lineups.php?date=tomorrow" data-level="1" data-val="Tomorrow">Tomorrow</a>
+                        				<a class="filter-link is-selected"  href="/hockey/nhl-lineups.php" data-level="1" data-val="Today">Today</a>
+								<a class="filter-link"  href="/hockey/nhl-lineups.php?date=tomorrow" data-level="1" data-val="Tomorrow">Tomorrow</a>
 				                    </div>
                     			</div>
         </div>
@@ -876,6 +876,10 @@
                     </li>
         											<li class="lineup__title is-middle">INJURIES</li>
                                                     <li class="lineup__player">
+            <div class="lineup__pos">C</div>
+            <a title="Joel Eriksson Ek" href="/hockey/player/joel-eriksson-ek-4903">J. Eriksson Ek</a>
+            <span class="lineup__inj">DTD</span>         </li>
+                <li class="lineup__player">
             <div class="lineup__pos">D</div>
             <a title="John Klingberg" href="/hockey/player/john-klingberg-4135">J. Klingberg</a>
             <span class="lineup__inj">DTD</span>         </li>
@@ -883,10 +887,6 @@
             <div class="lineup__pos">C</div>
             <a title="Oskar Sundqvist" href="/hockey/player/oskar-sundqvist-4444">O. Sundqvist</a>
             <span class="lineup__inj">DTD</span>         </li>
-                <li class="lineup__player">
-            <div class="lineup__pos">C</div>
-            <a title="Joel Eriksson Ek" href="/hockey/player/joel-eriksson-ek-4903">J. Eriksson Ek</a>
-            <span class="lineup__inj">OUT</span>         </li>
                 <li class="lineup__player">
             <div class="lineup__pos">C</div>
             <a title="Mason Shaw" href="/hockey/player/mason-shaw-5509">Mason Shaw</a>
@@ -961,7 +961,7 @@
                                 <div class="lineup__bottom">
                                     <div class="lineup__extra pad-top-0">
                                         <div class="lineup__odds is-row">
-                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; DAL -140</div>
+                                            <div class="lineup__odds-item"><b>LINE</b>&nbsp; DAL -145</div>
                                             <div class="lineup__odds-item"><b>&nbsp;O/U</b>&nbsp; 5.5 Goals</div>
                                         </div>
                                     </div>

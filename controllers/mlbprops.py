@@ -509,11 +509,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				pitcher = pitcherThrows = awayHomeSplits = ""
 
 				bats = leftOrRight[team].get(player, "")
-				hip = bbip = hrip = kip = 0
+				hip = bbip = hrip = hpg = kip = 0
 				try:
 					pitcher = lineups[opp]["pitching"]
 					pitcherThrows = leftOrRight[opp][pitcher]
 					hip = round(stats[opp][pitcher]["h_allowed"] / stats[opp][pitcher]["ip"], 2)
+					hpg = round(stats[opp][pitcher]["h_allowed"] / stats[opp][pitcher]["gamesPlayed"], 1)
 
 					hip = round(averages[opp][pitcher]["tot"]["h"] / averages[opp][pitcher]["tot"]["ip"], 2)
 					hrip = round(averages[opp][pitcher]["tot"]["hr"] / averages[opp][pitcher]["tot"]["ip"], 2)
@@ -904,6 +905,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"pitcherThrows": pitcherThrows,
 					"pitcherProj": pitcherProj,
 					"hip": hip,
+					"hpg": hpg,
 					"bbip": bbip,
 					"hrip": hrip,
 					"kip": kip,
