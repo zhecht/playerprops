@@ -32,10 +32,12 @@ elif os.path.exists("/home/playerprops/playerprops"):
 def convertDKTeam(team):
 	if team == "cws":
 		return "chw"
-	elif team == "was":
+	elif team in ["was", "wsn"]:
 		return "wsh"
-	elif team == "sfg":
-		return "sf"
+	elif team in ["sfg", "sdp", "kcr", "tbr"]:
+		return team[:2]
+	elif team == "az":
+		return "ari"
 	return team
 
 def addNumSuffix(val):
@@ -395,6 +397,24 @@ def convertRankingsProp(prop):
 		return "h+r+rbi_allowed"
 	return prop
 
+def sumStat(header, target, source):
+	if header not in target:
+		target[header] = 0
+
+	if header == "ip":
+		ip = target["ip"]+source["ip"]
+		remainder = int(str(round(ip, 1)).split(".")[-1])
+
+		if remainder >= 3:
+			ip += remainder // 3
+			ip = int(ip) + (remainder%3)*0.1
+		target["ip"] = ip
+	else:
+		try:
+			target[header] += source[header]
+		except:
+			pass
+
 def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineArg=""):
 	
 	if not date:
@@ -409,6 +429,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		averages = json.load(fh)
 	with open(f"{prefix}static/baseballreference/expected.json") as fh:
 		expected = json.load(fh)
+	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
+		playerIds = json.load(fh)
 	with open(f"{prefix}static/baseballreference/expectedHR.json") as fh:
 		expectedHR = json.load(fh)
 	with open(f"{prefix}static/baseballreference/parkFactors.json") as fh:
@@ -438,6 +460,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		playerHRFactors = json.load(fh)
 	with open(f"{prefix}static/baseballreference/statsVsTeam.json") as fh:
 		statsVsTeam = json.load(fh)
+	with open(f"{prefix}static/baseballreference/statsVsTeamCurrYear.json") as fh:
+		statsVsTeamCurrYear = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
 		gameLines = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
@@ -469,6 +493,11 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 			except:
 				print(game, player)
 				continue
+
+			try:
+				playerId = playerIds[team][player]
+			except:
+				playerId = 0
 
 			if teams and team not in teams:
 				continue
@@ -547,14 +576,31 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				againstTeamLastYearStats = {"ab": 0, "h": 0, "hr": 0, "rbi": 0, "bb": 0, "so": 0}
 				againstTeamStats = {}
 
+				againstTeamStats = statsVsTeam[team][opp].get(player, {})
+
+				if opp in statsVsTeamCurrYear[team] and player in statsVsTeamCurrYear[team][opp]:
+					for hdr in statsVsTeamCurrYear[team][opp][player]:
+						if hdr not in againstTeamStats:
+							againstTeamStats[hdr] = statsVsTeamCurrYear[team][opp][player][hdr]
+						elif hdr.endswith("Overs"):
+							for over in statsVsTeamCurrYear[team][opp][player][hdr]:
+								if over not in againstTeamStats[hdr]:
+									againstTeamStats[hdr][over] = 0
+								againstTeamStats[hdr][over] += statsVsTeamCurrYear[team][opp][player][hdr][over]
+						else:
+							sumStat(hdr, againstTeamStats, statsVsTeamCurrYear[team][opp][player])
+
 				try:
-					againstTeamStats = statsVsTeam[team][opp][player]
-					over = 0
-					for p in prop.split("+"):
-						over += againstTeamStats[p]
-					againstTeamTotalOver = round(againstTeamStats[prop+"Overs"][str(math.ceil(line))] * 100 / againstTeamStats["gamesPlayed"])
+					overs = againstTeamStats[prop+"Overs"][str(math.ceil(line))]
 				except:
-					pass
+					overs = 0
+				played = againstTeamStats.get("gamesPlayed", 0)
+				if opp in statsVsTeamCurrYear[team] and player in statsVsTeamCurrYear[team][opp]:
+					if f"{prop}Overs" in statsVsTeamCurrYear[team][opp][player]:
+						overs += statsVsTeamCurrYear[team][opp][player][prop+"Overs"].get(str(math.ceil(line)), 0)
+					played += statsVsTeamCurrYear[team][opp][player]["gamesPlayed"]
+				if played:
+					againstTeamTotalOver = round(overs * 100 / played)
 
 				if player in averages[team]:
 					for yr in averages[team][player]:
@@ -770,8 +816,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					againstTeamStatsDisplay = f"{str(format(round(againstTeamStats['h']/againstTeamStats['ab'], 3), '.3f'))[1:]} {int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])}, {int(againstTeamStats['hr'])} HR, {int(againstTeamStats['rbi'])} RBI, {int(againstTeamStats['bb'])} BB, {int(againstTeamStats['so'])} SO"
 					againstTeamStatsPerAB = f"{str(format(round(againstTeamStats['h']/againstTeamStats['ab'], 3), '.3f'))[1:]} {int(againstTeamStats['h'])}-{int(againstTeamStats['ab'])}, {round(againstTeamStats['hr'] / againstTeamStats['ab'], 2)} HR, {round(againstTeamStats['rbi'] / againstTeamStats['ab'], 2)} RBI, {round(againstTeamStats['bb'] / againstTeamStats['ab'], 2)} BB, {round(againstTeamStats['so'] / againstTeamStats['ab'], 2)} SO"
 				elif againstTeamStats.get("ip"):
-					againstTeamStatsDisplay = f"{round(againstTeamStats['ip'], 1)} IP {int(againstTeamStats['k'])} K, {int(againstTeamStats['h'])} H, {int(againstTeamStats['bb'])} BB"
-					againstTeamStatsPerAB = f"{round(againstTeamStats['ip'], 1)} IP {round(againstTeamStats['k'] / againstTeamStats['ip'], 2)} K, {round(againstTeamStats['h'] / againstTeamStats['ip'], 2)} H, {round(againstTeamStats['bb'] / againstTeamStats['ip'], 2)} BB"
+					againstTeamStatsDisplay = f"{round(againstTeamStats['ip'], 1)} IP {int(againstTeamStats['k'])} K, {int(againstTeamStats.get('h', 0))} H, {int(againstTeamStats.get('bb', 0))} BB"
+					againstTeamStatsPerAB = f"{round(againstTeamStats['ip'], 1)} IP {round(againstTeamStats['k'] / againstTeamStats['ip'], 2)} K, {round(againstTeamStats.get('h', 0) / againstTeamStats['ip'], 2)} H, {round(againstTeamStats.get('bb', 0) / againstTeamStats['ip'], 2)} BB"
 				else:
 					againstTeamStatsDisplay = ""
 					againstTeamStatsPerAB = ""
@@ -827,6 +873,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 
 				props.append({
 					"game": game,
+					"playerId": playerId,
 					"player": player.title(),
 					"team": team.upper(),
 					"opponent": opp.upper(),
@@ -937,6 +984,38 @@ def writeLineups():
 		json.dump(lineups, fh, indent=4)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json", "w") as fh:
 		json.dump(leftOrRight, fh, indent=4)
+
+def writeLeftRightSplits():
+	url = "https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=1&splitArrPitch=&position=B&autoPt=false&splitTeams=false&statType=player&statgroup=1&startDate=2023-03-01&endDate=2023-11-01&players=&filter=PA%7Cgt%7C10&groupBy=season&wxTemperature=&wxPressure=&wxAirDensity=&wxElevation=&wxWindSpeed=&sort=22,1&pg=0"
+
+	leftRightSplits = {}
+
+	for throws in ["LHP", "RHP"]:
+		with open(f"{prefix}Splits Leaderboard Data vs {throws}.csv", newline="") as fh:
+			reader = csv.reader(fh)
+
+			headers = []
+			for idx, row in enumerate(reader):
+				if idx == 0:
+					headers = [x.lower() for x in row]
+				else:
+					player = strip_accents(row[1]).lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+					team = convertDKTeam(row[2].lower())
+					if team not in leftRightSplits:
+						leftRightSplits[team] = {}
+					if player not in leftRightSplits[team]:
+						leftRightSplits[team][player] = {}
+					if throws not in leftRightSplits[team][player]:
+						leftRightSplits[team][player][throws] = {}
+
+					for hdr, col in zip(headers, row):
+						try:
+							leftRightSplits[team][player][throws][f"{hdr}"] = float(col)
+						except:
+							leftRightSplits[team][player][throws][f"{hdr}"] = col
+
+	with open(f"{prefix}static/baseballreference/leftRightSplits.json", "w") as fh:
+		json.dump(leftRightSplits, fh, indent=4)
 
 def write_projections(date):
 
@@ -1211,7 +1290,7 @@ def getProps_route():
 			if "P" in row["pos"]:
 				arr.append(row)
 			else:
-				if int(str(row["battingNumber"]).replace("-", "10")) <= 5:
+				if int(str(row["battingNumber"]).replace("-", "10")) <= 6:
 					arr.append(row)
 		props = arr
 
@@ -1272,12 +1351,14 @@ if __name__ == "__main__":
 		writeStaticProps()
 	elif args.projections:
 		write_projections(date)
+		writeLeftRightSplits()
 		writeStaticProps()
 	elif args.cron:
 		writeLineups()
 		writeProps(date)
 		writeBallparks()
 		write_projections(date)
+		writeLeftRightSplits()
 		writeGameLines(date)
 		writeStaticProps()
 

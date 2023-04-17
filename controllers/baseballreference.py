@@ -252,7 +252,7 @@ def write_curr_year_averages():
 				if year not in averages[team][player]:
 					averages[team][player][year] = {}
 				if player not in statsVsTeam[team][opp]:
-					statsVsTeam[team][opp][player] = {}
+					statsVsTeam[team][opp][player] = {"gamesPlayed": 0}
 				if copy:
 					averages[team][player][year] = stats[player].copy()
 					statsVsTeam[team][opp][player] = stats[player].copy()
@@ -260,6 +260,10 @@ def write_curr_year_averages():
 					for hdr in stats[player]:
 						sumStat(hdr, averages[team][player][year], stats[player])
 						sumStat(hdr, statsVsTeam[team][opp][player], stats[player])
+
+				if "gamesPlayed" not in statsVsTeam[team][opp][player]:
+					statsVsTeam[team][opp][player]["gamesPlayed"] = 0
+				statsVsTeam[team][opp][player]["gamesPlayed"] += 1
 
 				for hdr in stats[player]:
 					val = stats[player][hdr]
@@ -1045,38 +1049,6 @@ def writeSavantExpectedHR():
 	with open(f"{prefix}static/baseballreference/expectedHR.json", "w") as fh:
 		json.dump(expected, fh, indent=4)
 
-def writeLeftRightSplits():
-	url = "https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=1&splitArrPitch=&position=B&autoPt=false&splitTeams=false&statType=player&statgroup=1&startDate=2023-03-01&endDate=2023-11-01&players=&filter=PA%7Cgt%7C10&groupBy=season&wxTemperature=&wxPressure=&wxAirDensity=&wxElevation=&wxWindSpeed=&sort=22,1&pg=0"
-
-	leftRightSplits = {}
-
-	for throws in ["LHP", "RHP"]:
-		with open(f"{prefix}Splits Leaderboard Data vs {throws}.csv", newline="") as fh:
-			reader = csv.reader(fh)
-
-			headers = []
-			for idx, row in enumerate(reader):
-				if idx == 0:
-					headers = [x.lower() for x in row]
-				else:
-					player = strip_accents(row[1]).lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
-					team = convertRotoTeam(row[2].lower())
-					if team not in leftRightSplits:
-						leftRightSplits[team] = {}
-					if player not in leftRightSplits[team]:
-						leftRightSplits[team][player] = {}
-					if throws not in leftRightSplits[team][player]:
-						leftRightSplits[team][player][throws] = {}
-
-					for hdr, col in zip(headers, row):
-						try:
-							leftRightSplits[team][player][throws][f"{hdr}"] = float(col)
-						except:
-							leftRightSplits[team][player][throws][f"{hdr}"] = col
-
-	with open(f"{prefix}static/baseballreference/leftRightSplits.json", "w") as fh:
-		json.dump(leftRightSplits, fh, indent=4)
-
 
 # write batter vs pitcher
 def writeBVP():
@@ -1162,7 +1134,6 @@ if __name__ == "__main__":
 		write_schedule(date)
 		writeSavantExpected()
 		writeSavantParkFactors()
-		writeLeftRightSplits()
 		writeSavantExpectedHR()
 
 	#write_pitching()
@@ -1170,5 +1141,4 @@ if __name__ == "__main__":
 	#write_stats(date)
 	#write_totals()
 	#write_curr_year_averages()
-	#writeLeftRightSplits()
 	#writeSavantExpectedHR()

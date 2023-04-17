@@ -51,6 +51,9 @@
 			text-decoration: none;
 			color: #3391ff;
 		}
+		.tabulator-cell a {
+			color: inherit;
+		}
 		.negative { color: red; }
 		.positive { color: green; }
 	</style>
@@ -84,6 +87,7 @@
 		<div style="display: flex;justify-content: center;">
 			<button style="padding:5px;" onclick="groupBy();">Toggle Group By Game</button>
 			<button style="padding:5px;margin-left:1rem;" onclick="togglePerABAvg();">Toggle Avg Per AB</button>
+			<button style="padding:5px;margin-left:1rem;" onclick="toggleBadOdds();">Toggle Bad Odds</button>
 			<button style="padding:5px;margin-left:1rem;" onclick="sortByProjDiff();">Toggle Sort By Projected Diff</button>
 		</div>
 		<div id="tableDiv">
@@ -128,6 +132,22 @@
 					]);
 				} else {
 					TABLE.setSort("projDiff", "desc");
+				}
+			}
+
+			function toggleBadOdds() {
+				if (propArg === "h") {
+					if (TABLE.getFilters().length == 1) {
+						TABLE.addFilter("overOdds", "<=", -170);
+					} else {
+						TABLE.removeFilter("overOdds", "<=", -170);
+					}
+				} else {
+					if (TABLE.getFilters().length == 1) {
+						TABLE.addFilter("overOdds", ">=", -135);
+					} else {
+						TABLE.removeFilter("overOdds", ">=", -135);
+					}
 				}
 			}
 
@@ -205,6 +225,16 @@
 					html = "<div class='negative'>"+xVal+"</div>";
 				}
 				return html
+			}
+
+			const playerFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+
+				const a = document.createElement("a");
+				a.innerText = cell.getValue();
+				a.href = "https://www.espn.com/mlb/player/_/id/"+data.playerId;
+				a.target = "_blank";
+				return a;
 			}
 
 			const splitsFormatter = function(cell, params, rendered) {
