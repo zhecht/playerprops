@@ -720,7 +720,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					avg = round(val / gamesPlayed, 2)
 
 					if "P" in pos:
-						babip = advanced[team][player]["babip"]
+						if player in advanced[team]:
+							babip = advanced[team][player]["babip"]
 					else:
 						battingAvg = str(format(round(playerStats['h']/playerStats['ab'], 3), '.3f'))[1:]
 						dem = playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)
