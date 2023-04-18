@@ -138,9 +138,11 @@
 			function toggleBadOdds() {
 				if (propArg === "h") {
 					if (TABLE.getFilters().length == 1) {
+						TABLE.addFilter("battingNumber", "!=", "-");
 						TABLE.addFilter("overOdds", "<=", -170);
 					} else {
 						TABLE.removeFilter("overOdds", "<=", -170);
+						TABLE.removeFilter("battingNumber", "!=", "-");
 					}
 				} else {
 					if (TABLE.getFilters().length == 1) {
@@ -336,6 +338,23 @@
 						{title: "BB/IP", field: "bbip", hozAlign: "center", width: 80, visible: false},
 						{title: "HR/IP", field: "hrip", hozAlign: "center", width: 80, visible: false},
 						{title: "K/IP", field: "kip", hozAlign: "center", width: 80, visible: false},
+						{title: "K/BB", field: "k/bb", hozAlign: "center", width: 80, visible: false},
+						{title: "Pitches Per Plate", field: "pitchesPerPlate", hozAlign: "center", width: 80, visible: false},
+						{title: "1st Strike %", field: "advancedPitcher.f_strike_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "K%", field: "advancedPitcher.p_k_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "BB%", field: "advancedPitcher.p_bb_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Out Zone %", field: "advancedPitcher.out_zone_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Out Zone Swing %", field: "advancedPitcher.oz_swing_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Out Zone Miss Swing %", field: "advancedPitcher.oz_swing_miss_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "In Zone Swing %", field: "advancedPitcher.z_swing_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "In Zone Miss Swing %", field: "advancedPitcher.z_swing_miss_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Swing %", field: "advancedPitcher.swing_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Whiff %", field: "advancedPitcher.whiff_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Out Zone Contact %", field: "advancedPitcher.oz_contact_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "In Zone Contact %", field: "advancedPitcher.iz_contact_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Sweet Spot %", field: "advancedPitcher.sweet_spot_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Hard Hit %", field: "advancedPitcher.hard_hit_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "Barrel Batted %", field: "advancedPitcher.barrel_batted_rate", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
 						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150, tooltip: true},
 						{title: "vs Pitcher (Per AB)", field: "againstPitcherStatsPerAB", hozAlign: "center", width: 150, visible: false},
 						{title: "Career % Over", field: "careerTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
@@ -349,6 +368,7 @@
 						{title: "vs Team LYR", field: "againstTeamLastYearStats", hozAlign: "center", width: 140},
 						{title: "LYR A-H Splits", field: "lastYearAwayHomeSplits", hozAlign: "center", visible: true},
 						{title: "BB/PG", field: "bbpg", hozAlign: "center", width: 60},
+						{title: "Pitcher Summary", field: "pitcherSummary"},
 						//{title: "Diff", field: "diff", hozAlign: "center", width: 80, sorter: "number"},
 						//{title: "Hit Rate Odds", field: "hitRateOdds", hozAlign: "center", width: 80},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
@@ -374,27 +394,51 @@
 					TABLE.hideColumn("stadiumHitsRank");
 					TABLE.showColumn("stadiumHrRank");
 					TABLE.showColumn("xHR");
+					TABLE.showColumn("advancedPitcher.barrel_batted_rate");
+					TABLE.showColumn("advancedPitcher.sweet_spot_percent");
+					TABLE.showColumn("advancedPitcher.hard_hit_percent");
 				} else if (propArg === "so") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
 				} else if (["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+					TABLE.showColumn("k/bb");
+					TABLE.showColumn("pitchesPerPlate");
+					TABLE.showColumn("advancedPitcher.p_k_percent");
+					TABLE.showColumn("advancedPitcher.p_bb_percent");
+					TABLE.showColumn("advancedPitcher.out_zone_percent");
+					TABLE.showColumn("advancedPitcher.oz_swing_percent");
+					TABLE.showColumn("advancedPitcher.oz_swing_miss_percent");
+					TABLE.showColumn("advancedPitcher.z_swing_percent");
+					TABLE.showColumn("advancedPitcher.z_swing_miss_percent");
+					TABLE.showColumn("advancedPitcher.f_strike_percent");
 					TABLE.hideColumn("againstPitcherStats");
 					TABLE.hideColumn("pitcherProj");
+					TABLE.hideColumn("hpg");
 					TABLE.hideColumn("bbpg");
 					TABLE.hideColumn("pitcherXBA");
-					TABLE.hideColumn("babip");
 					TABLE.hideColumn("leftRightAvg");
 					TABLE.hideColumn("stadiumHitsRank");
 					TABLE.hideColumn("pitcher");
 					TABLE.hideColumn("pitcherThrows");
 					TABLE.hideColumn("avg");
 					TABLE.hideColumn("battingNumber");
-					if (propArg === "bb_allowed") {
+					if (propArg === "h_allowed") {
+						TABLE.hideColumn("advancedPitcher.f_strike_percent");
+						TABLE.hideColumn("advancedPitcher.p_k_percent");
+						TABLE.hideColumn("advancedPitcher.p_bb_percent");
+						TABLE.showColumn("advancedPitcher.iz_contact_percent");
+						TABLE.showColumn("advancedPitcher.oz_contact_percent");
+						TABLE.showColumn("advancedPitcher.sweet_spot_percent");
+						TABLE.showColumn("advancedPitcher.hard_hit_percent");
+						TABLE.showColumn("advancedPitcher.barrel_batted_rate");
+					} else if (propArg === "bb_allowed") {
 						TABLE.hideColumn("hip");
 						TABLE.showColumn("bbip");
 					} else if (propArg === "k") {
 						TABLE.hideColumn("hip");
 						TABLE.showColumn("kip");
+						TABLE.showColumn("advancedPitcher.swing_percent");
+						TABLE.showColumn("advancedPitcher.whiff_percent");
 					}
 				} else if (propArg == "bb") {
 					TABLE.hideColumn("hip");

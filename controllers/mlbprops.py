@@ -441,6 +441,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		roster = json.load(fh)
 	with open(f"{prefix}static/baseballreference/rankings.json") as fh:
 		rankings = json.load(fh)
+	with open(f"{prefix}static/baseballreference/playerRankings.json") as fh:
+		playerRankings = json.load(fh)
 	with open(f"{prefix}static/baseballreference/scores.json") as fh:
 		scores = json.load(fh)
 	try:
@@ -450,6 +452,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		projections = {}
 	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
+	with open(f"{prefix}static/baseballreference/advanced.json") as fh:
+		advanced = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
 		leftOrRight = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftRightSplits.json") as fh:
@@ -523,25 +527,46 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				except:
 					pass
 
-				proj = 0
+				# projection
 				try:
 					if propName in projections[team][player]:
 						proj = round(projections[team][player][propName], 2)
 					else:
 						proj = round(projections[team][player][prop], 2)
 				except:
-					pass
+					proj = 0
 
-				pitcherProj = 0
+				# pitcher Projection
 				try:
 					pitcherProj = round(projections[opp][pitcher]["h_allowed"], 2)
 				except:
-					pass
+					pitcherProj = 0
+
+				kPerBB = pitchesPerPlate = "-"
+				# advanced
+				try:
+					if "P" in pos:
+						advancedPitcher = advanced[team][player].copy()
+					else:
+						advancedPitcher = advanced[opp][pitcher].copy()
+				except:
+					advancedPitcher = {}
+				
+				pitcherSummary = ""
+				if pitcher and pitcher in advanced[opp]:
+					pitcherSummary = f"{advanced[opp][pitcher]['ba']} AVG, {advanced[opp][pitcher]['xba']} xAVG, {advanced[opp][pitcher]['babip']} BABIP, {advanced[opp][pitcher]['out_zone_percent']}% Out Zone, {advanced[opp][pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[opp][pitcher]['barrel_batted_rate']}% Barrel Batted"
 
 				if "P" in pos:
 					try:
 						hip = round(averages[team][player]["tot"]["h"] / averages[team][player]["tot"]["ip"], 2)
 						bbip = round(averages[team][player]["tot"]["bb"] / averages[team][player]["tot"]["ip"], 2)
+					except:
+						pass
+
+					# player rankings
+					try:
+						kPerBB = playerRankings[team][player]["k/bb"]["val"]
+						pitchesPerPlate = playerRankings[team][player]["pitchesPerPlate"]["val"]
 					except:
 						pass
 
@@ -679,6 +704,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				awayHomeSplits = [[], []]
 				winLossSplits = [[], []]
 				totalOver = battingAvg = avg = babip = bbpg = 0
+				
 				if player in stats[team]:
 					playerStats = stats[team][player]
 					gamesPlayed = playerStats["gamesPlayed"]
@@ -693,7 +719,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 						val += stats[team][player].get(p, 0)
 					avg = round(val / gamesPlayed, 2)
 
-					if "P" not in pos:
+					if "P" in pos:
+						babip = advanced[team][player]["babip"]
+					else:
 						battingAvg = str(format(round(playerStats['h']/playerStats['ab'], 3), '.3f'))[1:]
 						dem = playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)
 						if dem:
@@ -895,15 +923,19 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"stadiumHitsRank": stadiumHitsRank,
 					"stadiumHrRank": stadiumHrRank,
 					"pos": pos,
+					"advancedPitcher": advancedPitcher,
 					"againstPitcherStats": againstPitcherStats,
 					"againstPitcherStatsPerAB": againstPitcherStatsPerAB,
 					"againstTeamStats": againstTeamStatsDisplay,
 					"againstTeamStatsPerAB": againstTeamStatsPerAB,
 					"againstTeamLastYearStats": againstTeamLastYearStatsDisplay,
 					"againstTeamLastYearStatsPerAB": againstTeamLastYearStatsPerAB,
+					"pitcherSummary": pitcherSummary,
 					"pitcher": pitcher.split(" ")[-1].title(),
 					"pitcherThrows": pitcherThrows,
 					"pitcherProj": pitcherProj,
+					"k/bb": kPerBB,
+					"pitchesPerPlate": pitchesPerPlate,
 					"hip": hip,
 					"hpg": hpg,
 					"bbip": bbip,
@@ -1218,8 +1250,8 @@ def strip_accents(text):
 
 	return str(text)
 
-def writeBallparks():
-	url = "https://ballparkpal.com/ParkFactors.php"
+def writeBallparks(date):
+	url = f"https://ballparkpal.com/ParkFactors.php?date={date}"
 
 	ballparks = {}
 	playerHRFactors = {}
@@ -1358,16 +1390,19 @@ if __name__ == "__main__":
 	elif args.cron:
 		writeLineups()
 		writeProps(date)
-		writeBallparks()
+		writeBallparks(date)
 		write_projections(date)
 		writeLeftRightSplits()
 		writeGameLines(date)
 		writeStaticProps()
 
+	#writeBallparks(date)
+	#Walks Allowed (Proj) = (FantasyPros Projection) * (Pitches per Plate Appearance) * (Opponent BB Rank) * (K/BB) / (Season Average) * (Career Walk Average)
+
 	#writeStaticProps()
 	#writeBallparks()
 
-	if False:
+	if True:
 		with open("static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 
@@ -1377,7 +1412,16 @@ if __name__ == "__main__":
 		with open(f"{prefix}static/baseballreference/ballparks.json") as fh:
 			ballparks = json.load(fh)
 
-		headers = ["Game", "Park Factor", "Away", "Away HR/G", "Away Rank", "Away Opp HR/G", "Away Opp HR/G Rank", "Away A-H Splits", "Home", "Home HR/G", "Home Rank", "Home Opp HR/G", "Home Opp HR/G Rank", "Home A-H Splits"]
+		with open(f"{prefix}static/baseballreference/parkfactors.json") as fh:
+			savantRank = json.load(fh)
+
+
+		print("Rankings Source: [Team Rankings](https://www.teamrankings.com/mlb/stat/home-runs-per-game)  ")
+		print("Park Factor % Source: [Ballparkpal](https://ballparkpal.com/ParkFactors.php)  ")
+		print("Park Factor Source: [baseball savant](https://baseballsavant.mlb.com/leaderboard/statcast-park-factors)")
+		print("\n")
+
+		headers = ["Game", "Park Factor Rank", "Park Factor %", "Away", "Away HR/G", "Away Rank", "Away Opp HR/G", "Away Opp HR/G Rank", "Away A-H Splits", "Home", "Home HR/G", "Home Rank", "Home Opp HR/G", "Home Opp HR/G Rank", "Home A-H Splits"]
 
 		print("|".join(headers))
 		print("|".join([":--"]*len(headers)))
@@ -1389,7 +1433,7 @@ if __name__ == "__main__":
 			homeRank, homeVal = addNumSuffix(rankings[home]["hr"]["rank"]), rankings[home]["hr"]["season"]
 			homeOppRank, homeOppVal = addNumSuffix(rankings[home]["hr_allowed"]["rank"]), rankings[home]["hr_allowed"]["season"]
 			homeSplits = f"{rankings[home]['hr']['away']} - **{rankings[home]['hr']['home']}**"
-			print(f"{game}|{ballparks[game]}|{away}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
+			print(f"{game}|{addNumSuffix(savantRank[home]['hrRank'])}|{ballparks[game]}|{away}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
 
 
 	if False:

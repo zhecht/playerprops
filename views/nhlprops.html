@@ -4,8 +4,8 @@
 		<title>NHL Props</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
 		<link rel="stylesheet" href="/static/css/nhlteams.css" type="text/css">
-		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
-		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
 	</head>
 	<style>
 		body {
@@ -315,7 +315,9 @@
 				table.style.width = "100%";
 				const html = {};
 				for (col of data) {
-					//console.log(col);
+					if (col.value === 0) {
+						continue;
+					}
 					if ((col.value.indexOf(" // ") >= 0 || col.value.indexOf(" &#x2F;&#x2F; ") >= 0)) {
 						html[col.title] = "<td><strong>"+col.title+"</strong></td><td>"+col.value+"</td>";
 					} else {
@@ -364,7 +366,7 @@
                         {formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
                             cell.getRow().toggleSelect();
                         }},
-                        {title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center"},
+                        {title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center", visible: false},
 						{title: "Player", field: "player", headerFilter: "input"},
 						{title: "Avg Min", field: "avgMin", hozAlign: "center", width: 70},
 						{title: "PP Line", field: "ppLine",  hozAlign: "center", width: 70},
@@ -432,6 +434,9 @@
 						//{title: "Under", field: "underOdds", hozAlign: "center", sorter: "number", visible: true},
 					]
 				})
+				TABLE.on("rowClick", function(e, row) {
+					row.getElement().getElementsByClassName("tabulator-responsive-collapse-toggle")[0].click()
+				});
 			}
 
 			renderTable();
@@ -474,9 +479,17 @@
 			</script>
 		{% endif %}
 		<script>
+
+			setTimeout(function() {
+				if ("{{date}}" !== "") {
+					TABLE.showColumn("hit");
+				}
+			}, 500);
+
 			const bets = "{{bets}}".split(",");
 
 			setTimeout(function() {
+				
 				let rows = TABLE.getRows("active");
 				if ("{{prop}}" != "pts") {
 					return;
@@ -491,13 +504,9 @@
 						}
 					}
 				}
-			}, 7500);
+			}, 5000);
+
 		</script>
-		{% if date == "" %}
-			<script>
-				TABLE.getColumn("hit").hide();
-			</script>
-		{% endif %}
 	</body>
 
 </html>

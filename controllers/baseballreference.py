@@ -699,20 +699,28 @@ def write_roster():
 		json.dump(roster, fh, indent=4)
 
 def convertTeamRankingsTeam(team):
-	if team == "washington":
+	if team.startswith("wash"):
 		return "wsh"
-	elif team == "chi sox":
+	elif team.endswith("white sox") or team == "chi sox":
 		return "chw"
-	elif team == "chi cubs":
+	elif team.endswith("cubs"):
 		return "chc"
-	elif team == "sf giants":
+	elif team.endswith("giants"):
 		return "sf"
-	elif team == "kansas city":
+	elif team.endswith("dodgers"):
+		return "lad"
+	elif team.endswith("angels"):
+		return "laa"
+	elif team.startswith("kansas city"):
 		return "kc"
-	elif team == "san diego":
+	elif team.startswith("san diego"):
 		return "sd"
-	elif team == "tampa bay":
+	elif team.startswith("tampa bay"):
 		return "tb"
+	elif team.endswith("yankees"):
+		return "nyy"
+	elif team.endswith("mets"):
+		return "nym"
 	return team.replace(".", "").replace(" ", "")[:3]
 
 def addNumSuffix(val):
@@ -730,6 +738,50 @@ def addNumSuffix(val):
 		return f"{val}rd"
 	else:
 		return f"{val}th"
+
+def write_player_rankings():
+	baseUrl = "https://www.teamrankings.com/mlb/player-stat/"
+	pages = ["pitches-per-plate-appearance", "strikeouts-per-walk"]
+	ids = ["pitchesPerPlate", "k/bb"]
+
+	rankings = {}
+	for idx, page in enumerate(pages):
+		url = baseUrl+page
+		outfile = "outmlb2"
+		time.sleep(0.2)
+		call(["curl", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+		ranking = ids[idx]
+
+		for row in soup.find("table").findAll("tr")[1:]:
+			tds = row.findAll("td")
+			player = row.find("a").text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").split(" (")[0]
+			team = convertTeamRankingsTeam(row.findAll("a")[1].text.lower())
+
+			if team not in rankings:
+				rankings[team] = {}
+
+			if player not in rankings[team]:
+				rankings[team][player] = {}
+			
+			if ranking not in rankings[team][player]:
+				rankings[team][player][ranking] = {}
+
+			rankClass = ""
+			if int(tds[0].text) <= 10:
+				rankClass = "positive"
+			elif int(tds[0].text) >= 20:
+				rankClass = "negative"
+			rankings[team][player][ranking] = {
+				"rank": int(tds[0].text),
+				"rankSuffix": addNumSuffix(int(tds[0].text)),
+				"rankClass": rankClass,
+				"val": float(tds[-1].text.replace("--", "0")),
+			}
+
+	with open(f"{prefix}static/baseballreference/playerRankings.json", "w") as fh:
+		json.dump(rankings, fh, indent=4)
+
 
 def write_rankings():
 	baseUrl = "https://www.teamrankings.com/mlb/stat/"
@@ -1016,6 +1068,42 @@ def writeSavantExpected():
 	with open(f"{prefix}static/baseballreference/expected.json", "w") as fh:
 		json.dump(expected, fh, indent=4)
 
+def writeSavantPitcherAdvanced():
+	url = "https://baseballsavant.mlb.com/leaderboard/custom?year=2023&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
+	advanced = {}
+	time.sleep(0.2)
+	outfile = "outmlb2"
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	data = "{}"
+	for script in soup.findAll("script"):
+		if script.text.strip().startswith("var data"):
+			m = re.search(r"var data = \[{(.*?)}\];", script.text)
+			if m:
+				data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+				data = f"{{{data}}}"
+				break
+
+	data = eval(data)
+	
+	for row in data:
+		try:
+			team = convertRotoTeam(row["name_abbrev"].lower())
+		except:
+			continue
+		if team not in advanced:
+			advanced[team] = {}
+
+		player = strip_accents(row["player_name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+		last, first = map(str, player.split(", "))
+		player = f"{first} {last}"
+
+		advanced[team][player] = row.copy()
+
+	with open(f"{prefix}static/baseballreference/advanced.json", "w") as fh:
+		json.dump(advanced, fh, indent=4)
+
 def writeSavantExpectedHR():
 	url = "https://baseballsavant.mlb.com/leaderboard/home-runs"
 	expected = {}
@@ -1123,18 +1211,21 @@ if __name__ == "__main__":
 		writeBVP()
 	elif args.rankings:
 		write_rankings()
+		write_player_rankings()
 	elif args.roster:
 		write_roster()
 	elif args.pitching:
 		write_pitching()
 	elif args.cron:
 		write_rankings()
+		write_player_rankings()
 		writeBVP()
 		write_stats(date)
 		write_schedule(date)
 		writeSavantExpected()
 		writeSavantParkFactors()
 		writeSavantExpectedHR()
+		writeSavantPitcherAdvanced()
 
 	#write_pitching()
 	#writeYearAverages()
@@ -1142,3 +1233,4 @@ if __name__ == "__main__":
 	#write_totals()
 	#write_curr_year_averages()
 	#writeSavantExpectedHR()
+	#writeSavantPitcherAdvanced()
