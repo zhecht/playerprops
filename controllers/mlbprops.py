@@ -1403,10 +1403,10 @@ if __name__ == "__main__":
 	#writeBallparks()
 
 	if True:
-		with open("static/baseballreference/schedule.json") as fh:
+		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 
-		with open("static/baseballreference/rankings.json") as fh:
+		with open(f"{prefix}static/baseballreference/rankings.json") as fh:
 			rankings = json.load(fh)
 
 		with open(f"{prefix}static/baseballreference/ballparks.json") as fh:
@@ -1415,6 +1415,7 @@ if __name__ == "__main__":
 		with open(f"{prefix}static/baseballreference/parkfactors.json") as fh:
 			savantRank = json.load(fh)
 
+		print(date)
 
 		print("Rankings Source: [Team Rankings](https://www.teamrankings.com/mlb/stat/home-runs-per-game)  ")
 		print("Park Factor % Source: [Ballparkpal](https://ballparkpal.com/ParkFactors.php)  ")
@@ -1425,7 +1426,11 @@ if __name__ == "__main__":
 
 		print("|".join(headers))
 		print("|".join([":--"]*len(headers)))
+		seen = {}
 		for game in schedule[date]:
+			if game in seen:
+				continue
+			seen[game] = True
 			away, home = map(str, game.split(" @ "))
 			awayRank, awayVal = addNumSuffix(rankings[away]["hr"]["rank"]), rankings[away]["hr"]["season"]
 			awayOppRank, awayOppVal = addNumSuffix(rankings[away]["hr_allowed"]["rank"]), rankings[away]["hr_allowed"]["season"]
