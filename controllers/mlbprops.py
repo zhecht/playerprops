@@ -1597,7 +1597,7 @@ if __name__ == "__main__":
 				if not stats:
 					continue
 
-				dt = dt[:-5]
+				dt = dt[:-5].replace("-gm2", "")
 				if dt not in totHits:
 					totHits[dt] = {"h": 0, "hr": 0, "r": 0}
 				if dt not in games:
