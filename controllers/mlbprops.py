@@ -1514,6 +1514,7 @@ if __name__ == "__main__":
 		writeProps(date)
 		writeBallparks(date)
 		write_projections(date)
+		writeBPPlayerProps(date)
 		writeLeftRightSplits()
 		writeGameLines(date)
 		writeStaticProps()
@@ -1582,7 +1583,7 @@ if __name__ == "__main__":
 			except:
 				continue
 
-	if False:
+	if True:
 
 		totHits = {}
 		games = {}
