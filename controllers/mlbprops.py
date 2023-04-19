@@ -75,7 +75,13 @@ def writeGameLines(date):
 	displayTeams = {}
 	if "eventGroup" not in data:
 		return
+	seen = {}
 	for event in data["eventGroup"]["events"]:
+		start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
+		startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=5)
+		if startDt.day != int(date[-2:]):
+			continue
+			pass
 		displayTeams[event["teamName1"].lower()] = event.get("teamShortName1", "").lower()
 		displayTeams[event["teamName2"].lower()] = event.get("teamShortName2", "").lower()
 		if "teamShortName1" not in event:
@@ -84,6 +90,11 @@ def writeGameLines(date):
 			game = convertDKTeam(event["teamShortName1"].lower()) + " @ " + convertDKTeam(event["teamShortName2"].lower())
 		if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
 			continue
+
+		if game in seen:
+			game += " gm2"
+
+		seen[game] = True
 		if game not in lines:
 			lines[game] = {}
 		events[event["eventId"]] = game
@@ -185,6 +196,7 @@ def writeProps(date):
 		events = {}
 		if "eventGroup" not in data:
 			continue
+		seen = {}
 		for event in data["eventGroup"]["events"]:
 			start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
 			startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=5)
@@ -197,6 +209,10 @@ def writeProps(date):
 				game = convertDKTeam(event["teamShortName1"].lower()) + " @ " + convertDKTeam(event["teamShortName2"].lower())
 			if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
 				continue
+
+			if game in seen:
+				game += " gm2"
+			seen[game] = True
 			if game not in props:
 				props[game] = {}
 
@@ -450,8 +466,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 			projections = json.load(fh)
 	except:
 		projections = {}
+	with open(f"{prefix}static/baseballreference/numberfireProjections.json") as fh:
+		numberfireProjections = json.load(fh)
 	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
+	with open(f"{prefix}static/baseballreference/BPPlayerProps.json") as fh:
+		ballparkPalProps = json.load(fh)
 	with open(f"{prefix}static/baseballreference/advanced.json") as fh:
 		advanced = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
@@ -527,6 +547,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				except:
 					pass
 
+				#
+				try:
+					bp = f"{addNumSuffix(ballparkPalProps[team][player]['bpRank'])} ({ballparkPalProps[team][player]['bp']})"
+				except:
+					bp = ""
+
 				# projection
 				try:
 					if propName in projections[team][player]:
@@ -535,6 +561,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 						proj = round(projections[team][player][prop], 2)
 				except:
 					proj = 0
+
+				#numberfire projection
+				numberfireProj = 0
+				try:
+					numberfireProj = round(numberfireProjections[team][player][prop], 2)
+				except:
+					pass
 
 				# pitcher Projection
 				try:
@@ -553,8 +586,12 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					advancedPitcher = {}
 				
 				pitcherSummary = ""
-				if pitcher and pitcher in advanced[opp]:
-					pitcherSummary = f"{advanced[opp][pitcher]['ba']} AVG, {advanced[opp][pitcher]['xba']} xAVG, {advanced[opp][pitcher]['babip']} BABIP, {advanced[opp][pitcher]['out_zone_percent']}% Out Zone, {advanced[opp][pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[opp][pitcher]['barrel_batted_rate']}% Barrel Batted"
+				if "P" in pos:
+					if player in advanced[opp]:
+						pitcherSummary = f"{advanced[opp][player]['ba']} AVG, {advanced[opp][player]['xba']} xAVG, {advanced[opp][player]['babip']} BABIP, {advanced[opp][player]['out_zone_percent']}% Out Zone, {advanced[opp][player]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][player]['iz_contact_percent']}% In Zone Contact, {advanced[opp][player]['barrel_batted_rate']}% Barrel Batted"
+				else:
+					if pitcher and pitcher in advanced[opp]:
+						pitcherSummary = f"{advanced[opp][pitcher]['ba']} AVG, {advanced[opp][pitcher]['xba']} xAVG, {advanced[opp][pitcher]['babip']} BABIP, {advanced[opp][pitcher]['out_zone_percent']}% Out Zone, {advanced[opp][pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[opp][pitcher]['barrel_batted_rate']}% Barrel Batted"
 
 				if "P" in pos:
 					try:
@@ -730,9 +767,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					
 
 				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
-				files = sorted(files, key=lambda k: datetime.strptime(k.split("/")[-1].replace(".json", ""), "%Y-%m-%d"), reverse=True)
+				files = sorted(files, key=lambda k: datetime.strptime(k.replace("-gm2", "").split("/")[-1].replace(".json", ""), "%Y-%m-%d"), reverse=True)
 				for file in files:
-					chkDate = file.split("/")[-1].replace(".json","")
+					chkDate = file.replace("-gm2", "").split("/")[-1].replace(".json","")
 					currTeam = file.split("/")[-2]
 					currOpp = ""
 					currIsAway = False
@@ -915,6 +952,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"bats": bats,
 					"battingNumber": battingNumber,
 					"hrFactor": hrFactor,
+					"bp": bp,
 					"babip": babip,
 					"bbpg": bbpg,
 					"xBA": xBA,
@@ -947,6 +985,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"gamesPlayed": gamesPlayed,
 					"matchups": len(prevMatchup),
 					"line": line or 0,
+					"numberfireProj": numberfireProj,
 					"proj": proj,
 					"projDiff": projDiff,
 					"battingAvg": battingAvg,
@@ -1003,14 +1042,18 @@ def writeLineups():
 			status = "confirmed" if "is-green" in lineupList.find("div", class_="dot").get("class") else "expected"
 			startingPitcher = " ".join(lineupList.find("a").get("href").lower().split("/")[-1].split("-")[:-1])
 			leftOrRight[team][startingPitcher] = lineupList.find("span", class_="lineup__throws").text
-			lineups[team] = {
+
+			lineupTeam = team
+			if team in lineups:
+				lineupTeam += " gm2"
+			lineups[lineupTeam] = {
 				"batting": [],
 				"pitching": startingPitcher
 			}
 			for li in lineupList.findAll("li")[2:]:
 				try:
 					player = " ".join(li.find("a").get("href").lower().split("/")[-1].split("-")[:-1])
-					lineups[team]["batting"].append(player)
+					lineups[lineupTeam]["batting"].append(player)
 					leftOrRight[team][player] = li.find("span", class_="lineup__bats").text
 				except:
 					pass
@@ -1052,8 +1095,45 @@ def writeLeftRightSplits():
 	with open(f"{prefix}static/baseballreference/leftRightSplits.json", "w") as fh:
 		json.dump(leftRightSplits, fh, indent=4)
 
-def write_projections(date):
 
+def write_numberfire_projections():
+	projections = {}
+	for t in ["batters", "pitchers"]:
+		url = "https://www.numberfire.com/mlb/daily-fantasy/daily-baseball-projections/"+t
+
+		outfile = "outmlb2"
+		time.sleep(0.2)
+		call(["curl", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		for row in soup.find("table", class_="stat-table").find("tbody").findAll("tr"):
+			try:
+				team = row.find("span", class_="team-player__team active").text.strip().lower()
+			except:
+				continue
+			#player = row.find("a", class_="full").get("href").split("/")[-1].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "").replace("c j ", "cj ").replace("jd ", "jd ").replace("j p ", "jp ")
+			player = row.find("a", class_="full").text.strip().lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "").replace("c j ", "cj ").replace("jd ", "jd ").replace("j p ", "jp ")
+			
+			if team not in projections:
+				projections[team] = {}
+			projections[team][player] = {}
+
+			for td in row.findAll("td")[5:]:
+				hdr = td.get("class")[0]
+				val = float(td.text.strip())
+
+				projections[team][player][hdr] = val
+
+			if t == "batters":
+				projections[team][player]["h"] = projections[team][player]["1b"]+projections[team][player]["2b"]+projections[team][player]["3b"]+projections[team][player]["hr"]
+				projections[team][player]["h+r+rbi"] = projections[team][player]["h"]+projections[team][player]["r"]+projections[team][player]["rbi"]
+				projections[team][player]["tb"] = projections[team][player]["1b"]+2*projections[team][player]["2b"]+3*projections[team][player]["3b"]+4*projections[team][player]["hr"]
+
+	with open(f"{prefix}static/baseballreference/numberfireProjections.json", "w") as fh:
+		json.dump(projections, fh, indent=4)
+
+def write_projections(date):
+	write_numberfire_projections()
 	year = datetime.now().year
 
 	projections = {}
@@ -1251,6 +1331,47 @@ def strip_accents(text):
 
 	return str(text)
 
+def writeBPPlayerProps(date):
+	url = f"https://ballparkpal.com/PlayerProps.php?date={date}"
+
+	playerProps = {}
+	outfile = "outmlb2"
+	time.sleep(0.2)
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	bps = []
+	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
+		if "hits" not in row.findAll("td")[6].text.lower():
+			continue 
+		try:
+			bps.append(int(row.findAll("td")[7].text))
+		except:
+			continue
+
+	bps = sorted(bps)
+
+	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
+		team = row.find("td").text.lower().replace("was", "wsh")
+		player = row.findAll("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+		pa = float(row.findAll("td")[5].text)
+		if "hits" not in row.findAll("td")[6].text.lower():
+			continue 
+		try:
+			bp = int(row.findAll("td")[7].text)
+		except:
+			continue
+
+		if team not in playerProps:
+			playerProps[team] = {}
+
+		playerProps[team][player] = {
+			"pa": pa, "bp": bp, "bpRank": bps.index(int(bp))
+		}
+
+	with open(f"{prefix}static/baseballreference/BPPlayerProps.json", "w") as fh:
+		json.dump(playerProps, fh, indent=4)
+
 def writeBallparks(date):
 	url = f"https://ballparkpal.com/ParkFactors.php?date={date}"
 
@@ -1397,13 +1518,16 @@ if __name__ == "__main__":
 		writeGameLines(date)
 		writeStaticProps()
 
+	#writeBPPlayerProps(date)
+	#writeGameLines(date)
+	#write_numberfire_projections()
 	#writeBallparks(date)
 	#Walks Allowed (Proj) = (FantasyPros Projection) * (Pitches per Plate Appearance) * (Opponent BB Rank) * (K/BB) / (Season Average) * (Career Walk Average)
 
 	#writeStaticProps()
 	#writeBallparks()
 
-	if True:
+	if False:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 
@@ -1413,10 +1537,14 @@ if __name__ == "__main__":
 		with open(f"{prefix}static/baseballreference/ballparks.json") as fh:
 			ballparks = json.load(fh)
 
+		with open(f"{prefix}static/baseballreference/advanced.json") as fh:
+			advanced = json.load(fh)
+
+		with open(f"{prefix}static/mlbprops/lineups.json") as fh:
+			lineups = json.load(fh)
+
 		with open(f"{prefix}static/baseballreference/parkfactors.json") as fh:
 			savantRank = json.load(fh)
-
-		print(date)
 
 		print("Rankings Source: [Team Rankings](https://www.teamrankings.com/mlb/stat/home-runs-per-game)  ")
 		print("Park Factor % Source: [Ballparkpal](https://ballparkpal.com/ParkFactors.php)  ")
@@ -1441,6 +1569,18 @@ if __name__ == "__main__":
 			homeSplits = f"{rankings[home]['hr']['away']} - **{rankings[home]['hr']['home']}**"
 			print(f"{game}|{addNumSuffix(savantRank[home]['hrRank'])}|{ballparks[game]}|{away}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
 
+		print("\n")
+		headers = ["Team", "Opp", "Opp Pitcher", "Sweet Spot %", "Hard Hit %", "Barrel Batted %", "Out of Zone %", "In Zone Contact %"]
+		print("|".join(headers))
+		print("|".join([":--"]*len(headers)))
+		for game in schedule[date]:
+			away, home = map(str, game.split(" @ "))
+			awayPitcher, homePitcher = lineups[away]["pitching"], lineups[home]["pitching"]
+			print(f"{away}|{home}|{homePitcher}|{advanced[home][homePitcher]['sweet_spot_percent']}%|{advanced[home][homePitcher]['hard_hit_percent']}%|{advanced[home][homePitcher]['barrel_batted_rate']}%|{advanced[home][homePitcher]['out_zone_percent']}%|{advanced[home][homePitcher]['iz_contact_percent']}%")
+			try:
+				print(f"{home}|{away}|{awayPitcher}|{advanced[away][awayPitcher]['sweet_spot_percent']}%|{advanced[away][awayPitcher]['hard_hit_percent']}%|{advanced[away][awayPitcher]['barrel_batted_rate']}%|{advanced[away][awayPitcher]['out_zone_percent']}%|{advanced[away][awayPitcher]['iz_contact_percent']}%")
+			except:
+				continue
 
 	if False:
 

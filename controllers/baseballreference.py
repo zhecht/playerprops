@@ -75,6 +75,8 @@ def write_stats(date):
 			lastNames = {}
 			for teamRow in data["boxscore"]["players"]:
 				team = teamRow["team"]["abbreviation"].lower()
+				t = team+" gm2" if "gm2" in away else team
+
 				if team not in playerIds:
 					playerIds[team] = {}
 				if team not in lastNames:
@@ -91,8 +93,8 @@ def write_stats(date):
 						lastNames[team][player.split(" ")[-1]] = player
 
 						playerIds[team][player] = playerId
-						if player not in allStats[team]:
-							allStats[team][player] = {}
+						if player not in allStats[t]:
+							allStats[t][player] = {}
 
 						pitchingDecision = ""
 						if "notes" in playerRow and playerRow["notes"][0]["type"] == "pitchingDecision":
@@ -102,9 +104,9 @@ def write_stats(date):
 							elif pitchingDecision == "s":
 								pitchingDecision = "sv"
 							try:
-								allStats[team][player][pitchingDecision] += 1
+								allStats[t][player][pitchingDecision] += 1
 							except:
-								allStats[team][player][pitchingDecision] = 1
+								allStats[t][player][pitchingDecision] = 1
 
 						for header, stat in zip(headers, playerRow["stats"]):
 							if header == "h-ab":
@@ -113,20 +115,21 @@ def write_stats(date):
 								header = "so"
 							if header in ["pc-st"]:
 								pc, st = map(float, stat.split("-"))
-								allStats[team][player]["pc"] = pc
-								allStats[team][player]["st"] = st
+								allStats[t][player]["pc"] = pc
+								allStats[t][player]["st"] = st
 							elif header in ["bb", "hr", "h"] and title == "pitching":
-								allStats[team][player][header+"_allowed"] = float(stat)
+								allStats[t][player][header+"_allowed"] = float(stat)
 							else:
 								val = stat
 								try:
 									val = float(val)
 								except:
 									val = 0.0
-								allStats[team][player][header] = val
+								allStats[t][player][header] = val
 
 			for teamRow in data["boxscore"]["teams"]:
 				team = teamRow["team"]["abbreviation"].lower()
+				t = team+" gm2" if "gm2" in away else team
 				if not teamRow["details"]:
 					continue
 				for detailRow in teamRow["details"][0]["stats"]:
@@ -155,18 +158,19 @@ def write_stats(date):
 							except:
 								print(team, name)
 								continue
-						allStats[team][player][stat] = val
+						allStats[t][player][stat] = val
 
 			for rosterRow in data["rosters"]:
 				team = rosterRow["team"]["abbreviation"].lower()
+				t = team+" gm2" if "gm2" in away else team
 				if "roster" not in rosterRow:
 					continue
 				for playerRow in rosterRow["roster"]:
 					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 					for statRow in playerRow.get("stats", []):
 						hdr = statRow["shortDisplayName"].lower()
-						if hdr not in allStats[team][player]:
-							allStats[team][player][hdr] = statRow["value"]
+						if hdr not in allStats[t][player]:
+							allStats[t][player][hdr] = statRow["value"]
 
 			for team in allStats:
 				for player in allStats[team]:
@@ -184,9 +188,12 @@ def write_stats(date):
 						allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
 		for team in allStats:
-			if not os.path.isdir(f"{prefix}static/baseballreference/{team}"):
-				os.mkdir(f"{prefix}static/baseballreference/{team}")
-			with open(f"{prefix}static/baseballreference/{team}/{date}.json", "w") as fh:
+			realTeam = team.replace(" gm2", "")
+			if not os.path.isdir(f"{prefix}static/baseballreference/{realTeam}"):
+				os.mkdir(f"{prefix}static/baseballreference/{realTeam}")
+
+			d = date+"-gm2" if "gm2" in team else date
+			with open(f"{prefix}static/baseballreference/{realTeam}/{d}.json", "w") as fh:
 				json.dump(allStats[team], fh, indent=4)
 
 	write_totals()
@@ -234,6 +241,10 @@ def write_curr_year_averages():
 				stats = json.load(fh)
 
 			date = file.split("/")[-1][:-5]
+			doubleHeader = False
+			if "-gm2" in date:
+				doubleHeader = True
+			date = date.replace("-gm2", "")
 			opp = ""
 			for game in schedule[date]:
 				if game.startswith(team):
@@ -362,6 +373,7 @@ def write_schedule(date):
 		if date not in scores:
 			scores[date] = {}
 
+		seen = {}
 		for row in table.findAll("tr")[1:]:
 			tds = row.findAll("td")
 			try:
@@ -369,11 +381,16 @@ def write_schedule(date):
 				homeTeam = tds[1].findAll("a")[-1].get("href").split("/")[-2]
 			except:
 				continue
+
+			if (awayTeam, homeTeam) in seen:
+				awayTeam += " gm2"
+				homeTeam += " gm2"
+			seen[(awayTeam, homeTeam)] = True
 			boxscore = tds[2].find("a").get("href")
 			score = tds[2].find("a").text.strip()
 			if score.lower() == "postponed":
 				continue
-			if ", " in score and os.path.exists(f"{prefix}static/baseballreference/{awayTeam}/{date}.json"):
+			if ", " in score and os.path.exists(f"{prefix}static/baseballreference/{awayTeam.split(' ')[0]}/{date}.json"):
 				scoreSp = score.split(", ")
 				if awayTeam == scoreSp[0].split(" ")[0].lower():
 					scores[date][awayTeam] = int(scoreSp[0].split(" ")[1])
@@ -1139,13 +1156,13 @@ def writeSavantExpectedHR():
 
 
 # write batter vs pitcher
-def writeBVP():
+def writeBVP(dateArg):
 
 	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
 
 	date = str(datetime.datetime.now())[:10]
-	if False:
+	if int(dateArg.split("-")[-1]) > int(date.split("-")[-1]):
 		date = str(datetime.datetime.now() + datetime.timedelta(days=1))[:10]
 
 	for hotCold in ["hot", "cold"]:
@@ -1208,7 +1225,7 @@ if __name__ == "__main__":
 	if args.averages:
 		write_averages()
 	elif args.bvp:
-		writeBVP()
+		writeBVP(date)
 	elif args.rankings:
 		write_rankings()
 		write_player_rankings()
@@ -1216,10 +1233,12 @@ if __name__ == "__main__":
 		write_roster()
 	elif args.pitching:
 		write_pitching()
+	elif args.schedule:
+		write_schedule(date)
 	elif args.cron:
 		write_rankings()
 		write_player_rankings()
-		writeBVP()
+		writeBVP(date)
 		write_stats(date)
 		write_schedule(date)
 		writeSavantExpected()
