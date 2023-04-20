@@ -905,6 +905,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				if True:
 					gamesPlayed = lastYrGamesPlayed
 
+				projDiff = 0
 				if proj:
 					projDiff = round((proj - line) / proj, 3)
 
@@ -1583,7 +1584,7 @@ if __name__ == "__main__":
 			except:
 				continue
 
-	if True:
+	if False:
 
 		totHits = {}
 		games = {}
