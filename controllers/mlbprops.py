@@ -547,9 +547,23 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				except:
 					pass
 
+
+				line = propData[game][player][propName]["line"]
+				if line == "-":
+					line = 0
+
+				if lineArg:
+					line = float(lineArg)
+
 				#
 				try:
-					bp = f"{addNumSuffix(ballparkPalProps[team][player]['bpRank'])} ({ballparkPalProps[team][player]['bp']})"
+					if "P" in pos:
+						bp = f"{addNumSuffix(ballparkPalProps[team][player][f'{line}{prop}']['bpRank'])} ({ballparkPalProps[team][player][f'{line}{prop}']['bp']})"
+					else:
+						if prop in ballparkPalProps[team][player]:
+							bp = f"{addNumSuffix(ballparkPalProps[team][player][prop]['bpRank'])} ({ballparkPalProps[team][player][prop]['bp']})"
+						else:
+							bp = f"{addNumSuffix(ballparkPalProps[team][player]['h']['bpRank'])} ({ballparkPalProps[team][player]['h']['bp']})"
 				except:
 					bp = ""
 
@@ -611,14 +625,6 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					battingNumber = lineups[team]["batting"].index(player)+1
 				except:
 					battingNumber = "-"
-
-
-				line = propData[game][player][propName]["line"]
-				if line == "-":
-					line = 0
-
-				if lineArg:
-					line = float(lineArg)
 
 				overOdds = propData[game][player][propName]["over"]
 				underOdds = propData[game][player][propName]["under"]
@@ -1341,33 +1347,64 @@ def writeBPPlayerProps(date):
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
-	bps = []
+	bps = {}
 	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
-		if "hits" not in row.findAll("td")[6].text.lower():
-			continue 
+		prop = row.findAll("td")[6].text.lower().split(" ")[1]
+		if prop == "bases":
+			prop = "tb"
+		elif prop == "ks":
+			prop = "k"
+		elif prop == "hits":
+			prop = "h"
+
+		if prop == "k":
+			line = row.findAll("td")[6].text.split(" ")[-1]
+			prop = f"{line}k"
+
+		if prop not in bps:
+			bps[prop] = []
+
 		try:
-			bps.append(int(row.findAll("td")[7].text))
+			bps[prop].append(int(row.findAll("td")[7].text))
 		except:
 			continue
 
-	bps = sorted(bps)
+	for prop in bps:
+		bps[prop] = sorted(bps[prop])
 
 	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
 		team = row.find("td").text.lower().replace("was", "wsh")
 		player = row.findAll("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 		pa = float(row.findAll("td")[5].text)
-		if "hits" not in row.findAll("td")[6].text.lower():
-			continue 
+		prop = row.findAll("td")[6].text.lower().split(" ")[1]
+		if prop == "bases":
+			prop = "tb"
+		elif prop == "ks":
+			prop = "k"
+		elif prop == "hits":
+			prop = "h"
+
 		try:
 			bp = int(row.findAll("td")[7].text)
 		except:
 			continue
 
+		line = 0
+		if prop == "k":
+			line = row.findAll("td")[6].text.split(" ")[-1]
+			prop = f"{line}k"
+
 		if team not in playerProps:
 			playerProps[team] = {}
 
-		playerProps[team][player] = {
-			"pa": pa, "bp": bp, "bpRank": bps.index(int(bp))
+		if player not in playerProps[team]:
+			playerProps[team][player] = {}
+
+		if prop not in playerProps[team][player]:
+			playerProps[team][player][prop] = {}
+
+		playerProps[team][player][prop] = {
+			"pa": pa, "bp": bp, "bpRank": bps[prop].index(int(bp))
 		}
 
 	with open(f"{prefix}static/baseballreference/BPPlayerProps.json", "w") as fh:
