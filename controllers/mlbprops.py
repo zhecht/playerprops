@@ -901,7 +901,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				if len(arr) < 10:
 					arr.extend(lastYrLast20[:10-len(lastAll)])
 				if arr:
-					last10Over = round(len([x for x in arr if float(str(x).replace("'", "")) > line]) * 100 / len(arr))
+					last10Over = round(len([x for x in arr[:10] if float(str(x).replace("'", "")) > line]) * 100 / len(arr[:10]))
 				arr = lastAll.copy()
 				if len(arr) < 20:
 					arr.extend(lastYrLast20[:20-len(lastAll)])
@@ -1565,6 +1565,7 @@ if __name__ == "__main__":
 
 	#writeStaticProps()
 	#writeBallparks()
+
 
 	if False:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
