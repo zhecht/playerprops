@@ -1588,7 +1588,7 @@ if __name__ == "__main__":
 
 		print("Rankings Source: [Team Rankings](https://www.teamrankings.com/mlb/stat/home-runs-per-game)  ")
 		print("Park Factor % Source: [Ballparkpal](https://ballparkpal.com/ParkFactors.php)  ")
-		print("Park Factor Source: [baseball savant](https://baseballsavant.mlb.com/leaderboard/statcast-park-factors)")
+		print("Park Factor Rank Source: [baseball savant](https://baseballsavant.mlb.com/leaderboard/statcast-park-factors)")
 		print("\n")
 
 		headers = ["Game", "Park Factor Rank", "Park Factor %", "Away", "Away HR/G", "Away Rank", "Away Opp HR/G", "Away Opp HR/G Rank", "Away A-H Splits", "Home", "Home HR/G", "Home Rank", "Home Opp HR/G", "Home Opp HR/G Rank", "Home A-H Splits"]
@@ -1607,7 +1607,7 @@ if __name__ == "__main__":
 			homeRank, homeVal = addNumSuffix(rankings[home]["hr"]["rank"]), rankings[home]["hr"]["season"]
 			homeOppRank, homeOppVal = addNumSuffix(rankings[home]["hr_allowed"]["rank"]), rankings[home]["hr_allowed"]["season"]
 			homeSplits = f"{rankings[home]['hr']['away']} - **{rankings[home]['hr']['home']}**"
-			print(f"{game}|{addNumSuffix(savantRank[home]['hrRank'])}|{ballparks[game]}|{away}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
+			print(f"{game.upper()}|{addNumSuffix(savantRank[home]['hrRank'])}|{ballparks[game]}|{away.upper()}|{awayVal}|{awayRank}|{awayOppVal}|{awayOppRank}|{awaySplits}|{home.upper()}|{homeVal}|{homeRank}|{homeOppVal}|{homeOppRank}|{homeSplits}")
 
 		print("\n")
 		headers = ["Team", "Opp", "Opp Pitcher", "Sweet Spot %", "Hard Hit %", "Barrel Batted %", "Out of Zone %", "In Zone Contact %"]
@@ -1616,9 +1616,9 @@ if __name__ == "__main__":
 		for game in schedule[date]:
 			away, home = map(str, game.split(" @ "))
 			awayPitcher, homePitcher = lineups[away]["pitching"], lineups[home]["pitching"]
-			print(f"{away}|{home}|{homePitcher}|{advanced[home][homePitcher]['sweet_spot_percent']}%|{advanced[home][homePitcher]['hard_hit_percent']}%|{advanced[home][homePitcher]['barrel_batted_rate']}%|{advanced[home][homePitcher]['out_zone_percent']}%|{advanced[home][homePitcher]['iz_contact_percent']}%")
 			try:
-				print(f"{home}|{away}|{awayPitcher}|{advanced[away][awayPitcher]['sweet_spot_percent']}%|{advanced[away][awayPitcher]['hard_hit_percent']}%|{advanced[away][awayPitcher]['barrel_batted_rate']}%|{advanced[away][awayPitcher]['out_zone_percent']}%|{advanced[away][awayPitcher]['iz_contact_percent']}%")
+				print(f"{away.upper()}|{home.upper()}|{homePitcher.title()}|{advanced[home][homePitcher]['sweet_spot_percent']}%|{advanced[home][homePitcher]['hard_hit_percent']}%|{advanced[home][homePitcher]['barrel_batted_rate']}%|{advanced[home][homePitcher]['out_zone_percent']}%|{advanced[home][homePitcher]['iz_contact_percent']}%")
+				print(f"{home.upper()}|{away.upper()}|{awayPitcher.title()}|{advanced[away][awayPitcher]['sweet_spot_percent']}%|{advanced[away][awayPitcher]['hard_hit_percent']}%|{advanced[away][awayPitcher]['barrel_batted_rate']}%|{advanced[away][awayPitcher]['out_zone_percent']}%|{advanced[away][awayPitcher]['iz_contact_percent']}%")
 			except:
 				continue
 
