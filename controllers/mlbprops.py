@@ -633,7 +633,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				overOdds = propData[game][player][propName]["over"]
 				underOdds = propData[game][player][propName]["under"]
 
-				bpOdds = bpOdds - int(overOdds)
+				bpDiff = bpOdds - int(overOdds)
 
 				lastYrGamesPlayed = 0
 				if team in averages and player in averages[team] and "2022" in averages[team][player]:
@@ -1001,6 +1001,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"numberfireProj": numberfireProj,
 					"proj": proj,
 					"projDiff": projDiff,
+					"bpDiff": bpDiff,
 					"battingAvg": battingAvg,
 					"avg": avg,
 					"diff": diff,
