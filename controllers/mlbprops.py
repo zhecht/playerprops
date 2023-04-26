@@ -556,14 +556,18 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					line = float(lineArg)
 
 				#
+				bpOdds = 0
 				try:
 					if "P" in pos:
 						bp = f"{addNumSuffix(ballparkPalProps[team][player][f'{line}{prop}']['bpRank'])} ({ballparkPalProps[team][player][f'{line}{prop}']['bp']})"
+						bpOdds = ballparkPalProps[team][player][f'{line}{prop}']['bp']
 					else:
 						if prop in ballparkPalProps[team][player]:
 							bp = f"{addNumSuffix(ballparkPalProps[team][player][prop]['bpRank'])} ({ballparkPalProps[team][player][prop]['bp']})"
+							bpOdds = ballparkPalProps[team][player][prop]['bp']
 						else:
 							bp = f"{addNumSuffix(ballparkPalProps[team][player]['h']['bpRank'])} ({ballparkPalProps[team][player]['h']['bp']})"
+							bpOdds = ballparkPalProps[team][player]['h']['bp']
 				except:
 					bp = ""
 
@@ -628,6 +632,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 
 				overOdds = propData[game][player][propName]["over"]
 				underOdds = propData[game][player][propName]["under"]
+
+				bpOdds = bpOdds - int(overOdds)
 
 				lastYrGamesPlayed = 0
 				if team in averages and player in averages[team] and "2022" in averages[team][player]:
