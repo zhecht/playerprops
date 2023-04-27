@@ -89,6 +89,7 @@
 			<button style="padding:5px;margin-left:1rem;" onclick="togglePerABAvg();">Toggle Avg Per AB</button>
 			<button style="padding:5px;margin-left:1rem;" onclick="toggleBadOdds();">Toggle Bad Odds</button>
 			<button style="padding:5px;margin-left:1rem;" onclick="sortByProjDiff();">Toggle Sort By Projected Diff</button>
+			<button style="padding:5px;margin-left:1rem;" onclick="sortByBPDiff();">Toggle Sort By BP Diff</button>
 		</div>
 		<div id="tableDiv">
 			<div id="propsTable">
@@ -122,6 +123,17 @@
 					TABLE.hideColumn("againstPitcherStatsPerAB");
 				}
 				showingPerAB = !showingPerAB;
+			}
+
+			function sortByBPDiff() {
+				if (TABLE.getSorters().length == 1) {
+					TABLE.setSort([
+						{column: "careerTotalOver", dir: "desc"},
+						{column: "againstTeamTotalOver", dir: "desc"},
+					]);
+				} else {
+					TABLE.setSort("bpDiff", "desc");
+				}
 			}
 
 			function sortByProjDiff() {
@@ -164,6 +176,51 @@
 				return cell.getValue()+"%";
 			}
 
+			const advancedFormatter = function(cell, params, rendered) {
+				const prop = cell.getRow().getData().prop;
+				const field = params.field;
+				const disp = cell.getValue()+"%";
+				if (["h_allowed", "bb_allowed", "k"].indexOf(prop) < 0 || !medians[field]) {
+					return disp;
+				}
+				const { q1, mid, q3 } = medians[field];
+
+				let flipped = false;
+				if (prop === "h_allowed") {
+					if (["oz_swing_miss_percent", "z_swing_miss_percent"].indexOf(field) >= 0) {
+						flipped = true;
+					}
+				} else if (prop === "k") {
+					if (["p_bb_percent"].indexOf(field) >= 0) {
+						flipped = true;
+					}
+				} else if (prop === "bb_allowed") {
+					if (["p_k_percent", "f_strike_percent", "oz_swing_percent", "swing_percent", "z_swing_percent", "oz_swing_miss_percent", "z_swing_miss_percent"].indexOf(field) >= 0) {
+						flipped = true;
+					}
+				}
+
+				if (prop !== "bb_allowed" && field === "out_zone_percent") {
+					flipped = true;
+				}
+
+				//flipped logic
+				if (flipped) {
+					if (cell.getValue() >= q3) {
+						return "<div class='negative'>"+disp+"</div>";
+					} else if (cell.getValue() <= q1) {
+						return "<div class='positive'>"+disp+"</div>";
+					}
+				} else {
+					if (cell.getValue() >= q3) {
+						return "<div class='positive'>"+disp+"</div>";
+					} else if (cell.getValue() <= q1) {
+						return "<div class='negative'>"+disp+"</div>";
+					}
+				}
+				return disp;
+			}
+
 			const colorFormatter = function(cell, params, rendered) {
 				const data = cell.getRow().getData();
 				if (cell.getValue() >= parseFloat(data.line)) {
@@ -193,7 +250,7 @@
 				const field = cell.getField();
 				const val = cell.getValue();
 				const suffix = addNumSuffix(val);
-				if ((field == "oppRank" || field == "oppABRank" || field == "oppRankLastYear") && propArg != "h_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
+				if ((field == "oppRankLast3" || field == "oppRank" || field == "oppABRank" || field == "oppRankLastYear") && propArg != "h_allowed" && propArg != "so" && propArg != "bb_allowed" && propArg != "h+r+rbi" && propArg != "er" || (propArg == "bb")) {
 					if (val >= 20) {
 						return "<div class='positive'>"+suffix+"</div>";
 					} else if (val <= 10) {
@@ -209,6 +266,30 @@
 					} else {
 						return suffix;
 					}
+				}
+			}
+
+			function getMedian(values) {
+				// Sort the array in ascending order
+				values.sort(function(a, b) {
+					return a - b;
+				});
+
+				var len = values.length;
+				let qLen = Math.floor(len / 4);
+				var mid = Math.floor(len / 2);
+
+				let q1 = values[Math.floor(len / 4)];
+				let q3 = values[Math.floor(3 * len / 4)];
+
+				if (len % 2 === 0) {
+					q1 = (values[qLen - 1] + values[qLen]) / 2;
+					q3 = (values[3*qLen - 1] + values[3*qLen]) / 2;
+					mid = (values[mid - 1] + values[mid]) / 2;
+					return { q1, mid, q3 };
+				} else {
+					mid = values[mid];
+					return { q1, mid, q3 };
 				}
 			}
 
@@ -263,11 +344,42 @@
 				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
 			}
 
+			const medians = {};
+			const arrs = {};
 			function renderTable() {
 				TABLE = new Tabulator("#propsTable", {
 					tooltipsHeader: true,
 					ajaxURL: "/getMLBProps",
-					ajaxParams:{date: "{{date}}", teams: "{{teams}}", players: "{{players}}", bet: "{{bet}}", line: "{{line}}"},
+					ajaxParams:{date: "{{date}}", teams: "{{teams}}", players: "{{players}}", bet: "{{bet}}", line: "{{line}}", prop: "{{prop}}", pitchers: "{{pitchers}}"},
+					ajaxResponse: function(url, params, response) {
+
+						if ((!"{{pitchers}}" && propArg == "") || ["h", "hr", "rbi", "r", "bb", "h+r+rbi", "tb", "sb", "so", "1b", "2b"].indexOf(propArg) >= 0) {
+							return response;
+						}
+
+						const hdrs = ["f_strike_percent", "p_k_percent", "p_bb_percent", "swing_percent", "whiff_percent", "out_zone_percent", "oz_swing_percent", "z_swing_percent", "hard_hit_percent", "sweet_spot_percent", "oz_contact_percent", "oz_swing_miss_percent", "z_swing_miss_percent", "iz_contact_percent"];
+						for (const row of response) {
+							if (!"{{pitchers}}" && row.prop != propArg) {
+								continue;
+							}
+							for (const hdr of hdrs) {
+								if (!arrs[hdr]) {
+									arrs[hdr] = [];
+								}
+								if (row.advancedPitcher[hdr]) {
+									arrs[hdr].push(row.advancedPitcher[hdr]);
+								}
+							}
+						}
+
+						for (const hdr of hdrs) {
+							//const { q1, mid, q3 } = ;
+							if (arrs[hdr]) {
+								medians[hdr] = getMedian(arrs[hdr].map(Number));
+							}
+						}
+						return response;
+					},
 					responsiveLayout:"collapse",
 					responsiveLayoutCollapseStartOpen: false,
 					//layout: "fitDataFill",
@@ -312,7 +424,9 @@
 						{title: "A/H", field: "awayHome", hozAlign: "center", width: 30},
 						{title: "Opp", field: "opponent", width: "80", hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
-						{title: "LYR Opp Rank", field: "oppRankLastYear", hozAlign: "center", formatter: rankFormatter, width: 70},
+						{title: "LYR Opp Rank", field: "oppRankLastYear", hozAlign: "center", formatter: rankFormatter, width: 70, visible: true},
+						,
+						{title: "L3 Opp Rank", field: "oppRankLast3", hozAlign: "center", formatter: rankFormatter, width: 70, visible: false},
 						{title: "Hits Rank", field: "stadiumHitsRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "HR Rank", field: "stadiumHrRank", hozAlign: "center", formatter: rankFormatter, width: 70, visible: false},
 						//{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
@@ -324,7 +438,7 @@
 						{title: "Numberfire Proj", field: "numberfireProj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "HR Factor", field: "hrFactor", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "Proj Diff", field: "projDiff", visible: false, sorter: "number"},
-						{title: "BP Diff", field: "bpDiff", visible: true, sorter: "number"},
+						{title: "BP Diff", field: "bpDiff", visible: false, sorter: "number"},
 						{title: "BP Rank", field: "bp", hozAlign: "center", width: 100,  sorter: "number"},
 						//{title: "Avg", field: "avg", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "HR-xHR", field: "xHR", hozAlign: "center", width: 80,  sorter: "number", visible: false},
@@ -344,20 +458,20 @@
 						{title: "K/IP", field: "kip", hozAlign: "center", width: 80, visible: false},
 						{title: "K/BB", field: "k/bb", hozAlign: "center", width: 80, visible: false},
 						{title: "Pitches Per Plate", field: "pitchesPerPlate", hozAlign: "center", width: 80, visible: false},
-						{title: "1st Strike %", field: "advancedPitcher.f_strike_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "K%", field: "advancedPitcher.p_k_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "BB%", field: "advancedPitcher.p_bb_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Out Zone %", field: "advancedPitcher.out_zone_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Out Zone Swing %", field: "advancedPitcher.oz_swing_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Out Zone Miss Swing %", field: "advancedPitcher.oz_swing_miss_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "In Zone Swing %", field: "advancedPitcher.z_swing_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "In Zone Miss Swing %", field: "advancedPitcher.z_swing_miss_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Swing %", field: "advancedPitcher.swing_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Whiff %", field: "advancedPitcher.whiff_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Out Zone Contact %", field: "advancedPitcher.oz_contact_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "In Zone Contact %", field: "advancedPitcher.iz_contact_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Sweet Spot %", field: "advancedPitcher.sweet_spot_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
-						{title: "Hard Hit %", field: "advancedPitcher.hard_hit_percent", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "1st Strike %", field: "advancedPitcher.f_strike_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "f_strike_percent"}},
+						{title: "K%", field: "advancedPitcher.p_k_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "p_k_percent"}},
+						{title: "BB%", field: "advancedPitcher.p_bb_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "p_bb_percent"}},
+						{title: "Out Zone %", field: "advancedPitcher.out_zone_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "out_zone_percent"}},
+						{title: "Out Zone Swing %", field: "advancedPitcher.oz_swing_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "oz_swing_percent"}},
+						{title: "Out Zone Miss Swing %", field: "advancedPitcher.oz_swing_miss_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "oz_swing_miss_percent"}},
+						{title: "In Zone Swing %", field: "advancedPitcher.z_swing_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "z_swing_percent"}},
+						{title: "In Zone Miss Swing %", field: "advancedPitcher.z_swing_miss_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "z_swing_miss_percent"}},
+						{title: "Swing %", field: "advancedPitcher.swing_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "swing_percent"}},
+						{title: "Whiff %", field: "advancedPitcher.whiff_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "whiff_percent"}},
+						{title: "Out Zone Contact %", field: "advancedPitcher.oz_contact_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "oz_contact_percent"}},
+						{title: "In Zone Contact %", field: "advancedPitcher.iz_contact_percent", hozAlign: "center", width: 80, visible: false, formatter: advancedFormatter, formatterParams:{"field": "iz_contact_percent"}},
+						{title: "Sweet Spot %", field: "advancedPitcher.sweet_spot_percent", hozAlign: "center", width: 80, visible: false, formatter: advancedFormatter, formatterParams:{"field": "sweet_spot_percent"}},
+						{title: "Hard Hit %", field: "advancedPitcher.hard_hit_percent", hozAlign: "center", width: 80, visible: false, formatter: advancedFormatter, formatterParams:{"field": "hard_hit_percent"}},
 						{title: "Barrel Batted %", field: "advancedPitcher.barrel_batted_rate", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
 						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150, tooltip: true},
 						{title: "vs Pitcher (Per AB)", field: "againstPitcherStatsPerAB", hozAlign: "center", width: 150, visible: false},
@@ -378,6 +492,7 @@
 						{title: "Under", field: "underOdds", hozAlign: "center"},
 					]
 				})
+
 				TABLE.on("rowClick", function(e, row) {
 					row.getElement().getElementsByClassName("tabulator-responsive-collapse-toggle")[0].click()
 				});
@@ -403,7 +518,7 @@
 				} else if (propArg === "so") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
-				} else if (["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+				} else if ("{{pitchers}}" || ["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
 					TABLE.showColumn("k/bb");
 					TABLE.showColumn("pitchesPerPlate");
 					TABLE.showColumn("advancedPitcher.p_k_percent");
@@ -472,11 +587,6 @@
 		{% if prop != "" %}
 			<script>
 				TABLE.setFilter([{field:"prop", type:"=", value:"{{prop}}"}]);
-			</script>
-		{% endif %}
-		{% if pitchers %}
-			<script>
-				TABLE.getColumn("avgIP").show();
 			</script>
 		{% endif %}
 	</body>

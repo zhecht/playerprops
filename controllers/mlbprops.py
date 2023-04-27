@@ -368,7 +368,7 @@ def writeStaticProps():
 
 	with open(f"{prefix}static/betting/mlb.json", "w") as fh:
 		json.dump(props, fh, indent=4)
-	for prop in ["k", "outs", "wins", "h_allowed", "bb", "er"]:
+	for prop in ["h", "hr", "bb_allowed", "k", "outs", "wins", "h_allowed", "bb", "er"]:
 		filteredProps = [p for p in props if p["prop"] == prop]
 		with open(f"{prefix}static/betting/mlb_{prop}.json", "w") as fh:
 			json.dump(filteredProps, fh, indent=4)
@@ -633,7 +633,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				overOdds = propData[game][player][propName]["over"]
 				underOdds = propData[game][player][propName]["under"]
 
-				bpDiff = bpOdds - int(overOdds)
+				bpDiff = 0
+				if bpOdds:
+					bpDiff = round((int(overOdds) - bpOdds) / abs(int(overOdds)), 3)
 
 				lastYrGamesPlayed = 0
 				if team in averages and player in averages[team] and "2022" in averages[team][player]:
@@ -853,13 +855,14 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 
 
 				oppRank = oppRankVal = oppABRank = ""
-				oppRankLastYear = ""
+				oppRankLastYear = oppRankLast3 = ""
 				rankingsProp = convertRankingsProp(propName)
 				
 				if rankingsProp in rankings[opp]:
 					oppRankVal = str(rankings[opp][rankingsProp]["season"])
 					oppRank = rankings[opp][rankingsProp]['rank']
 					oppRankLastYear = rankings[opp][rankingsProp].get('lastYearRank', 0)
+					oppRankLast3 = rankings[opp][rankingsProp].get('last3Rank', 0)
 					oppABRank = rankings[opp]["opp_ab"]["rank"]
 
 				hitRateOdds = diff = 0
@@ -1019,6 +1022,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"oppABRank": oppABRank,
 					"oppRankLastYear": oppRankLastYear,
 					"oppRank": oppRank,
+					"oppRankLast3": oppRankLast3,
 					"oppRankVal": oppRankVal,
 					"overOdds": overOdds,
 					"underOdds": underOdds
@@ -1470,8 +1474,13 @@ def getProps_route():
 			players = request.args.get("players").lower().split(",")
 		props = getPropData(date=request.args.get("date"), playersArg=players, teams="", pitchers=pitchers, lineArg=request.args.get("line") or "")
 	elif request.args.get("prop"):
-		with open(f"{prefix}static/betting/mlb_{request.args.get('prop')}.json") as fh:
-			props = json.load(fh)
+		path = f"{prefix}static/betting/mlb_{request.args.get('prop')}.json"
+		if not os.path.exists(path):
+			with open(f"{prefix}static/betting/mlb.json") as fh:
+				props = json.load(fh)
+		else:
+			with open(path) as fh:
+				props = json.load(fh)
 	else:
 		with open(f"{prefix}static/betting/mlb.json") as fh:
 			props = json.load(fh)
@@ -1495,11 +1504,18 @@ def getProps_route():
 					arr.append(row)
 		props = arr
 
+	if request.args.get("pitchers"):
+		arr = []
+		for row in props:
+			if "P" in row["pos"]:
+				arr.append(row)
+		props = arr
+
 	return jsonify(props)
 
 @mlbprops_blueprint.route('/mlbprops')
 def props_route():
-	prop = date = teams = players = bet = line = ""
+	prop = date = teams = players = bet = pitchers = line = ""
 	if request.args.get("prop"):
 		prop = request.args.get("prop").replace(" ", "+")
 
@@ -1517,6 +1533,8 @@ def props_route():
 		bet = request.args.get("bet")
 	if request.args.get("line"):
 		line = request.args.get("line")
+	if request.args.get("pitchers"):
+		pitchers = request.args.get("pitchers")
 
 	with open(f"{prefix}bets") as fh:
 		bets = json.load(fh)
@@ -1527,7 +1545,22 @@ def props_route():
 		bets = []
 		
 	bets = ",".join(bets)
-	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players, bet=bet, line=line)
+	return render_template("mlbprops.html", prop=prop, date=date, teams=teams, bets=bets, players=players, bet=bet, line=line, pitchers=pitchers)
+
+
+def quartiles(arr):
+	arr = sorted(arr)
+	size = len(arr)
+	mLen, qLen = int(size/2), int(size/4)
+	q1, q3 = arr[qLen], arr[qLen*3]
+
+	if size % 2 == 0:
+		q1 = round((arr[qLen - 1] + arr[qLen]) / 2, 1)
+		q3 = round((arr[3*qLen - 1] + arr[3*qLen]) / 2, 1)
+		mid = round((arr[mLen-1] + arr[mLen]) / 2, 1)
+	else:
+		mid = arr[mLen]
+	return q1, mid, q3
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -1666,3 +1699,81 @@ if __name__ == "__main__":
 					avg = round(totHits[dt][prop] / (games[dt] / 2), 2)
 					print(dt, prop, avg)
 			print("\n")
+
+
+	# Analyze pitchers
+	if False:
+		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
+			schedule = json.load(fh)
+		with open(f"{prefix}static/baseballreference/roster.json") as fh:
+			roster = json.load(fh)
+		with open(f"{prefix}static/baseballreference/advanced.json") as fh:
+			advanced = json.load(fh)
+
+		analysis = {}
+		dts = schedule.keys()
+		#dts = ["2023-04-26"]
+		for dt in sorted(dts, key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
+
+			path = f"{prefix}static/mlbprops/dates/{dt}.json"
+			if not os.path.exists(path):
+				continue
+
+			with open(path) as fh:
+				props = json.load(fh)
+
+			if datetime.strptime(dt, "%Y-%m-%d") >= datetime.strptime(str(datetime.now())[:10], "%Y-%m-%d"):
+				continue
+
+			for game in schedule[dt]:
+				away, home = map(str, game.split(" @ "))
+
+				for teamIdx, team in enumerate([away, home]):
+
+					path = f"{prefix}static/baseballreference/{team}/{dt}.json"
+					if not os.path.exists(path):
+						continue
+
+					with open(path) as fh:
+						stats = json.load(fh)
+
+					for player in stats:
+
+						try:
+							if "P" not in roster[team][player]:
+								continue
+						except:
+							continue
+
+						if game not in props or player not in props[game]:
+							continue
+
+						for prop in ["k", "bb_allowed", "h_allowed"]:
+							if prop not in props[game][player] or prop not in stats[player]:
+								continue
+
+							if prop not in analysis:
+								analysis[prop] = {}
+
+							if player not in advanced[team]:
+								continue
+
+							hit = "miss"
+							line = props[game][player][prop]["line"]
+							if stats[player][prop] >= line:
+								hit = "hit"
+
+							for hdr in ["out_zone_percent", "z_swing_percent", "oz_swing_percent", "iz_contact_percent", "oz_contact_percent", "whiff_percent", "f_strike_percent", "swing_percent", "z_swing_miss_percent", "oz_swing_miss_percent"]:
+
+								if hdr not in analysis[prop]:
+									analysis[prop][hdr] = {"hit": [], "miss": []}
+								
+								analysis[prop][hdr][hit].append(advanced[team][player][hdr])
+			
+		for prop in analysis:
+			print(prop)
+			for hdr in analysis[prop]:
+				arr = []
+				for hit in analysis[prop][hdr]:
+					arr.append(quartiles(analysis[prop][hdr][hit]))
+				print("\t", hdr, arr)
