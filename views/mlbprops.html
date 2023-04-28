@@ -158,9 +158,9 @@
 					}
 				} else {
 					if (TABLE.getFilters().length == 1) {
-						TABLE.addFilter("overOdds", ">=", -150);
+						TABLE.addFilter("overOdds", ">=", -130);
 					} else {
-						TABLE.removeFilter("overOdds", ">=", -150);
+						TABLE.removeFilter("overOdds", ">=", -130);
 					}
 				}
 			}
@@ -426,7 +426,9 @@
 						{title: "Opp Rank", field: "oppRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "LYR Opp Rank", field: "oppRankLastYear", hozAlign: "center", formatter: rankFormatter, width: 70, visible: true},
 						,
-						{title: "L3 Opp Rank", field: "oppRankLast3", hozAlign: "center", formatter: rankFormatter, width: 70, visible: false},
+						{title: "L3", field: "oppRankLast3", hozAlign: "center",  width: 70, visible: true},
+						{title: "pit/pa", field: "oppTeamBattingPitches.pit/pa", hozAlign: "center",  width: 70, visible: false},
+						{title: "str%", field: "oppTeamBattingPitches.str%", hozAlign: "center",  width: 70, visible: false},
 						{title: "Hits Rank", field: "stadiumHitsRank", hozAlign: "center", formatter: rankFormatter, width: 70},
 						{title: "HR Rank", field: "stadiumHrRank", hozAlign: "center", formatter: rankFormatter, width: 70, visible: false},
 						//{title: "Opp Rank Val", field: "oppRankVal", hozAlign: "center", width: 70},
@@ -456,8 +458,8 @@
 						{title: "BB/IP", field: "bbip", hozAlign: "center", width: 80, visible: false},
 						{title: "HR/IP", field: "hrip", hozAlign: "center", width: 80, visible: false},
 						{title: "K/IP", field: "kip", hozAlign: "center", width: 80, visible: false},
-						{title: "K/BB", field: "k/bb", hozAlign: "center", width: 80, visible: false},
-						{title: "Pitches Per Plate", field: "pitchesPerPlate", hozAlign: "center", width: 80, visible: false},
+						{title: "Pitches Per Plate", field: "playerPitches.pit/pa", hozAlign: "center", width: 80, visible: false},
+						{title: "Str%", field: "playerPitches.str%", hozAlign: "center", width: 80, visible: false},
 						{title: "1st Strike %", field: "advancedPitcher.f_strike_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "f_strike_percent"}},
 						{title: "K%", field: "advancedPitcher.p_k_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "p_k_percent"}},
 						{title: "BB%", field: "advancedPitcher.p_bb_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "p_bb_percent"}},
@@ -475,6 +477,8 @@
 						{title: "Barrel Batted %", field: "advancedPitcher.barrel_batted_rate", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
 						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150, tooltip: true},
 						{title: "vs Pitcher (Per AB)", field: "againstPitcherStatsPerAB", hozAlign: "center", width: 150, visible: false},
+						{title: "3-0%", field: "playerPitches.30%", hozAlign: "center", width: 70, sorter: "number", responsive: 2},
+						{title: "0-2%", field: "playerPitches.02%", hozAlign: "center", width: 70, sorter: "number", responsive: 2},
 						{title: "% Over vs Team", field: "againstTeamTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "vs Team", field: "againstTeamStats", hozAlign: "center", width: 150, tooltip: true},
 						{title: "vs Team (Per AB)", field: "againstTeamStatsPerAB", hozAlign: "center", width: 150, visible: false},
@@ -519,8 +523,12 @@
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
 				} else if ("{{pitchers}}" || ["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
-					TABLE.showColumn("k/bb");
-					TABLE.showColumn("pitchesPerPlate");
+					TABLE.showColumn("playerPitches.str%");
+					TABLE.showColumn("playerPitches.pit/pa");
+					TABLE.showColumn("playerPitches.02%");
+					TABLE.showColumn("playerPitches.30%");
+					TABLE.showColumn("oppTeamBattingPitches.pit/pa");
+					TABLE.showColumn("oppTeamBattingPitches.str%");
 					TABLE.showColumn("advancedPitcher.p_k_percent");
 					TABLE.showColumn("advancedPitcher.p_bb_percent");
 					TABLE.showColumn("advancedPitcher.out_zone_percent");

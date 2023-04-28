@@ -484,6 +484,14 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		playerHRFactors = json.load(fh)
 	with open(f"{prefix}static/baseballreference/statsVsTeam.json") as fh:
 		statsVsTeam = json.load(fh)
+	with open(f"{prefix}static/baseballreference/battingPitches.json") as fh:
+		battingPitches = json.load(fh)
+	with open(f"{prefix}static/baseballreference/pitchingPitches.json") as fh:
+		pitchingPitches = json.load(fh)
+	with open(f"{prefix}static/baseballreference/playerBattingPitches.json") as fh:
+		playerBattingPitches = json.load(fh)
+	with open(f"{prefix}static/baseballreference/playerPitchingPitches.json") as fh:
+		playerPitchingPitches = json.load(fh)
 	with open(f"{prefix}static/baseballreference/statsVsTeamCurrYear.json") as fh:
 		statsVsTeamCurrYear = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
@@ -594,6 +602,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					pitcherProj = 0
 
 				kPerBB = pitchesPerPlate = "-"
+
 				# advanced
 				try:
 					if "P" in pos:
@@ -602,8 +611,22 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 						advancedPitcher = advanced[opp][pitcher].copy()
 				except:
 					advancedPitcher = {}
+
+				# pitches
+				try:
+					if "P" in pos:
+						playerPitches = playerPitchingPitches[team][player].copy()
+					else:
+						playerPitches = playerPitchingPitches[opp][pitcher].copy()
+				except:
+					playerPitches = {}
+
+				try:
+					oppTeamBattingPitches = battingPitches[opp].copy()
+				except:
+					oppTeamBattingPitches = {}
 				
-				pitcherSummary = ""
+				pitcherSummary = strikePercent = ""
 				if "P" in pos:
 					if player in advanced[opp]:
 						pitcherSummary = f"{advanced[opp][player]['ba']} AVG, {advanced[opp][player]['xba']} xAVG, {advanced[opp][player]['babip']} BABIP, {advanced[opp][player]['out_zone_percent']}% Out Zone, {advanced[opp][player]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][player]['iz_contact_percent']}% In Zone Contact, {advanced[opp][player]['barrel_batted_rate']}% Barrel Batted"
@@ -621,10 +644,14 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					# player rankings
 					try:
 						kPerBB = playerRankings[team][player]["k/bb"]["val"]
-						pitchesPerPlate = playerRankings[team][player]["pitchesPerPlate"]["val"]
 					except:
 						pass
 
+					try:
+						pitchesPerPlate = playerPitchingPitches[team][player]["pit/pa"]
+						strikePercent = playerPitchingPitches[team][player]["str%"]
+					except:
+						pass
 				try:
 					battingNumber = lineups[team]["batting"].index(player)+1
 				except:
@@ -862,7 +889,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					oppRankVal = str(rankings[opp][rankingsProp]["season"])
 					oppRank = rankings[opp][rankingsProp]['rank']
 					oppRankLastYear = rankings[opp][rankingsProp].get('lastYearRank', 0)
-					oppRankLast3 = rankings[opp][rankingsProp].get('last3Rank', 0)
+					oppRankLast3 = rankings[opp][rankingsProp].get('last3', 0)
 					oppABRank = rankings[opp]["opp_ab"]["rank"]
 
 				hitRateOdds = diff = 0
@@ -964,6 +991,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"awayHome": "@" if awayTeam == team else "v",
 					"awayHomeSplits": awayHomeSplits,
 					"lastYearAwayHomeSplits": lastYrAwayHomeSplits,
+					"playerPitches": playerPitches,
+					"oppTeamBattingPitches": oppTeamBattingPitches,
 					#"winLossSplits": winLossSplits,
 					"bats": bats,
 					"battingNumber": battingNumber,

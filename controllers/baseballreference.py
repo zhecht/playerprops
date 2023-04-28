@@ -895,6 +895,115 @@ def write_rankings():
 	with open(f"{prefix}static/baseballreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
 
+
+def write_batting_pitches():
+	url = "https://www.baseball-reference.com/leagues/majors/2023-pitches-batting.shtml"
+	time.sleep(0.2)
+	outfile = "outmlb2"
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	headers = []
+	for td in soup.find("tr").findAll("th")[1:]:
+		headers.append(td.text.lower())
+
+	battingPitches = {}
+	for tr in soup.findAll("tr")[1:]:
+		try:
+			team = convertRotoTeam(tr.find("th").find("a").get("href").split("/")[-2].lower())
+		except:
+			continue
+		j = {}
+		for td, hdr in zip(tr.findAll("td"), headers):
+			j[hdr] = td.text
+
+		battingPitches[team] = j
+
+	playerBattingPitches = {}
+	for comment in soup.findAll(text=lambda text:isinstance(text, Comment)):
+		if "div_players_pitches_batting" in comment:
+			soup = BS(comment, "lxml")
+
+			headers = []
+			for th in soup.find("tr").findAll("th")[1:]:
+				headers.append(th.text.lower())
+
+			for tr in soup.findAll("tr")[1:]:
+				tds = tr.findAll("td")
+				if not tds or not tr.find("a"):
+					continue
+				j = {}
+				for td, hdr in zip(tds, headers):
+					j[hdr] = td.text
+
+				team = convertRotoTeam(j["tm"].lower())
+				player = strip_accents(tr.find("a").text.lower().replace("\u00a0", " ").replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", ""))
+				if team not in playerBattingPitches:
+					playerBattingPitches[team] = {}
+				playerBattingPitches[team][player] = j
+
+			break
+
+	with open(f"{prefix}static/baseballreference/playerBattingPitches.json", "w") as fh:
+		json.dump(playerBattingPitches, fh, indent=4)
+	with open(f"{prefix}static/baseballreference/battingPitches.json", "w") as fh:
+		json.dump(battingPitches, fh, indent=4)
+
+
+def write_pitching_pitches():
+	url = "https://www.baseball-reference.com/leagues/majors/2023-pitches-pitching.shtml"
+	time.sleep(0.2)
+	outfile = "outmlb2"
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	headers = []
+	for td in soup.find("tr").findAll("th")[1:]:
+		headers.append(td.text.lower())
+
+	pitchingPitches = {}
+	for tr in soup.findAll("tr")[1:]:
+		try:
+			team = convertRotoTeam(tr.find("th").find("a").get("href").split("/")[-2].lower())
+		except:
+			continue
+		j = {}
+		for td, hdr in zip(tr.findAll("td"), headers):
+			j[hdr] = td.text
+
+		pitchingPitches[team] = j
+
+	playerPitchingPitches = {}
+	for comment in soup.findAll(text=lambda text:isinstance(text, Comment)):
+		if "div_players_pitches_pitching" in comment:
+			soup = BS(comment, "lxml")
+
+			headers = []
+			for th in soup.find("tr").findAll("th")[1:]:
+				headers.append(th.text.lower())
+
+			for tr in soup.findAll("tr")[1:]:
+				tds = tr.findAll("td")
+				if not tds or not tr.find("a"):
+					continue
+				j = {}
+				for td, hdr in zip(tds, headers):
+					j[hdr] = td.text
+
+				team = convertRotoTeam(j["tm"].lower())
+				player = strip_accents(tr.find("a").text.lower().replace("\u00a0", " ").replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", ""))
+				if team not in playerPitchingPitches:
+					playerPitchingPitches[team] = {}
+				playerPitchingPitches[team][player] = j
+
+			break
+
+	with open(f"{prefix}static/baseballreference/playerPitchingPitches.json", "w") as fh:
+		json.dump(playerPitchingPitches, fh, indent=4)
+	with open(f"{prefix}static/baseballreference/pitchingPitches.json", "w") as fh:
+		json.dump(pitchingPitches, fh, indent=4)
+
+
 def write_pitching():
 	with open(f"{prefix}static/baseballreference/pitching.json") as fh:
 		pitching = json.load(fh)
@@ -1205,6 +1314,7 @@ if __name__ == "__main__":
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
+	parser.add_argument("--pitches", help="Pitches", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
 	parser.add_argument("--stats", help="Stats", action="store_true")
 	parser.add_argument("--pitching", help="Pitching", action="store_true")
@@ -1231,6 +1341,9 @@ if __name__ == "__main__":
 		write_player_rankings()
 	elif args.roster:
 		write_roster()
+	elif args.pitches:
+		write_batting_pitches()
+		write_pitching_pitches()
 	elif args.pitching:
 		write_pitching()
 	elif args.schedule:
@@ -1238,6 +1351,8 @@ if __name__ == "__main__":
 	elif args.cron:
 		write_rankings()
 		write_player_rankings()
+		write_batting_pitches()
+		write_pitching_pitches()
 		writeBVP(date)
 		write_stats(date)
 		write_schedule(date)
