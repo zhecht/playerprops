@@ -1088,7 +1088,10 @@ def writeLineups():
 
 			status = "confirmed" if "is-green" in lineupList.find("div", class_="dot").get("class") else "expected"
 			startingPitcher = " ".join(lineupList.find("a").get("href").lower().split("/")[-1].split("-")[:-1])
-			leftOrRight[team][startingPitcher] = lineupList.find("span", class_="lineup__throws").text
+			try:
+				leftOrRight[team][startingPitcher] = lineupList.find("span", class_="lineup__throws").text
+			except:
+				pass
 
 			lineupTeam = team
 			if team in lineups:

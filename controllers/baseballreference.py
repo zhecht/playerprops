@@ -1129,10 +1129,10 @@ def writeSavantParkFactors():
 
 	data = "{}"
 	for script in soup.findAll("script"):
-		if script.text.strip().startswith("var data"):
-			m = re.search(r"var data = \[{(.*?)}\];", script.text)
+		if "var data" in script.string:
+			m = re.search(r"var data = \[{(.*?)}\];", script.string)
 			if m:
-				data = m.group(1).replace("false", "False").replace("true", "True")
+				data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
 				data = f"{{{data}}}"
 				break
 
@@ -1170,8 +1170,8 @@ def writeSavantExpected():
 
 		data = "{}"
 		for script in soup.findAll("script"):
-			if script.text.strip().startswith("var data"):
-				m = re.search(r"var data = \[{(.*?)}\];", script.text)
+			if "var data" in script.string:
+				m = re.search(r"var data = \[{(.*?)}\];", script.string)
 				if m:
 					data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
 					data = f"{{{data}}}"
@@ -1204,8 +1204,8 @@ def writeSavantPitcherAdvanced():
 
 	data = "{}"
 	for script in soup.findAll("script"):
-		if script.text.strip().startswith("var data"):
-			m = re.search(r"var data = \[{(.*?)}\];", script.text)
+		if "var data" in script.string:
+			m = re.search(r"var data = \[{(.*?)}\];", script.string)
 			if m:
 				data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
 				data = f"{{{data}}}"
@@ -1241,8 +1241,8 @@ def writeSavantExpectedHR():
 
 		data = "{}"
 		for script in soup.findAll("script"):
-			if script.text.strip().startswith("var data"):
-				m = re.search(r"var data = \[{(.*?)}\];", script.text)
+			if "var data" in script.string:
+				m = re.search(r"var data = \[{(.*?)}\];", script.string)
 				if m:
 					data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
 					data = f"{{{data}}}"
