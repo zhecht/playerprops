@@ -367,6 +367,8 @@ def write_schedule(date):
 		if table.find("div", class_="Table__Title"):
 			date = table.find("div", class_="Table__Title").text.strip()
 			date = str(datetime.datetime.strptime(date, "%A, %B %d, %Y"))[:10]
+		else:
+			continue
 		schedule[date] = []
 		if date not in boxscores:
 			boxscores[date] = {}

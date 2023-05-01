@@ -71,7 +71,6 @@ def writeGameLines(date):
 		data = json.load(fh)
 
 	events = {}
-	lines = {}
 	displayTeams = {}
 	if "eventGroup" not in data:
 		return
@@ -1262,6 +1261,7 @@ def getSlateData(date = None, teams=""):
 
 			if game not in gameLines or "line" not in gameLines[game]:
 				continue
+
 			runline = gameLines[game]["line"]["line"]
 			totalLine = gameLines[game]["total"]["line"]
 			if idx == 1:
@@ -1486,7 +1486,10 @@ def writeBallparks(date):
 
 @mlbprops_blueprint.route('/slatemlb')
 def slate_route():
-	data = getSlateData()
+	date = None
+	if request.args.get("date"):
+		date = request.args.get("date")
+	data = getSlateData(date=date)
 	grouped = {}
 	for row in data:
 		if row["game"] not in grouped:

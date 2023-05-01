@@ -505,6 +505,39 @@
 			renderTable();
 
 			setTimeout(function() {
+				/*
+				if ("{{pitchers}}" || ["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+					TABLE.rowFormatter:function(row){
+						//create and style holder elements
+						var holderEl = document.createElement("div");
+						var tableEl = document.createElement("div");
+
+						holderEl.style.boxSizing = "border-box";
+						holderEl.style.padding = "10px 30px 10px 10px";
+						holderEl.style.borderTop = "1px solid #333";
+						holderEl.style.borderBotom = "1px solid #333";
+
+
+						tableEl.style.border = "1px solid #333";
+
+						holderEl.appendChild(tableEl);
+
+						row.getElement().appendChild(holderEl);
+
+						var subTable = new Tabulator(tableEl, {
+							layout:"fitColumns",
+							data: row.getData(),
+							columns:[
+							{title:"Date", field:"date", sorter:"date"},
+							{title:"Engineer", field:"engineer"},
+							{title:"Action", field:"actions"},
+							]
+							}
+						)
+					},
+				}
+				*/
+
 				if ("{{date}}" !== "") {
 					TABLE.showColumn("hit");
 				}
