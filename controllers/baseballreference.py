@@ -443,7 +443,7 @@ def write_averages():
 			pId = ids[team][player]
 			if player in averages[team]:
 				pass
-				#continue
+				continue
 			
 			averages[team][player] = {}
 			lastYearStats[team][player] = {}
@@ -548,6 +548,11 @@ def write_averages():
 								val = 0.0
 								if header in ["dec", "rel"]:
 									val = td.text.strip()
+									if "(" in val:
+										p = val.split("(")[0].lower()
+										if p not in yearStats[year][team][player][date]:
+											yearStats[year][team][player][date][p] = 0
+										yearStats[year][team][player][date][p] += 1
 								else:
 									try:
 										val = float(td.text.strip())

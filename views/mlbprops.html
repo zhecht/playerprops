@@ -78,8 +78,9 @@
 			<a id="k" href="/mlbprops?prop=k">Strikeouts</a>
 			<!--
 			<a id="outs" href="/mlbprops?prop=outs">Outs</a>
-			<a id="win" href="/mlbprops?prop=win">Win</a>
+			
 			-->
+			<a id="w" href="/mlbprops?prop=w">Win</a>
 			<a id="h_allowed" href="/mlbprops?prop=h_allowed">Hits</a>
 			<a id="bb" href="/mlbprops?prop=bb_allowed">Walks</a>
 			<a id="er" href="/mlbprops?prop=er">ER</a>
@@ -180,7 +181,7 @@
 				const prop = cell.getRow().getData().prop;
 				const field = params.field;
 				const disp = cell.getValue()+"%";
-				if (["h_allowed", "bb_allowed", "k"].indexOf(prop) < 0 || !medians[field]) {
+				if (["h_allowed", "bb_allowed", "k", "w"].indexOf(prop) < 0 || !medians[field]) {
 					return disp;
 				}
 				const { q1, mid, q3 } = medians[field];
@@ -411,6 +412,7 @@
 						{title: "Player", field: "player", headerFilter: "input"},
 						{title: "Game", field: "game", visible: false},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
+						{title: "ERA", field: "advancedPitcher.p_era", hozAlign: "center", width: 60,  sorter: "number", visible: false},
 						{title: "BA", field: "battingAvg", hozAlign: "center", width: 60,  sorter: "number"},
 						{title: "xBA", field: "xBA", hozAlign: "center", width: 60,  sorter: "number", formatter: expectedFormatter},
 						{title: "vs R/L Avg", field: "leftRightAvg", hozAlign: "center", width: 60,  sorter: "number", formatter: expectedFormatter},
@@ -438,6 +440,8 @@
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
 						{title: "Proj", field: "proj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "Numberfire Proj", field: "numberfireProj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
+						{title: "IP Proj", field: "projIP", hozAlign: "center", width: 80,  sorter: "number", visible: false},
+						{title: "IP Numberfire Proj", field: "numberfireProjIP", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "HR Factor", field: "hrFactor", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "Proj Diff", field: "projDiff", visible: false, sorter: "number"},
 						{title: "BP Diff", field: "bpDiff", visible: false, sorter: "number"},
@@ -555,7 +559,10 @@
 				} else if (propArg === "so") {
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
-				} else if ("{{pitchers}}" || ["k", "outs", "win", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+				} else if ("{{pitchers}}" || ["k", "outs", "w", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+					TABLE.showColumn("projIP");
+					TABLE.showColumn("numberfireProjIP");
+					TABLE.showColumn("advancedPitcher.p_era");
 					TABLE.showColumn("playerPitches.str%");
 					TABLE.showColumn("playerPitches.pit/pa");
 					TABLE.showColumn("playerPitches.02%");
@@ -598,6 +605,12 @@
 						TABLE.showColumn("kip");
 						TABLE.showColumn("advancedPitcher.swing_percent");
 						TABLE.showColumn("advancedPitcher.whiff_percent");
+					} else if (propArg == "w") {
+						TABLE.hideColumn("oppRank");
+						TABLE.hideColumn("oppRankLastYear");
+						TABLE.hideColumn("oppRankLast3");
+						TABLE.hideColumn("oppTeamBattingPitches.str%");
+						TABLE.hideColumn("bp");
 					}
 				} else if (propArg == "bb") {
 					TABLE.hideColumn("hip");

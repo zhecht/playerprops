@@ -167,7 +167,7 @@ def convertDKProp(mainCat, prop):
 	elif prop == "doubles":
 		return "2b"
 	elif prop == "to record a win":
-		return "win"
+		return "w"
 	
 	return "_".join(prop.split(" "))
 
@@ -260,7 +260,7 @@ def writeProps(date):
 							except:
 								line = 0
 							for outcome in row["outcomes"]:
-								if outcome["label"].lower() == "over" or (prop == "win" and outcome["label"].lower() == "yes"):
+								if outcome["label"].lower() == "over" or (prop == "w" and outcome["label"].lower() == "yes"):
 									odds[0] = outcome["oddsAmerican"]
 								else:
 									odds[1] = outcome["oddsAmerican"]
@@ -562,6 +562,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				if lineArg:
 					line = float(lineArg)
 
+				if prop == "w":
+					line = 0.5
+
 				#
 				bpOdds = 0
 				try:
@@ -579,18 +582,24 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					bp = ""
 
 				# projection
+				projIP = 0
 				try:
 					if propName in projections[team][player]:
 						proj = round(projections[team][player][propName], 2)
 					else:
 						proj = round(projections[team][player][prop], 2)
+
+					if "P" in pos:
+						projIP = round(projections[team][player]["ip"], 2)
 				except:
 					proj = 0
 
 				#numberfire projection
-				numberfireProj = 0
+				numberfireProj = numberfireProjIP = 0
 				try:
 					numberfireProj = round(numberfireProjections[team][player][prop], 2)
+					if "P" in pos:
+						numberfireProjIP = round(numberfireProjections[team][player]["ip"], 2)
 				except:
 					pass
 
@@ -1031,6 +1040,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"line": line or 0,
 					"numberfireProj": numberfireProj,
 					"proj": proj,
+					"numberfireProjIP": numberfireProjIP,
+					"projIP": projIP,
 					"projDiff": projDiff,
 					"bpDiff": bpDiff,
 					"battingAvg": battingAvg,
@@ -1167,11 +1178,16 @@ def write_numberfire_projections():
 				projections[team] = {}
 			projections[team][player] = {}
 
-			for td in row.findAll("td")[5:]:
+			cutoff = 5 if t == "batters" else 4
+			for td in row.findAll("td")[cutoff:]:
 				hdr = td.get("class")[0]
-				val = float(td.text.strip())
-
-				projections[team][player][hdr] = val
+				if hdr == "wl":
+					w,l = map(float, td.text.strip().split("-"))
+					projections[team][player]["w"] = w
+					projections[team][player]["l"] = l
+				else:
+					val = float(td.text.strip())
+					projections[team][player][hdr] = val
 
 			if t == "batters":
 				projections[team][player]["h"] = projections[team][player]["1b"]+projections[team][player]["2b"]+projections[team][player]["3b"]+projections[team][player]["hr"]
@@ -1194,7 +1210,7 @@ def write_projections(date):
 			headers = []
 			for idx, row in enumerate(reader):
 				if idx == 0:
-					headers = [x.lower() for x in row[6:-1]]
+					headers = [x.lower() for x in row[5:-1]]
 				else:
 					if len(row) < 2:
 						continue
@@ -1211,7 +1227,7 @@ def write_projections(date):
 						continue
 						
 
-					for hdr, col in zip(headers, row[6:-1]):
+					for hdr, col in zip(headers, row[5:-1]):
 						suffix = ""
 						if HP == "P" and hdr in ["h", "bb", "hr"]:
 							suffix = "_allowed"
