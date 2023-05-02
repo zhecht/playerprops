@@ -1751,6 +1751,11 @@ if __name__ == "__main__":
 					print(dt, prop, avg)
 			print("\n")
 
+		hrs = []
+		for dt in totHits:
+			hrs.append(totHits[dt]["hr"] / (games[dt] / 2))
+		print(sum(hrs) / len(hrs))
+
 
 	# Analyze pitchers
 	if False:
