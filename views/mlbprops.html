@@ -438,6 +438,7 @@
 						{title: "Prop", field: "displayProp", hozAlign: "center"},
 						{title: "Line", field: "line", hozAlign: "center"},
 						{title: "Last ➡️", field: "lastDisplay", hozAlign: "center"},
+						{title: "MyProj", field: "myProj", hozAlign: "center", width: 80,  sorter: "number", visible: false, formatter: colorFormatter},
 						{title: "Proj", field: "proj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "Numberfire Proj", field: "numberfireProj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "IP Proj", field: "projIP", hozAlign: "center", width: 80,  sorter: "number", visible: false},
@@ -597,14 +598,17 @@
 						TABLE.showColumn("advancedPitcher.sweet_spot_percent");
 						TABLE.showColumn("advancedPitcher.hard_hit_percent");
 						TABLE.showColumn("advancedPitcher.barrel_batted_rate");
+						TABLE.showColumn("myProj");
 					} else if (propArg === "bb_allowed") {
 						TABLE.hideColumn("hip");
 						TABLE.showColumn("bbip");
+						TABLE.showColumn("myProj");
 					} else if (propArg === "k") {
 						TABLE.hideColumn("hip");
 						TABLE.showColumn("kip");
 						TABLE.showColumn("advancedPitcher.swing_percent");
 						TABLE.showColumn("advancedPitcher.whiff_percent");
+						TABLE.showColumn("myProj");
 					} else if (propArg == "w") {
 						TABLE.hideColumn("oppRank");
 						TABLE.hideColumn("oppRankLastYear");

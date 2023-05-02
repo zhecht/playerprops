@@ -989,6 +989,20 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				except:
 					pass
 
+				myProj = 0
+				if projIP:
+					avgIP = projIP
+					if numberfireProjIP:
+						avgIP = (projIP + numberfireProjIP) / 2
+					myProj = avgIP * 3
+					if propName == "bb_allowed":
+						myProj *= float(advancedPitcher.get("p_bb_percent", 0)) * 0.01
+					elif propName == "k":
+						myProj *= float(advancedPitcher.get("p_k_percent", 0)) * 0.01
+					elif propName == "h_allowed":
+						myProj = avgIP * hip
+					myProj = round(myProj, 2)
+
 				props.append({
 					"game": game,
 					"playerId": playerId,
@@ -1039,6 +1053,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"matchups": len(prevMatchup),
 					"line": line or 0,
 					"numberfireProj": numberfireProj,
+					"myProj": myProj,
 					"proj": proj,
 					"numberfireProjIP": numberfireProjIP,
 					"projIP": projIP,
