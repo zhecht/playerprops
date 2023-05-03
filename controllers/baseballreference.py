@@ -367,8 +367,13 @@ def write_schedule(date):
 		if table.find("div", class_="Table__Title"):
 			date = table.find("div", class_="Table__Title").text.strip()
 			date = str(datetime.datetime.strptime(date, "%A, %B %d, %Y"))[:10]
+			date = date.split(" ")[-1]
 		else:
 			continue
+
+		if table.find("a", class_="Schedule__liveLink"):
+			continue
+
 		schedule[date] = []
 		if date not in boxscores:
 			boxscores[date] = {}
@@ -392,6 +397,7 @@ def write_schedule(date):
 			score = tds[2].find("a").text.strip()
 			if score.lower() == "postponed":
 				continue
+
 			if ", " in score and os.path.exists(f"{prefix}static/baseballreference/{awayTeam.split(' ')[0]}/{date}.json"):
 				scoreSp = score.split(", ")
 				if awayTeam == scoreSp[0].split(" ")[0].lower():
@@ -400,6 +406,7 @@ def write_schedule(date):
 				else:
 					scores[date][awayTeam] = int(scoreSp[1].split(" ")[1])
 					scores[date][homeTeam] = int(scoreSp[0].split(" ")[1])
+
 			boxscores[date][f"{awayTeam} @ {homeTeam}"] = boxscore
 			schedule[date].append(f"{awayTeam} @ {homeTeam}")
 

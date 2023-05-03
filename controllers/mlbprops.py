@@ -994,13 +994,16 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					avgIP = projIP
 					if numberfireProjIP:
 						avgIP = (projIP + numberfireProjIP) / 2
-					myProj = avgIP * 3
+
+					myProj = (avgIP * 3) + ((avgIP-1) * hip) + ((avgIP-1) * bbip)
+
 					if propName == "bb_allowed":
 						myProj *= float(advancedPitcher.get("p_bb_percent", 0)) * 0.01
 					elif propName == "k":
 						myProj *= float(advancedPitcher.get("p_k_percent", 0)) * 0.01
 					elif propName == "h_allowed":
 						myProj = avgIP * hip
+						
 					myProj = round(myProj, 2)
 
 				props.append({
@@ -1267,6 +1270,8 @@ def getSlateData(date = None, teams=""):
 
 	with open(f"{prefix}static/baseballreference/rankings.json") as fh:
 		rankings = json.load(fh)
+	with open(f"{prefix}static/baseballreference/advanced.json") as fh:
+		advanced = json.load(fh)
 	with open(f"{prefix}static/baseballreference/scores.json") as fh:
 		scores = json.load(fh)
 	with open(f"{prefix}static/baseballreference/totals.json") as fh:
@@ -1382,6 +1387,11 @@ def getSlateData(date = None, teams=""):
 				else:
 					totals[key] = 0
 
+			try:
+				advancedPitcher = advanced[team][pitcher].copy()
+			except:
+				advancedPitcher = {}
+
 			res.append({
 				"game": game,
 				"team": team,
@@ -1395,6 +1405,7 @@ def getSlateData(date = None, teams=""):
 				"totals": totals,
 				"pitcher": pitcher,
 				"rankings": rankings[team],
+				"advancedPitcher": advancedPitcher,
 				"pitcherStats": pitcherStats,
 				"pitcherThrows": pitcherThrows,
 				"pitcherRecord": pitcherRecord,

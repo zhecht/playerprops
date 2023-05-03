@@ -70,14 +70,14 @@
 		<div class="game">
 			<div class="team">
 				<h2 class="{{data[game]['A'].team}}">{{ data[game]["A"].team.upper() }}</h2>
-				<div>
+				<div style="margin-top:0.5rem;">
 					{{ data[game]["A"].pitcher.title() }} ({{ data[game]["A"].pitcherThrows }})
 					&bull;
 					{{ data[game]["A"].pitcherRecord }}
 					&bull;
 					{{ data[game]["A"].pitcherStats.era }} ERA
 				</div>
-				<div>
+				<div style="margin-top:1rem;">
 					{{ data[game]["A"].pitcherStats.ip }} IP
 					&bull;
 					{{ data[game]["A"].pitcherStats.get('h_allowed',0)|int }} H
@@ -96,6 +96,22 @@
 					{{ data[game]["A"].pitcherStats.kip }} K/IP
 					&bull;
 					{{ data[game]["A"].pitcherStats.bbip }} BB/IP
+				</div>
+				<div style="margin-top:1rem;">
+					{{ data[game]["A"].advancedPitcher.ba }} BA
+					&bull;
+					{{ data[game]["A"].advancedPitcher.xba }} XBA
+					&bull;
+					{{ data[game]["A"].advancedPitcher.babip }} BABIP
+					&bull;
+					{{ data[game]["A"].advancedPitcher.slg }} SLG
+				</div>
+				<div>
+					{{ data[game]["A"].advancedPitcher.sweet_spot_percent }}% Sweet Spot
+					&bull;
+					{{ data[game]["A"].advancedPitcher.hard_hit_percent }}% Hard Hit
+					&bull;
+					{{ data[game]["A"].advancedPitcher.barrel_batted_rate }}% Barrel
 				</div>
 				<div class="row">
 					<span style="text-decoration: underline;">L10 Team Totals</span>
@@ -165,14 +181,14 @@
 			</table>
 			<div class="team">
 				<h2 class="{{data[game]['H'].team}}">{{ data[game]["H"].team.upper() }}</h2>
-				<div>
+				<div style="margin-top:0.5rem;">
 					{{ data[game]["H"].pitcher.title() }} ({{ data[game]["H"].pitcherThrows }})
 					&bull;
 					{{ data[game]["H"].pitcherRecord }}
 					&bull;
 					{{ data[game]["H"].pitcherStats.era }} ERA
 				</div>
-				<div>
+				<div style="margin-top:1rem;">
 					{{ data[game]["H"].pitcherStats.ip }} IP
 					&bull;
 					{{ data[game]["H"].pitcherStats.get('h_allowed',0)|int }} H
@@ -191,6 +207,22 @@
 					{{ data[game]["H"].pitcherStats.kip }} K/IP
 					&bull;
 					{{ data[game]["H"].pitcherStats.bbip }} BB/IP
+				</div>
+				<div style="margin-top:1rem;">
+					{{ data[game]["H"].advancedPitcher.ba }} BA
+					&bull;
+					{{ data[game]["H"].advancedPitcher.xba }} XBA
+					&bull;
+					{{ data[game]["H"].advancedPitcher.babip }} BABIP
+					&bull;
+					{{ data[game]["H"].advancedPitcher.slg }} SLG
+				</div>
+				<div>
+					{{ data[game]["H"].advancedPitcher.sweet_spot_percent }}% Sweet Spot
+					&bull;
+					{{ data[game]["H"].advancedPitcher.hard_hit_percent }}% Hard Hit
+					&bull;
+					{{ data[game]["H"].advancedPitcher.barrel_batted_rate }}% Barrel
 				</div>
 				<div class="row">
 					<span style="text-decoration: underline;">L10 Team Totals</span>
