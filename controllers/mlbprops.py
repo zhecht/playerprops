@@ -338,7 +338,7 @@ def writeCsvs(props):
 
 
 	# add top 4 to reddit
-	headerList = ["NAME","POS","Batting #","B. AVG","TEAM","A/H","OPP","OPP RANK","LYR OPP RANK","PROP","LINE","LAST ➡️","AVG","% OVER", "CAREER % OVER", "% OVER VS TEAM", "VS TEAM", "PITCHER", "VS PITCHER", "OVER","UNDER"]
+	headerList = ["NAME","Batting #","B. AVG","TEAM","A/H","OPP","OPP RANK","PROP","LINE","LAST ➡️","AVG","% OVER", "CAREER % OVER", "% OVER VS TEAM", "VS TEAM", "PITCHER", "VS PITCHER", "OVER","UNDER"]
 	headers = "\t".join(headerList)
 	reddit = "|".join(headers.split("\t"))
 	reddit += "\n"+"|".join([":--"]*len(headerList))
@@ -346,11 +346,11 @@ def writeCsvs(props):
 	for prop in ["h", "h+r+rbi", "hr", "so"]:
 		if prop in splitProps:
 			rows = sorted(splitProps[prop], key=lambda k: (k["totalOver"], k["careerTotalOver"]), reverse=True)
-			for row in [r for r in rows if int(str(r["battingNumber"]).replace('-', '10')) <= 5][:3]:
+			for row in [r for r in rows if int(str(r["battingNumber"]).replace('-', '10')) <= 6][:3]:
 				overOdds = row["overOdds"]
 				underOdds = row["underOdds"]
 				avg = row["lastYearAvg"]
-				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["pos"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"], row["avg"], f"{row['totalOver']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["againstPitcherStats"], overOdds, underOdds]])
+				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["prop"], row["line"], row["lastDisplay"], row["avg"], f"{row['totalOver']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["againstPitcherStats"], overOdds, underOdds]])
 			reddit += "\n"+"|".join(["-"]*len(headerList))
 
 	with open(f"{prefix}static/mlbprops/csvs/reddit", "w") as fh:
@@ -473,6 +473,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		ballparkPalProps = json.load(fh)
 	with open(f"{prefix}static/baseballreference/advanced.json") as fh:
 		advanced = json.load(fh)
+	with open(f"{prefix}static/baseballreference/sortedRankings.json") as fh:
+		sortedRankings = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
 		leftOrRight = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftRightSplits.json") as fh:
@@ -816,6 +818,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 							babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
 					
 
+				over5Innings = []
 				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
 				files = sorted(files, key=lambda k: datetime.strptime(k.replace("-gm2", "").split("/")[-1].replace(".json", ""), "%Y-%m-%d"), reverse=True)
 				for file in files:
@@ -861,6 +864,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 						if chkDate == date or datetime.strptime(chkDate, "%Y-%m-%d") > datetime.strptime(date, "%Y-%m-%d"):
 							continue
 
+						if "P" in pos:
+							over5Innings.append(gameStats[player]["ip"])
+
 						lastAll.append(int(val))
 
 						teamScore = scores[chkDate].get(currTeam, 0)
@@ -875,6 +881,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 							winLossSplits[0].append(val)
 						elif teamScore < oppScore:
 							winLossSplits[1].append(val)
+
+				if over5Innings:
+					over5Innings = int(len([x for x in over5Innings if x >= 5]) * 100 / len(over5Innings))
 
 				awayGames = len(awayHomeSplits[0])
 				homeGames = len(awayHomeSplits[1])
@@ -1044,6 +1053,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"pitcher": pitcher.split(" ")[-1].title(),
 					"pitcherThrows": pitcherThrows,
 					"pitcherProj": pitcherProj,
+					"over5Innings": over5Innings,
 					"k/bb": kPerBB,
 					"pitchesPerPlate": pitchesPerPlate,
 					"hip": hip,

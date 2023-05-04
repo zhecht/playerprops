@@ -177,6 +177,33 @@
 				return cell.getValue()+"%";
 			}
 
+			const percentileFormatter = function(cell, params, rendered) {
+				const field = params.field;
+				let value = parseInt(cell.getValue());
+				let flipped = false;
+				if (propArg === "h_allowed") {
+					if (["oz_swing_miss_percentPercentile", "z_swing_miss_percentPercentile"].indexOf(field) >= 0) {
+						flipped = true;
+					}
+				} else if (propArg === "bb_allowed") {
+					if (["p_k_percentPercentile", "f_strike_percentPercentile", "oz_swing_percentPercentile", "swing_percentPercentile", "z_swing_percentPercentile", "oz_swing_miss_percentPercentile", "z_swing_miss_percentPercentile"].indexOf(field) >= 0) {
+						flipped = true;
+					}
+				}
+
+				if (flipped) {
+					value = 100-value;
+				}
+
+				const disp = addNumSuffix(value);
+				if (value >= 70) {
+					return "<div class='positive'>"+disp+"</div>";
+				} else if (value <= 30) {
+					return "<div class='negative'>"+disp+"</div>";
+				}
+				return disp;
+			}
+
 			const advancedFormatter = function(cell, params, rendered) {
 				const prop = cell.getRow().getData().prop;
 				const field = params.field;
@@ -412,6 +439,7 @@
 						{title: "Player", field: "player", headerFilter: "input"},
 						{title: "Game", field: "game", visible: false},
 						{title: "Over", field: "overOdds", hozAlign: "center"},
+						{title: "5IP%", field: "over5Innings", hozAlign: "center", width: 70, sorter: "number", formatter: percentFormatter, visible: false},
 						{title: "ERA", field: "advancedPitcher.p_era", hozAlign: "center", width: 60,  sorter: "number", visible: false},
 						{title: "BA", field: "battingAvg", hozAlign: "center", width: 60,  sorter: "number"},
 						{title: "xBA", field: "xBA", hozAlign: "center", width: 60,  sorter: "number", formatter: expectedFormatter},
@@ -465,21 +493,21 @@
 						{title: "K/IP", field: "kip", hozAlign: "center", width: 80, visible: false},
 						{title: "Pitches Per Plate", field: "playerPitches.pit/pa", hozAlign: "center", width: 80, visible: false},
 						{title: "Str%", field: "playerPitches.str%", hozAlign: "center", width: 80, visible: false},
-						{title: "1st Strike %", field: "advancedPitcher.f_strike_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "f_strike_percent"}},
-						{title: "K%", field: "advancedPitcher.p_k_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "p_k_percent"}},
-						{title: "BB%", field: "advancedPitcher.p_bb_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "p_bb_percent"}},
-						{title: "Out Zone %", field: "advancedPitcher.out_zone_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "out_zone_percent"}},
-						{title: "Out Zone Swing %", field: "advancedPitcher.oz_swing_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "oz_swing_percent"}},
-						{title: "Out Zone Miss Swing %", field: "advancedPitcher.oz_swing_miss_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "oz_swing_miss_percent"}},
-						{title: "In Zone Swing %", field: "advancedPitcher.z_swing_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "z_swing_percent"}},
-						{title: "In Zone Miss Swing %", field: "advancedPitcher.z_swing_miss_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "z_swing_miss_percent"}},
-						{title: "Swing %", field: "advancedPitcher.swing_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "swing_percent"}},
-						{title: "Whiff %", field: "advancedPitcher.whiff_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "whiff_percent"}},
-						{title: "Out Zone Contact %", field: "advancedPitcher.oz_contact_percent", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: advancedFormatter, formatterParams:{"field": "oz_contact_percent"}},
-						{title: "In Zone Contact %", field: "advancedPitcher.iz_contact_percent", hozAlign: "center", width: 80, visible: false, formatter: advancedFormatter, formatterParams:{"field": "iz_contact_percent"}},
-						{title: "Sweet Spot %", field: "advancedPitcher.sweet_spot_percent", hozAlign: "center", width: 80, visible: false, formatter: advancedFormatter, formatterParams:{"field": "sweet_spot_percent"}},
-						{title: "Hard Hit %", field: "advancedPitcher.hard_hit_percent", hozAlign: "center", width: 80, visible: false, formatter: advancedFormatter, formatterParams:{"field": "hard_hit_percent"}},
-						{title: "Barrel Batted %", field: "advancedPitcher.barrel_batted_rate", hozAlign: "center", width: 80, visible: false, formatter: percentFormatter},
+						{title: "1st Strike %", field: "advancedPitcher.f_strike_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "f_strike_percentPercentile"}},
+						{title: "K%", field: "advancedPitcher.p_k_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "p_k_percentPercentile"}},
+						{title: "BB%", field: "advancedPitcher.p_bb_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "p_bb_percentPercentile"}},
+						{title: "Out Zone %", field: "advancedPitcher.out_zone_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "out_zone_percentPercentile"}},
+						{title: "Out Zone Swing %", field: "advancedPitcher.oz_swing_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "oz_swing_percentPercentile"}},
+						{title: "Out Zone Miss Swing %", field: "advancedPitcher.oz_swing_miss_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "oz_swing_miss_percentPercentile"}},
+						{title: "In Zone Swing %", field: "advancedPitcher.z_swing_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "z_swing_percentPercentile"}},
+						{title: "In Zone Miss Swing %", field: "advancedPitcher.z_swing_miss_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "z_swing_miss_percentPercentile"}},
+						{title: "Swing %", field: "advancedPitcher.swing_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "swing_percentPercentile"}},
+						{title: "Whiff %", field: "advancedPitcher.whiff_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "whiff_percentPercentile"}},
+						{title: "Out Zone Contact %", field: "advancedPitcher.oz_contact_percentPercentile", hozAlign: "center", width: 80, visible: false, sorter: "number", formatter: percentileFormatter, formatterParams:{"field": "oz_contact_percentPercentile"}},
+						{title: "In Zone Contact %", field: "advancedPitcher.iz_contact_percentPercentile", hozAlign: "center", width: 80, visible: false, formatter: percentileFormatter, formatterParams:{"field": "iz_contact_percentPercentile"}},
+						{title: "Sweet Spot %", field: "advancedPitcher.sweet_spot_percentPercentile", hozAlign: "center", width: 80, visible: false, formatter: percentileFormatter, formatterParams:{"field": "sweet_spot_percentPercentile"}},
+						{title: "Hard Hit %", field: "advancedPitcher.hard_hit_percentPercentile", hozAlign: "center", width: 80, visible: false, formatter: percentileFormatter, formatterParams:{"field": "hard_hit_percentPercentile"}},
+						{title: "Barrel Batted %", field: "advancedPitcher.barrel_batted_ratePercentile", hozAlign: "center", width: 80, visible: false, formatter: percentileFormatter},
 						{title: "vs Pitcher", field: "againstPitcherStats", hozAlign: "center", width: 150, tooltip: true},
 						{title: "vs Pitcher (Per AB)", field: "againstPitcherStatsPerAB", hozAlign: "center", width: 150, visible: false},
 						{title: "3-0%", field: "playerPitches.30%", hozAlign: "center", width: 70, sorter: "number", responsive: 2},
@@ -562,6 +590,7 @@
 					TABLE.showColumn("kip");
 				} else if ("{{pitchers}}" || ["k", "outs", "w", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
 					TABLE.showColumn("projIP");
+					TABLE.showColumn("over5Innings");
 					TABLE.showColumn("numberfireProjIP");
 					TABLE.showColumn("advancedPitcher.p_era");
 					TABLE.showColumn("playerPitches.str%");
@@ -570,14 +599,14 @@
 					TABLE.showColumn("playerPitches.30%");
 					TABLE.showColumn("oppTeamBattingPitches.pit/pa");
 					TABLE.showColumn("oppTeamBattingPitches.str%");
-					TABLE.showColumn("advancedPitcher.p_k_percent");
-					TABLE.showColumn("advancedPitcher.p_bb_percent");
-					TABLE.showColumn("advancedPitcher.out_zone_percent");
-					TABLE.showColumn("advancedPitcher.oz_swing_percent");
-					TABLE.showColumn("advancedPitcher.oz_swing_miss_percent");
-					TABLE.showColumn("advancedPitcher.z_swing_percent");
-					TABLE.showColumn("advancedPitcher.z_swing_miss_percent");
-					TABLE.showColumn("advancedPitcher.f_strike_percent");
+					TABLE.showColumn("advancedPitcher.p_k_percentPercentile");
+					TABLE.showColumn("advancedPitcher.p_bb_percentPercentile");
+					TABLE.showColumn("advancedPitcher.out_zone_percentPercentile");
+					TABLE.showColumn("advancedPitcher.oz_swing_percentPercentile");
+					TABLE.showColumn("advancedPitcher.oz_swing_miss_percentPercentile");
+					TABLE.showColumn("advancedPitcher.z_swing_percentPercentile");
+					TABLE.showColumn("advancedPitcher.z_swing_miss_percentPercentile");
+					TABLE.showColumn("advancedPitcher.f_strike_percentPercentile");
 					TABLE.hideColumn("againstPitcherStats");
 					TABLE.hideColumn("pitcherProj");
 					TABLE.hideColumn("hpg");
@@ -590,14 +619,14 @@
 					TABLE.hideColumn("avg");
 					TABLE.hideColumn("battingNumber");
 					if (propArg === "h_allowed") {
-						TABLE.hideColumn("advancedPitcher.f_strike_percent");
-						TABLE.hideColumn("advancedPitcher.p_k_percent");
-						TABLE.hideColumn("advancedPitcher.p_bb_percent");
-						TABLE.showColumn("advancedPitcher.iz_contact_percent");
-						TABLE.showColumn("advancedPitcher.oz_contact_percent");
-						TABLE.showColumn("advancedPitcher.sweet_spot_percent");
-						TABLE.showColumn("advancedPitcher.hard_hit_percent");
-						TABLE.showColumn("advancedPitcher.barrel_batted_rate");
+						TABLE.hideColumn("advancedPitcher.f_strike_percentPercentile");
+						TABLE.hideColumn("advancedPitcher.p_k_percentPercentile");
+						TABLE.hideColumn("advancedPitcher.p_bb_percentPercentile");
+						TABLE.showColumn("advancedPitcher.iz_contact_percentPercentile");
+						TABLE.showColumn("advancedPitcher.oz_contact_percentPercentile");
+						TABLE.showColumn("advancedPitcher.sweet_spot_percentPercentile");
+						TABLE.showColumn("advancedPitcher.hard_hit_percentPercentile");
+						TABLE.showColumn("advancedPitcher.barrel_batted_ratePercentile");
 						TABLE.showColumn("myProj");
 					} else if (propArg === "bb_allowed") {
 						TABLE.hideColumn("hip");
@@ -606,8 +635,8 @@
 					} else if (propArg === "k") {
 						TABLE.hideColumn("hip");
 						TABLE.showColumn("kip");
-						TABLE.showColumn("advancedPitcher.swing_percent");
-						TABLE.showColumn("advancedPitcher.whiff_percent");
+						TABLE.showColumn("advancedPitcher.swing_percentPercentile");
+						TABLE.showColumn("advancedPitcher.whiff_percentPercentile");
 						TABLE.showColumn("myProj");
 					} else if (propArg == "w") {
 						TABLE.hideColumn("oppRank");
