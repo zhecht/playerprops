@@ -865,7 +865,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 							continue
 
 						if "P" in pos:
-							over5Innings.append(gameStats[player]["ip"])
+							over5Innings.append(gameStats[player].get("ip", 0))
 
 						lastAll.append(int(val))
 
