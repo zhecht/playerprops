@@ -1680,6 +1680,7 @@ if __name__ == "__main__":
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
 	parser.add_argument("--lines", action="store_true", help="Game Lines")
 	parser.add_argument("-l", "--lineups", action="store_true", help="Write Lineups")
+	parser.add_argument("-p", "--props", action="store_true", help="Props")
 	parser.add_argument("-g", "--goalies", action="store_true", help="Goalie Stats")
 	parser.add_argument("--opp", action="store_true", help="Opportunities")
 	parser.add_argument("-d", "--date", help="Date")
@@ -1704,6 +1705,8 @@ if __name__ == "__main__":
 		writeOpportunities()
 	elif args.lineups:
 		writeLineups()
+	elif args.props:
+		writeStaticProps()
 	elif args.cron:
 		writeProps(date)
 		writeTT(date)

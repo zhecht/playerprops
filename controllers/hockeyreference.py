@@ -252,7 +252,10 @@ def writeTeamTTOI():
 		for file in files:
 			date = file.split("/")[-1][:-5]
 			games = schedule[date]
-			gameSp = [g.split(" @ ") for g in games if team in g.split(" @ ")][0]
+			try:
+				gameSp = [g.split(" @ ") for g in games if team in g.split(" @ ")][0]
+			except:
+				continue
 			opp = gameSp[0] if team == gameSp[1] else gameSp[1]
 			if opp not in teamTTOI:
 				teamTTOI[opp] = {"ttoi": [], "oppTTOI": []}
@@ -460,5 +463,6 @@ if __name__ == "__main__":
 	elif args.cron:
 		write_schedule(date)
 		write_stats(date)
+		write_schedule(date)
 		writeRankings()
 		writeTeamTTOI()
