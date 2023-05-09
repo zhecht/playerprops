@@ -1364,10 +1364,16 @@ def getSlateData(date = None, teams=""):
 							wonLost = "Lost"
 
 						if opp in gSp:
+							decision = "-"
 							for p in gameStats:
 								if "ip" in gameStats[p]:
 									currPitcher.append(p)
-							prevMatchup.append(f"{dt} {wonLost} {score} (SP: {currPitcher[0].title()})")
+									if "w" in gameStats[p]:
+										decision = "W"
+									elif "l" in gameStats[p]:
+										decision = "L"
+									break
+							prevMatchup.append(f"{dt} {wonLost} {score} (SP: {currPitcher[0].title()} {decision})")
 
 						teamScore = score1
 						oppScore = score2
@@ -1695,7 +1701,7 @@ if __name__ == "__main__":
 	#writeBallparks()
 
 
-	if False:
+	if True:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 

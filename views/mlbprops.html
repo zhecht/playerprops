@@ -589,6 +589,8 @@
 					TABLE.hideColumn("hip");
 					TABLE.showColumn("kip");
 				} else if ("{{pitchers}}" || ["k", "outs", "w", "h_allowed", "bb_allowed", "er"].indexOf(propArg) >= 0) {
+					TABLE.showColumn("advancedPitcher.iz_contact_percentPercentile");
+					TABLE.showColumn("advancedPitcher.oz_contact_percentPercentile");
 					TABLE.showColumn("projIP");
 					TABLE.showColumn("over5Innings");
 					TABLE.showColumn("numberfireProjIP");
@@ -622,8 +624,6 @@
 						TABLE.hideColumn("advancedPitcher.f_strike_percentPercentile");
 						TABLE.hideColumn("advancedPitcher.p_k_percentPercentile");
 						TABLE.hideColumn("advancedPitcher.p_bb_percentPercentile");
-						TABLE.showColumn("advancedPitcher.iz_contact_percentPercentile");
-						TABLE.showColumn("advancedPitcher.oz_contact_percentPercentile");
 						TABLE.showColumn("advancedPitcher.sweet_spot_percentPercentile");
 						TABLE.showColumn("advancedPitcher.hard_hit_percentPercentile");
 						TABLE.showColumn("advancedPitcher.barrel_batted_ratePercentile");
