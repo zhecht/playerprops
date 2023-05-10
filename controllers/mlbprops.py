@@ -1701,7 +1701,7 @@ if __name__ == "__main__":
 	#writeBallparks()
 
 
-	if True:
+	if False:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 
