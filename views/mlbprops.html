@@ -157,6 +157,12 @@
 						TABLE.removeFilter("overOdds", "<=", -170);
 						TABLE.removeFilter("battingNumber", "!=", "-");
 					}
+				} else if (propArg === "h+r+rbi") {
+					if (TABLE.getFilters().length == 1) {
+						TABLE.addFilter("overOdds", ">=", -120);
+					} else {
+						TABLE.removeFilter("overOdds", ">=", -120);
+					}
 				} else {
 					if (TABLE.getFilters().length == 1) {
 						TABLE.addFilter("overOdds", ">=", -130);
