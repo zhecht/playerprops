@@ -614,11 +614,13 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				kPerBB = pitchesPerPlate = "-"
 
 				# advanced
+				era = ""
 				try:
 					if "P" in pos:
 						advancedPitcher = advanced[team][player].copy()
 					else:
 						advancedPitcher = advanced[opp][pitcher].copy()
+					era = advancedPitcher["p_era"]
 				except:
 					advancedPitcher = {}
 
@@ -642,7 +644,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 						pitcherSummary = f"{advanced[opp][player]['ba']} AVG, {advanced[opp][player]['xba']} xAVG, {advanced[opp][player]['babip']} BABIP, {advanced[opp][player]['out_zone_percent']}% Out Zone, {advanced[opp][player]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][player]['iz_contact_percent']}% In Zone Contact, {advanced[opp][player]['barrel_batted_rate']}% Barrel Batted"
 				else:
 					if pitcher and pitcher in advanced[opp]:
-						pitcherSummary = f"{advanced[opp][pitcher]['ba']} AVG, {advanced[opp][pitcher]['xba']} xAVG, {advanced[opp][pitcher]['babip']} BABIP, {advanced[opp][pitcher]['out_zone_percent']}% Out Zone, {advanced[opp][pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[opp][pitcher]['barrel_batted_rate']}% Barrel Batted"
+						pitcherSummary = f"{advanced[opp][pitcher]['p_era']} ERA, {advanced[opp][pitcher]['ba']} AVG, {advanced[opp][pitcher]['xba']} xAVG, {advanced[opp][pitcher]['babip']} BABIP, {advanced[opp][pitcher]['out_zone_percent']}% Out Zone, {advanced[opp][pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[opp][pitcher]['barrel_batted_rate']}% Barrel Batted"
 
 				if "P" in pos:
 					try:
@@ -1051,6 +1053,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"againstTeamLastYearStatsPerAB": againstTeamLastYearStatsPerAB,
 					"pitcherSummary": pitcherSummary,
 					"pitcher": pitcher.split(" ")[-1].title(),
+					"era": era,
 					"pitcherThrows": pitcherThrows,
 					"pitcherProj": pitcherProj,
 					"over5Innings": over5Innings,
