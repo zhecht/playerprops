@@ -1035,6 +1035,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"battingNumber": battingNumber,
 					"hrFactor": hrFactor,
 					"bp": bp,
+					"bpOdds": bpOdds,
 					"babip": babip,
 					"bbpg": bbpg,
 					"xBA": xBA,
