@@ -317,9 +317,9 @@ def writeCsvs(props):
 			#	avg = f"**{avg}**"
 
 			if prop in ["k", "outs", "win", "h_allowed", "bb_allowed", "er"]:
-				csvs[prop] += "\n" + "\t".join([str(x) for x in [row["player"], overOdds, row["pos"], row["bats"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"], row["avg"], f"{row['totalOver']}%", f"{row['last10Over']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", underOdds]])
+				csvs[prop] += "\n" + "\t".join([str(x) for x in [row["player"], overOdds, row["pos"], row["bats"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"].replace("'", ""), row["avg"], f"{row['totalOver']}%", f"{row['last10Over']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", underOdds]])
 			else:
-				csvs[prop] += "\n" + "\t".join([str(x) for x in [row["player"], overOdds, row["pos"], row["bats"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"], row["avg"], f"{row['totalOver']}%", f"{row['last10Over']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["pitcherThrows"], row["againstPitcherStats"], underOdds]])
+				csvs[prop] += "\n" + "\t".join([str(x) for x in [row["player"], overOdds, row["pos"], row["bats"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"].replace("'", ""), row["avg"], f"{row['totalOver']}%", f"{row['last10Over']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["pitcherThrows"], row["againstPitcherStats"], underOdds]])
 
 	# add full rows
 	csvs["full"] = headers
@@ -334,7 +334,7 @@ def writeCsvs(props):
 			underOdds = "'"+underOdds
 		#if avg >= row["line"]:
 		#	avg = f"**{avg}**"
-		csvs["full"] += "\n" + "\t".join([str(x) for x in [row["player"], overOdds, row["pos"], row["bats"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"], row["avg"], f"{row['totalOver']}%", f"{row['last10Over']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["pitcherThrows"], row["againstPitcherStats"], underOdds]])
+		csvs["full"] += "\n" + "\t".join([str(x) for x in [row["player"], overOdds, row["pos"], row["bats"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), addNumSuffix(row["oppRankLastYear"]), row["prop"], row["line"], row["lastDisplay"].replace("'", ""), row["avg"], f"{row['totalOver']}%", f"{row['last10Over']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["pitcherThrows"], row["againstPitcherStats"], underOdds]])
 
 
 	# add top 4 to reddit
@@ -350,7 +350,7 @@ def writeCsvs(props):
 				overOdds = row["overOdds"]
 				underOdds = row["underOdds"]
 				avg = row["lastYearAvg"]
-				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["prop"], row["line"], row["lastDisplay"], row["avg"], f"{row['totalOver']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["againstPitcherStats"], overOdds, underOdds]])
+				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["battingNumber"], row["battingAvg"], row["team"], row["awayHome"], row["opponent"], addNumSuffix(row["oppRank"]), row["prop"], row["line"], row["lastDisplay"].replace("'", ""), row["avg"], f"{row['totalOver']}%", f"{row['careerTotalOver']}%", f"{row['againstTeamTotalOver']}%", f"{row['againstTeamStats']}", row["pitcher"], row["againstPitcherStats"], overOdds, underOdds]])
 			reddit += "\n"+"|".join(["-"]*len(headerList))
 
 	with open(f"{prefix}static/mlbprops/csvs/reddit", "w") as fh:
@@ -1609,6 +1609,10 @@ def getProps_route():
 		props = arr
 
 	return jsonify(props)
+
+@mlbprops_blueprint.route('/hedge')
+def hedge_route():
+	return render_template("hedge.html")
 
 @mlbprops_blueprint.route('/mlbprops')
 def props_route():

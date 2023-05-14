@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Hedge</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+		}
+		.div {
+			display:flex;
+			flex-direction:column;
+			width:200px;
+			justify-content: center;
+		}
+		.div input {
+			margin-top: 1rem;
+			font-size: 24px;
+			padding: 5px;
+		}
+	</style>
+	<body>
+		<div class="div">
+			<label for="originalBet">Original Bet Amt</label>
+			<input id="originalBet" placeholder="Original Bet Amount" />
+			<input id="originalOdds" placeholder="Original Odds" />
+			<input id="hedgeOdds" placeholder="Hedge Odds" />
+		</div>
+	</body>
+
+</html>
