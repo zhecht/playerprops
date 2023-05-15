@@ -360,8 +360,8 @@ def writeCsvs(props):
 		with open(f"{prefix}static/mlbprops/csvs/{prop}.csv", "w") as fh:
 			fh.write(csvs[prop])
 
-def writeStaticProps():
-	props = getPropData()
+def writeStaticProps(date=None):
+	props = getPropData(date)
 
 	writeCsvs(props)
 
@@ -1684,7 +1684,7 @@ if __name__ == "__main__":
 	if args.lineups:
 		writeLineups()
 	elif args.props:
-		writeStaticProps()
+		writeStaticProps(date)
 	elif args.projections:
 		write_projections(date)
 		writeLeftRightSplits()
@@ -1697,7 +1697,7 @@ if __name__ == "__main__":
 		writeBPPlayerProps(date)
 		writeLeftRightSplits()
 		writeGameLines(date)
-		writeStaticProps()
+		writeStaticProps(date)
 
 	#writeBPPlayerProps(date)
 	#writeGameLines(date)
