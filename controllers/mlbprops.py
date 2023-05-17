@@ -1708,8 +1708,16 @@ if __name__ == "__main__":
 	#writeStaticProps()
 	#writeBallparks()
 
-
 	if True:
+		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
+			schedule = json.load(fh)
+
+		print("[", end="")
+		print(", ".join([f"'{x}'" for x in schedule[date]]), end="")
+		print("]")
+
+
+	if False:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 
