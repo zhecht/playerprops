@@ -1199,7 +1199,11 @@ def write_numberfire_projections():
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for row in soup.find("table", class_="stat-table").find("tbody").findAll("tr"):
+		try:
+			rows = soup.find("table", class_="stat-table").find("tbody").findAll("tr")
+		except:
+			continue
+		for row in rows:
 			try:
 				team = row.find("span", class_="team-player__team active").text.strip().lower()
 			except:

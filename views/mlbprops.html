@@ -115,6 +115,16 @@
 				console.log(out);
 			}
 
+			function printSelected() {
+				const rows = TABLE.getSelectedRows();
+				let out = [];
+				for (row of rows) {
+					console.log('"'+row.getData().player.toLowerCase()+'"')
+					out.push('"'+row.getData().player.toLowerCase()+'"');
+				}
+				console.log(out.join(", "));
+			}
+
 			function groupBy() {
 				if (TABLE.options.groupBy === undefined || TABLE.options.groupBy === false) {
 					TABLE.setGroupBy("game");
@@ -688,7 +698,7 @@
 						}
 					}
 				}
-			}, 37500);
+			}, 50000);
 		</script>
 		{% if prop != "" %}
 			<script>
