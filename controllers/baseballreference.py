@@ -440,6 +440,13 @@ def write_averages():
 				stats = json.load(fh)
 			yearStats[year] = stats
 
+	if True:
+		ids = {
+			"tb": {
+				"josh lowe": 40557
+			}
+		}
+
 	for team in ids:
 		if team not in averages:
 			averages[team] = {}
