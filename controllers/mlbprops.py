@@ -1485,6 +1485,8 @@ def writeBPPlayerProps(date):
 	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
 		team = row.find("td").text.lower().replace("was", "wsh")
 		player = row.findAll("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+		if player == "nicholas castellanos":
+			player = "nick castellanos"
 		pa = float(row.findAll("td")[5].text)
 		prop = row.findAll("td")[6].text.lower().split(" ")[1]
 		if prop == "bases":
