@@ -110,7 +110,7 @@
 				for (row of rows) {
 					row = row.getData();
 					out += row.player+"\n";
-					out += "> ballparkpal "+row.hrFactor+" HR factor for him and "+row.bpOdds+" simulated odds, "+row.overOdds+" on draftkings. "+row.totalOver+"% hit rate on season, "+row.careerTotalOver+"% in career, "+row.lastYearTotalOver+"% last year. "+row.pitcher+" percentiles. vs "+row.pitcher+" he is "+row.againstPitcherStats+". "+row.opponent+" ranked "+addNumSuffix(row.oppRank)+" in HR allowed at "+row.oppRankVal+" hr/g ("+row.oppRankLast3+" in last 3). fantasypros projects "+row.proj+" today, numberfire projects "+row.numberfireProj+". HR-xHR is "+row.xHR+". In "+row.matchups+" matchups last year "+row.lastYearTeamMatchupOver+"% hit ("+row.againstTeamLastYearStats+"). In all games vs opponent "+row.againstTeamTotalOver+"% hit ("+row.againstTeamStats+").\n";
+					out += "> ballparkpal "+row.hrFactor+" HR factor for him and "+row.bpOdds+" simulated odds, "+row.overOdds+" on draftkings. "+row.totalOver+"% hit rate on season, "+row.careerTotalOver+"% in career, "+row.lastYearTotalOver+"% last year. ["+row.pitcher+" percentiles](). vs "+row.pitcher+" he is "+row.againstPitcherStats+". "+row.opponent+" ranked "+addNumSuffix(row.oppRank)+" in HR allowed at "+row.oppRankVal+" hr/g ("+row.oppRankLast3+" in last 3). fantasypros projects "+row.proj+" today, numberfire projects "+row.numberfireProj+". HR-xHR is "+row.xHR+". In "+row.matchups+" matchups last year "+row.lastYearTeamMatchupOver+"% hit ("+row.againstTeamLastYearStats+"). In all games vs opponent "+row.againstTeamTotalOver+"% hit ("+row.againstTeamStats+").\n";
 				}
 				console.log(out);
 			}
