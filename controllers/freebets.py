@@ -16,6 +16,89 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
+def writeBallparkpal():
+	js = """
+		const data = {};
+		for (row of document.getElementsByTagName("tr")) {
+			tds = row.getElementsByTagName("td");
+			if (tds.length === 0) {
+				continue;
+			}
+			let team = tds[0].innerText.toLowerCase();
+			if (team === "was") {
+				team = "wsh";
+			}
+
+			if (data[team] === undefined) {
+				data[team] = {};
+			}
+
+			let player = tds[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
+			if (tds[2].innerText.indexOf("HR") < 0) {
+				continue;
+			}
+
+			let max = 0;
+			let maxBooks = [];
+			let books = ["fd", "dk", "mgm", "cz", "pn", "bs"];
+			let idx = 4;
+			while (idx < 10) {
+				if (tds[idx].innerText) {
+					const odds = parseInt(tds[idx].innerText);
+					if (odds == max) {
+						maxBooks.push(books[idx-4]);
+					} else if (odds > max) {
+						maxBooks = [books[idx-4]];
+						max = odds;
+					}
+				}
+				idx++;
+			}
+
+			data[team][player] = {
+				bpp: tds[3].innerText,
+				fd: tds[4].innerText,
+				dk: tds[5].innerText,
+				mgm: tds[6].innerText,
+				cz: tds[7].innerText,
+				pn: tds[8].innerText,
+				bs: tds[9].innerText,
+				max: max,
+				maxBooks: maxBooks
+			}
+		}
+		console.log(data);
+
+	"""
+
+def checkBPP():
+	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
+	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
+		bppLines = json.load(fh)
+
+	data = []
+	for team in bppLines:
+		for player in bppLines[team]:
+			try:
+				bet365Underdog = int(bet365Lines[team][player].split("/")[0])
+			except:
+				continue
+
+			maxBpp = bppLines[team][player]["max"]
+			maxBooks = bppLines[team][player]["maxBooks"]
+			fd = bppLines[team][player]["fd"]
+			if maxBpp > bet365Underdog and maxBooks != ["fd"]:
+				summary = f"{player} bet={bet365Lines[team][player]}; max={maxBpp}; maxBooks={maxBooks}; fd={fd}"
+				diff = (maxBpp - bet365Underdog) / bet365Underdog
+				data.append((diff, summary))
+
+	for row in sorted(data, reverse=True):
+		print(row[1])
+
+
+
 def writeActionNetwork():
 	actionNetworkBookIds = {
 		68: "draftkings",
@@ -115,8 +198,6 @@ def writeFanduel():
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-los-angeles-angels-32362930",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-san-francisco-giants-32362924",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32365887",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32365888",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-san-francisco-giants-32365881",
@@ -125,8 +206,8 @@ def writeFanduel():
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-texas-rangers-32365890",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-washington-nationals-32365891",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32365886",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-new-york-mets-32365889",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-tampa-bay-rays-32366656",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-cincinnati-reds-32367445",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-st.-louis-cardinals-32365882",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-atlanta-braves-32366657",
 	"https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-los-angeles-angels-32365885",
@@ -142,13 +223,15 @@ def writeFanduel():
 		lines[game] = {}
 
 		outfile = "out"
-		time.sleep(0.2)
+		time.sleep(0.42)
 		url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}&tab=batter-props"
 		call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
 
 		with open(outfile) as fh:
 			data = json.load(fh)
 
+		if "markets" not in data["attachments"]:
+			continue
 		for market in data["attachments"]["markets"]:
 			marketName = data["attachments"]["markets"][market]["marketName"].lower()
 
@@ -196,23 +279,22 @@ def write365():
 			let playerList = [];
 			if (div.innerText == "Player Home Runs") {
 				for (playerDiv of div.parentNode.nextSibling.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
-					let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "");
+					let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
 					let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase();
-					let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" ")[0];
 
 					if (team === "la angels") {
 						team = "laa";
 					} else if (team === "la dodgers") {
 						team = "lad";
-					} else if (team === "chicago white sox") {
+					} else if (team === "chi white sox") {
 						team = "chw";
-					} else if (team === "chicago cubs") {
+					} else if (team === "chi cubs") {
 						team = "chc";
-					} else if (team === "washington nationals") {
+					} else if (team === "was nationals") {
 						team = "wsh";
-					} else if (team === "new york mets") {
+					} else if (team === "ny mets") {
 						team = "nym";
-					} else if (team === "new york yankees") {
+					} else if (team === "ny yankees") {
 						team = "nyy";
 					} else {
 						team = team.split(" ")[0];
@@ -250,6 +332,11 @@ def write365():
 
 def writeEV():
 
+	date = str(datetime.now())[:10]
+
+	with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
+		dkLines = json.load(fh)
+
 	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
 		bet365Lines = json.load(fh)
 
@@ -260,7 +347,7 @@ def writeEV():
 	with open(f"{prefix}static/mlbprops/ev.json") as fh:
 		evData = json.load(fh)
 
-	evData = {}
+	#evData = {}
 
 	for game in fdLines:
 		for player in fdLines[game]:
@@ -274,26 +361,51 @@ def writeEV():
 			else:
 				continue
 
+			fdLine = fdLines[game][player]["hr"]
+
+			dkLine = 0
+			if player in dkLines[game] and "hr" in dkLines[game][player]:
+				dkLine = int(dkLines[game][player]["hr"]["over"])
+
 			sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
+
+			if dkLine > fdLine and dkLine > sharpUnderdog:
+				print(fdLine, dkLine, sharpUnderdog, player)
 
 			if player in evData:
 				continue
-			if fdLines[game][player]["hr"] > sharpUnderdog:
+			if fdLine > sharpUnderdog:
 				pass
-				devigger(evData, player, bet365Lines[team][player], fdLines[game][player]["hr"])
+				devigger(evData, player, bet365Lines[team][player], fdLine)
 				evData[player]["game"] = game
+				evData[player]["team"] = team
 				evData[player]["bet365"] = bet365Lines[team][player]
-				evData[player]["fanduel"] = fdLines[game][player]["hr"]
+				evData[player]["fanduel"] = fdLine
 
 
 	with open(f"{prefix}static/mlbprops/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
+def sortEV():
+	with open(f"{prefix}static/mlbprops/ev.json") as fh:
+		evData = json.load(fh)
+
+	data = []
+
+	for player in evData:
+		ev = float(evData[player]["ev"])
+		data.append((ev, player, evData[player]))
+
+	for row in sorted(data, reverse=True):
+		playerData = row[-1]
+		print(f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{playerData['fanduel']} FD compared to {playerData['bet365']}. Implied Prob = {playerData['implied'].replace(' ', '')}")
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--fd", action="store_true", help="Fanduel")
 	parser.add_argument("--ev", action="store_true", help="EV")
+	parser.add_argument("--bpp", action="store_true", help="BPP")
+	parser.add_argument("-p", "--print", action="store_true", help="Print")
 
 	args = parser.parse_args()
 
@@ -302,6 +414,12 @@ if __name__ == '__main__':
 
 	if args.ev:
 		writeEV()
+
+	if args.bpp:
+		checkBPP()
+
+	if args.print:
+		sortEV()
 	#write365()
 	#writeActionNetwork()
 	#devigger()

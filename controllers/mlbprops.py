@@ -253,7 +253,7 @@ def writeProps(date):
 							
 							if "participant" not in row["outcomes"][0]:
 								continue
-							player = strip_accents(row["outcomes"][0]["participant"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").split(" (")[0]
+							player = strip_accents(row["outcomes"][0]["participant"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").replace("kike", "enrique").split(" (")[0]
 							odds = ["+0","+0"]
 							try:
 								line = row["outcomes"][0]["line"]
