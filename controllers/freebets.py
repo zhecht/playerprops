@@ -1,8 +1,11 @@
 
 from datetime import datetime
 from subprocess import call
+from bs4 import BeautifulSoup as BS
 import json
 import os
+import re
+import argparse
 import time
 
 prefix = ""
@@ -112,27 +115,30 @@ def writeFanduel():
 	"""
 
 	games = [
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-detroit-tigers-32357990",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-colorado-rockies-32357984",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-los-angeles-dodgers-32357991",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-oakland-athletics-32357992",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-san-francisco-giants-32358829",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-san-diego-padres-32358859",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-baltimore-orioles-32357986",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-miami-marlins-32357985",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-toronto-blue-jays-32357987",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-boston-red-sox-32357988",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-new-york-mets-32358670",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-st.-louis-cardinals-32357983",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-texas-rangers-32357993",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-chicago-white-sox-32357989",
-	  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-houston-astros-32357994"
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-los-angeles-angels-32362930",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-san-francisco-giants-32362924",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32365887",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32365888",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-san-francisco-giants-32365881",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-pittsburgh-pirates-32365883",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-philadelphia-phillies-32365884",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-texas-rangers-32365890",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-washington-nationals-32365891",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32365886",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-new-york-mets-32365889",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-tampa-bay-rays-32366656",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-st.-louis-cardinals-32365882",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-atlanta-braves-32366657",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-los-angeles-angels-32365885",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-san-diego-padres-32365892"
 	]
 
 	lines = {}
 	for game in games:
 		gameId = game.split("-")[-1]
 		game = convertFDTeam(game.split("/")[-1][:-9].replace("-", " "))
+		if game in lines:
+			continue
 		lines[game] = {}
 
 		outfile = "out"
@@ -159,9 +165,145 @@ def writeFanduel():
 	with open(f"{prefix}static/baseballreference/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-if __name__ == '__main__':
+def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630):
 
-	writeFanduel()
+	outfile = "out"
+	post = ["curl", 'http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-X", "POST", "-H", 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0', "-H", 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', "-H",'Accept-Language: en-US,en;q=0.5', "-H",'Accept-Encoding: gzip, deflate', "-H",'Content-Type: application/x-www-form-urlencoded', "-H",'Origin: http://crazyninjamike.com', "-H",'Connection: keep-alive', "-H",'Referer: http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-H",'Cookie: General=KellyMultiplier=.25&KellyBankRoll=1000&DevigMethodIndex=4&WorstCaseDevigMethod_Multiplicative=True&WorstCaseDevigMethod_Additive=True&WorstCaseDevigMethod_Power=True&WorstCaseDevigMethod_Shin=True&MultiplicativeWeight=0&AdditiveWeight=0&PowerWeight=0&ShinWeight=0&ShowEVColorIndicator=False&ShowDetailedDevigInfo=True&CopyToClipboard_Reddit=False&ShowHedgeDevigMethod=False&UseMultilineTextbox=False; ASP.NET_SessionId=h2cklqfayhnovxkckdykfm4o', "-H",'Upgrade-Insecure-Requests: 1', "-H",'Pragma: no-cache', "-H",'Cache-Control: no-cache', "--data-raw", '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwUKMjA1MjMyNjgxMA9kFgICAw9kFhgCJw8PFgIeB1Zpc2libGVoZGQCNQ8PFgIeBFRleHQFgAI8Yj5Xb3JzdC1jYXNlOiAoUG93ZXIpPC9iPjwvYnI%2BTGVnIzEgKDU3NSk7IE1hcmtldCBKdWljZSA9IDQuOCAlOyBMZWcncyBKdWljZSA9IDQuNSAlOyBGYWlyIFZhbHVlID0gKzc4MyAoMTEuMyAlKTwvYnI%2BRmluYWwgT2RkcyAoKzYzMCk7IM6jKE1hcmtldCBKdWljZSkgPSA0LjgxICU7IM6jKExlZydzIEp1aWNlKSA9IDQuNSAlOyBGYWlyIFZhbHVlID0gKzc4MyAoMTEuMyAlKTwvYnI%2BU3VtbWFyeTsgRVYlID0gLTE3LjMgJSAoRkIgPSA3MS4zICUpZGQCNw8PFgIeCEltYWdlVXJsZWRkAjkPDxYCHwEFBTwvYnI%2BZGQCOw8PFgIfAWVkZAI%2FDw8WAh8BZWRkAkEPDxYCHwFlZGQCRQ8PFgIfAWVkZAJHDw8WAh8BZWRkAksPDxYCHwFlZGQCTQ8PFgIfAWVkZAJRDw8WAh8BZWRkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYTBRNDaGVja0JveENvcnJlbGF0aW9uBQ1DaGVja0JveEJvb3N0BRZSYWRpb0J1dHRvbkJvb3N0UHJvZml0BRNSYWRpb0J1dHRvbkJvb3N0QWxsBRNSYWRpb0J1dHRvbkJvb3N0QWxsBRRDaGVja0JveERhaWx5RmFudGFzeQUOQ2hlY2tCb3hSZXdhcmQFJUNoZWNrQm94TGlzdFdvcnN0Q2FzZU1ldGhvZFNldHRpbmdzJDAFJUNoZWNrQm94TGlzdFdvcnN0Q2FzZU1ldGhvZFNldHRpbmdzJDEFJUNoZWNrQm94TGlzdFdvcnN0Q2FzZU1ldGhvZFNldHRpbmdzJDIFJUNoZWNrQm94TGlzdFdvcnN0Q2FzZU1ldGhvZFNldHRpbmdzJDMFJUNoZWNrQm94TGlzdFdvcnN0Q2FzZU1ldGhvZFNldHRpbmdzJDMFJUNoZWNrQm94TGlzdENvcHlUb0NsaXBib2FyZFNldHRpbmdzJDAFJUNoZWNrQm94TGlzdENvcHlUb0NsaXBib2FyZFNldHRpbmdzJDAFGkNoZWNrQm94TGlzdE1pc2NTZXR0aW5ncyQwBRpDaGVja0JveExpc3RNaXNjU2V0dGluZ3MkMQUaQ2hlY2tCb3hMaXN0TWlzY1NldHRpbmdzJDEFEUNoZWNrQm94U2hvd0hlZGdlBRtDaGVja0JveFVzZU11bHRpbGluZVRleHRib3j3YSa0x8tCP%2FIRsSJbwRSmbvip%2FQ%3D%3D&__VIEWSTATEGENERATOR=75A63123&__EVENTVALIDATION=%2FwEdAD0xhk8EdsoMEQ9SrpSOuYvpVduh02rwiY5pxbMa1RNJ5aQWjQCmzgVoWED6ZF3QmBhQwDtP%2FiI7M6rA7bM7sw79dcexLTc65mHP6HSLc%2Bf1LffPdxAlAXM62AauCNlhmmvcpkkrUUk0wKmeRC%2Bo5Y4X6geodp8Olur%2BmlGM1%2FKrX0%2FlhO7FgJVfVmSrfexz2O8O1Hi%2Fs4JOEIbuo8tqstA4FSD8tQvxjLeGTr%2FZjbpMMCoLzpV5VCswEluevhpgd9wk6hQu8IzOUf9SV1fT41DJrES61htWrWjs6qQMwbhFAInbbXKrUyuaH0WERw6pAco%2FDYrJ17Id28pC779glSqiyuRmS0vMxthemNSZxFYiWcucIPcus%2FOzSDEyoeofXW3aOzoxxlnSXry0La7j6r%2Fs%2BfHYZidJ9iL1XbUgK8hpdJe%2BtzEYMgx%2BTUfzwbS304A%2FY8oqBpGAsYx8Mop1jRjezzZQ%2B9tmmKZqyksYCdJDpzyJeqLpB5t8%2F2GJQ3xLbuvhfOPVw%2FvZ64GRORAnyiUeAIH4rCiLrkEjcbAVN3KRLGcEq1QxEeM%2Fjkzi4zrZhPrdYjFyIOpXU7VVEH8x6qLFK%2FgiX4R7k%2BePj3bS7J%2BgWBTnTMwDkbtKRoDY9CgTs7Im6q5QJGQ4Zop7C9MPh%2FovUZMCC%2B0SDrnxmEkAW9uYtxLt%2Fyzf7D%2FO38iSXXKKjp%2F7pQZSXQqK%2BkHRq0%2F8hxlteb8BqBsXIQ3Id4DTK3MIxXuZIjIbmxHxK2jQvvnkl2IojkGDopgGMUjBgFQSCSRWR%2BvnMJoIOfBUI43VZFoFoOWmJfOGgotEV0SbRtvJlGGgBtNu745bl1XM%2FNjSIkmj0hpqvWk5jUlJo8y5DJZi2FeCfzTe16FW7YBUVAarIwORcYHwHlUbtxUIovxtp6Fnp9PZDrtAO8BRQYb%2BM2XZoW6ZGCGPI3Vs4qn7bWwKvOZxJ0hkpY3JuBY8dUINwhWy9tBMMMleqCemET2u7gRHPAbTtEEA0M6r7Zrzlm%2BXOIAyERXQ8XPFFqsFxOEZFeuxKH%2FI7Em%2FLOYrJZQEF%2FXmnfJtqlZ119DKEMgOAXJKwTjbHfIVMvqWcHvFBXtSrRli%2BLXSuvmx4sYD3Q%2FsmNkE8GK1s%2FT%2FRpPmdWeEsxFtygifU2vOaYXIhnkpGZxXMYRub%2FxoObcM1wBoVb5Wzqjq1UUGVOuNjuWHehORBMX7COFSeqYehFSmr8SovWm91KahWi5xvQwY6WQfKYDVBNSRbUN8dPza19tfAj7Bgb95LWIXvHnlu623MCphxMmD59a%2F8FmjcA2Psl5LiAJUgZxsX0wLL3s%3D&TextBoxKellyMultiplier=.25&TextBoxBankRoll=1000&RadioButtonListDevigMethod=worstcase&TextBoxLegOdds='+str(bet365Odds)+'&TextBoxFinalOdds='+str(finalOdds)+'&TextBoxCorrelation=0&TextBoxBoost=0%25&Boost=RadioButtonBoostProfit&DropDownListDailyFantasy=0&ButtonCalculate=Calculate&CheckBoxListWorstCaseMethodSettings%240=The+Multiplicative%2FNormalization%2FTraditional+Method&CheckBoxListWorstCaseMethodSettings%241=The+Additive+Method&CheckBoxListWorstCaseMethodSettings%242=The+Power+Method&CheckBoxListWorstCaseMethodSettings%243=The+Shin+Method&TextBoxMultiplicativeWeight=0%25&TextBoxAdditiveWeight=0%25&TextBoxPowerWeight=0%25&TextBoxShinWeight=0%25&CheckBoxListMiscSettings%241=Show+Detailed+Devig+Info', "-o", outfile]
+
+	time.sleep(0.3)
+	call(post)
+
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+	output = soup.find("span", id="LabelOutput").text
+
+	m = re.search(r".* Fair Value = (.*?) \((.*?)\)Summary\; EV% = (.*?) .*FB = (.*?)\)", output)
+	if m:
+		fairVal = m.group(1)
+		implied = m.group(2)
+		ev = m.group(3)
+		fb = m.group(4)
+		evData[player] = {
+			"fairVal": fairVal,
+			"implied": implied,
+			"ev": ev,
+			"fb": fb
+		}
+
+def write365():
+	js = """
+		let data = {};
+		for (div of document.getElementsByClassName("gl-MarketGroupButton_Text")) {
+			let playerList = [];
+			if (div.innerText == "Player Home Runs") {
+				for (playerDiv of div.parentNode.nextSibling.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
+					let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "");
+					let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase();
+					let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" ")[0];
+
+					if (team === "la angels") {
+						team = "laa";
+					} else if (team === "la dodgers") {
+						team = "lad";
+					} else if (team === "chicago white sox") {
+						team = "chw";
+					} else if (team === "chicago cubs") {
+						team = "chc";
+					} else if (team === "washington nationals") {
+						team = "wsh";
+					} else if (team === "new york mets") {
+						team = "nym";
+					} else if (team === "new york yankees") {
+						team = "nyy";
+					} else {
+						team = team.split(" ")[0];
+					}
+					
+					if (data[team] === undefined) {
+						data[team] = {};
+					}
+					data[team][player] = "";
+					playerList.push([team, player]);
+				}
+
+				let idx = 0;
+				for (playerDiv of div.parentNode.nextSibling.getElementsByClassName("gl-Market")[1].getElementsByClassName("gl-ParticipantCenteredStacked")) {
+					let team = playerList[idx][0];
+					let player = playerList[idx][1];
+
+					data[team][player] = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
+					idx += 1;
+				}
+
+				idx = 0;
+				for (playerDiv of div.parentNode.nextSibling.getElementsByClassName("gl-Market")[2].getElementsByClassName("gl-ParticipantCenteredStacked")) {
+					let team = playerList[idx][0];
+					let player = playerList[idx][1];
+
+					data[team][player] += "/" + playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
+					idx += 1;
+				}
+			}
+		}
+		console.log(data)
+	"""
+	pass
+
+def writeEV():
+
+	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+
+	with open(f"{prefix}static/mlbprops/ev.json") as fh:
+		evData = json.load(fh)
+
+	evData = {}
+
+	for game in fdLines:
+		for player in fdLines[game]:
+			if "hr" not in fdLines[game][player]:
+				continue
+			team1, team2 = map(str, game.split(" @ "))
+			if team1 in bet365Lines and player in bet365Lines[team1]:
+				team = team1
+			elif team2 in bet365Lines and player in bet365Lines[team2]:
+				team = team2
+			else:
+				continue
+
+			sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
+
+			if player in evData:
+				continue
+			if fdLines[game][player]["hr"] > sharpUnderdog:
+				pass
+				devigger(evData, player, bet365Lines[team][player], fdLines[game][player]["hr"])
+				evData[player]["game"] = game
+				evData[player]["bet365"] = bet365Lines[team][player]
+				evData[player]["fanduel"] = fdLines[game][player]["hr"]
+
+
+	with open(f"{prefix}static/mlbprops/ev.json", "w") as fh:
+		json.dump(evData, fh, indent=4)
+
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--fd", action="store_true", help="Fanduel")
+	parser.add_argument("--ev", action="store_true", help="EV")
+
+	args = parser.parse_args()
+
+	if args.fd:
+		writeFanduel()
+
+	if args.ev:
+		writeEV()
+	#write365()
 	#writeActionNetwork()
+	#devigger()
 
 	freeBet = 170
