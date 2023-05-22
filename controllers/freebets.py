@@ -198,22 +198,17 @@ def writeFanduel():
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-cincinnati-reds-32368519",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-philadelphia-phillies-32368513",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-pittsburgh-pirates-32368514",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-atlanta-braves-32368521",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-washington-nationals-32368522",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32368517",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-new-york-mets-32368524",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-tampa-bay-rays-32368899",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32368516",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32369768",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-st.-louis-cardinals-32368512",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-texas-rangers-32368518",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-san-francisco-giants-32368511",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-los-angeles-angels-32368515",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-san-diego-padres-32368523",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-new-york-mets-32368520"
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-pittsburgh-pirates-32371721",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32371717",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32371718",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-32372096",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-atlanta-braves-32371716",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32371719",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-milwaukee-brewers-32371722",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-minnesota-twins-32372097",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-colorado-rockies-32371961",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-los-angeles-angels-32372157",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32371720"
 	]
 
 	lines = {}
@@ -421,7 +416,7 @@ def sortEV():
 		line = f"{playerData['fanduel']} FD"
 		if not playerData["fanduel"]:
 			line = f"{playerData['other']} {playerData['otherBook']}"
-		print(f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} compared to {playerData['bet365']}. Implied Prob = {playerData['implied'].replace(' ', '')}")
+		print(f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}. Implied = {playerData['implied'].replace(' ', '')}  ")
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
