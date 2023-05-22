@@ -420,6 +420,14 @@ def write_schedule(date):
 		json.dump(schedule, fh, indent=4)
 
 def write_averages():
+
+	with open(f"{prefix}static/mlbprops/stats/2018.json") as fh:
+		stats = json.load(fh)
+	for g in stats["stl"]["paul dejong"]:
+		#print(g)
+		pass
+	#exit()
+
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		ids = json.load(fh)
 
@@ -443,7 +451,7 @@ def write_averages():
 	if True:
 		ids = {
 			"tb": {
-				"josh lowe": 40557
+				"paul dejong": 35185
 			}
 		}
 

@@ -731,6 +731,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 							pass
 
 				if careerTotalGames:
+					if player == "paul dejong" and prop == "hr":
+						print(careerTotalOver, careerTotalGames)
 					careerTotalOver = round(careerTotalOver * 100 / careerTotalGames)
 					try:
 						careerAvg = 0
