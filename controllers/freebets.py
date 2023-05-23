@@ -198,17 +198,20 @@ def writeFanduel():
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-pittsburgh-pirates-32371721",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32371717",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32371718",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-32372096",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-atlanta-braves-32371716",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32371719",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-milwaukee-brewers-32371722",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-minnesota-twins-32372097",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-colorado-rockies-32371961",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-los-angeles-angels-32372157",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32371720"
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32373959",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-pittsburgh-pirates-32373923",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-32373920",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32374039",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32374425",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-washington-nationals-32373916",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-new-york-yankees-32373922",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-atlanta-braves-32373915",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-chicago-cubs-32373914",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-minnesota-twins-32373924",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-milwaukee-brewers-32374040",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-colorado-rockies-32373917",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-los-angeles-angels-32373918",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32373919"
 	]
 
 	lines = {}
@@ -384,9 +387,12 @@ def writeEV(dinger=False):
 
 			if player in evData:
 				continue
-			if line > sharpUnderdog:
+			if dinger or line > sharpUnderdog:
 				pass
 				devigger(evData, player, bet365Lines[team][player], line, dinger)
+				if player not in evData:
+					print(player)
+					continue
 				evData[player]["game"] = game
 				evData[player]["team"] = team
 				evData[player]["bet365"] = bet365Lines[team][player]
@@ -445,6 +451,6 @@ if __name__ == '__main__':
 		sortEV()
 	#write365()
 	#writeActionNetwork()
-	#devigger({}, dinger=dinger)
+	#devigger({}, player="vladimir guerrero", bet365Odds="330/-450", finalOdds=420,  dinger=True)
 
 	freeBet = 170

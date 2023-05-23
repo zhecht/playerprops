@@ -1104,10 +1104,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 
 	return props
 
-def writeLineups():
+def writeLineups(date):
 	url = f"https://www.rotowire.com/baseball/daily-lineups.php"
 
-	if datetime.now().hour > 21 or datetime.now().hour < 3:
+	if int(date[-2:]) > datetime.now().day or datetime.now().hour > 21 or datetime.now().hour < 3:
 		url += "?date=tomorrow"	
 	outfile = "outmlb2"
 	time.sleep(0.2)
@@ -1696,7 +1696,7 @@ if __name__ == "__main__":
 		date = str(date)[:10]
 
 	if args.lineups:
-		writeLineups()
+		writeLineups(date)
 	elif args.props:
 		writeStaticProps(date)
 	elif args.projections:
@@ -1704,7 +1704,7 @@ if __name__ == "__main__":
 		writeLeftRightSplits()
 		writeStaticProps()
 	elif args.cron:
-		writeLineups()
+		writeLineups(date)
 		writeProps(date)
 		writeBallparks(date)
 		write_projections(date)
@@ -1722,7 +1722,7 @@ if __name__ == "__main__":
 	#writeStaticProps()
 	#writeBallparks()
 
-	if True:
+	if False:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 
@@ -1731,7 +1731,7 @@ if __name__ == "__main__":
 		print("]")
 
 
-	if False:
+	if True:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 

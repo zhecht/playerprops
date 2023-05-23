@@ -118,7 +118,10 @@ def write_stats(date):
 								allStats[t][player]["pc"] = pc
 								allStats[t][player]["st"] = st
 							elif header in ["bb", "hr", "h"] and title == "pitching":
-								allStats[t][player][header+"_allowed"] = float(stat)
+								try:
+									allStats[t][player][header+"_allowed"] = float(stat)
+								except:
+									allStats[t][player][header+"_allowed"] = 0
 							else:
 								val = stat
 								try:
@@ -420,14 +423,6 @@ def write_schedule(date):
 		json.dump(schedule, fh, indent=4)
 
 def write_averages():
-
-	with open(f"{prefix}static/mlbprops/stats/2018.json") as fh:
-		stats = json.load(fh)
-	for g in stats["stl"]["paul dejong"]:
-		#print(g)
-		pass
-	#exit()
-
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		ids = json.load(fh)
 
@@ -446,11 +441,11 @@ def write_averages():
 		if os.path.exists(f"{prefix}static/mlbprops/stats/{year}.json"):
 			with open(f"{prefix}static/mlbprops/stats/{year}.json") as fh:
 				stats = json.load(fh)
-			yearStats[year] = stats
+			yearStats[year] = stats.copy()
 
-	if True:
+	if False:
 		ids = {
-			"tb": {
+			"stl": {
 				"paul dejong": 35185
 			}
 		}
@@ -465,7 +460,7 @@ def write_averages():
 			pId = ids[team][player]
 			if player in averages[team]:
 				pass
-				continue
+				#continue
 			
 			averages[team][player] = {}
 			lastYearStats[team][player] = {}
@@ -496,7 +491,8 @@ def write_averages():
 				if player not in yearStats[year][team]:
 					yearStats[year][team][player] = {}
 				elif year != currYear:
-					continue
+					pass
+					#continue
 
 				yearStats[year][team][player] = {}
 				gamesPlayed = 0
@@ -596,6 +592,7 @@ def write_averages():
 								yearStats[year][team][player][date]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
 				with open(f"{prefix}static/mlbprops/stats/{year}.json", "w") as fh:
+					print(year)
 					json.dump(yearStats[year], fh, indent=4)
 
 	writeYearAverages()
@@ -622,7 +619,7 @@ def writeYearAverages():
 
 			for player in yearStats[team]:
 				tot = {}
-				playerStats = yearStats[team][player]
+				playerStats = yearStats[team][player].copy()
 				if player not in averages[team]:
 					averages[team][player] = {"tot": {}}
 				if True or "tot" not in playerStats:
