@@ -1731,7 +1731,7 @@ if __name__ == "__main__":
 		print("]")
 
 
-	if True:
+	if False:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 			schedule = json.load(fh)
 

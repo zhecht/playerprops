@@ -198,20 +198,21 @@ def writeFanduel():
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32373959",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-pittsburgh-pirates-32373923",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-32373920",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32374039",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32374425",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-washington-nationals-32373916",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-new-york-yankees-32373922",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-atlanta-braves-32373915",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-chicago-cubs-32373914",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-minnesota-twins-32373924",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-milwaukee-brewers-32374040",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-colorado-rockies-32373917",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-los-angeles-angels-32373918",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32373919"
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-pittsburgh-pirates-32376540",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32376531",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32376536",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-minnesota-twins-32376541",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-milwaukee-brewers-32376542",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32376528",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-32376535",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-washington-nationals-32376532",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-new-york-yankees-32376534",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-atlanta-braves-32376529",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-chicago-cubs-32376530",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32376537",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-colorado-rockies-32376533",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-los-angeles-angels-32376538",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32376539"
 	]
 
 	lines = {}
@@ -266,7 +267,10 @@ def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=Fal
 	call(post)
 
 	soup = BS(open(outfile, 'rb').read(), "lxml")
-	output = soup.find("span", id="LabelOutput").text
+	try:
+		output = soup.find("span", id="LabelOutput").text
+	except:
+		return
 
 	m = re.search(r".* Fair Value = (.*?) \((.*?)\)Summary\; EV% = (.*?) .*FB = (.*?)\)", output)
 	if m:
@@ -284,58 +288,61 @@ def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=Fal
 def write365():
 	js = """
 		let data = {};
-		for (div of document.getElementsByClassName("gl-MarketGroupButton_Text")) {
-			let playerList = [];
-			if (div.innerText == "Player Home Runs") {
-				for (playerDiv of div.parentNode.nextSibling.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
-					let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
-					let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" - ")[0];
-
-					if (team === "la angels") {
-						team = "laa";
-					} else if (team === "la dodgers") {
-						team = "lad";
-					} else if (team === "chi white sox") {
-						team = "chw";
-					} else if (team === "chi cubs") {
-						team = "chc";
-					} else if (team === "was nationals") {
-						team = "wsh";
-					} else if (team === "ny mets") {
-						team = "nym";
-					} else if (team === "ny yankees") {
-						team = "nyy";
-					} else {
-						team = team.split(" ")[0];
-					}
-					
-					if (data[team] === undefined) {
-						data[team] = {};
-					}
-					data[team][player] = "";
-					playerList.push([team, player]);
-				}
-
-				let idx = 0;
-				for (playerDiv of div.parentNode.nextSibling.getElementsByClassName("gl-Market")[1].getElementsByClassName("gl-ParticipantCenteredStacked")) {
-					let team = playerList[idx][0];
-					let player = playerList[idx][1];
-
-					data[team][player] = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
-					idx += 1;
-				}
-
-				idx = 0;
-				for (playerDiv of div.parentNode.nextSibling.getElementsByClassName("gl-Market")[2].getElementsByClassName("gl-ParticipantCenteredStacked")) {
-					let team = playerList[idx][0];
-					let player = playerList[idx][1];
-
-					data[team][player] += "/" + playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
-					idx += 1;
-				}
+		for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
+			if (div.classList.contains("src-FixtureSubGroup_Closed")) {
+				div.click();
 			}
+			let playerList = [];
+			for (playerDiv of div.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
+				let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
+				let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" - ")[0];
+
+				if (team === "la angels") {
+					team = "laa";
+				} else if (team === "la dodgers") {
+					team = "lad";
+				} else if (team === "chi white sox") {
+					team = "chw";
+				} else if (team === "chi cubs") {
+					team = "chc";
+				} else if (team === "was nationals") {
+					team = "wsh";
+				} else if (team === "ny mets") {
+					team = "nym";
+				} else if (team === "ny yankees") {
+					team = "nyy";
+				} else {
+					team = team.split(" ")[0];
+				}
+				
+				if (data[team] === undefined) {
+					data[team] = {};
+				}
+				data[team][player] = "";
+				playerList.push([team, player]);
+			}
+
+			let idx = 0;
+			for (playerDiv of div.getElementsByClassName("gl-Market")[1].getElementsByClassName("gl-ParticipantCenteredStacked")) {
+				let team = playerList[idx][0];
+				let player = playerList[idx][1];
+
+				data[team][player] = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
+				idx += 1;
+			}
+
+			idx = 0;
+			for (playerDiv of div.getElementsByClassName("gl-Market")[2].getElementsByClassName("gl-ParticipantCenteredStacked")) {
+				let team = playerList[idx][0];
+				let player = playerList[idx][1];
+
+				data[team][player] += "/" + playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
+				idx += 1;
+			}
+			
 		}
 		console.log(data)
+
 	"""
 	pass
 
