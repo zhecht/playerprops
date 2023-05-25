@@ -198,22 +198,18 @@ def writeFanduel():
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-pittsburgh-pirates-32376540",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32376531",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32376536",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-minnesota-twins-32376541",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-milwaukee-brewers-32376542",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32376528",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-32376535",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-washington-nationals-32376532",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-new-york-yankees-32376534",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-atlanta-braves-32376529",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-chicago-cubs-32376530",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32376537",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-colorado-rockies-32376533",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-los-angeles-angels-32376538",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32376539"
-	]
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-new-york-yankees-32376534",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-los-angeles-angels-32376538",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32376539",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32378832",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-32378836",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-colorado-rockies-32378834",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-washington-nationals-32378835",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-detroit-tigers-32378838",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-new-york-yankees-32378839",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-chicago-cubs-32378833",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32378837"
+]
 
 	lines = {}
 	for game in games:
@@ -236,8 +232,12 @@ def writeFanduel():
 		for market in data["attachments"]["markets"]:
 			marketName = data["attachments"]["markets"][market]["marketName"].lower()
 
-			if marketName in ["to hit a home run", "to hit a double"]:
-				prop = "double" if "double" in marketName else "hr"
+			if marketName in ["to hit a home run", "to hit a double", "to hit a triple"]:
+				prop = "hr"
+				if "double" in marketName:
+					prop = "double"
+				elif "triple" in marketName:
+					prop = "triple"
 				for playerRow in data["attachments"]["markets"][market]["runners"]:
 					player = playerRow["runnerName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 					try:
