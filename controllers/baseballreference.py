@@ -1240,28 +1240,24 @@ def writeSavantPitcherAdvanced():
 	data = eval(data)
 	
 	for row in data:
-		try:
-			team = convertRotoTeam(row["name_abbrev"].lower())
-		except:
-			continue
-		if team not in advanced:
-			advanced[team] = {}
-
 		player = strip_accents(row["player_name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 		last, first = map(str, player.split(", "))
 		player = f"{first} {last}"
 
-		advanced[team][player] = row.copy()
+		advanced[player] = row.copy()
 
 	sortedRankings = {}
-	for team in advanced:
-		for player in advanced[team]:
-			for hdr in advanced[team][player]:
-				if "_rate" in hdr or "_percent" in hdr or "_swing" in hdr or hdr.startswith("x") or hdr in ["ba", "bacon", "babip", "obp", "slg", "iso", "woba"]:
-					if hdr not in sortedRankings:
-						sortedRankings[hdr] = []
-					val = float(advanced[team][player][hdr])
-					sortedRankings[hdr].append(val)
+	for player in advanced:
+		for hdr in advanced[player]:
+			if "_rate" in hdr or "_percent" in hdr or "_swing" in hdr or hdr.startswith("x") or hdr in ["ba", "bacon", "babip", "obp", "slg", "iso", "woba"]:
+				if hdr not in sortedRankings:
+					sortedRankings[hdr] = []
+
+				try:
+					val = float(advanced[player][hdr])
+				except:
+					val = 0
+				sortedRankings[hdr].append(val)
 
 	for hdr in sortedRankings:
 		reverse = True
@@ -1270,21 +1266,20 @@ def writeSavantPitcherAdvanced():
 			reverse = False
 		sortedRankings[hdr] = sorted(sortedRankings[hdr], reverse=reverse)
 
-	for team in advanced:
-		for player in advanced[team]:
-			newData = {}
-			for hdr in advanced[team][player]:
-				try:
-					val = float(advanced[team][player][hdr])
-					idx = sortedRankings[hdr].index(val)
-					dupes = sortedRankings[hdr].count(val)
+	for player in advanced:
+		newData = {}
+		for hdr in advanced[player]:
+			try:
+				val = float(advanced[player][hdr])
+				idx = sortedRankings[hdr].index(val)
+				dupes = sortedRankings[hdr].count(val)
 
-					newData[hdr] = ((idx + 0.5 * dupes) / len(sortedRankings[hdr])) * 100
-				except:
-					pass
+				newData[hdr] = ((idx + 0.5 * dupes) / len(sortedRankings[hdr])) * 100
+			except:
+				pass
 
-			for hdr in newData:
-				advanced[team][player][hdr+"Percentile"] = round(newData[hdr], 2)
+		for hdr in newData:
+			advanced[player][hdr+"Percentile"] = round(newData[hdr], 2)
 
 	with open(f"{prefix}static/baseballreference/advanced.json", "w") as fh:
 		json.dump(advanced, fh, indent=4)

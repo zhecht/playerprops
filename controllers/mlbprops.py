@@ -617,9 +617,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				era = ""
 				try:
 					if "P" in pos:
-						advancedPitcher = advanced[team][player].copy()
+						advancedPitcher = advanced[player].copy()
 					else:
-						advancedPitcher = advanced[opp][pitcher].copy()
+						advancedPitcher = advanced[pitcher].copy()
 					era = advancedPitcher["p_era"]
 				except:
 					advancedPitcher = {}
@@ -637,14 +637,6 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					oppTeamBattingPitches = battingPitches[opp].copy()
 				except:
 					oppTeamBattingPitches = {}
-				
-				pitcherSummary = strikePercent = ""
-				if "P" in pos:
-					if player in advanced[opp]:
-						pitcherSummary = f"{advanced[opp][player]['ba']} AVG, {advanced[opp][player]['xba']} xAVG, {advanced[opp][player]['babip']} BABIP, {advanced[opp][player]['out_zone_percent']}% Out Zone, {advanced[opp][player]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][player]['iz_contact_percent']}% In Zone Contact, {advanced[opp][player]['barrel_batted_rate']}% Barrel Batted"
-				else:
-					if pitcher and pitcher in advanced[opp]:
-						pitcherSummary = f"{advanced[opp][pitcher]['p_era']} ERA, {advanced[opp][pitcher]['ba']} AVG, {advanced[opp][pitcher]['xba']} xAVG, {advanced[opp][pitcher]['babip']} BABIP, {advanced[opp][pitcher]['out_zone_percent']}% Out Zone, {advanced[opp][pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[opp][pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[opp][pitcher]['barrel_batted_rate']}% Barrel Batted"
 
 				if "P" in pos:
 					try:
@@ -795,7 +787,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				lastAll = []
 				awayHomeSplits = [[], []]
 				winLossSplits = [[], []]
-				totalOver = battingAvg = avg = babip = bbpg = 0
+				totalOver = battingAvg = avg = hitter_babip = babip = bbpg = 0
 				
 				if player in stats[team]:
 					playerStats = stats[team][player]
@@ -812,15 +804,30 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					avg = round(val / gamesPlayed, 2)
 
 					if "P" in pos:
-						if player in advanced[team]:
-							babip = advanced[team][player]["babip"]
+						if player in advanced:
+							dem = int(advanced[player]["ab"])-int(advanced[player]["strikeout"])-int(advanced[player]["home_run"])+int(advanced[player]["p_sac_fly"])
+							if dem:
+								babip = format((int(advanced[player]["hit"]) - int(advanced[player]["home_run"])) / dem, '.3f')[1:]
+							pass
 					else:
+						if pitcher in advanced:
+							dem = int(advanced[pitcher]["ab"])-int(advanced[pitcher]["strikeout"])-int(advanced[pitcher]["home_run"])+int(advanced[pitcher]["p_sac_fly"])
+							if dem:
+								babip = format((int(advanced[pitcher]["hit"]) - int(advanced[pitcher]["home_run"])) / dem, '.3f')[1:]
+							pass
 						if playerStats['ab']:
 							battingAvg = str(format(round(playerStats['h']/playerStats['ab'], 3), '.3f'))[1:]
 						dem = playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)
 						if dem:
-							babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
+							hitter_babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
 					
+				pitcherSummary = strikePercent = ""
+				if "P" in pos:
+					if player in advanced:
+						pitcherSummary = f"{advanced[player]['batting_avg']} AVG, {advanced[player]['xba']} xAVG, {babip} BABIP, {advanced[player]['out_zone_percent']}% Out Zone, {advanced[player]['oz_contact_percent']}% Out Zone Contact, {advanced[player]['iz_contact_percent']}% In Zone Contact, {advanced[player]['barrel_batted_rate']}% Barrel Batted"
+				else:
+					if pitcher and pitcher in advanced:
+						pitcherSummary = f"{advanced[pitcher]['p_era']} ERA, {advanced[pitcher]['batting_avg']} AVG, {advanced[pitcher]['xba']} xAVG, {babip} BABIP, {advanced[pitcher]['out_zone_percent']}% Out Zone, {advanced[pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[pitcher]['barrel_batted_rate']}% Barrel Batted"
 
 				over5Innings = []
 				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
@@ -1108,7 +1115,8 @@ def writeLineups(date):
 	url = f"https://www.rotowire.com/baseball/daily-lineups.php"
 
 	if int(date[-2:]) > datetime.now().day or datetime.now().hour > 21 or datetime.now().hour < 3:
-		url += "?date=tomorrow"	
+		url += "?date=tomorrow"
+
 	outfile = "outmlb2"
 	time.sleep(0.2)
 	call(["curl", "-k", url, "-o", outfile])
@@ -1415,7 +1423,7 @@ def getSlateData(date = None, teams=""):
 					totals[key] = 0
 
 			try:
-				advancedPitcher = advanced[team][pitcher].copy()
+				advancedPitcher = advanced[pitcher].copy()
 			except:
 				advancedPitcher = {}
 
@@ -1884,7 +1892,7 @@ if __name__ == "__main__":
 							if prop not in analysis:
 								analysis[prop] = {}
 
-							if player not in advanced[team]:
+							if player not in advanced:
 								continue
 
 							hit = "miss"
@@ -1897,7 +1905,7 @@ if __name__ == "__main__":
 								if hdr not in analysis[prop]:
 									analysis[prop][hdr] = {"hit": [], "miss": []}
 								
-								analysis[prop][hdr][hit].append(advanced[team][player][hdr])
+								analysis[prop][hdr][hit].append(advanced[player][hdr])
 			
 		for prop in analysis:
 			print(prop)
