@@ -198,21 +198,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-tampa-bay-rays-32388787",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-baltimore-orioles-32387285",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-new-york-yankees-32387289",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-detroit-tigers-32387286",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cleveland-guardians-32387290",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-milwaukee-brewers-32387272",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-minnesota-twins-32387288",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-kansas-city-royals-32387291",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-cubs-32387283",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-colorado-rockies-32387284",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-oakland-athletics-32387287",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-los-angeles-angels-32387292",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-arizona-diamondbacks-32387293",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-seattle-mariners-32387294",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-atlanta-braves-32387282"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-miami-marlins-32391352",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-detroit-tigers-32391354",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-baltimore-orioles-32391353",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-toronto-blue-jays-32391358",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-new-york-mets-32391349",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-boston-red-sox-32391359",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-st.-louis-cardinals-32391360",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-chicago-cubs-32391361",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-houston-astros-32391355",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-chicago-white-sox-32391356",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-arizona-diamondbacks-32391350",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-seattle-mariners-32391357",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-oakland-athletics-32391362",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-san-francisco-giants-32392768",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-los-angeles-dodgers-32391351"
 ]
 
 	lines = {}
@@ -350,9 +350,10 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False):
+def writeEV(dinger=False, date=None, useDK=False):
 
-	date = str(datetime.now())[:10]
+	if not date:
+		date = str(datetime.now())[:10]
 
 	with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
 		dkLines = json.load(fh)
@@ -374,24 +375,31 @@ def writeEV(dinger=False):
 			if "hr" not in fdLines[game][player]:
 				continue
 			team1, team2 = map(str, game.split(" @ "))
-			if team1 in bet365Lines and player in bet365Lines[team1]:
-				team = team1
-			elif team2 in bet365Lines and player in bet365Lines[team2]:
-				team = team2
-			else:
-				continue
+			team = ""
+			if not useDK:
+				if team1 in bet365Lines and player in bet365Lines[team1]:
+					team = team1
+				elif team2 in bet365Lines and player in bet365Lines[team2]:
+					team = team2
+				else:
+					continue
 
 			fdLine = fdLines[game][player]["hr"]
 
 			dkLine = 0
 			if game in dkLines and player in dkLines[game] and "hr" in dkLines[game][player]:
 				dkLine = int(dkLines[game][player]["hr"]["over"])
+			elif useDK:
+				continue
 
-			sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
+			if useDK:
+				sharpUnderdog = dkLine
+			else:
+				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
 
 			line = fdLine
 			fd = True
-			if dkLine > fdLine and dkLine > sharpUnderdog:
+			if not useDK and dkLine > fdLine and dkLine > sharpUnderdog:
 				line = dkLine
 				fd = False
 				#print(fdLine, dkLine, sharpUnderdog, player)
@@ -400,13 +408,17 @@ def writeEV(dinger=False):
 				continue
 			if dinger or line > sharpUnderdog:
 				pass
-				devigger(evData, player, bet365Lines[team][player], line, dinger)
+				if useDK:
+					ou = f"{sharpUnderdog}/{dkLines[game][player]['hr']['under']}"
+				else:
+					ou = bet365Lines[team][player]
+				devigger(evData, player, ou, line, dinger)
 				if player not in evData:
 					print(player)
 					continue
 				evData[player]["game"] = game
 				evData[player]["team"] = team
-				evData[player]["bet365"] = bet365Lines[team][player]
+				evData[player]["bet365"] = ou
 				if not fd:
 					fdLine = 0
 					evData[player]["other"] = line
@@ -437,7 +449,9 @@ def sortEV():
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
+	parser.add_argument("-d", "--date", help="date")
 	parser.add_argument("--fd", action="store_true", help="Fanduel")
+	parser.add_argument("--dk", action="store_true", help="Draftkings")
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
@@ -453,7 +467,7 @@ if __name__ == '__main__':
 		writeFanduel()
 
 	if args.ev:
-		writeEV(dinger)
+		writeEV(dinger=dinger, date=args.date, useDK=args.dk)
 
 	if args.bpp:
 		checkBPP()
