@@ -346,7 +346,7 @@ def writeCsvs(props):
 	for prop in ["h", "h+r+rbi", "hr", "so"]:
 		if prop in splitProps:
 			rows = sorted(splitProps[prop], key=lambda k: (k["totalOver"], k["careerTotalOver"]), reverse=True)
-			for row in [r for r in rows if int(str(r["battingNumber"]).replace('-', '10')) <= 6][:3]:
+			for row in [r for r in rows if r["gamesPlayed"] >= 7 and int(str(r["battingNumber"]).replace('-', '10')) <= 6][:3]:
 				overOdds = row["overOdds"]
 				underOdds = row["underOdds"]
 				avg = row["lastYearAvg"]
@@ -970,9 +970,6 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					arr.extend(lastYrLast20[:20-len(lastAll)])
 				if arr:
 					last20Over = round(len([x for x in arr if float(str(x).replace("'", "")) > line]) * 100 / len(arr))
-
-				if True:
-					gamesPlayed = lastYrGamesPlayed
 
 				projDiff = 0
 				if proj:
@@ -1727,6 +1724,14 @@ if __name__ == "__main__":
 
 	#writeStaticProps()
 	#writeBallparks()
+
+	if False:
+		for dt in os.listdir("static/baseballreference/nyy"):
+			with open(f"static/baseballreference/nyy/{dt}") as fh:
+				stats = json.load(fh)
+
+			if "dj lemahieu" in stats:
+				print(dt, stats["dj lemahieu"]["h"])
 
 	if False:
 		with open(f"{prefix}static/baseballreference/schedule.json") as fh:
