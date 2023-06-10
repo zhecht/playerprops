@@ -445,7 +445,7 @@ def sortEV():
 		line = f"{playerData['fanduel']} FD"
 		if not playerData["fanduel"]:
 			line = f"{playerData['other']} {playerData['otherBook']}"
-		print(f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}. Implied = {playerData['implied'].replace(' ', '')}  ")
+		print(f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}  ")
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()

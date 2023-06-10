@@ -985,13 +985,17 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					xHR = expectedHR[team][player]["xhr_diff"]
 				except:
 					pass
-				pitcherXBA = xBA = 0
+				pitcherXBA = xBA = oba = 0
 				try:
 					xBA = format(expected[team][player]["est_ba"], '.3f')[1:]
 					if "P" in pos:
 						battingAvg = format(expected[team][player]["ba"], '.3f')[1:]
 					else:
 						pitcherXBA = format(expected[opp][pitcher]["est_ba"], '.3f')[1:]
+				except:
+					pass
+				try:
+					oba = f"{expected[team][player]['woba']} wOBA -- {expected[team][player]['est_woba']} XwOBA -- {expected[team][player]['wobacon']} wOBAcon -- {expected[team][player]['est_wobacon']} XwOBAcon"
 				except:
 					pass
 
@@ -1044,6 +1048,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"bbpg": bbpg,
 					"xBA": xBA,
 					"xHR": xHR,
+					"oba": oba,
 					"pitcherXBA": pitcherXBA,
 					"leftRightAvg": leftRightAvg,
 					"stadiumHitsRank": stadiumHitsRank,
