@@ -198,19 +198,13 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-detroit-tigers-32413256",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-chicago-white-sox-32413259",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-st.-louis-cardinals-32413243",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-32413242",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-pittsburgh-pirates-32413246",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-philadelphia-phillies-32413247",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-baltimore-orioles-32413250",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-atlanta-braves-32413244",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-tampa-bay-rays-32413254",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-milwaukee-brewers-32413260",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-cleveland-guardians-32413253",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-new-york-yankees-32413248",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-los-angeles-angels-32413249"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-boston-red-sox-32418094",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-st.-louis-cardinals-32418090",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-texas-rangers-32418092",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-kansas-city-royals-32418097",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-arizona-diamondbacks-32418091",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-oakland-athletics-32418093",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-seattle-mariners-32418096"
 ]
 
 	lines = {}
@@ -234,12 +228,14 @@ def writeFanduel():
 		for market in data["attachments"]["markets"]:
 			marketName = data["attachments"]["markets"][market]["marketName"].lower()
 
-			if marketName in ["to hit a home run", "to hit a double", "to hit a triple"]:
+			if marketName in ["to hit a home run", "to hit a double", "to hit a triple", "to record a hit"]:
 				prop = "hr"
 				if "double" in marketName:
 					prop = "double"
 				elif "triple" in marketName:
 					prop = "triple"
+				elif "record" in marketName:
+					prop = "h"
 				for playerRow in data["attachments"]["markets"][market]["runners"]:
 					player = playerRow["runnerName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 					try:
