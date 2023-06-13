@@ -969,7 +969,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				if len(arr) < 20:
 					arr.extend(lastYrLast20[:20-len(lastAll)])
 				if arr:
-					last20Over = round(len([x for x in arr if float(str(x).replace("'", "")) > line]) * 100 / len(arr))
+					last20Over = round(len([x for x in arr[:20] if float(str(x).replace("'", "")) > line]) * 100 / len(arr[:20]))
 
 				projDiff = 0
 				if proj:
@@ -1045,6 +1045,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 					"bp": bp,
 					"bpOdds": bpOdds,
 					"babip": babip,
+					"hitter_babip": hitter_babip,
 					"bbpg": bbpg,
 					"xBA": xBA,
 					"xHR": xHR,

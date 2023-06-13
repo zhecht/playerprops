@@ -459,8 +459,8 @@ def write_averages():
 		for player in ids[team]:
 			pId = ids[team][player]
 			if player in averages[team]:
-				pass
-				#continue
+				#pass
+				continue
 			
 			averages[team][player] = {}
 			lastYearStats[team][player] = {}
