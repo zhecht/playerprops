@@ -6,6 +6,7 @@ import json
 import os
 import re
 import argparse
+import unicodedata
 import time
 
 prefix = ""
@@ -15,6 +16,16 @@ if os.path.exists("/home/zhecht/playerprops"):
 elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
+
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
+
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+
+	return str(text)
 
 def writeBallparkpal():
 	js = """
@@ -96,6 +107,60 @@ def checkBPP():
 
 	for row in sorted(data, reverse=True):
 		print(row[1])
+
+def writeKambi():
+	data = {}
+	outfile = f"out.json"
+	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/baseball/mlb/all/all/matches.json?lang=en_US&market=US"
+	os.system(f"curl -k \"{url}\" -o {outfile}")
+	
+	with open(outfile) as fh:
+		j = json.load(fh)
+
+	eventIds = {}
+	for event in j["events"]:
+		game = event["event"]["name"]
+		if game in eventIds:
+			continue
+			#pass
+		eventIds[game] = event["event"]["id"]
+
+
+	for game in eventIds:
+		eventId = eventIds[game]
+		teamIds = {}
+		
+		time.sleep(0.3)
+		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json"
+		os.system(f"curl -k \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			j = json.load(fh)
+
+		for betOffer in j["betOffers"]:
+			label = betOffer["criterion"]["label"]
+			if not teamIds and "Handicap" in label:
+				for row in betOffer["outcomes"]:
+					team = convertFDTeam(row["label"].lower())
+					teamIds[row["participantId"]] = team
+					data[team] = {}
+
+			elif "to hit a Home Run" in label:
+				player = strip_accents(betOffer["outcomes"][0]["participant"])
+				try:
+					last, first = map(str, player.lower().split(", "))
+					player = f"{first} {last}"
+				except:
+					player = player.lower()
+				player = player.replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+				over = betOffer["outcomes"][0]["oddsAmerican"]
+				under = betOffer["outcomes"][1]["oddsAmerican"]
+				team = teamIds[betOffer["outcomes"][0]["eventParticipantId"]]
+				data[team][player] = f"{over}/{under}"
+
+
+	with open(f"{prefix}static/freebets/kambi.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 
 
 
@@ -198,21 +263,16 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-detroit-tigers-32419867",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-baltimore-orioles-32419863",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-boston-red-sox-32419866",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-new-york-mets-32419868",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-minnesota-twins-32419873",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-st.-louis-cardinals-32419858",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-chicago-cubs-32419860",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-texas-rangers-32419864",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-kansas-city-royals-32419869",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-houston-astros-32419870",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-arizona-diamondbacks-32419862",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-oakland-athletics-32419865",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-seattle-mariners-32419872",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-san-diego-padres-32419874",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-los-angeles-dodgers-32419871"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-baltimore-orioles-32423740",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-oakland-athletics-32423741",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-arizona-diamondbacks-32423737",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-minnesota-twins-32423743",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-atlanta-braves-32423738",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-chicago-cubs-32423739",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-texas-rangers-32423742",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-houston-astros-32423744",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-san-diego-padres-32423746",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-los-angeles-dodgers-32423745"
 ]
 
 	lines = {}
@@ -352,7 +412,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -366,6 +426,8 @@ def writeEV(dinger=False, date=None, useDK=False):
 	with open(f"{prefix}static/baseballreference/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
 
+	with open(f"{prefix}static/freebets/kambi.json") as fh:
+		kambi = json.load(fh)
 
 	with open(f"{prefix}static/mlbprops/ev.json") as fh:
 		evData = json.load(fh)
@@ -396,6 +458,8 @@ def writeEV(dinger=False, date=None, useDK=False):
 
 			if useDK:
 				sharpUnderdog = dkLine
+			elif avg and player in kambi[team]:
+				sharpUnderdog = (int(bet365Lines[team][player].split("/")[0]) + int(kambi[team][player].split("/")[0])) / 2
 			else:
 				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
 
@@ -412,6 +476,10 @@ def writeEV(dinger=False, date=None, useDK=False):
 				pass
 				if useDK:
 					ou = f"{sharpUnderdog}/{dkLines[game][player]['hr']['under']}"
+				elif avg and player in kambi[team]:
+					over = (int(bet365Lines[team][player].split("/")[0]) + int(kambi[team][player].split("/")[0])) / 2
+					under = (int(bet365Lines[team][player].split("/")[1]) + int(kambi[team][player].split("/")[1])) / 2
+					ou = f"{int(over)}/{int(under)}"
 				else:
 					ou = bet365Lines[team][player]
 				devigger(evData, player, ou, line, dinger)
@@ -452,10 +520,12 @@ def sortEV():
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-d", "--date", help="date")
+	parser.add_argument("--avg", action="store_true", help="AVG")
 	parser.add_argument("--fd", action="store_true", help="Fanduel")
 	parser.add_argument("--dk", action="store_true", help="Draftkings")
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
+	parser.add_argument("--kambi", action="store_true", help="Kambi")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 
@@ -468,8 +538,11 @@ if __name__ == '__main__':
 	if args.fd:
 		writeFanduel()
 
+	if args.kambi:
+		writeKambi()
+
 	if args.ev:
-		writeEV(dinger=dinger, date=args.date, useDK=args.dk)
+		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg)
 
 	if args.bpp:
 		checkBPP()
