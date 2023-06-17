@@ -822,10 +822,10 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				pitcherSummary = strikePercent = ""
 				if "P" in pos:
 					if player in advanced:
-						pitcherSummary = f"{advanced[player]['batting_avg']} AVG, {advanced[player]['xba']} xAVG, {babip} BABIP, {advanced[player]['out_zone_percent']}% Out Zone, {advanced[player]['oz_contact_percent']}% Out Zone Contact, {advanced[player]['iz_contact_percent']}% In Zone Contact, {advanced[player]['barrel_batted_rate']}% Barrel Batted"
+						pitcherSummary = f"{advanced[player]['batting_avg']} AVG, {advanced[player]['xba']} xAVG, {babip} BABIP, {advanced[player]['slg_percent']} SLG, {advanced[player]['xslg']} xSLG, {advanced[player]['woba']} WOBA, {advanced[player]['xwoba']} xWOBA, {advanced[player]['barrel_batted_rate']}% Barrel Batted"
 				else:
 					if pitcher and pitcher in advanced:
-						pitcherSummary = f"{advanced[pitcher]['p_era']} ERA, {advanced[pitcher]['batting_avg']} AVG, {advanced[pitcher]['xba']} xAVG, {babip} BABIP, {advanced[pitcher]['out_zone_percent']}% Out Zone, {advanced[pitcher]['oz_contact_percent']}% Out Zone Contact, {advanced[pitcher]['iz_contact_percent']}% In Zone Contact, {advanced[pitcher]['barrel_batted_rate']}% Barrel Batted"
+						pitcherSummary = f"{advanced[pitcher]['p_era']} ERA, {advanced[pitcher]['batting_avg']} AVG, {advanced[pitcher]['xba']} xAVG, {babip} BABIP, {advanced[pitcher]['slg_percent']} SLG, {advanced[pitcher]['xslg']} xSLG, {advanced[pitcher]['woba']} WOBA, {advanced[pitcher]['xwoba']} xWOBA, {advanced[pitcher]['barrel_batted_rate']}% Barrel Batted"
 
 				over5Innings = []
 				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
