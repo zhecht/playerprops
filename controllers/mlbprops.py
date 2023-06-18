@@ -343,7 +343,7 @@ def writeCsvs(props):
 	reddit = "|".join(headers.split("\t"))
 	reddit += "\n"+"|".join([":--"]*len(headerList))
 
-	for prop in ["h", "h+r+rbi", "hr", "so"]:
+	for prop in ["h", "h+r+rbi", "hr", "tb"]:
 		if prop in splitProps:
 			rows = sorted(splitProps[prop], key=lambda k: (k["totalOver"], k["careerTotalOver"]), reverse=True)
 			for row in [r for r in rows if r["gamesPlayed"] >= 7 and int(str(r["battingNumber"]).replace('-', '10')) <= 6][:3]:
