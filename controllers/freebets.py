@@ -263,15 +263,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-washington-nationals-32431318",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-detroit-tigers-32431321",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-miami-marlins-32431325",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-pittsburgh-pirates-32431319",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-cincinnati-reds-32431316",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-minnesota-twins-32431323",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-milwaukee-brewers-32431320",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-houston-astros-32431324",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-san-francisco-giants-32431317"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-32432892",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-tampa-bay-rays-32432897",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-detroit-tigers-32432899",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-miami-marlins-32432904",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-pittsburgh-pirates-32432893",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-washington-nationals-32432894",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-new-york-yankees-32432900",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-cincinnati-reds-32432890",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-cleveland-guardians-32432898",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-minnesota-twins-32432901",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-milwaukee-brewers-32432895",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-chicago-white-sox-32432896",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-houston-astros-32432902",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-san-francisco-giants-32432891",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-los-angeles-angels-32432903"
 ]
 
 	lines = {}
@@ -505,18 +511,41 @@ def sortEV():
 	with open(f"{prefix}static/mlbprops/ev.json") as fh:
 		evData = json.load(fh)
 
+	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
+		bppLines = json.load(fh)
+
+	with open(f"{prefix}static/freebets/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
 	data = []
 
 	for player in evData:
 		ev = float(evData[player]["ev"])
-		data.append((ev, player, evData[player]))
+		bpp = kambi = ""
+		team = evData[player].get("team", "")
+		if team and team in bppLines and player in bppLines[team]:
+			bpp = "\t".join([x or '-' for x in [bppLines[team][player]["dk"], bppLines[team][player]["mgm"], bppLines[team][player]["cz"], bppLines[team][player]["pn"], bppLines[team][player]["bs"]]])
+		else:
+			bpp = "\t".join(['-']*5)
+		if team and team in kambiLines and player in kambiLines[team]:
+			kambi = kambiLines[team][player]
+		#print(evData[player]["bet365"])
+		tab = "\t".join([str(x) for x in [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), f"{evData[player]['bet365'][1:]}", bpp, kambi]])
+		data.append((ev, player, tab, evData[player]))
 
+	dt = datetime.strftime(datetime.now(), "%I %p")
+	output = f"\t\tUPD: {dt}\n\n"
+	output += "\t".join(["EV", "Team", "Player", "FD", "bet365", "DK", "MGM", "CZ", "PN", "BS", "Kambi"]) + "\n"
 	for row in sorted(data, reverse=True):
 		playerData = row[-1]
 		line = f"{playerData['fanduel']} FD"
 		if not playerData["fanduel"]:
 			line = f"{playerData['other']} {playerData['otherBook']}"
+		output += f"{row[-2]}\n"
 		print(f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}  ")
+
+	with open(f"{prefix}static/freebets/ev.csv", "w") as fh:
+		fh.write(output)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
