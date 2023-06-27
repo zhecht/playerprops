@@ -208,7 +208,7 @@ def writeActionNetwork():
 
 		playerIds = {}
 		for row in market["players"]:
-			playerIds[row["id"]] = row["full_name"].lower().replace(".", "").replace("-", " ").replace("'", "")
+			playerIds[row["id"]] = row["full_name"].lower().replace(".", "").replace("-", " ").replace("'", "").replace(" jr", "").replace(" ii", "")
 
 		books = market["books"]
 		for bookData in books:
@@ -259,12 +259,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-baltimore-orioles-32445179",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-32445176",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-atlanta-braves-32445180",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-texas-rangers-32445178",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-los-angeles-angels-32445177",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-seattle-mariners-32445181"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-pittsburgh-pirates-32447126",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-baltimore-orioles-32447134",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-toronto-blue-jays-32447133",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-32447124",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-boston-red-sox-32447132",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-atlanta-braves-32447136",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-st.-louis-cardinals-32447135",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-texas-rangers-32447128",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-kansas-city-royals-32447129",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-colorado-rockies-32447127",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-los-angeles-angels-32447130",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-oakland-athletics-32447131",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-arizona-diamondbacks-32447137",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-seattle-mariners-32447138"
 ]
 
 	lines = {}
@@ -445,7 +453,12 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False):
 				elif team2 in bet365Lines and player in bet365Lines[team2]:
 					team = team2
 				else:
-					continue
+					if team1 in actionnetwork and player in actionnetwork[team1]:
+						team = team1
+					elif team2 in actionnetwork and player in actionnetwork[team2]:
+						team = team2
+					else:
+						continue
 
 			fdLine = fdLines[game][player]["hr"]
 
@@ -463,7 +476,11 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False):
 				cz = actionnetwork[team][player]["hr"].get("caesars", "-")
 				pb = actionnetwork[team][player]["hr"].get("pointsbet", "-")
 
-			bet365ou = bet365Lines[team][player]
+			if team not in bet365Lines or player not in bet365Lines[team]:
+				bet365ou = ""
+			else:
+				bet365ou = bet365Lines[team][player]
+
 			avgOver = []
 			avgUnder = []
 			for book in [bet365ou, dk, mgm, pb]:
@@ -471,13 +488,20 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False):
 					avgOver.append(int(book.split("/")[0]))
 					if "/" in book:
 						avgUnder.append(int(book.split("/")[1]))
-			avgOver = int(sum(avgOver) / len(avgOver))
+			if avgOver:
+				avgOver = int(sum(avgOver) / len(avgOver))
+			else:
+				avgOver = "-"
 			if avgUnder:
 				avgUnder = int(sum(avgUnder) / len(avgUnder))
 			else:
 				avgUnder = "-"
 			ou = f"{avgOver}/{avgUnder}"
 
+			if ou == "-/-":
+				continue
+
+			sharpUnderdog = 0
 			if useDK:
 				sharpUnderdog = dkLine
 			elif avg:
@@ -536,7 +560,10 @@ def sortEV():
 	bet365data = []
 	for player in evData:
 		ev = float(evData[player]["ev"])
-		bet365ev = float(evData[player]["bet365ev"])
+		if "bet365ev" not in evData[player]:
+			bet365ev = 0
+		else:
+			bet365ev = float(evData[player]["bet365ev"])
 		bpp = dk = mgm = pb = cz = br = kambi = ""
 		team = evData[player].get("team", "")
 		if team and team in bppLines and player in bppLines[team]:
@@ -581,7 +608,7 @@ def sortEV():
 		if not playerData["fanduel"]:
 			line = f"{playerData['other']} {playerData['otherBook']}"
 		bet365output += f"{row[-2]}\n"
-		bet365reddit += f"{playerData['bet365ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}  \n"
+		bet365reddit += f"{playerData.get('bet365ev', '-')}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}  \n"
 
 	with open(f"{prefix}static/freebets/reddit", "w") as fh:
 		fh.write(reddit)
