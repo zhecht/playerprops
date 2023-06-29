@@ -259,17 +259,16 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-atlanta-braves-32449504",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-seattle-mariners-32449505",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-pittsburgh-pirates-32449498",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-toronto-blue-jays-32449507",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-st.-louis-cardinals-32449509",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-texas-rangers-32449500",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-chicago-cubs-32449496",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-kansas-city-royals-32449501",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-los-angeles-angels-32449502",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-oakland-athletics-32449503",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-arizona-diamondbacks-32449510"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-pittsburgh-pirates-32451973",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-texas-rangers-32451975",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-kansas-city-royals-32451976",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-arizona-diamondbacks-32451980",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-los-angeles-angels-32451978",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-boston-red-sox-32451979",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-32451971",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-st.-louis-cardinals-32451982",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-chicago-cubs-32451972",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-colorado-rockies-32451974"
 ]
 
 	lines = {}

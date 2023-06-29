@@ -1167,6 +1167,8 @@ def writeSavantParkFactors():
 	parkFactors = {}
 	arr = []
 	for row in data:
+		if not row["name_display_club"]:
+			continue
 		team = convertSavantTeam(row["name_display_club"].lower())
 		parkFactors[team] = {}
 
@@ -1420,5 +1422,6 @@ if __name__ == "__main__":
 	#write_stats(date)
 	#write_totals()
 	#write_curr_year_averages()
+	#writeSavantParkFactors()
 	#writeSavantExpectedHR()
 	#writeSavantPitcherAdvanced()
