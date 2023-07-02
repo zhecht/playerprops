@@ -259,16 +259,17 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-pittsburgh-pirates-32451973",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-texas-rangers-32451975",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-kansas-city-royals-32451976",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-arizona-diamondbacks-32451980",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-los-angeles-angels-32451978",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-boston-red-sox-32451979",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-32451971",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-st.-louis-cardinals-32451982",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-chicago-cubs-32451972",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-colorado-rockies-32451974"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-baltimore-orioles-32458922",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-atlanta-braves-32458917",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32458920",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-pittsburgh-pirates-32458921",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-toronto-blue-jays-32458923",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-kansas-city-royals-32458927",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-st.-louis-cardinals-32458928",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-chicago-cubs-32458929",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-colorado-rockies-32458931",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-angels-32458930",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-seattle-mariners-32458926"
 ]
 
 	lines = {}
