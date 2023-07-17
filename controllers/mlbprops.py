@@ -1690,6 +1690,83 @@ def quartiles(arr):
 		mid = arr[mLen]
 	return q1, mid, q3
 
+def convertFDTeam(team):
+	team = team.replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "oak").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
+	return team
+
+def writeBovada(date):
+
+	url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/baseball/mlb?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
+	outfile = "outmlb2"
+	call(["curl", "-k", url, "-o", outfile])
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	if not data:
+		return
+
+	lines = {}
+
+	for event in data[0]["events"]:
+		game = convertFDTeam(event["description"].lower())
+		gameLink = event["link"]
+
+		propUrl = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/{gameLink}"
+
+		time.sleep(0.3)
+		outfile = "outmlb2"
+		call(["curl", "-k", propUrl, "-o", outfile])
+
+		with open(outfile) as fh:
+			propData = json.load(fh)
+
+		lines[game] = {}
+		for group in propData[0]["events"][0]["displayGroups"]:
+			if group["description"] == "Player Props":
+				for market in group["markets"]:
+					desc = strip_accents(market["description"])
+					if not desc.startswith("Total Hits, Runs and RBI"):
+						continue
+					player = desc.lower().split(" - ")[-1].split(" (")[0].replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+					ou = ["", ""]
+					for outcome in market["outcomes"]:
+						idx = 0 if outcome["type"] == "O" else 1
+						ou[idx] = outcome["price"]["american"].replace("EVEN", "+100")
+
+					lines[game][player] = f"{ou[0]}/{ou[1]}"
+
+	with open(f"{prefix}static/mlbprops/bovada.json", "w") as fh:
+		json.dump(lines, fh, indent=4)
+
+def hrrEV(date):
+
+	with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
+		lines = json.load(fh)
+
+	with open(f"{prefix}static/mlbprops/bovada.json") as fh:
+		bovada = json.load(fh)
+
+	data = []
+	for game in lines:
+		if game not in bovada:
+			continue
+		for player in lines[game]:
+			if player not in bovada[game]:
+				continue
+
+			ou = lines[game][player]["h+r+rbi"]["line"]
+			over = lines[game][player]["h+r+rbi"]["over"]
+			bovadaOver = bovada[game][player].split("/")[0]
+
+			if int(over) > int(bovadaOver):
+				diff = (int(over) - int(bovadaOver)) / int(over)
+				data.append((diff, game, player, over, bovadaOver))
+
+	for row in sorted(data, reverse=True):
+		print(row)
+
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
@@ -1697,6 +1774,7 @@ if __name__ == "__main__":
 	parser.add_argument("--lineups", help="Lineups", action="store_true")
 	parser.add_argument("--lines", action="store_true", help="Game Lines")
 	parser.add_argument("-p", "--props", action="store_true", help="Props")
+	parser.add_argument("-b", "--bovada", action="store_true", help="Bovada")
 	parser.add_argument("--projections", help="Projections", action="store_true")
 	parser.add_argument("-w", "--week", help="Week", type=int)
 
@@ -1711,6 +1789,9 @@ if __name__ == "__main__":
 		writeLineups(date)
 	elif args.props:
 		writeStaticProps(date)
+	elif args.bovada:
+		writeBovada(date)
+		#hrrEV(date)
 	elif args.projections:
 		write_projections(date)
 		writeLeftRightSplits()
