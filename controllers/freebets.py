@@ -262,19 +262,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-philadelphia-phillies-32492959",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-baltimore-orioles-32492965",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-pittsburgh-pirates-32492968",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-toronto-blue-jays-32492966",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-cincinnati-reds-32492955",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-new-york-mets-32492967",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-atlanta-braves-32492956",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-st.-louis-cardinals-32492957",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-chicago-cubs-32492958",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-texas-rangers-32492960",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32492961",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-los-angeles-angels-32492962",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-seattle-mariners-32492964"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-pittsburgh-pirates-32495062",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-baltimore-orioles-32495059",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-texas-rangers-32495052",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-st.-louis-cardinals-32495045",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-colorado-rockies-32495063",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-oakland-athletics-32495053",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-philadelphia-phillies-32495051",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-los-angeles-angels-32495054",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-toronto-blue-jays-32495060",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-cincinnati-reds-32495048",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-new-york-mets-32495061",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-atlanta-braves-32495050",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-chicago-cubs-32495049",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32495057",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-seattle-mariners-32495058"
 ]
 
 	lines = {}
@@ -366,7 +368,7 @@ def write365():
 			}
 			let playerList = [];
 			for (playerDiv of div.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
-				let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
+				let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(". ", "").replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
 				let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" - ")[0];
 
 				if (team === "la angels") {
@@ -418,7 +420,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg=""):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -433,7 +435,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False):
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/freebets/kambi.json") as fh:
-		kambi = json.load(fh)
+		kambiLines = json.load(fh)
 
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
@@ -444,6 +446,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False):
 	evData = {}
 
 	for game in fdLines:
+		if gameArg and game != gameArg:
+			continue
 		for player in fdLines[game]:
 			if "hr" not in fdLines[game][player]:
 				continue
@@ -483,12 +487,18 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False):
 			else:
 				bet365ou = bet365Lines[team][player]
 
+			if team and team in kambiLines and player in kambiLines[team]:
+				kambi = kambiLines[team][player]
+
 			avgOver = []
 			avgUnder = []
-			for book in [bet365ou, dk, mgm, pb]:
+			l = [bet365ou, dk, mgm, pb]
+			if allArg:
+				l = [bet365ou, dk, mgm, pb, cz, br, kambi]
+			for book in l:
 				if book and book != "-":
 					avgOver.append(int(book.split("/")[0]))
-					if "/" in book:
+					if "/" in book and book.split("/")[1] != "0":
 						avgUnder.append(int(book.split("/")[1]))
 			if avgOver:
 				avgOver = int(sum(avgOver) / len(avgOver))
@@ -629,12 +639,14 @@ if __name__ == '__main__':
 	parser.add_argument("-d", "--date", help="date")
 	parser.add_argument("--action", action="store_true", help="Action Network")
 	parser.add_argument("--avg", action="store_true", help="AVG")
+	parser.add_argument("--all", action="store_true", help="ALL AVGs")
 	parser.add_argument("--fd", action="store_true", help="Fanduel")
 	parser.add_argument("--dk", action="store_true", help="Draftkings")
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
+	parser.add_argument("-g", "--game", help="Game")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 
 	args = parser.parse_args()
@@ -650,7 +662,7 @@ if __name__ == '__main__':
 		writeKambi()
 
 	if args.ev:
-		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg)
+		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game)
 
 	if args.bpp:
 		checkBPP()
