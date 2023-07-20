@@ -206,6 +206,11 @@
 				return cell.getValue()+"%";
 			}
 
+			const pitcherFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				return "<a target='_blank' href='https://baseballsavant.mlb.com/savant-player/"+data.savantId+"'>"+cell.getValue()+"</a>";
+			}
+
 			const percentileFormatter = function(cell, params, rendered) {
 				const field = params.field;
 				let value = parseInt(cell.getValue());
@@ -511,7 +516,7 @@
 						{title: "L20 % Over", field: "last20Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "L10 % Over", field: "last10Over", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
 						{title: "Career % Over", field: "careerTotalOver", hozAlign: "center", formatter: percentFormatter, width: 80, sorter: "number"},
-						{title: "Pitcher", field: "pitcher", hozAlign: "center"},
+						{title: "Pitcher", field: "pitcher", hozAlign: "center", formatter: pitcherFormatter},
 						{title: "Throws", field: "pitcherThrows", width: 40, hozAlign: "center"},
 						{title: "xBA", field: "pitcherXBA", width:60, hozAlign: "center", sorter: "number"},
 						{title: "Proj", field: "pitcherProj", width: 80, hozAlign: "center", sorter: "number"},

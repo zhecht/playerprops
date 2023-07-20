@@ -175,19 +175,24 @@ def writeActionNetwork():
 		355: "caesars"
 	}
 
-	props = ["35_doubles", "33_hr"]
+	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles"]
+	#props = ["32_singles"]
+
 	odds = {}
 	optionTypes = {}
 
 	date = datetime.now()
 	date = str(date)[:10]
 
-	for prop in props:
+	for actionProp in props:
+		time.sleep(0.2)
 		path = f"out.json"
-		url = f"https://api.actionnetwork.com/web/v1/leagues/8/props/core_bet_type_{prop}?bookIds=69,68,283,348,351,355&date={date.replace('-', '')}"
+		url = f"https://api.actionnetwork.com/web/v1/leagues/8/props/core_bet_type_{actionProp}?bookIds=69,68,283,348,351,355&date={date.replace('-', '')}"
 		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {path}")
 
-		prop = prop.split("_")[-1]
+		prop = actionProp.split("_")[-1].replace("strikeouts", "k")
+		if prop.endswith("s"):
+			prop = prop[:-1]
 
 		with open(path) as fh:
 			j = json.load(fh)
@@ -221,6 +226,7 @@ def writeActionNetwork():
 				team = teamIds[oddData["team_id"]]
 				overUnder = optionTypes[oddData["option_type_id"]]
 				book = actionNetworkBookIds.get(bookId, "")
+				value = oddData["value"]
 
 				if team not in odds:
 					odds[team] = {}
@@ -229,15 +235,31 @@ def writeActionNetwork():
 				if prop not in odds[team][player]:
 					odds[team][player][prop] = {}
 
-				if book not in odds[team][player][prop]:
-					odds[team][player][prop][book] = f"{oddData['money']}"
-				elif overUnder == "over":
-					odds[team][player][prop][book] = f"{oddData['money']}/{odds[team][player][prop][book]}"
+				if prop == "k":
+					if value not in odds[team][player][prop]:
+						odds[team][player][prop][value] = {}
+
+					if book not in odds[team][player][prop][value]:
+						odds[team][player][prop][value][book] = f"{oddData['money']}"
+					elif overUnder == "over":
+						odds[team][player][prop][value][book] = f"{oddData['money']}/{odds[team][player][prop][value][book]}"
+					else:
+						odds[team][player][prop][value][book] += f"/{oddData['money']}"
 				else:
-					odds[team][player][prop][book] += f"/{oddData['money']}"
-				sp = odds[team][player][prop][book].split("/")
-				if odds[team][player][prop][book].count("/") == 3:
-					odds[team][player][prop][book] = sp[1]+"/"+sp[2]
+					if book not in odds[team][player][prop]:
+						odds[team][player][prop][book] = f"{oddData['money']}"
+					elif overUnder == "over":
+						odds[team][player][prop][book] = f"{oddData['money']}/{odds[team][player][prop][book]}"
+					else:
+						odds[team][player][prop][book] += f"/{oddData['money']}"
+					sp = odds[team][player][prop][book].split("/")
+					if odds[team][player][prop][book].count("/") == 3:
+						odds[team][player][prop][book] = sp[1]+"/"+sp[2]
+
+					if prop == "hr":
+						sp = odds[team][player][prop][book].split("/")
+						if len(sp) == 2 and int(sp[0]) < 0:
+							del odds[team][player][prop][book]
 
 	with open(f"{prefix}static/freebets/actionnetwork.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
@@ -262,21 +284,16 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-pittsburgh-pirates-32495062",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-baltimore-orioles-32495059",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-texas-rangers-32495052",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-st.-louis-cardinals-32495045",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-colorado-rockies-32495063",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-oakland-athletics-32495053",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-philadelphia-phillies-32495051",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-los-angeles-angels-32495054",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-toronto-blue-jays-32495060",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-cincinnati-reds-32495048",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-new-york-mets-32495061",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-atlanta-braves-32495050",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-chicago-cubs-32495049",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32495057",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-seattle-mariners-32495058"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-atlanta-braves-32497177",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-cincinnati-reds-32497176",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-philadelphia-phillies-32497178",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-toronto-blue-jays-32497186",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-new-york-mets-32497184",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32497181",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-seattle-mariners-32497182",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-tampa-bay-rays-32497179",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-chicago-cubs-32497175",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-oakland-athletics-32497180"
 ]
 
 	lines = {}
@@ -288,41 +305,62 @@ def writeFanduel():
 		lines[game] = {}
 
 		outfile = "out"
-		time.sleep(0.42)
-		url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}&tab=batter-props"
-		call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
 
-		with open(outfile) as fh:
-			data = json.load(fh)
+		for tab in ["pitcher", "hitter"]:
+			time.sleep(0.42)
+			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}&tab={tab}-props"
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
 
-		if "markets" not in data["attachments"]:
-			continue
-		for market in data["attachments"]["markets"]:
-			marketName = data["attachments"]["markets"][market]["marketName"].lower()
+			with open(outfile) as fh:
+				data = json.load(fh)
 
-			if marketName in ["to hit a home run", "to hit a double", "to hit a triple", "to record a hit"]:
-				prop = "hr"
-				if "double" in marketName:
-					prop = "double"
-				elif "triple" in marketName:
-					prop = "triple"
-				elif "record" in marketName:
-					prop = "h"
-				for playerRow in data["attachments"]["markets"][market]["runners"]:
-					player = playerRow["runnerName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
-					try:
-						odds = playerRow["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"]
-					except:
-						continue
+			if "markets" not in data["attachments"]:
+				continue
+			for market in data["attachments"]["markets"]:
+				marketName = data["attachments"]["markets"][market]["marketName"].lower()
 
-					if player not in lines[game]:
-						lines[game][player] = {}
-					lines[game][player][prop] = odds
+				if marketName in ["to hit a home run", "to hit a double", "to hit a triple", "to hit a single", "to record a hit"] or "- strikeouts" in marketName:
+					prop = "hr"
+					if "single" in marketName:
+						prop = "single"
+					elif "double" in marketName:
+						prop = "double"
+					elif "triple" in marketName:
+						prop = "triple"
+					elif "record" in marketName:
+						prop = "h"
+					elif "strikeouts" in marketName:
+						prop = "k"
+
+					for playerRow in data["attachments"]["markets"][market]["runners"]:
+						player = playerRow["runnerName"].lower().replace(" over", "").replace(" under", "").replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+						handicap = ""
+						try:
+							odds = playerRow["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"]
+							if prop == "k":
+								t = playerRow['result']['type'][0].lower()
+								if t == "o":
+									handicap = f"{t}{playerRow['handicap']}"
+						except:
+							continue
+
+						if player not in lines[game]:
+							lines[game][player] = {}
+
+						if prop != "k":
+							lines[game][player][prop] = odds
+						else:
+							if handicap:
+								lines[game][player][prop] = f"{handicap} {odds}"
+							else:
+								lines[game][player][prop] += f"/{odds}"
+
+
 	
 	with open(f"{prefix}static/baseballreference/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=False, avg=False):
+def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=False, avg=False, prop="hr"):
 
 	if dinger:
 		# assuming 2hr/g = 40% FB @ 70% conversion
@@ -330,7 +368,7 @@ def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=Fal
 		# 80% conversion
 		#finalOdds = f"1={finalOdds};n=0.36x"
 
-	outfile = "out"
+	outfile = f"out_{prop}"
 	post = ["curl", 'http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-X", "POST", "-H", 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0', "-H", 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', "-H",'Accept-Language: en-US,en;q=0.5', "-H",'Accept-Encoding: gzip, deflate', "-H",'Content-Type: application/x-www-form-urlencoded', "-H",'Origin: http://crazyninjamike.com', "-H",'Connection: keep-alive', "-H",'Referer: http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-H",'Cookie: General=KellyMultiplier=.25&KellyBankRoll=1000&DevigMethodIndex=4&WorstCaseDevigMethod_Multiplicative=True&WorstCaseDevigMethod_Additive=True&WorstCaseDevigMethod_Power=True&WorstCaseDevigMethod_Shin=True&MultiplicativeWeight=0&AdditiveWeight=0&PowerWeight=0&ShinWeight=0&ShowEVColorIndicator=False&ShowDetailedDevigInfo=True&CopyToClipboard_Reddit=False&ShowHedgeDevigMethod=False&UseMultilineTextbox=False; ASP.NET_SessionId=h2cklqfayhnovxkckdykfm4o', "-H",'Upgrade-Insecure-Requests: 1', "-H",'Pragma: no-cache', "-H",'Cache-Control: no-cache', "--data-raw", '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwUKLTg5NDkxNjMyNg9kFgICAw9kFhwCJw8PFgIeB1Zpc2libGVoZGQCNQ8PFgQeBFRleHRlHwBoZGQCNw8PFgIfAQWBAjxiPldvcnN0LWNhc2U6IChQb3dlcik8L2I%2BPC9icj5MZWcjMSAoKzQ1MCk7IE1hcmtldCBKdWljZSA9IDQuOCAlOyBMZWcncyBKdWljZSA9IDQuNCAlOyBGYWlyIFZhbHVlID0gKzU3NSAoMTQuOCAlKTwvYnI%2BRmluYWwgT2RkcyAoKzQ4MCk7IM6jKE1hcmtldCBKdWljZSkgPSA0Ljg1ICU7IM6jKExlZydzIEp1aWNlKSA9IDQuNCAlOyBGYWlyIFZhbHVlID0gKzU3NSAoMTQuOCAlKTwvYnI%2BU3VtbWFyeTsgRVYlID0gLTE0LjEgJSAoRkIgPSA3MS4xICUpZGQCOQ8PFgIeCEltYWdlVXJsZWRkAjsPDxYCHwEF0gI8L2JyPjwvYnI%2BPGJ1dHRvbiB0eXBlPSJidXR0b24iIG9uY2xpY2s9IkNvcHlUb0NsaXBib2FyZCgnVGV4dGJveF9EZXZpZ3NVUkxfZGV2aWdzdXJsJykiPkNvcHkgRGV2aWcncyBVUkw8L2J1dHRvbj48dGV4dGFyZWEgaWQ9IlRleHRib3hfRGV2aWdzVVJMX2Rldmlnc3VybCIgbmFtZT0iVGV4dDEiIGNvbHM9IjQwIiByb3dzPSI1IiBzdHlsZT0iZGlzcGxheTogbm9uZSI%2BaHR0cDovL2NyYXp5bmluamFtaWtlLmNvbS9QdWJsaWMvc3BvcnRzYm9va3Mvc3BvcnRzYm9va19kZXZpZ2dlci5hc3B4P2F1dG9maWxsPTEmTGVnT2Rkcz0lMmI0NTAlMmYtNjUwJkZpbmFsT2Rkcz00ODA8L3RleHRhcmVhPmRkAj0PDxYCHwFlZGQCQQ8PFgIfAWVkZAJDDw8WAh8BZWRkAkcPDxYCHwFlZGQCSQ8PFgIfAWVkZAJNDw8WAh8BZWRkAk8PDxYCHwFlZGQCUw8PFgIfAWVkZAJfDxBkZBYBZmQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFhUFE0NoZWNrQm94Q29ycmVsYXRpb24FDUNoZWNrQm94Qm9vc3QFFlJhZGlvQnV0dG9uQm9vc3RQcm9maXQFE1JhZGlvQnV0dG9uQm9vc3RBbGwFE1JhZGlvQnV0dG9uQm9vc3RBbGwFFENoZWNrQm94RGFpbHlGYW50YXN5BQ5DaGVja0JveFJld2FyZAUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMAUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMQUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMgUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMwUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMwUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMAUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMQUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMgUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMgUaQ2hlY2tCb3hMaXN0TWlzY1NldHRpbmdzJDAFGkNoZWNrQm94TGlzdE1pc2NTZXR0aW5ncyQxBRpDaGVja0JveExpc3RNaXNjU2V0dGluZ3MkMQURQ2hlY2tCb3hTaG93SGVkZ2UFG0NoZWNrQm94VXNlTXVsdGlsaW5lVGV4dGJveKOjTHKsFcieE9KKzTJQiI3AJR6B&__VIEWSTATEGENERATOR=75A63123&__EVENTVALIDATION=%2FwEdAEIw9X7iCaxD%2F3rNNZYgx5HDVduh02rwiY5pxbMa1RNJ5aQWjQCmzgVoWED6ZF3QmBhQwDtP%2FiI7M6rA7bM7sw79dcexLTc65mHP6HSLc%2Bf1LffPdxAlAXM62AauCNlhmmvcpkkrUUk0wKmeRC%2Bo5Y4X6geodp8Olur%2BmlGM1%2FKrX0%2FlhO7FgJVfVmSrfexz2O8O1Hi%2Fs4JOEIbuo8tqstA4FSD8tQvxjLeGTr%2FZjbpMMCoLzpV5VCswEluevhpgd9wk6hQu8IzOUf9SV1fT41DJrES61htWrWjs6qQMwbhFAInbbXKrUyuaH0WERw6pAco%2FDYrJ17Id28pC779glSqiyuRmS0vMxthemNSZxFYiWcucIPcus%2FOzSDEyoeofXW3aOzoxxlnSXry0La7j6r%2Fs%2BfHYZidJ9iL1XbUgK8hpdJe%2BtzEYMgx%2BTUfzwbS304A%2FY8oqBpGAsYx8Mop1jRjezzZQ%2B9tmmKZqyksYCdJDpzyJeqLpB5t8%2F2GJQ3xLbuvhfOPVw%2FvZ64GRORAnyiUeAIH4rCiLrkEjcbAVN3KRLGcEq1QxEeM%2Fjkzi4zrZhPrdYjFyIOpXU7VVEH8x6qLFK%2FgiX4R7k%2BePj3bS7J%2BgWBTnTMwDkbtKRoDY9CgTs7Im6q5QJGQ4Zop7C9MPh%2FovUZMCC%2B0SDrnxmEkAW9uYtxLt%2Fyzf7D%2FO38iSXXKKjp%2F7pQZSXQqK%2BkHRq0%2F8hxlteb8BqBsXIQ3Id4DTK3MIxXuZIjIbmxHxK2jQvvnkl2IojkGDopgGMUjBgFQSCSRWR%2BvnMJoIOfBUI43VZFoFoOWmJfOGgotEV0SbRtvJlGGgBtNu745bl1XM%2FNjSIkmj0hpqvWk5jUlJo8y5DJZi2FeCfzTe16FW7YBUVAarIwORcYHwHlUbtxUIovxtp6Fnp9PZDrtAO8BRQYb%2BM2XZoW6ZGCGPI3Vs4qn7bWwKvOZxJ0hkpY3JuBY8dUINwhWy9tBMMMleqCemET2u7gRHPAbTtEEA0M6r7Zrzlm%2BXOIAyERXQ8XPFFqsFxOEZFeuxKH%2FI7Em%2FLOYrJZQEF%2FXmnfJtqlZ119DKEMgOAXJKwTjbHfIVMvqWcHvFBXtSrRli%2BLXSuvmx4sYD3Q%2FsmNkE8GK1s%2FT%2FRpPmdWeEsxFtygifU2vOaYXIhnkpGZxXMYRub%2FxoObcM1wBoVb5Wzqjq1e%2FUwuJUFie73%2BFPJ7NCOPtptpM51QcGXfw1UVjBtUMFQwE9YmMRS%2Fc7ytpgEPqE7kUGVOuNjuWHehORBMX7COGM4yNZD1WpVnhcev8qNkDbxq5sREhC1cwZ55vP6Xc17lJ6ph6EVKavxKi9ab3UpqFaLnG9DBjpZB8pgNUE1JFtQ3x0%2FNrX218CPsGBv3ktYhe8eeW7rbcwKmHEyYPn1r%2FO2TD8UgBuluW1SPDteuzIU6xb9g%3D%3D&TextBoxKellyMultiplier=.25&TextBoxBankRoll=1000&RadioButtonListDevigMethod=worstcase&TextBoxLegOdds='+str(bet365Odds)+'&TextBoxFinalOdds='+str(finalOdds)+'&TextBoxCorrelation=0&TextBoxBoost=0%25&Boost=RadioButtonBoostProfit&DropDownListDailyFantasy=0&ButtonCalculate=Calculate&Text1=http%3A%2F%2Fcrazyninjamike.com%2FPublic%2Fsportsbooks%2Fsportsbook_devigger.aspx%3Fautofill%3D1%26LegOdds%3D%252b450%252f-650%26FinalOdds%3D480&CheckBoxListWorstCaseMethodSettings%240=The+Multiplicative%2FNormalization%2FTraditional+Method&CheckBoxListWorstCaseMethodSettings%241=The+Additive+Method&CheckBoxListWorstCaseMethodSettings%242=The+Power+Method&CheckBoxListWorstCaseMethodSettings%243=The+Shin+Method&TextBoxMultiplicativeWeight=0%25&TextBoxAdditiveWeight=0%25&TextBoxPowerWeight=0%25&TextBoxShinWeight=0%25&CheckBoxListCopyToClipboardSettings%240=devigurl&CheckBoxListMiscSettings%241=Show+Detailed+Devig+Info', "-o", outfile]
 
 	time.sleep(0.3)
@@ -362,6 +400,7 @@ def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=Fal
 def write365():
 	js = """
 		let data = {};
+		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
 		for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
 			if (div.classList.contains("src-FixtureSubGroup_Closed")) {
 				div.click();
@@ -401,7 +440,13 @@ def write365():
 				let team = playerList[idx][0];
 				let player = playerList[idx][1];
 
-				data[team][player] = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
+				let line = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Handicap")[0].innerText;
+				let odds = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
+				if (title === "pitcher strikeouts") {
+					data[team][player] = line+" "+odds;
+				} else {
+					data[team][player] = odds;
+				}
 				idx += 1;
 			}
 
@@ -420,7 +465,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg=""):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", strikeouts=False, prop="hr", under=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -428,8 +473,13 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
 		dkLines = json.load(fh)
 
-	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
-		bet365Lines = json.load(fh)
+	if prop != "hr":
+		with open(f"{prefix}static/mlbprops/bet365_{prop}s.json") as fh:
+			bet365Lines = json.load(fh)
+	else:
+		with open(f"{prefix}static/mlbprops/bet365.json") as fh:
+			bet365Lines = json.load(fh)
+
 
 	with open(f"{prefix}static/baseballreference/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
@@ -449,7 +499,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 		if gameArg and game != gameArg:
 			continue
 		for player in fdLines[game]:
-			if "hr" not in fdLines[game][player]:
+			if prop not in fdLines[game][player]:
 				continue
 			team1, team2 = map(str, game.split(" @ "))
 			team = ""
@@ -466,49 +516,104 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					else:
 						continue
 
-			fdLine = fdLines[game][player]["hr"]
+			fdLine = fdLines[game][player][prop]
+			handicap = ""
+			if prop == "k":
+				handicap = float(fdLine.split(" ")[0][1:])
+				if under:
+					fdLine = int(fdLine.split(" ")[1].split("/")[1])
+				else:
+					fdLine = int(fdLine.split(" ")[1].split("/")[0])
 
+			dk = ""
 			dkLine = 0
-			if game in dkLines and player in dkLines[game] and "hr" in dkLines[game][player]:
-				dkLine = int(dkLines[game][player]["hr"]["over"])
+			dkProp = prop.replace("single", "1b").replace("double", "2b")
+			if game in dkLines and player in dkLines[game] and dkProp in dkLines[game][player]:
+				dk = dkLines[game][player][dkProp]["over"]+"/"+dkLines[game][player][dkProp]["under"]
+				if under:
+					dkLine = int(dkLines[game][player][dkProp]["under"])
+				else:
+					dkLine = int(dkLines[game][player][dkProp]["over"])
+
+				if handicap and handicap != dkLines[game][player][dkProp]["line"]:
+					dk = ""
 			elif useDK:
 				continue
 
-			dk = mgm = pb = cz = br = kambi = ""
-			if team in actionnetwork and player in actionnetwork[team] and "hr" in actionnetwork[team][player]:
-				dk = actionnetwork[team][player]["hr"].get("draftkings", "-")
-				mgm = actionnetwork[team][player]["hr"].get("mgm", "-")
-				br = actionnetwork[team][player]["hr"].get("betrivers", "-")
-				cz = actionnetwork[team][player]["hr"].get("caesars", "-")
-				pb = actionnetwork[team][player]["hr"].get("pointsbet", "-")
+			mgm = pb = cz = br = kambi = ""
+			if team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
+				data = actionnetwork[team][player][prop]
+				if prop == "k":
+					data = actionnetwork[team][player][prop][str(handicap)]
+				mgm = data.get("mgm", "-")
+				br = data.get("betrivers", "-")
+				cz = data.get("caesars", "-")
+				pb = data.get("pointsbet", "-")
 
 			if team not in bet365Lines or player not in bet365Lines[team]:
 				bet365ou = ""
 			else:
 				bet365ou = bet365Lines[team][player]
+				if prop == "k":
+					if bet365ou.split(" ")[0] != str(handicap):
+						bet365ou = ""
+					else:
+						bet365ou = bet365ou.split(" ")[-1]
 
 			if team and team in kambiLines and player in kambiLines[team]:
 				kambi = kambiLines[team][player]
 
+			line = fdLine
+			fd = True
+			if False and prop != "hr" and dkLine > fdLine:
+				line = dkLine
+				fd = False
+
 			avgOver = []
 			avgUnder = []
 			l = [bet365ou, dk, mgm, pb]
+			if prop in ["single", "double", "k"]:
+				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, cz, br]
 			if allArg:
 				l = [bet365ou, dk, mgm, pb, cz, br, kambi]
 			for book in l:
 				if book and book != "-":
-					avgOver.append(int(book.split("/")[0]))
+					odds = int(book.split("/")[0])
+					if odds > 0:
+						decOdds = 1 + (odds / 100)
+					else:
+						decOdds = 1 - (100 / odds)
+					avgOver.append(decOdds)
 					if "/" in book and book.split("/")[1] != "0":
-						avgUnder.append(int(book.split("/")[1]))
+						odds = int(book.split("/")[1])
+						if odds > 0:
+							decOdds = 1 + (odds / 100)
+						else:
+							decOdds = 1 - (100 / odds)
+						avgUnder.append(decOdds)
 			if avgOver:
-				avgOver = int(sum(avgOver) / len(avgOver))
+				avgOver = float(sum(avgOver) / len(avgOver))
+				if avgOver >= 2:
+					avgOver = (avgOver - 1) * 100
+				else:
+					avgOver = -100 / (avgOver - 1)
+				avgOver = int(avgOver)
 			else:
 				avgOver = "-"
 			if avgUnder:
-				avgUnder = int(sum(avgUnder) / len(avgUnder))
+				avgUnder = float(sum(avgUnder) / len(avgUnder))
+				if avgUnder >= 2:
+					avgUnder = (avgUnder - 1) * 100
+				else:
+					avgUnder = -100 / (avgUnder - 1)
+				avgUnder = int(avgUnder)
 			else:
 				avgUnder = "-"
-			ou = f"{avgOver}/{avgUnder}"
+
+			if under:
+				ou = f"{avgUnder}/{avgOver}"
+			else:
+				ou = f"{avgOver}/{avgUnder}"
 
 			if ou == "-/-":
 				continue
@@ -523,41 +628,38 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 			#fdLine = fdLine * 1.2
 
-			line = fdLine
-			fd = True
-			if False and not useDK and dkLine > fdLine and dkLine > sharpUnderdog:
-				line = dkLine
-				fd = False
-				#print(fdLine, dkLine, sharpUnderdog, player)
-
 			if player in evData:
 				continue
 			if dinger or line > sharpUnderdog:
 				pass
 				if useDK:
-					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player]['hr']['under']}"
+					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
 
-				devigger(evData, player, bet365ou, line, dinger)
-				devigger(evData, player, ou, line, dinger, avg=True)
+				if prop == "hr":
+					devigger(evData, player, bet365ou, line, dinger)
+				devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 				if player not in evData:
 					print(player)
 					continue
+				evData[player]["pitcher"] = strikeouts
 				evData[player]["game"] = game
 				evData[player]["team"] = team
 				evData[player]["ou"] = ou
+				evData[player]["odds"] = l
+				evData[player]["under"] = under
 				evData[player]["bet365"] = bet365ou
 				if not fd:
 					fdLine = 0
 					evData[player]["other"] = line
 					evData[player]["otherBook"] = "DK"
-				evData[player]["fanduel"] = fdLine
+				evData[player]["fanduel"] = fdLines[game][player][prop].split(" ")[-1]
+				evData[player]["dk"] = dk
+				evData[player]["value"] = str(handicap)
 
-	with open(f"{prefix}static/mlbprops/ev.json", "w") as fh:
+	with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
 def sortEV():
-	with open(f"{prefix}static/mlbprops/ev.json") as fh:
-		evData = json.load(fh)
 
 	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
 		bppLines = json.load(fh)
@@ -568,71 +670,95 @@ def sortEV():
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
-	data = []
-	bet365data = []
-	for player in evData:
-		ev = float(evData[player]["ev"])
-		if "bet365ev" not in evData[player]:
-			bet365ev = 0
-		else:
-			bet365ev = float(evData[player]["bet365ev"])
-		bpp = dk = mgm = pb = cz = br = kambi = ""
-		team = evData[player].get("team", "")
-		if team and team in bppLines and player in bppLines[team]:
-			bpp = "\t".join([x or '-' for x in [bppLines[team][player]["mgm"], bppLines[team][player]["cz"], bppLines[team][player]["pn"], bppLines[team][player]["bs"]]])
-		else:
-			bpp = "\t".join(['-']*4)
 
-		if team and team in actionnetwork and player in actionnetwork[team] and "hr" in actionnetwork[team][player]:
-			dk = actionnetwork[team][player]["hr"].get("draftkings", "-")
-			mgm = actionnetwork[team][player]["hr"].get("mgm", "-")
-			br = actionnetwork[team][player]["hr"].get("betrivers", "-")
-			cz = actionnetwork[team][player]["hr"].get("caesars", "-")
-			pb = actionnetwork[team][player]["hr"].get("pointsbet", "-")
+	for prop in ["hr", "k", "single", "double"]:
+		with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
+			evData = json.load(fh)
 
-		if team and team in kambiLines and player in kambiLines[team]:
-			kambi = kambiLines[team][player]
+		data = []
+		bet365data = []
+		for player in evData:
+			try:
+				ev = float(evData[player]["ev"])
+			except:
+				continue
+			if "bet365ev" not in evData[player]:
+				bet365ev = 0
+			else:
+				bet365ev = float(evData[player]["bet365ev"])
+			bpp = dk = mgm = pb = cz = br = kambi = ""
+			team = evData[player].get("team", "")
+			dk = evData[player]["dk"]
+			value = evData[player].get("value", 0)
+			if "/" in dk and int(dk.split("/")[0]) > 0:
+				dk = str(dk)[1:]
+			if team and team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
+				an = actionnetwork[team][player][prop]
+				if prop == "k":
+					an = actionnetwork[team][player][prop][value]
+				mgm = an.get("mgm", "-")
+				br = an.get("betrivers", "-")
+				cz = an.get("caesars", "-")
+				pb = an.get("pointsbet", "-")
 
-		bet365 = evData[player]['bet365'][1:]
-		avg = evData[player]['ou']
+			if prop == "hr" and team and team in kambiLines and player in kambiLines[team]:
+				kambi = kambiLines[team][player]
 
-		#print(evData[player]["bet365"])
-		tab = "\t".join([str(x) for x in [ev, bet365ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz, pb, br, "-", "-", kambi]])
-		data.append((ev, player, tab, evData[player]))
-		bet365data.append((bet365ev, player, tab, evData[player]))
+			bet365 = evData[player]['bet365']
+			if "/" in bet365 and int(bet365.split("/")[0]) > 0:
+				bet365 = str(bet365)[1:]
+			avg = evData[player]['ou']
 
-	dt = datetime.strftime(datetime.now(), "%I %p")
-	output = f"\t\t\tUPD: {dt}\n\n"
-	output += "\t".join(["EV (AVG)", "EV (365)", "Team", "Player", "FD", "AVG", "bet365", "DK", "MGM", "CZ","PB", "BR", "PN", "BS", "Kambi"]) + "\n"
-	bet365output = output
-	reddit = bet365reddit = ""
-	for row in sorted(data, reverse=True):
-		playerData = row[-1]
-		line = f"{playerData['fanduel']} FD"
-		if not playerData["fanduel"]:
-			line = f"{playerData['other']} {playerData['otherBook']}"
-		output += f"{row[-2]}\n"
-		reddit += f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs AVG {playerData['ou']}  \n"
+			l = [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz, pb, br, "-", "-"]
+			if prop == "hr":
+				l.insert(1, bet365ev)
+				l.append(kambi)
+			elif prop == "k":
+				l.insert(1, value)
+			tab = "\t".join([str(x) for x in l])
+			data.append((ev, player, tab, evData[player]))
+			bet365data.append((bet365ev, player, tab, evData[player]))
 
-	for row in sorted(bet365data, reverse=True):
-		playerData = row[-1]
-		line = f"{playerData['fanduel']} FD"
-		if not playerData["fanduel"]:
-			line = f"{playerData['other']} {playerData['otherBook']}"
-		bet365output += f"{row[-2]}\n"
-		bet365reddit += f"{playerData.get('bet365ev', '-')}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}  \n"
+		dt = datetime.strftime(datetime.now(), "%I %p")
+		output = f"\t\t\tUPD: {dt}\n\n"
+		l = ["EV (AVG)", "Team", "Player", "FD", "AVG", "bet365", "DK", "MGM", "CZ","PB", "BR", "PN", "BS"]
+		if prop == "hr":
+			l.insert(1, "EV (365)")
+			l.append("Kambi")
+		elif prop == "k":
+			l.insert(1, "Line")
+		output += "\t".join(l) + "\n"
+		bet365output = output
+		reddit = bet365reddit = ""
+		for row in sorted(data, reverse=True):
+			playerData = row[-1]
+			line = f"{playerData['fanduel']} FD"
+			if not playerData["fanduel"]:
+				line = f"{playerData['other']} {playerData['otherBook']}"
+			output += f"{row[-2]}\n"
+			reddit += f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs AVG {playerData['ou']}  \n"
 
-	with open(f"{prefix}static/freebets/reddit", "w") as fh:
-		fh.write(reddit)
+		for row in sorted(bet365data, reverse=True):
+			playerData = row[-1]
+			line = f"{playerData['fanduel']} FD"
+			if not playerData["fanduel"]:
+				line = f"{playerData['other']} {playerData['otherBook']}"
+			bet365output += f"{row[-2]}\n"
+			bet365reddit += f"{playerData.get('bet365ev', '-')}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}  \n"
 
-	with open(f"{prefix}static/freebets/reddit365", "w") as fh:
-		fh.write(bet365reddit)
+		if prop == "hr":
+			with open(f"{prefix}static/freebets/reddit_{prop}", "w") as fh:
+				fh.write(reddit)
 
-	with open(f"{prefix}static/freebets/ev.csv", "w") as fh:
-		fh.write(output)
+			with open(f"{prefix}static/freebets/reddit365_{prop}", "w") as fh:
+				fh.write(bet365reddit)
 
-	with open(f"{prefix}static/freebets/ev365.csv", "w") as fh:
-		fh.write(bet365output)
+			with open(f"{prefix}static/freebets/ev365_{prop}.csv", "w") as fh:
+				fh.write(bet365output)
+
+		with open(f"{prefix}static/freebets/ev_{prop}.csv", "w") as fh:
+			fh.write(output)
+
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
@@ -647,6 +773,10 @@ if __name__ == '__main__':
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
 	parser.add_argument("-g", "--game", help="Game")
+	parser.add_argument("-k", "--k", action="store_true", help="Ks")
+	parser.add_argument("--prop", help="Prop")
+	parser.add_argument("--update", action="store_true", help="Update")
+	parser.add_argument("--under", action="store_true", help="Under")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 
 	args = parser.parse_args()
@@ -661,8 +791,12 @@ if __name__ == '__main__':
 	if args.kambi:
 		writeKambi()
 
+	if args.update:
+		writeFanduel()
+		writeActionNetwork()
+
 	if args.ev:
-		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game)
+		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop)
 
 	if args.bpp:
 		checkBPP()
@@ -672,10 +806,14 @@ if __name__ == '__main__':
 
 	if args.print:
 		sortEV()
+
+	if args.prop:
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, prop=args.prop, under=args.under)
+		sortEV()
 	#write365()
 	#writeActionNetwork()
 
 	data = {}
-	#devigger(data, player="anthony santander", bet365Odds="+360/-500", finalOdds=390)
+	#devigger(data, player="dean kremer", bet365Odds="-115/-115", finalOdds="-128")
 	#devigger(data, player="anthony santander", bet365Odds="300/-465", finalOdds=390, avg=True)
 	#print(data)

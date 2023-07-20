@@ -570,7 +570,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				#
 				bpOdds = 0
 				try:
-					if "P" in pos:
+					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
 						bp = f"{addNumSuffix(ballparkPalProps[team][player][f'{line}{prop}']['bpRank'])} ({ballparkPalProps[team][player][f'{line}{prop}']['bp']})"
 						bpOdds = ballparkPalProps[team][player][f'{line}{prop}']['bp']
 					else:
@@ -614,19 +614,20 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				kPerBB = pitchesPerPlate = "-"
 
 				# advanced
-				era = ""
+				era = savantId = ""
 				try:
-					if "P" in pos:
+					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
 						advancedPitcher = advanced[player].copy()
 					else:
 						advancedPitcher = advanced[pitcher].copy()
 					era = advancedPitcher["p_era"]
+					savantId = advancedPitcher["player_id"]
 				except:
 					advancedPitcher = {}
 
 				# pitches
 				try:
-					if "P" in pos:
+					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
 						playerPitches = playerPitchingPitches[team][player].copy()
 					else:
 						playerPitches = playerPitchingPitches[opp][pitcher].copy()
@@ -638,7 +639,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				except:
 					oppTeamBattingPitches = {}
 
-				if "P" in pos:
+				if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
 					try:
 						hip = round(averages[team][player]["tot"]["h"] / averages[team][player]["tot"]["ip"], 2)
 						bbip = round(averages[team][player]["tot"]["bb"] / averages[team][player]["tot"]["ip"], 2)
@@ -801,7 +802,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 						val += stats[team][player].get(p, 0)
 					avg = round(val / gamesPlayed, 2)
 
-					if "P" in pos:
+					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
 						if player in advanced:
 							dem = int(advanced[player]["ab"])-int(advanced[player]["strikeout"])-int(advanced[player]["home_run"])+int(advanced[player]["p_sac_fly"])
 							if dem:
@@ -820,7 +821,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 							hitter_babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
 					
 				pitcherSummary = strikePercent = ""
-				if "P" in pos:
+				if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
 					if player in advanced:
 						pitcherSummary = f"{advanced[player]['batting_avg']} AVG, {advanced[player]['xba']} xAVG, {babip} BABIP, {advanced[player]['slg_percent']} SLG, {advanced[player]['xslg']} xSLG, {advanced[player]['woba']} WOBA, {advanced[player]['xwoba']} xWOBA, {advanced[player]['barrel_batted_rate']}% Barrel Batted"
 				else:
@@ -988,7 +989,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				pitcherXBA = xBA = oba = 0
 				try:
 					xBA = format(expected[team][player]["est_ba"], '.3f')[1:]
-					if "P" in pos:
+					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
 						battingAvg = format(expected[team][player]["ba"], '.3f')[1:]
 					else:
 						pitcherXBA = format(expected[opp][pitcher]["est_ba"], '.3f')[1:]
@@ -1029,6 +1030,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				props.append({
 					"game": game,
 					"playerId": playerId,
+					"savantId": savantId,
 					"player": player.title(),
 					"team": team.upper(),
 					"opponent": opp.upper(),
