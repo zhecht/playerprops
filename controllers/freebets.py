@@ -29,6 +29,12 @@ def strip_accents(text):
 
 def writeBallparkpal():
 	js = """
+		for (btn of document.getElementsByTagName("button")) {
+			if (btn.innerText === "Expanded Book View") {
+				btn.click();
+			}
+		}
+
 		const data = {};
 		for (row of document.getElementsByTagName("tr")) {
 			tds = row.getElementsByTagName("td");
@@ -45,8 +51,19 @@ def writeBallparkpal():
 			}
 
 			let player = tds[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
-			if (tds[2].innerText.indexOf("HR") < 0) {
-				continue;
+
+			if (data[team][player] === undefined) {
+				data[team][player] = {};
+			}
+
+			let prop = tds[2].innerText.toLowerCase().split(" ")[1];
+			let line = tds[2].innerText.split(" ")[2];
+			if (prop === "ks") {
+				prop = "k";
+			} else if (prop === "bases") {
+				prop = "tb";
+			} else if (prop === "hits") {
+				prop = "h";
 			}
 
 			let max = 0;
@@ -66,7 +83,11 @@ def writeBallparkpal():
 				idx++;
 			}
 
-			data[team][player] = {
+			if (data[team][player][prop] === undefined) {
+				data[team][player][prop] = {};
+			}
+
+			data[team][player][prop][line] = {
 				bpp: tds[3].innerText,
 				fd: tds[4].innerText,
 				dk: tds[5].innerText,
@@ -284,16 +305,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-atlanta-braves-32497177",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-cincinnati-reds-32497176",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-philadelphia-phillies-32497178",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-toronto-blue-jays-32497186",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-new-york-mets-32497184",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-32497181",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-seattle-mariners-32497182",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-tampa-bay-rays-32497179",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-chicago-cubs-32497175",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-oakland-athletics-32497180"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-chicago-cubs-32499137",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-miami-marlins-32499139",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-tampa-bay-rays-32499142",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-detroit-tigers-32499149",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-washington-nationals-32499140",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-new-york-yankees-32499143",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-cincinnati-reds-32499138",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-boston-red-sox-32499147",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-cleveland-guardians-32499148",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-texas-rangers-32499151",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-milwaukee-brewers-32499141",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-minnesota-twins-32499146",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-los-angeles-angels-32499150",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-oakland-athletics-32499145",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-seattle-mariners-32499144"
 ]
 
 	lines = {}
@@ -493,6 +519,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlbprops/ev.json") as fh:
 		evData = json.load(fh)
 
+	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
+		bpp = json.load(fh)
+
 	evData = {}
 
 	for game in fdLines:
@@ -544,11 +573,16 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			if team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
 				data = actionnetwork[team][player][prop]
 				if prop == "k":
-					data = actionnetwork[team][player][prop][str(handicap)]
+					data = actionnetwork[team][player][prop].get(str(handicap), {})
 				mgm = data.get("mgm", "-")
 				br = data.get("betrivers", "-")
 				cz = data.get("caesars", "-")
 				pb = data.get("pointsbet", "-")
+
+			pn = bs = ""
+			if prop == "k" and team in bpp and player in bpp[team] and "k" in bpp[team][player] and str(handicap) in bpp[team][player]["k"]:
+				pn = bpp[team][player]["k"][str(handicap)].get("pn", "-")
+				bs = bpp[team][player]["k"][str(handicap)].get("bs", "-")
 
 			if team not in bet365Lines or player not in bet365Lines[team]:
 				bet365ou = ""
@@ -572,8 +606,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			avgOver = []
 			avgUnder = []
 			l = [bet365ou, dk, mgm, pb]
-			if prop in ["single", "double", "k"]:
+			if prop in ["single", "double"]:
 				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, cz, br]
+			elif prop == "k":
+				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, cz, br, pn, bs]
 			if allArg:
 				l = [bet365ou, dk, mgm, pb, cz, br, kambi]
 			for book in l:
@@ -622,6 +658,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			if useDK:
 				sharpUnderdog = dkLine
 			elif avg:
+				if ou.startswith("-/"):
+					continue
 				sharpUnderdog = int(ou.split("/")[0])
 			else:
 				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
@@ -630,7 +668,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 			if player in evData:
 				continue
-			if dinger or line > sharpUnderdog:
+			if dinger or prop == "k" or line > sharpUnderdog:
 				pass
 				if useDK:
 					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
@@ -652,7 +690,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					fdLine = 0
 					evData[player]["other"] = line
 					evData[player]["otherBook"] = "DK"
-				evData[player]["fanduel"] = fdLines[game][player][prop].split(" ")[-1]
+				evData[player]["fanduel"] = str(fdLines[game][player][prop]).split(" ")[-1]
 				evData[player]["dk"] = dk
 				evData[player]["value"] = str(handicap)
 
@@ -701,6 +739,16 @@ def sortEV():
 				cz = an.get("caesars", "-")
 				pb = an.get("pointsbet", "-")
 
+			pn = bs = "-"
+			if team in bppLines and player in bppLines[team] and prop in bppLines[team][player]:
+				if prop == "k":
+					if value in bppLines[team][player]["k"]:
+						pn = bppLines[team][player]["k"][value].get("pn", "-")
+						bs = bppLines[team][player]["k"][value].get("bs", "-")
+				else:
+					pn = bppLines[team][player][prop]["0.5"].get("pn", "-")
+					bs = bppLines[team][player][prop]["0.5"].get("bs", "-")
+
 			if prop == "hr" and team and team in kambiLines and player in kambiLines[team]:
 				kambi = kambiLines[team][player]
 
@@ -709,7 +757,7 @@ def sortEV():
 				bet365 = str(bet365)[1:]
 			avg = evData[player]['ou']
 
-			l = [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz, pb, br, "-", "-"]
+			l = [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz, pb, br, pn, bs]
 			if prop == "hr":
 				l.insert(1, bet365ev)
 				l.append(kambi)
@@ -794,6 +842,7 @@ if __name__ == '__main__':
 	if args.update:
 		writeFanduel()
 		writeActionNetwork()
+		writeKambi()
 
 	if args.ev:
 		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop)

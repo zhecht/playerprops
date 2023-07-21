@@ -161,6 +161,8 @@ def write_stats(date):
 							except:
 								print(team, name)
 								continue
+						if player not in allStats[t]:
+							continue
 						allStats[t][player][stat] = val
 
 			for rosterRow in data["rosters"]:
