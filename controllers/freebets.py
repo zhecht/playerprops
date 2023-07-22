@@ -305,21 +305,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-chicago-cubs-32499137",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-miami-marlins-32499139",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-tampa-bay-rays-32499142",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-detroit-tigers-32499149",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-washington-nationals-32499140",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-new-york-yankees-32499143",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-cincinnati-reds-32499138",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-boston-red-sox-32499147",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-cleveland-guardians-32499148",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-texas-rangers-32499151",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-milwaukee-brewers-32499141",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-minnesota-twins-32499146",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-los-angeles-angels-32499150",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-oakland-athletics-32499145",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-seattle-mariners-32499144"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-new-york-yankees-32501155",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-miami-marlins-32501152",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-chicago-cubs-32501150",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-texas-rangers-32501165",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-seattle-mariners-32501157",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-tampa-bay-rays-32501158",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-detroit-tigers-32501164",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-washington-nationals-32501153",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-boston-red-sox-32501162",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-cleveland-guardians-32501163",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-milwaukee-brewers-32501154",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-minnesota-twins-32501159",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-oakland-athletics-32501156",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-los-angeles-angels-32501166"
 ]
 
 	lines = {}
@@ -611,7 +610,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			elif prop == "k":
 				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, cz, br, pn, bs]
 			if allArg:
-				l = [bet365ou, dk, mgm, pb, cz, br, kambi]
+				l = [bet365ou, dk, mgm, pb, cz, br, kambi, pn, bs]
 			for book in l:
 				if book and book != "-":
 					odds = int(book.split("/")[0])
