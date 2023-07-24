@@ -1,5 +1,5 @@
 
-from datetime import datetime
+from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
 import json
@@ -205,6 +205,9 @@ def writeActionNetwork():
 	date = datetime.now()
 	date = str(date)[:10]
 
+	if datetime.now().hour > 21:
+		date = str(datetime.now() + timedelta(days=1))[:10]
+
 	for actionProp in props:
 		time.sleep(0.2)
 		path = f"out.json"
@@ -305,21 +308,15 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-detroit-tigers-32503645",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-washington-nationals-32503633",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-new-york-yankees-32503639",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-cincinnati-reds-32503632",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-miami-marlins-32503634",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-tampa-bay-rays-32503638",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-cleveland-guardians-32503644",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-milwaukee-brewers-32503635",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-minnesota-twins-32503640",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-chicago-cubs-32503630",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-texas-rangers-32503643",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-oakland-athletics-32503637",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-los-angeles-angels-32503642",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-seattle-mariners-32503636",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-boston-red-sox-32503641"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-detroit-tigers-32506146",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-philadelphia-phillies-32506145",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-washington-nationals-32506138",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-cleveland-guardians-32506141",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-minnesota-twins-32506143",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-milwaukee-brewers-32506139",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-houston-astros-32506142",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-san-diego-padres-32506140",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-los-angeles-dodgers-32506144"
 ]
 
 	lines = {}
@@ -611,7 +608,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			elif prop == "k":
 				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, cz, br, pn, bs]
 			if allArg:
-				l = [bet365ou, dk, mgm, pb, cz, br, kambi, pn, bs]
+				l = [bet365ou, dk, mgm, pb, cz, br, pn, bs]
 			for book in l:
 				if book and book != "-":
 					odds = int(book.split("/")[0])
@@ -842,7 +839,7 @@ if __name__ == '__main__':
 	if args.update:
 		writeFanduel()
 		writeActionNetwork()
-		writeKambi()
+		#writeKambi()
 
 	if args.ev:
 		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop)
