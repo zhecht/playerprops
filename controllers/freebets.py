@@ -308,21 +308,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-toronto-blue-jays-32516809",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-miami-marlins-32516816",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-pittsburgh-pirates-32516808",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-new-york-mets-32516804",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-chicago-white-sox-32516812",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-kansas-city-royals-32516813",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-st.-louis-cardinals-32516805",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-baltimore-orioles-32516810",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-houston-astros-32516811",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-san-francisco-giants-32516814",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-atlanta-braves-32516806",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-arizona-diamondbacks-32516815",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-colorado-rockies-32516817",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-san-diego-padres-32516818",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-los-angeles-dodgers-32516807"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-atlanta-braves-32519379",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-pittsburgh-pirates-32519383",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-new-york-mets-32519380",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-miami-marlins-32519391",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-houston-astros-32519386",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-kansas-city-royals-32519387",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-chicago-white-sox-32519388",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-st.-louis-cardinals-32519381",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-colorado-rockies-32519393",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-san-francisco-giants-32519389",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-los-angeles-dodgers-32519382",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-arizona-diamondbacks-32519390",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-san-diego-padres-32519394",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-baltimore-orioles-32519384"
 ]
 
 	lines = {}
@@ -763,7 +762,6 @@ def sortEV():
 			l = [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz, pb, br, pn, bs]
 			if prop == "hr":
 				l.insert(1, bet365ev)
-				l.append(kambi)
 			elif prop == "k":
 				l.insert(1, value)
 			tab = "\t".join([str(x) for x in l])
@@ -775,7 +773,6 @@ def sortEV():
 		l = ["EV (AVG)", "Team", "Player", "FD", "AVG", "bet365", "DK", "MGM", "CZ","PB", "BR", "PN", "BS"]
 		if prop == "hr":
 			l.insert(1, "EV (365)")
-			l.append("Kambi")
 		elif prop == "k":
 			l.insert(1, "Line")
 		output += "\t".join(l) + "\n"
