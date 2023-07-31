@@ -27,6 +27,20 @@ def strip_accents(text):
 
 	return str(text)
 
+def convertDecOdds(odds):
+	if odds > 0:
+		decOdds = 1 + (odds / 100)
+	else:
+		decOdds = 1 - (100 / odds)
+	return decOdds
+
+def convertAmericanOdds(avg):
+	if avg >= 2:
+		avg = (avg - 1) * 100
+	else:
+		avg = -100 / (avg - 1)
+	return int(avg)
+
 def writeBallparkpal():
 	js = """
 		for (btn of document.getElementsByTagName("button")) {
@@ -183,19 +197,179 @@ def writeKambi():
 	with open(f"{prefix}static/freebets/kambi.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
+actionNetworkBookIds = {
+	68: "draftkings",
+	69: "fanduel",
+	#15: "betmgm",
+	283: "mgm",
+	348: "betrivers",
+	351: "pointsbet",
+	355: "caesars"
+}
+
+def writeActionNetworkML():
+	date = datetime.now()
+	date = str(date)[:10]
+
+	if datetime.now().hour > 21:
+		date = str(datetime.now() + timedelta(days=1))[:10]
+
+	time.sleep(0.2)
+	path = f"out.json"
+	url = f"https://api.actionnetwork.com/web/v1/scoreboard/mlb?period=game&bookIds=15,30,283,366,68,351,348,355,76,75,123,69&date={date.replace('-', '')}"
+	os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {path}")
+
+	with open(path) as fh:
+		j = json.load(fh)
+
+	#with open("j.json", "w") as fh:
+	#	json.dump(j, fh, indent=4)
+
+	if "games" not in j:
+		return
+
+	data = {}
+	
+	for game in j["games"]:
+		if game["status"] == "complete":
+			continue
+		start = game["start_time"].split(".")[0].split("T")[1]
+		inning = ""
+		if game["status"] == "inprogress":
+			inning = game["status_display"]
+		away = game["teams"][0]["abbr"].lower()
+		home = game["teams"][1]["abbr"].lower()
+		awayScore = game["boxscore"]["stats"]["away"]["runs"]
+		homeScore = game["boxscore"]["stats"]["home"]["runs"]
+		score = f"{awayScore}-{homeScore}"
+		if inning:
+			score += f" {inning}"
+
+		g = f"{away} @ {home}"
+		data[g] = {
+			"start": start,
+			"score": score,
+			"ou": {},
+			"ml": {},
+			"spread": {},
+			"away_ou": {},
+			"home_ou": {}
+		}
+
+		for odd in game["odds"]:
+			book = actionNetworkBookIds.get(odd["book_id"], "")
+			if not book:
+				#print(odd["book_id"])
+				continue
+
+			if odd["total"] not in data[g]["ou"]:
+				data[g]["ou"][odd["total"]] = {}
+
+			spread = odd["spread_away"]
+			if spread not in data[g]["spread"]:
+				data[g]["spread"][spread] = {}
+
+			for which in ["away", "home"]:
+				ou = odd[f"{which}_total"]
+				if not ou:
+					continue
+				if ou not in data[g][f"{which}_ou"]:
+					data[g][f"{which}_ou"][ou] = {}
+				data[g][f"{which}_ou"][ou][book] = str(odd[f"{which}_over"])+"/"+str(odd[f"{which}_under"])
+
+			if odd['over']:
+				data[g]["ou"][odd["total"]][book] = f"{odd['over']}/{odd['under']}"
+			if odd['ml_away']:
+				data[g]["ml"][book] = f"{odd['ml_away']}/{odd['ml_home']}"
+			if odd['spread_away_line']:
+				data[g]["spread"][spread][book] = f"{odd['spread_away_line']}/{odd['spread_home_line']}"
+
+	#with open("t.json", "w") as fh:
+	#	json.dump(data, fh, indent=4)
+
+	for game in data:
+
+		for which in ["ou", "away_ou", "home_ou"]:
+			ou = ""
+			ouLen = 0
+			for ouNum in data[game][which]:
+				if not ou:
+					ou = ouNum
+				if len(data[game][which].keys()) > ouLen:
+					ou = ouNum
+					ouLen = len(data[game][which].keys())
+			avgOU = [[], []]
+			maxOU = [[], []]
+			if not ou:
+				continue
+			for book in data[game][which][ou]:
+				awayOdds, homeOdds = map(int, data[game][which][ou][book].split("/"))
+				odds = [convertDecOdds(awayOdds), convertDecOdds(homeOdds)]
+				if not maxOU[0]:
+					maxOU[0] = maxOU[1] = [book]
+				else:
+					if odds[0] > max(avgOU[0]):
+						maxOU[0] = [book]
+					elif odds[0] == max(avgOU[0]):
+						maxOU[0].append(book)
+					if odds[1] > max(avgOU[1]):
+						maxOU[1] = [book]
+					elif odds[1] == max(avgOU[1]):
+						maxOU[1].append(book)
+
+				avgOU[0].append(odds[0])
+				avgOU[1].append(odds[1])
+
+			over = convertDecOdds(int(data[game][which][ou][maxOU[0][0]].split("/")[0]))
+			under = convertDecOdds(int(data[game][which][ou][maxOU[1][0]].split("/")[1]))
+			if False and len(avgOU[0]) > 1:
+				avgOU[0].remove(over)
+				avgOU[1].remove(under)
+			avgOU[0], avgOU[1] = str(convertAmericanOdds(float(sum(avgOU[0]) / len(avgOU[0])))), str(convertAmericanOdds(float(sum(avgOU[1]) / len(avgOU[1]))))
+			data[game][f"{which}_num"] = ou
+			data[game][f"{which}_avg"] = "/".join(avgOU)
+			data[game][f"{which}_away"] = f"{','.join(maxOU[0])} {data[game][which][ou][maxOU[0][0]].split('/')[0]}"
+			data[game][f"{which}_home"] = f"{','.join(maxOU[1])} {data[game][which][ou][maxOU[1][0]].split('/')[1]}"
+
+		avgML = [[], []]
+		maxML = [[], []]
+		for book in data[game]["ml"]:
+			awayOdds, homeOdds = map(int, data[game]["ml"][book].split("/"))
+			odds = [convertDecOdds(awayOdds), convertDecOdds(homeOdds)]
+			if not maxML[0]:
+				maxML[0] = maxML[1] = [book]
+			else:
+				if odds[0] > max(avgML[0]):
+					maxML[0] = [book]
+				elif odds[0] == max(avgML[0]):
+					maxML[0].append(book)
+				if odds[1] > max(avgML[1]):
+					maxML[1] = [book]
+				elif odds[1] == max(avgML[1]):
+					maxML[1].append(book)
+			avgML[0].append(odds[0])
+			avgML[1].append(odds[1])
+
+		if not data[game]["ml"]:
+			continue
+		over = convertDecOdds(int(data[game]["ml"][maxML[0][0]].split("/")[0]))
+		under = convertDecOdds(int(data[game]["ml"][maxML[1][0]].split("/")[1]))
+		if False:
+			avgML[0].remove(over)
+			avgML[1].remove(under)
+		avgML[0], avgML[1] = str(convertAmericanOdds(float(sum(avgML[0]) / len(avgML[0])))), str(convertAmericanOdds(float(sum(avgML[1]) / len(avgML[1]))))
+		data[game]["ml_avg"] = "/".join(avgML)
+		data[game]["ml_away"] = f"{','.join(maxML[0])} {data[game]['ml'][maxML[0][0]].split('/')[0]}"
+		data[game]["ml_home"] = f"{','.join(maxML[1])} {data[game]['ml'][maxML[1][0]].split('/')[1]}"
+
+
+
+	with open(f"{prefix}static/freebets/actionnetworkML.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 
 
 def writeActionNetwork():
-	actionNetworkBookIds = {
-		68: "draftkings",
-		69: "fanduel",
-		#15: "betmgm",
-		283: "mgm",
-		348: "betrivers",
-		351: "pointsbet",
-		355: "caesars"
-	}
-
 	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles"]
 	#props = ["32_singles"]
 
@@ -220,9 +394,6 @@ def writeActionNetwork():
 
 		with open(path) as fh:
 			j = json.load(fh)
-
-		with open(path, "w") as fh:
-			json.dump(j, fh, indent=4)
 
 		if "markets" not in j:
 			return
@@ -308,20 +479,15 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-atlanta-braves-32519379",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-pittsburgh-pirates-32519383",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-new-york-mets-32519380",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-miami-marlins-32519391",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-houston-astros-32519386",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-kansas-city-royals-32519387",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-chicago-white-sox-32519388",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-st.-louis-cardinals-32519381",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-colorado-rockies-32519393",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-san-francisco-giants-32519389",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-los-angeles-dodgers-32519382",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-arizona-diamondbacks-32519390",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-san-diego-padres-32519394",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-baltimore-orioles-32519384"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-miami-marlins-32521928",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-washington-nationals-32521929",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-new-york-yankees-32521931",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32521932",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-atlanta-braves-32521935",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-cubs-32521926",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-houston-astros-32521933",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-32521930",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-32521934"
 ]
 
 	lines = {}
@@ -616,35 +782,17 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				l = [bet365ou, dk, mgm, pb, cz, br, pn, bs]
 			for book in l:
 				if book and book != "-":
-					odds = int(book.split("/")[0])
-					if odds > 0:
-						decOdds = 1 + (odds / 100)
-					else:
-						decOdds = 1 - (100 / odds)
-					avgOver.append(decOdds)
+					avgOver.append(convertDecOdds(int(book.split("/")[0])))
 					if "/" in book and book.split("/")[1] != "0":
-						odds = int(book.split("/")[1])
-						if odds > 0:
-							decOdds = 1 + (odds / 100)
-						else:
-							decOdds = 1 - (100 / odds)
-						avgUnder.append(decOdds)
+						avgUnder.append(convertDecOdds(int(book.split("/")[1])))
 			if avgOver:
 				avgOver = float(sum(avgOver) / len(avgOver))
-				if avgOver >= 2:
-					avgOver = (avgOver - 1) * 100
-				else:
-					avgOver = -100 / (avgOver - 1)
-				avgOver = int(avgOver)
+				avgOver = convertAmericanOdds(avgOver)
 			else:
 				avgOver = "-"
 			if avgUnder:
 				avgUnder = float(sum(avgUnder) / len(avgUnder))
-				if avgUnder >= 2:
-					avgUnder = (avgUnder - 1) * 100
-				else:
-					avgUnder = -100 / (avgUnder - 1)
-				avgUnder = int(avgUnder)
+				avgUnder = convertAmericanOdds(avgUnder)
 			else:
 				avgUnder = "-"
 
@@ -735,6 +883,8 @@ def sortEV():
 			if team and team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
 				an = actionnetwork[team][player][prop]
 				if prop == "k":
+					if value not in actionnetwork[team][player][prop]:
+						continue
 					an = actionnetwork[team][player][prop][value]
 				mgm = an.get("mgm", "-")
 				br = an.get("betrivers", "-")
@@ -822,6 +972,7 @@ if __name__ == '__main__':
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
 	parser.add_argument("-g", "--game", help="Game")
 	parser.add_argument("-k", "--k", action="store_true", help="Ks")
+	parser.add_argument("--ml", action="store_true", help="Moneyline and Totals")
 	parser.add_argument("--prop", help="Prop")
 	parser.add_argument("--update", action="store_true", help="Update")
 	parser.add_argument("--under", action="store_true", help="Under")
@@ -843,6 +994,10 @@ if __name__ == '__main__':
 		writeFanduel()
 		writeActionNetwork()
 		#writeKambi()
+
+	if args.ml:
+		writeActionNetworkML()
+
 
 	if args.ev:
 		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop)
