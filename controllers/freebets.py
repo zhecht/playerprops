@@ -479,15 +479,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-miami-marlins-32521928",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-washington-nationals-32521929",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-new-york-yankees-32521931",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32521932",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-atlanta-braves-32521935",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-cubs-32521926",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-houston-astros-32521933",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-32521930",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-32521934"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-atlanta-braves-32525901",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-pittsburgh-pirates-32525905",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-washington-nationals-32525893",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-32525894",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-32525897",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-miami-marlins-32525895",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-new-york-yankees-32525898",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32525899",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-st.-louis-cardinals-32525902",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-cubs-32525892",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-texas-rangers-32525900",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-kansas-city-royals-32525903",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-san-francisco-giants-32525890",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-los-angeles-dodgers-32525904"
 ]
 
 	lines = {}
@@ -659,7 +664,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", strikeouts=False, prop="hr", under=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", strikeouts=False, prop="hr", under=False, nocz=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -751,6 +756,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			if prop == "k" and team in bpp and player in bpp[team] and "k" in bpp[team][player] and str(handicap) in bpp[team][player]["k"]:
 				pn = bpp[team][player]["k"][str(handicap)].get("pn", "-")
 				bs = bpp[team][player]["k"][str(handicap)].get("bs", "-")
+			elif prop == "hr" and team in bpp and player in bpp[team] and "hr" in bpp[team][player]:
+				pn = bpp[team][player]["hr"]["0.5"].get("pn", "-")
+				bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
 
 			if team not in bet365Lines or player not in bet365Lines[team]:
 				bet365ou = ""
@@ -775,11 +783,17 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			avgUnder = []
 			l = [bet365ou, dk, mgm, pb]
 			if prop in ["single", "double"]:
-				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, cz, br]
+				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, br]
+				if not nocz:
+					l.append(cz)
 			elif prop == "k":
-				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, cz, br, pn, bs]
+				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, br, pn, bs]
+				if not nocz:
+					l.append(cz)
 			if allArg:
-				l = [bet365ou, dk, mgm, pb, cz, br, pn, bs]
+				l = [bet365ou, dk, mgm, pb, br, pn, bs]
+				if not nocz:
+					l.append(cz)
 			for book in l:
 				if book and book != "-":
 					avgOver.append(convertDecOdds(int(book.split("/")[0])))
@@ -823,7 +837,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if useDK:
 					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
 
-				if prop == "hr":
+				if prop == "hr" and bet365ou:
 					devigger(evData, player, bet365ou, line, dinger)
 				devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 				if player not in evData:
@@ -918,7 +932,7 @@ def sortEV():
 			data.append((ev, player, tab, evData[player]))
 			bet365data.append((bet365ev, player, tab, evData[player]))
 
-		dt = datetime.strftime(datetime.now(), "%I %p")
+		dt = datetime.strftime(datetime.now(), "%I:%M %p")
 		output = f"\t\t\tUPD: {dt}\n\n"
 		l = ["EV (AVG)", "Team", "Player", "FD", "AVG", "bet365", "DK", "MGM", "CZ","PB", "BR", "PN", "BS"]
 		if prop == "hr":
@@ -976,6 +990,7 @@ if __name__ == '__main__':
 	parser.add_argument("--prop", help="Prop")
 	parser.add_argument("--update", action="store_true", help="Update")
 	parser.add_argument("--under", action="store_true", help="Under")
+	parser.add_argument("--nocz", action="store_true", help="No CZ Lines")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 
 	args = parser.parse_args()
@@ -1000,7 +1015,7 @@ if __name__ == '__main__':
 
 
 	if args.ev:
-		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop)
+		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop, nocz=args.nocz)
 
 	if args.bpp:
 		checkBPP()
@@ -1012,7 +1027,7 @@ if __name__ == '__main__':
 		sortEV()
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, prop=args.prop, under=args.under)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, prop=args.prop, under=args.under, nocz=args.nocz)
 		sortEV()
 	#write365()
 	#writeActionNetwork()

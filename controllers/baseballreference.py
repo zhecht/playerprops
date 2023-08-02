@@ -948,6 +948,7 @@ def write_batting_pitches():
 		battingPitches[team] = j
 
 	playerBattingPitches = {}
+	referenceIds = {}
 	for comment in soup.findAll(text=lambda text:isinstance(text, Comment)):
 		if "div_players_pitches_batting" in comment:
 			soup = BS(comment, "lxml")
@@ -968,7 +969,10 @@ def write_batting_pitches():
 				player = strip_accents(tr.find("a").text.lower().replace("\u00a0", " ").replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", ""))
 				if team not in playerBattingPitches:
 					playerBattingPitches[team] = {}
+				if team not in referenceIds:
+					referenceIds[team] = {}
 				playerBattingPitches[team][player] = j
+				referenceIds[team][player] = tr.find("a").get("href")
 
 			break
 
@@ -976,6 +980,8 @@ def write_batting_pitches():
 		json.dump(playerBattingPitches, fh, indent=4)
 	with open(f"{prefix}static/baseballreference/battingPitches.json", "w") as fh:
 		json.dump(battingPitches, fh, indent=4)
+	with open(f"{prefix}static/baseballreference/referenceIds.json", "w") as fh:
+		json.dump(referenceIds, fh, indent=4)
 
 
 def write_pitching_pitches():
@@ -1361,6 +1367,84 @@ def writeBVP(dateArg):
 	with open(f"{prefix}static/baseballreference/bvp.json", "w") as fh:
 		json.dump(bvp, fh, indent=4)
 
+def writeTrades():
+
+	url = "https://www.espn.com/mlb/transactions"
+	outfile = "outmlb2"
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	data = "{}"
+	for script in soup.findAll("script"):
+		if script.string and '"transactions"' in script.string:
+			m = re.search(r"transactions\":\[{(.*?)}}\],", script.string)
+			if m:
+				data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+				data = f"{{{data}}}}}"
+				break
+
+	data = eval(data)
+
+	with open("t", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+
+def writeBaseballReferencePH():
+	with open(f"{prefix}static/mlbprops/ev_hr.json") as fh:
+		ev = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/referenceIds.json") as fh:
+		referenceIds = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/ph.json") as fh:
+		ph = json.load(fh)
+
+	date = datetime.datetime.now()
+	for player in ev:
+		team = ev[player]["team"]
+		if team not in ph:
+			ph[team] = {}
+		if player in ph[team] and ph[team][player]["updated"] == str(date)[:10]:
+			continue
+
+		if player not in referenceIds[team]:
+			continue
+		ph[team][player] = {
+			"updated": str(date)[:10],
+			"phf": 0,
+			"ph": 0,
+			"games": 0,
+			"rest": []
+		}
+
+		pid = referenceIds[team][player].split("/")[-1][:-6]
+		print(pid)
+		time.sleep(0.3)
+		url = f"https://www.baseball-reference.com/players/gl.fcgi?id={pid}&t=b&year={date.year}"
+		outfile = "outmlb3"
+		call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+		betweenRest = 0
+		for tr in soup.find("table", id="batting_gamelogs").find("tbody").findAll("tr"):
+			if tr.get("class") and ("thead" in tr.get("class") or "partial_table" in tr.get("class")):
+				continue
+			inngs = tr.findAll("td")[7].text.lower()
+			ph[team][player]["games"] += 1
+			if "gs" in inngs:
+				ph[team][player]["phf"] += 1
+			elif "cg" not in inngs:
+				ph[team][player]["ph"] += 1
+
+			if "(" in tr.findAll("td")[1].text:
+				daysSinceLast = int(tr.findAll("td")[1].text.split("(")[-1][:-1])
+				if daysSinceLast == 1:
+					ph[team][player]["rest"].append(betweenRest)
+				betweenRest = 0
+			betweenRest += 1
+
+	with open(f"{prefix}static/baseballreference/ph.json", "w") as fh:
+		json.dump(ph, fh, indent=4)
+
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -1374,9 +1458,11 @@ if __name__ == "__main__":
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
 	parser.add_argument("--pitches", help="Pitches", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
+	parser.add_argument("--trades", help="Trades", action="store_true")
 	parser.add_argument("--stats", help="Stats", action="store_true")
 	parser.add_argument("--pitching", help="Pitching", action="store_true")
 	parser.add_argument("--ttoi", help="Team TTOI", action="store_true")
+	parser.add_argument("--ph", help="baseball reference pinch hits", action="store_true")
 	parser.add_argument("-e", "--end", help="End Week", type=int)
 	parser.add_argument("-w", "--week", help="Week", type=int)
 
@@ -1394,6 +1480,8 @@ if __name__ == "__main__":
 		write_averages()
 	elif args.bvp:
 		writeBVP(date)
+	elif args.ph:
+		writeBaseballReferencePH()
 	elif args.rankings:
 		write_rankings()
 		write_player_rankings()
@@ -1406,6 +1494,8 @@ if __name__ == "__main__":
 		write_pitching()
 	elif args.schedule:
 		write_schedule(date)
+	elif args.trades:
+		writeTrades()
 	elif args.cron:
 		write_rankings()
 		write_player_rankings()
