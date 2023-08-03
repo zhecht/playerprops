@@ -370,7 +370,7 @@ def writeActionNetworkML():
 
 
 def writeActionNetwork():
-	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles"]
+	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles", "77_total_bases"]
 	#props = ["32_singles"]
 
 	odds = {}
@@ -388,7 +388,7 @@ def writeActionNetwork():
 		url = f"https://api.actionnetwork.com/web/v1/leagues/8/props/core_bet_type_{actionProp}?bookIds=69,68,283,348,351,355&date={date.replace('-', '')}"
 		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {path}")
 
-		prop = actionProp.split("_")[-1].replace("strikeouts", "k")
+		prop = actionProp.split("_")[-1].replace("strikeouts", "k").replace("base", "tb")
 		if prop.endswith("s"):
 			prop = prop[:-1]
 
@@ -430,7 +430,7 @@ def writeActionNetwork():
 				if prop not in odds[team][player]:
 					odds[team][player][prop] = {}
 
-				if prop == "k":
+				if prop in ["k", "tb"]:
 					if value not in odds[team][player][prop]:
 						odds[team][player][prop][value] = {}
 
@@ -479,20 +479,17 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-atlanta-braves-32525901",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-pittsburgh-pirates-32525905",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-washington-nationals-32525893",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-32525894",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-32525897",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-miami-marlins-32525895",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-new-york-yankees-32525898",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32525899",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-st.-louis-cardinals-32525902",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-cubs-32525892",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-texas-rangers-32525900",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-kansas-city-royals-32525903",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-san-francisco-giants-32525890",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-los-angeles-dodgers-32525904"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-miami-marlins-32528570",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-texas-rangers-32528572",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-kansas-city-royals-32528576",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32528573",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-san-francisco-giants-32528568",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-milwaukee-brewers-32528571",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-new-york-yankees-32528574",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-st.-louis-cardinals-32528577",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-cubs-32528569",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-los-angeles-angels-32528575",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-los-angeles-dodgers-32528578"
 ]
 
 	lines = {}
@@ -518,7 +515,7 @@ def writeFanduel():
 			for market in data["attachments"]["markets"]:
 				marketName = data["attachments"]["markets"][market]["marketName"].lower()
 
-				if marketName in ["to hit a home run", "to hit a double", "to hit a triple", "to hit a single", "to record a hit"] or "- strikeouts" in marketName:
+				if marketName in ["to hit a home run", "to hit a double", "to hit a triple", "to hit a single", "to record a hit", "to record 2+ total bases"] or "- strikeouts" in marketName:
 					prop = "hr"
 					if "single" in marketName:
 						prop = "single"
@@ -530,6 +527,8 @@ def writeFanduel():
 						prop = "h"
 					elif "strikeouts" in marketName:
 						prop = "k"
+					elif "total bases" in marketName:
+						prop = "tb"
 
 					for playerRow in data["attachments"]["markets"][market]["runners"]:
 						player = playerRow["runnerName"].lower().replace(" over", "").replace(" under", "").replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
@@ -664,7 +663,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", strikeouts=False, prop="hr", under=False, nocz=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, prop="hr", under=False, nocz=False, no365=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -700,6 +699,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	for game in fdLines:
 		if gameArg and game != gameArg:
 			continue
+		if teamArg and teamArg not in game:
+			continue
 		for player in fdLines[game]:
 			if prop not in fdLines[game][player]:
 				continue
@@ -720,7 +721,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 			fdLine = fdLines[game][player][prop]
 			handicap = ""
-			if prop == "k":
+			if prop in "k":
 				handicap = float(fdLine.split(" ")[0][1:])
 				if under:
 					fdLine = int(fdLine.split(" ")[1].split("/")[1])
@@ -837,7 +838,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if useDK:
 					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
 
-				if prop == "hr" and bet365ou:
+				if prop == "hr" and bet365ou and not no365:
 					devigger(evData, player, bet365ou, line, dinger)
 				devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 				if player not in evData:
@@ -872,8 +873,7 @@ def sortEV():
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
-
-	for prop in ["hr", "k", "single", "double"]:
+	for prop in ["hr", "k", "single", "double", "tb"]:
 		with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
 			evData = json.load(fh)
 
@@ -923,7 +923,9 @@ def sortEV():
 				bet365 = str(bet365)[1:]
 			avg = evData[player]['ou']
 
-			l = [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz, pb, br, pn, bs]
+			l = [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz]
+			if prop not in ["single", "double", "tb"]:
+				l.extend([pb, br, pn, bs])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
@@ -934,7 +936,9 @@ def sortEV():
 
 		dt = datetime.strftime(datetime.now(), "%I:%M %p")
 		output = f"\t\t\tUPD: {dt}\n\n"
-		l = ["EV (AVG)", "Team", "Player", "FD", "AVG", "bet365", "DK", "MGM", "CZ","PB", "BR", "PN", "BS"]
+		l = ["EV (AVG)", "Team", "Player", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
+		if prop not in ["single", "double", "tb"]:
+			l.extend(["PB", "BR", "PN", "BS"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":
@@ -985,12 +989,14 @@ if __name__ == '__main__':
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
 	parser.add_argument("-g", "--game", help="Game")
+	parser.add_argument("-t", "--team", help="Team")
 	parser.add_argument("-k", "--k", action="store_true", help="Ks")
 	parser.add_argument("--ml", action="store_true", help="Moneyline and Totals")
 	parser.add_argument("--prop", help="Prop")
-	parser.add_argument("--update", action="store_true", help="Update")
+	parser.add_argument("-u", "--update", action="store_true", help="Update")
 	parser.add_argument("--under", action="store_true", help="Under")
 	parser.add_argument("--nocz", action="store_true", help="No CZ Lines")
+	parser.add_argument("--no365", action="store_true", help="No 365 Devig")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 
 	args = parser.parse_args()
@@ -1027,7 +1033,7 @@ if __name__ == '__main__':
 		sortEV()
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, prop=args.prop, under=args.under, nocz=args.nocz)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, no365=args.no365)
 		sortEV()
 	#write365()
 	#writeActionNetwork()

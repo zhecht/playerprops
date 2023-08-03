@@ -430,7 +430,7 @@ def sumStat(header, target, source):
 		except:
 			pass
 
-def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineArg=""):
+def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lineArg=""):
 	
 	if not date:
 		date = datetime.now()
@@ -495,6 +495,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 		playerPitchingPitches = json.load(fh)
 	with open(f"{prefix}static/baseballreference/statsVsTeamCurrYear.json") as fh:
 		statsVsTeamCurrYear = json.load(fh)
+	with open(f"{prefix}static/baseballreference/trades.json") as fh:
+		trades = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
 		gameLines = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
@@ -532,7 +534,7 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 			except:
 				playerId = 0
 
-			if teams and team not in teams:
+			if teamsArg and team not in teamsArg:
 				continue
 
 			for propName in propData[game][player]:
@@ -665,15 +667,28 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				overOdds = propData[game][player][propName]["over"]
 				underOdds = propData[game][player][propName]["under"]
 
+				tradeFrom = tradeTo = ""
+				if player in trades:
+					tradeFrom = trades[player]["from"]
+					tradeTo = trades[player]["to"]
+
 				bpDiff = 0
 				if bpOdds:
 					bpDiff = round((int(overOdds) - bpOdds) / abs(int(overOdds)), 3)
 
 				lastYrGamesPlayed = 0
-				if team in averages and player in averages[team] and "2022" in averages[team][player]:
-					lastYrGamesPlayed = averages[team][player]["2022"].get("gamesPlayed", 0)
+				lastYr = datetime.now().year - 1
+				if team in averages and player in averages[team] and lastYr in averages[team][player]:
+					lastYrGamesPlayed = averages[team][player][lastYr].get("gamesPlayed", 0)
 					for p in prop.split("+"):
-						lastYearAvg += averages[team][player]["2022"].get(p, 0)
+						lastYearAvg += averages[team][player][lastYr].get(p, 0)
+
+					if lastYrGamesPlayed:
+						lastYearAvg = round(lastYearAvg / lastYrGamesPlayed, 2)
+				elif tradeFrom and tradeFrom in averages and player in averages[tradeFrom] and lastYr in averages[tradeFrom][player]:
+					lastYrGamesPlayed = averages[tradeFrom][player][lastYr].get("gamesPlayed", 0)
+					for p in prop.split("+"):
+						lastYearAvg += averages[tradeFrom][player][lastYr].get(p, 0)
 
 					if lastYrGamesPlayed:
 						lastYearAvg = round(lastYearAvg / lastYrGamesPlayed, 2)
@@ -687,83 +702,91 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 
 				againstTeamStats = statsVsTeam[team][opp].get(player, {})
 
-				if opp in statsVsTeamCurrYear[team] and player in statsVsTeamCurrYear[team][opp]:
-					for hdr in statsVsTeamCurrYear[team][opp][player]:
-						if hdr not in againstTeamStats:
-							againstTeamStats[hdr] = statsVsTeamCurrYear[team][opp][player][hdr]
-						elif hdr.endswith("Overs"):
-							for over in statsVsTeamCurrYear[team][opp][player][hdr]:
-								if over not in againstTeamStats[hdr]:
-									againstTeamStats[hdr][over] = 0
-								againstTeamStats[hdr][over] += statsVsTeamCurrYear[team][opp][player][hdr][over]
-						else:
-							sumStat(hdr, againstTeamStats, statsVsTeamCurrYear[team][opp][player])
-
+				teams = [team]
+				if tradeFrom:
+					teams.append(tradeFrom)
+				for t in teams:
+					if opp in statsVsTeamCurrYear[t] and player in statsVsTeamCurrYear[t][opp]:
+						for hdr in statsVsTeamCurrYear[t][opp][player]:
+							if hdr not in againstTeamStats:
+								againstTeamStats[hdr] = statsVsTeamCurrYear[t][opp][player][hdr]
+							elif hdr.endswith("Overs"):
+								for over in statsVsTeamCurrYear[t][opp][player][hdr]:
+									if over not in againstTeamStats[hdr]:
+										againstTeamStats[hdr][over] = 0
+									againstTeamStats[hdr][over] += statsVsTeamCurrYear[t][opp][player][hdr][over]
+							else:
+								sumStat(hdr, againstTeamStats, statsVsTeamCurrYear[t][opp][player])
 				try:
 					overs = againstTeamStats[prop+"Overs"][str(math.ceil(line))]
 				except:
 					overs = 0
 				played = againstTeamStats.get("gamesPlayed", 0)
-				if opp in statsVsTeamCurrYear[team] and player in statsVsTeamCurrYear[team][opp]:
-					if f"{prop}Overs" in statsVsTeamCurrYear[team][opp][player]:
-						overs += statsVsTeamCurrYear[team][opp][player][prop+"Overs"].get(str(math.ceil(line)), 0)
-					played += statsVsTeamCurrYear[team][opp][player]["gamesPlayed"]
+
+				for t in teams:
+					if opp in statsVsTeamCurrYear[t] and player in statsVsTeamCurrYear[t][opp]:
+						if f"{prop}Overs" in statsVsTeamCurrYear[t][opp][player]:
+							overs += statsVsTeamCurrYear[t][opp][player][prop+"Overs"].get(str(math.ceil(line)), 0)
+						played += statsVsTeamCurrYear[t][opp][player]["gamesPlayed"]
 				if played:
 					againstTeamTotalOver = round(overs * 100 / played)
 
-				if player in averages[team]:
-					for yr in averages[team][player]:
-						if yr == "tot":
-							continue
-						overLine = math.ceil(line)
-						try:
-							over = averages[team][player][yr][f"{prop}Overs"][str(overLine)]
-							careerTotalGames += averages[team][player][yr]["gamesPlayed"]
-							careerTotalOver += over
-						except:
-							pass
+				for t in teams:
+					if player in averages[t]:
+						for yr in averages[t][player]:
+							if yr == "tot":
+								continue
+							overLine = math.ceil(line)
+							try:
+								over = averages[t][player][yr][f"{prop}Overs"][str(overLine)]
+								careerTotalGames += averages[t][player][yr]["gamesPlayed"]
+								careerTotalOver += over
+							except:
+								pass
 
 				if careerTotalGames:
 					careerTotalOver = round(careerTotalOver * 100 / careerTotalGames)
 					try:
-						careerAvg = 0
-						for p in prop.split("+"):
-							careerAvg += averages[team][player]["tot"][p]
-						careerAvg = round(careerAvg / averages[team][player]["gamesPlayed"])
+						careerAvg = gp = 0
+						for t in teams:
+							gp += averages[t][player]["gamesPlayed"]
+							for p in prop.split("+"):
+								careerAvg += averages[t][player]["tot"][p]
+						careerAvg = round(careerAvg / gp)
 
 					except:
 						pass
 
+				for t in teams:
+					if t in lastYearStats and player in lastYearStats[t]:
+						l = [d.replace(" gm2", "") for d in lastYearStats[t][player] if d != "tot"]
+						seen = {}
+						for d in sorted(l, key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
+							if d in seen:
+								d += " gm2"
+							seen[d] = True
+							lastTotalGames += 1
+							val = 0
+							for p in prop.split("+"):
+								val += lastYearStats[t][player][d].get(p, 0)
 
-				if team in lastYearStats and player in lastYearStats[team]:
-					l = [d.replace(" gm2", "") for d in lastYearStats[team][player] if d != "tot"]
-					seen = {}
-					for d in sorted(l, key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
-						if d in seen:
-							d += " gm2"
-						seen[d] = True
-						lastTotalGames += 1
-						val = 0
-						for p in prop.split("+"):
-							val += lastYearStats[team][player][d].get(p, 0)
+							if val > line:
+								lastYearTotalOver += 1
 
-						if val > line:
-							lastYearTotalOver += 1
+							if len(lastYrLast20) < 20:
+								lastYrLast20.append(val)
 
-						if len(lastYrLast20) < 20:
-							lastYrLast20.append(val)
+							currOpp = lastYearStats[t][player][d]["vs"]
 
-						currOpp = lastYearStats[team][player][d]["vs"]
+							if currOpp == opp:
+								prevMatchup.append(val)
+								for hdr in againstTeamLastYearStats:
+									againstTeamLastYearStats[hdr] += lastYearStats[t][player][d].get(hdr, 0)
 
-						if currOpp == opp:
-							prevMatchup.append(val)
-							for hdr in againstTeamLastYearStats:
-								againstTeamLastYearStats[hdr] += lastYearStats[team][player][d].get(hdr, 0)
-
-						if lastYearStats[team][player][d]["isAway"]:
-							lastYrAwayHomeSplits[0].append(val)
-						else:
-							lastYrAwayHomeSplits[1].append(val)
+							if lastYearStats[t][player][d]["isAway"]:
+								lastYrAwayHomeSplits[0].append(val)
+							else:
+								lastYrAwayHomeSplits[1].append(val)
 
 				if lastTotalGames:
 					lastYearTotalOver = round(lastYearTotalOver * 100 / lastTotalGames)
@@ -788,18 +811,30 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				winLossSplits = [[], []]
 				totalOver = battingAvg = avg = hitter_babip = babip = bbpg = 0
 				
-				if player in stats[team]:
-					playerStats = stats[team][player]
+				if player in stats[team] or (tradeFrom and player in stats[tradeFrom]):
+					try:
+						playerStats = stats[team][player]
+					except:
+						playerStats = {}
+					if tradeFrom and player in stats[tradeFrom]:
+						for p in stats[tradeFrom][player]:
+							if p not in playerStats:
+								playerStats[p] = 0
+							playerStats[p] += stats[tradeFrom][player][p]
+
 					gamesPlayed = playerStats["gamesPlayed"]
 
 					if gamesPlayed:
 						bbpg = round(playerStats.get("bb", 0) / gamesPlayed, 2)
 					val = 0
 					currProp = prop
-					if propName in stats[team][player]:
+					if propName in stats[team].get(player, {}) or (tradeFrom and propName in stats[tradeFrom][player]):
 						currProp = propName
 					for p in currProp.split("+"):
-						val += stats[team][player].get(p, 0)
+						if player in stats[team]:
+							val += stats[team][player].get(p, 0)
+						if tradeFrom:
+							val += stats[tradeFrom][player].get(p, 0)
 					avg = round(val / gamesPlayed, 2)
 
 					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
@@ -830,6 +865,8 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 
 				over5Innings = []
 				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
+				if tradeFrom:
+					files.extend(glob.glob(f"{prefix}static/baseballreference/{tradeFrom}/*.json"))
 				files = sorted(files, key=lambda k: datetime.strptime(k.replace("-gm2", "").split("/")[-1].replace(".json", ""), "%Y-%m-%d"), reverse=True)
 				for file in files:
 					chkDate = file.replace("-gm2", "").split("/")[-1].replace(".json","")
@@ -928,8 +965,9 @@ def getPropData(date = None, playersArg = [], teams = "", pitchers=False, lineAr
 				againstPitcherStats = ""
 				againstPitcherStatsPerAB = ""
 				try:
-					againstPitcherStats = f"{str(format(round(bvp[team][player+' v '+pitcher]['h']/bvp[team][player+' v '+pitcher]['ab'], 3), '.3f'))[1:]} {int(bvp[team][player+' v '+pitcher]['h'])}-{int(bvp[team][player+' v '+pitcher]['ab'])}, {int(bvp[team][player+' v '+pitcher]['hr'])} HR, {int(bvp[team][player+' v '+pitcher]['rbi'])} RBI, {int(bvp[team][player+' v '+pitcher]['bb'])} BB, {int(bvp[team][player+' v '+pitcher]['so'])} SO"
-					againstPitcherStatsPerAB = f"{str(format(round(bvp[team][player+' v '+pitcher]['h']/bvp[team][player+' v '+pitcher]['ab'], 3), '.3f'))[1:]} {int(bvp[team][player+' v '+pitcher]['h'])}-{bvp[team][player+' v '+pitcher]['ab']}, {round(bvp[team][player+' v '+pitcher]['hr'] / bvp[team][player+' v '+pitcher]['ab'], 2)} HR, {round(bvp[team][player+' v '+pitcher]['rbi'] / bvp[team][player+' v '+pitcher]['ab'], 2)} RBI, {round(bvp[team][player+' v '+pitcher]['bb'] / bvp[team][player+' v '+pitcher]['ab'], 2)} BB, {round(bvp[team][player+' v '+pitcher]['so'] / bvp[team][player+' v '+pitcher]['ab'], 2)} SO"
+					bvpStats = bvp[team][player+' v '+pitcher]
+					againstPitcherStats = f"{str(format(round(bvpStats['h']/bvpStats['ab'], 3), '.3f'))[1:]} {int(bvpStats['h'])}-{int(bvpStats['ab'])}, {int(bvpStats['hr'])} HR, {int(bvpStats['rbi'])} RBI, {int(bvpStats['bb'])} BB, {int(bvpStats['so'])} SO"
+					againstPitcherStatsPerAB = f"{str(format(round(bvpStats['h']/bvpStats['ab'], 3), '.3f'))[1:]} {int(bvpStats['h'])}-{bvpStats['ab']}, {round(bvpStats['hr'] / bvpStats['ab'], 2)} HR, {round(bvpStats['rbi'] / bvpStats['ab'], 2)} RBI, {round(bvpStats['bb'] / bvpStats['ab'], 2)} BB, {round(bvpStats['so'] / bvpStats['ab'], 2)} SO"
 				except:
 					pass
 
@@ -1598,7 +1636,7 @@ def getProps_route():
 		players = ""
 		if request.args.get("players"):
 			players = request.args.get("players").lower().split(",")
-		props = getPropData(date=request.args.get("date"), playersArg=players, teams="", pitchers=pitchers, lineArg=request.args.get("line") or "")
+		props = getPropData(date=request.args.get("date"), playersArg=players, teamsArg="", pitchers=pitchers, lineArg=request.args.get("line") or "")
 	elif request.args.get("prop"):
 		path = f"{prefix}static/betting/mlb_{request.args.get('prop')}.json"
 		if not os.path.exists(path):
@@ -1789,6 +1827,8 @@ if __name__ == "__main__":
 
 	if args.lineups:
 		writeLineups(date)
+	elif args.lines:
+		writeProps(date)
 	elif args.props:
 		writeStaticProps(date)
 	elif args.bovada:
