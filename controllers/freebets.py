@@ -28,6 +28,8 @@ def strip_accents(text):
 	return str(text)
 
 def convertDecOdds(odds):
+	if odds == 0:
+		return 0
 	if odds > 0:
 		decOdds = 1 + (odds / 100)
 	else:
@@ -64,7 +66,7 @@ def writeBallparkpal():
 				data[team] = {};
 			}
 
-			let player = tds[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
+			let player = tds[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "").replace("michael a taylor", "michael taylor");
 
 			if (data[team][player] === undefined) {
 				data[team][player] = {};
@@ -418,6 +420,8 @@ def writeActionNetwork():
 				pass
 			for oddData in bookData["odds"]:
 				player = playerIds[oddData["player_id"]]
+				if player == "michael a taylor":
+					player = "michael taylor"
 				team = teamIds[oddData["team_id"]]
 				overUnder = optionTypes[oddData["option_type_id"]]
 				book = actionNetworkBookIds.get(bookId, "")
@@ -479,17 +483,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-miami-marlins-32528570",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-texas-rangers-32528572",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-kansas-city-royals-32528576",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-toronto-blue-jays-32528573",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-san-francisco-giants-32528568",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-milwaukee-brewers-32528571",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-new-york-yankees-32528574",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-st.-louis-cardinals-32528577",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-cubs-32528569",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-los-angeles-angels-32528575",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-los-angeles-dodgers-32528578"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-chicago-cubs-32530965",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-cincinnati-reds-32530966",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-detroit-tigers-32530972",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-new-york-yankees-32530973",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-baltimore-orioles-32530975",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-philadelphia-phillies-32530976",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32530970",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-boston-red-sox-32530971",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-texas-rangers-32530974",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-milwaukee-brewers-32530967",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-minnesota-twins-32530977",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-st.-louis-cardinals-32530964",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-los-angeles-angels-32530969",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-32530968"
 ]
 
 	lines = {}

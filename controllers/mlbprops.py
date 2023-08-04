@@ -271,8 +271,8 @@ def writeProps(date):
 								props[game][player][prop] = {}
 							props[game][player][prop] = {
 								"line": line,
-								"over": odds[0],
-								"under": odds[1]
+								"over": odds[0].replace("\u2212", "-"),
+								"under": odds[1].replace("\u2212", "-")
 							}
 
 	with open(f"{prefix}static/mlbprops/dates/{date}.json", "w") as fh:
@@ -811,9 +811,10 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				winLossSplits = [[], []]
 				totalOver = battingAvg = avg = hitter_babip = babip = bbpg = 0
 				
+				playerStats = {}
 				if player in stats[team] or (tradeFrom and player in stats[tradeFrom]):
 					try:
-						playerStats = stats[team][player]
+						playerStats = stats[team][player].copy()
 					except:
 						playerStats = {}
 					if tradeFrom and player in stats[tradeFrom]:
