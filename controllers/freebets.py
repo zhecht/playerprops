@@ -483,20 +483,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-chicago-cubs-32530965",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-cincinnati-reds-32530966",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-detroit-tigers-32530972",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-new-york-yankees-32530973",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-baltimore-orioles-32530975",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-philadelphia-phillies-32530976",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32530970",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-boston-red-sox-32530971",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-texas-rangers-32530974",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-milwaukee-brewers-32530967",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-minnesota-twins-32530977",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-st.-louis-cardinals-32530964",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-los-angeles-angels-32530969",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-32530968"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32535986",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-boston-red-sox-32535983",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-new-york-yankees-32535984",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-baltimore-orioles-32535988",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-philadelphia-phillies-32535991",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-cincinnati-reds-32535978",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-detroit-tigers-32535985",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-milwaukee-brewers-32535981",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-minnesota-twins-32535992",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-st.-louis-cardinals-32535979",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-chicago-cubs-32535980",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-texas-rangers-32535990",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-los-angeles-angels-32535987",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-oakland-athletics-32535989",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-32535982"
 ]
 
 	lines = {}
@@ -670,7 +671,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, prop="hr", under=False, nocz=False, no365=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, prop="hr", under=False, nocz=False, nobr=False, no365=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -791,17 +792,23 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			avgUnder = []
 			l = [bet365ou, dk, mgm, pb]
 			if prop in ["single", "double"]:
-				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, br]
+				l = [bet365ou, dk if fd else str(fdLine), mgm, pb]
 				if not nocz:
 					l.append(cz)
+				if not nobr:
+					l.append(br)
 			elif prop == "k":
-				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, br, pn, bs]
+				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, pn, bs]
 				if not nocz:
 					l.append(cz)
+				if not nobr:
+					l.append(br)
 			if allArg:
-				l = [bet365ou, dk, mgm, pb, br, pn, bs]
+				l = [bet365ou, dk, mgm, pb, pn, bs]
 				if not nocz:
 					l.append(cz)
+				if not nobr:
+					l.append(br)
 			for book in l:
 				if book and book != "-":
 					avgOver.append(convertDecOdds(int(book.split("/")[0])))
@@ -1004,6 +1011,7 @@ if __name__ == '__main__':
 	parser.add_argument("--under", action="store_true", help="Under")
 	parser.add_argument("--nocz", action="store_true", help="No CZ Lines")
 	parser.add_argument("--no365", action="store_true", help="No 365 Devig")
+	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 
 	args = parser.parse_args()
@@ -1040,7 +1048,7 @@ if __name__ == '__main__':
 		sortEV()
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, no365=args.no365)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365)
 		sortEV()
 	#write365()
 	#writeActionNetwork()

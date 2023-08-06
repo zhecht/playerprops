@@ -253,8 +253,8 @@ def writeProps(date):
 							
 							if "participant" not in row["outcomes"][0]:
 								continue
-							player = strip_accents(row["outcomes"][0]["participant"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").replace("kike", "enrique").split(" (")[0]
-							odds = ["+0","+0"]
+							player = strip_accents(row["outcomes"][0]["participant"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").replace("kike", "enrique").split(" (")[0].strip()
+							odds = ["+0","0"]
 							try:
 								line = row["outcomes"][0]["line"]
 							except:
@@ -526,7 +526,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 			try:
 				pos = roster[team][player]
 			except:
-				print(game, player)
+				print(game, team, player)
 				continue
 
 			try:
@@ -673,7 +673,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					tradeTo = trades[player]["to"]
 
 				bpDiff = 0
-				if bpOdds:
+				if bpOdds and int(overOdds):
 					bpDiff = round((int(overOdds) - bpOdds) / abs(int(overOdds)), 3)
 
 				lastYrGamesPlayed = 0
