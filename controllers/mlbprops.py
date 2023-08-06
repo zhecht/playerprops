@@ -1436,7 +1436,10 @@ def getSlateData(date = None, teams=""):
 									elif "l" in gameStats[p]:
 										decision = "L"
 									break
-							prevMatchup.append(f"{dt} {wonLost} {score} (SP: {currPitcher[0].title()} {decision})")
+							p = ""
+							if currPitcher:
+								p = currPitcher[0].title()
+							prevMatchup.append(f"{dt} {wonLost} {score} (SP: {p} {decision})")
 
 						teamScore = score1
 						oppScore = score2
