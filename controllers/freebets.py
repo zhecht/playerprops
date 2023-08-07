@@ -371,15 +371,18 @@ def writeActionNetworkML():
 
 
 
-def writeActionNetwork():
+def writeActionNetwork(dateArg = None):
 	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles", "77_total_bases"]
 	#props = ["32_singles"]
 
 	odds = {}
 	optionTypes = {}
 
-	date = datetime.now()
-	date = str(date)[:10]
+	if not dateArg:
+		date = datetime.now()
+		date = str(date)[:10]
+	else:
+		date = dateArg
 
 	if datetime.now().hour > 21:
 		date = str(datetime.now() + timedelta(days=1))[:10]
@@ -406,7 +409,7 @@ def writeActionNetwork():
 
 		teamIds = {}
 		for row in market["teams"]:
-			teamIds[row["id"]] = row["abbr"].lower()
+			teamIds[row["id"]] = row["abbr"].lower().replace("cws", "chw")
 
 		playerIds = {}
 		for row in market["players"]:
@@ -483,21 +486,18 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-32535986",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-boston-red-sox-32535983",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-new-york-yankees-32535984",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-baltimore-orioles-32535988",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-philadelphia-phillies-32535991",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-cincinnati-reds-32535978",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-detroit-tigers-32535985",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-milwaukee-brewers-32535981",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-minnesota-twins-32535992",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-st.-louis-cardinals-32535979",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-chicago-cubs-32535980",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-texas-rangers-32535990",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-los-angeles-angels-32535987",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-oakland-athletics-32535989",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-32535982"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-32538531",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-cincinnati-reds-32538529",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32538532",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-32538538",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-pittsburgh-pirates-32538533",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-new-york-mets-32538530",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-cleveland-guardians-32538535",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-boston-red-sox-32538537",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-milwaukee-brewers-32538534",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-chicago-white-sox-32538536",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-los-angeles-angels-32538540",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-oakland-athletics-32538539"
 ]
 
 	lines = {}
@@ -1013,6 +1013,7 @@ if __name__ == '__main__':
 	parser.add_argument("--no365", action="store_true", help="No 365 Devig")
 	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
+	parser.add_argument("--plays", action="store_true", help="Plays")
 
 	args = parser.parse_args()
 
@@ -1057,3 +1058,27 @@ if __name__ == '__main__':
 	#devigger(data, player="dean kremer", bet365Odds="-115/-115", finalOdds="-128")
 	#devigger(data, player="anthony santander", bet365Odds="300/-465", finalOdds=390, avg=True)
 	#print(data)
+
+	if args.plays:
+		with open(f"static/mlbprops/ev_hr.json") as fh:
+			ev = json.load(fh)
+		plays = [("endy rodriguez", 1000), ("luis robert", 350), ("jake burger", 340), ("shohei ohtani", 235), ("mj melendez", 460), ("joey votto", 300), ("mickey moniak", 420), ("gabriel arias", 750), ("eloy jimenez", 420), ("jeremy pena", 750), ("trayce thompson", 480), ("yordan alvarez", 320), ("mark vientos", 900), ("matt olson", 450)]
+
+		output = []
+		for player, odds in plays:
+			if player not in ev:
+				output.append(f"{player} taken={odds}")
+				continue
+			currOdds = int(ev[player]["fanduel"])
+			ou = ev[player]["ou"]
+			currEv = ev[player]["ev"]
+
+			if currOdds != odds:
+				data = {}
+				devigger(data, player=player, bet365Odds=ou, finalOdds=odds, avg=True)
+				if data:
+					currEv = data[player]["ev"]
+
+			output.append(f"{player} taken={odds} curr={currOdds} ev={currEv}")
+
+		print("\n".join(output))
