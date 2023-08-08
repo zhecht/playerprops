@@ -119,6 +119,42 @@ def writeBallparkpal():
 
 	"""
 
+def convertBPPTeam(team):
+	return team.replace("nationals", "wsh").replace("phillies", "phi").replace("twins", "min").replace("tigers", "det").replace("marlins", "mia").replace("reds", "cin").replace("cardinals", "stl").replace("rays", "tb").replace("braves", "atl").replace("pirates", "pit").replace("astros", "hou").replace("orioles", "bal").replace("blue jays", "tor").replace("guardians", "cle").replace("royals", "kc").replace("red sox", "bos").replace("cubs", "chc").replace("mets", "nym").replace("yankees", "nyy").replace("white sox", "chw").replace("rockies", "col").replace("brewers", "mil").replace("giants", "sf").replace("angels", "laa").replace("rangers", "tex").replace("athletics", "oak").replace("padres", "sd").replace("mariners", "sea").replace("dodgers", "lad").replace("dbacks", "ari")
+
+def writeBPPHomers():
+	url = "https://ballparkpal.com/index.php"
+	outfile = f"outBpp"
+	os.system(f"curl -k \"{url}\" -o {outfile}")
+
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	links = []
+	for a in soup.findAll("a"):
+		if a.text == "Details":
+			links.append(a.get("href"))
+
+	data = {}
+	for url in links:
+		outfile = f"outBpp"
+		time.sleep(0.3)
+		os.system(f"curl -k \"{url}\" -o {outfile}")
+
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		for table in soup.findAll("table", class_="runMarginTable"):
+			if "Home Runs" not in table.text:
+				continue
+			game = convertBPPTeam(table.findAll("th")[1].text.lower()) + " @ " + convertBPPTeam(table.findAll("th")[3].text.lower())
+			if game not in data:
+				tds = table.findAll("tr")[3].findAll("td")
+				data[game] = round(float(tds[1].text) + float(tds[3].text), 2)
+			break
+
+	with open(f"{prefix}static/freebets/bppExpectedHomers.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+
 def checkBPP():
 	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
 		bet365Lines = json.load(fh)
@@ -144,6 +180,31 @@ def checkBPP():
 
 	for row in sorted(data, reverse=True):
 		print(row[1])
+
+def writeLineups():
+	url = "https://www.mlb.com/starting-lineups/"
+	outfile = f"outlineups"
+	os.system(f"curl -k \"{url}\" -o {outfile}")
+
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	data = {}
+	for table in soup.findAll("div", class_="starting-lineups__matchup"):
+		for which in ["away", "home"]:
+			team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari")
+
+			if team in data:
+				continue
+			data[team] = []
+			for player in table.find("ol", class_=f"starting-lineups__team--{which}").findAll("li"):
+				try:
+					data[team].append(player.find("a").text.strip().lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", ""))
+				except:
+					data[team].append(player.text)
+
+	with open(f"{prefix}static/freebets/lineups.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 
 def writeKambi():
 	data = {}
@@ -486,7 +547,6 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32541786",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-cincinnati-reds-32540540",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-32540544",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-tampa-bay-rays-32540552",
@@ -527,7 +587,7 @@ def writeFanduel():
 			for market in data["attachments"]["markets"]:
 				marketName = data["attachments"]["markets"][market]["marketName"].lower()
 
-				if marketName in ["to hit a home run", "to hit a double", "to hit a triple", "to hit a single", "to record a hit", "to record 2+ total bases"] or "- strikeouts" in marketName:
+				if marketName in ["to hit a home run", "to hit a double", "to hit a triple", "to hit a single", "to record a hit", "to record 2+ total bases", "to record an rbi", "to record a run"] or "- strikeouts" in marketName:
 					prop = "hr"
 					if "single" in marketName:
 						prop = "single"
@@ -535,12 +595,16 @@ def writeFanduel():
 						prop = "double"
 					elif "triple" in marketName:
 						prop = "triple"
-					elif "record" in marketName:
+					elif "rbi" in marketName:
+						prop = "rbi"
+					elif "record a hit" in marketName:
 						prop = "h"
 					elif "strikeouts" in marketName:
 						prop = "k"
 					elif "total bases" in marketName:
 						prop = "tb"
+					elif "record a run" in marketName:
+						prop = "r"
 
 					for playerRow in data["attachments"]["markets"][market]["runners"]:
 						player = playerRow["runnerName"].lower().replace(" over", "").replace(" under", "").replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
@@ -570,13 +634,14 @@ def writeFanduel():
 	with open(f"{prefix}static/baseballreference/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=False, avg=False, prop="hr"):
+def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=False, avg=False, prop="hr", expectedHR=0):
 
 	if dinger:
 		# assuming 2hr/g = 40% FB @ 70% conversion
-		finalOdds = f"1={finalOdds};n=0.28x"
-		# 80% conversion
-		#finalOdds = f"1={finalOdds};n=0.36x"
+		if expectedHR:
+			finalOdds = f"1={finalOdds};n={round(expectedHR, 4)}x"
+		else:
+			finalOdds = f"1={finalOdds};n=0.28x"
 
 	outfile = f"out_{prop}"
 	post = ["curl", 'http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-X", "POST", "-H", 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0', "-H", 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', "-H",'Accept-Language: en-US,en;q=0.5', "-H",'Accept-Encoding: gzip, deflate', "-H",'Content-Type: application/x-www-form-urlencoded', "-H",'Origin: http://crazyninjamike.com', "-H",'Connection: keep-alive', "-H",'Referer: http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-H",'Cookie: General=KellyMultiplier=.25&KellyBankRoll=1000&DevigMethodIndex=4&WorstCaseDevigMethod_Multiplicative=True&WorstCaseDevigMethod_Additive=True&WorstCaseDevigMethod_Power=True&WorstCaseDevigMethod_Shin=True&MultiplicativeWeight=0&AdditiveWeight=0&PowerWeight=0&ShinWeight=0&ShowEVColorIndicator=False&ShowDetailedDevigInfo=True&CopyToClipboard_Reddit=False&ShowHedgeDevigMethod=False&UseMultilineTextbox=False; ASP.NET_SessionId=h2cklqfayhnovxkckdykfm4o', "-H",'Upgrade-Insecure-Requests: 1', "-H",'Pragma: no-cache', "-H",'Cache-Control: no-cache', "--data-raw", '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwUKLTg5NDkxNjMyNg9kFgICAw9kFhwCJw8PFgIeB1Zpc2libGVoZGQCNQ8PFgQeBFRleHRlHwBoZGQCNw8PFgIfAQWBAjxiPldvcnN0LWNhc2U6IChQb3dlcik8L2I%2BPC9icj5MZWcjMSAoKzQ1MCk7IE1hcmtldCBKdWljZSA9IDQuOCAlOyBMZWcncyBKdWljZSA9IDQuNCAlOyBGYWlyIFZhbHVlID0gKzU3NSAoMTQuOCAlKTwvYnI%2BRmluYWwgT2RkcyAoKzQ4MCk7IM6jKE1hcmtldCBKdWljZSkgPSA0Ljg1ICU7IM6jKExlZydzIEp1aWNlKSA9IDQuNCAlOyBGYWlyIFZhbHVlID0gKzU3NSAoMTQuOCAlKTwvYnI%2BU3VtbWFyeTsgRVYlID0gLTE0LjEgJSAoRkIgPSA3MS4xICUpZGQCOQ8PFgIeCEltYWdlVXJsZWRkAjsPDxYCHwEF0gI8L2JyPjwvYnI%2BPGJ1dHRvbiB0eXBlPSJidXR0b24iIG9uY2xpY2s9IkNvcHlUb0NsaXBib2FyZCgnVGV4dGJveF9EZXZpZ3NVUkxfZGV2aWdzdXJsJykiPkNvcHkgRGV2aWcncyBVUkw8L2J1dHRvbj48dGV4dGFyZWEgaWQ9IlRleHRib3hfRGV2aWdzVVJMX2Rldmlnc3VybCIgbmFtZT0iVGV4dDEiIGNvbHM9IjQwIiByb3dzPSI1IiBzdHlsZT0iZGlzcGxheTogbm9uZSI%2BaHR0cDovL2NyYXp5bmluamFtaWtlLmNvbS9QdWJsaWMvc3BvcnRzYm9va3Mvc3BvcnRzYm9va19kZXZpZ2dlci5hc3B4P2F1dG9maWxsPTEmTGVnT2Rkcz0lMmI0NTAlMmYtNjUwJkZpbmFsT2Rkcz00ODA8L3RleHRhcmVhPmRkAj0PDxYCHwFlZGQCQQ8PFgIfAWVkZAJDDw8WAh8BZWRkAkcPDxYCHwFlZGQCSQ8PFgIfAWVkZAJNDw8WAh8BZWRkAk8PDxYCHwFlZGQCUw8PFgIfAWVkZAJfDxBkZBYBZmQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFhUFE0NoZWNrQm94Q29ycmVsYXRpb24FDUNoZWNrQm94Qm9vc3QFFlJhZGlvQnV0dG9uQm9vc3RQcm9maXQFE1JhZGlvQnV0dG9uQm9vc3RBbGwFE1JhZGlvQnV0dG9uQm9vc3RBbGwFFENoZWNrQm94RGFpbHlGYW50YXN5BQ5DaGVja0JveFJld2FyZAUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMAUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMQUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMgUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMwUlQ2hlY2tCb3hMaXN0V29yc3RDYXNlTWV0aG9kU2V0dGluZ3MkMwUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMAUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMQUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMgUlQ2hlY2tCb3hMaXN0Q29weVRvQ2xpcGJvYXJkU2V0dGluZ3MkMgUaQ2hlY2tCb3hMaXN0TWlzY1NldHRpbmdzJDAFGkNoZWNrQm94TGlzdE1pc2NTZXR0aW5ncyQxBRpDaGVja0JveExpc3RNaXNjU2V0dGluZ3MkMQURQ2hlY2tCb3hTaG93SGVkZ2UFG0NoZWNrQm94VXNlTXVsdGlsaW5lVGV4dGJveKOjTHKsFcieE9KKzTJQiI3AJR6B&__VIEWSTATEGENERATOR=75A63123&__EVENTVALIDATION=%2FwEdAEIw9X7iCaxD%2F3rNNZYgx5HDVduh02rwiY5pxbMa1RNJ5aQWjQCmzgVoWED6ZF3QmBhQwDtP%2FiI7M6rA7bM7sw79dcexLTc65mHP6HSLc%2Bf1LffPdxAlAXM62AauCNlhmmvcpkkrUUk0wKmeRC%2Bo5Y4X6geodp8Olur%2BmlGM1%2FKrX0%2FlhO7FgJVfVmSrfexz2O8O1Hi%2Fs4JOEIbuo8tqstA4FSD8tQvxjLeGTr%2FZjbpMMCoLzpV5VCswEluevhpgd9wk6hQu8IzOUf9SV1fT41DJrES61htWrWjs6qQMwbhFAInbbXKrUyuaH0WERw6pAco%2FDYrJ17Id28pC779glSqiyuRmS0vMxthemNSZxFYiWcucIPcus%2FOzSDEyoeofXW3aOzoxxlnSXry0La7j6r%2Fs%2BfHYZidJ9iL1XbUgK8hpdJe%2BtzEYMgx%2BTUfzwbS304A%2FY8oqBpGAsYx8Mop1jRjezzZQ%2B9tmmKZqyksYCdJDpzyJeqLpB5t8%2F2GJQ3xLbuvhfOPVw%2FvZ64GRORAnyiUeAIH4rCiLrkEjcbAVN3KRLGcEq1QxEeM%2Fjkzi4zrZhPrdYjFyIOpXU7VVEH8x6qLFK%2FgiX4R7k%2BePj3bS7J%2BgWBTnTMwDkbtKRoDY9CgTs7Im6q5QJGQ4Zop7C9MPh%2FovUZMCC%2B0SDrnxmEkAW9uYtxLt%2Fyzf7D%2FO38iSXXKKjp%2F7pQZSXQqK%2BkHRq0%2F8hxlteb8BqBsXIQ3Id4DTK3MIxXuZIjIbmxHxK2jQvvnkl2IojkGDopgGMUjBgFQSCSRWR%2BvnMJoIOfBUI43VZFoFoOWmJfOGgotEV0SbRtvJlGGgBtNu745bl1XM%2FNjSIkmj0hpqvWk5jUlJo8y5DJZi2FeCfzTe16FW7YBUVAarIwORcYHwHlUbtxUIovxtp6Fnp9PZDrtAO8BRQYb%2BM2XZoW6ZGCGPI3Vs4qn7bWwKvOZxJ0hkpY3JuBY8dUINwhWy9tBMMMleqCemET2u7gRHPAbTtEEA0M6r7Zrzlm%2BXOIAyERXQ8XPFFqsFxOEZFeuxKH%2FI7Em%2FLOYrJZQEF%2FXmnfJtqlZ119DKEMgOAXJKwTjbHfIVMvqWcHvFBXtSrRli%2BLXSuvmx4sYD3Q%2FsmNkE8GK1s%2FT%2FRpPmdWeEsxFtygifU2vOaYXIhnkpGZxXMYRub%2FxoObcM1wBoVb5Wzqjq1e%2FUwuJUFie73%2BFPJ7NCOPtptpM51QcGXfw1UVjBtUMFQwE9YmMRS%2Fc7ytpgEPqE7kUGVOuNjuWHehORBMX7COGM4yNZD1WpVnhcev8qNkDbxq5sREhC1cwZ55vP6Xc17lJ6ph6EVKavxKi9ab3UpqFaLnG9DBjpZB8pgNUE1JFtQ3x0%2FNrX218CPsGBv3ktYhe8eeW7rbcwKmHEyYPn1r%2FO2TD8UgBuluW1SPDteuzIU6xb9g%3D%3D&TextBoxKellyMultiplier=.25&TextBoxBankRoll=1000&RadioButtonListDevigMethod=worstcase&TextBoxLegOdds='+str(bet365Odds)+'&TextBoxFinalOdds='+str(finalOdds)+'&TextBoxCorrelation=0&TextBoxBoost=0%25&Boost=RadioButtonBoostProfit&DropDownListDailyFantasy=0&ButtonCalculate=Calculate&Text1=http%3A%2F%2Fcrazyninjamike.com%2FPublic%2Fsportsbooks%2Fsportsbook_devigger.aspx%3Fautofill%3D1%26LegOdds%3D%252b450%252f-650%26FinalOdds%3D480&CheckBoxListWorstCaseMethodSettings%240=The+Multiplicative%2FNormalization%2FTraditional+Method&CheckBoxListWorstCaseMethodSettings%241=The+Additive+Method&CheckBoxListWorstCaseMethodSettings%242=The+Power+Method&CheckBoxListWorstCaseMethodSettings%243=The+Shin+Method&TextBoxMultiplicativeWeight=0%25&TextBoxAdditiveWeight=0%25&TextBoxPowerWeight=0%25&TextBoxShinWeight=0%25&CheckBoxListCopyToClipboardSettings%240=devigurl&CheckBoxListMiscSettings%241=Show+Detailed+Devig+Info', "-o", outfile]
@@ -699,6 +764,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
+
+	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
+		bppExpectedHomers = json.load(fh)
 
 	with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
 		evData = json.load(fh)
@@ -865,6 +933,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if useDK:
 					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
 
+				expectedHR = 0.28
+				if game in bppExpectedHomers and dinger:
+					expectedHR = .70 * (bppExpectedHomers[game] / 5)
+
 				if prop == "hr" and bet365ou and not no365:
 					devigger(evData, player, bet365ou, line, dinger)
 				devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
@@ -892,7 +964,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
-def sortEV():
+def sortEV(dinger=False):
 
 	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
 		bppLines = json.load(fh)
@@ -902,6 +974,12 @@ def sortEV():
 
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
+
+	with open(f"{prefix}static/freebets/lineups.json") as fh:
+		lineups = json.load(fh)
+
+	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
+		bppExpectedHomers = json.load(fh)
 
 	for prop in ["hr", "k", "single", "double", "tb"]:
 		with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
@@ -919,6 +997,7 @@ def sortEV():
 			else:
 				bet365ev = float(evData[player]["bet365ev"])
 			bpp = dk = mgm = pb = cz = br = kambi = ""
+			game = evData[player]["game"]
 			team = evData[player].get("team", "")
 			dk = evData[player]["dk"]
 			value = evData[player].get("value", 0)
@@ -953,26 +1032,38 @@ def sortEV():
 				bet365 = str(bet365)[1:]
 			avg = evData[player]['ou']
 
-			l = [ev, team.upper(), player.title(), evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz]
+			expectedHR = 2
+			if dinger and game in bppExpectedHomers:
+				expectedHR = bppExpectedHomers[game]
+
+			starting = ""
+			if team in lineups and player in lineups[team]:
+				starting = "*"
+
+			l = [ev, team.upper(), player.title(), starting, evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz]
 			if prop not in ["single", "double", "tb"]:
 				l.extend([pb, br, pn, bs])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
 				l.insert(1, value)
+			if dinger:
+				l.append(expectedHR)
 			tab = "\t".join([str(x) for x in l])
 			data.append((ev, player, tab, evData[player]))
 			bet365data.append((bet365ev, player, tab, evData[player]))
 
 		dt = datetime.strftime(datetime.now(), "%I:%M %p")
 		output = f"\t\t\tUPD: {dt}\n\n"
-		l = ["EV (AVG)", "Team", "Player", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
+		l = ["EV (AVG)", "Team", "Player", "Starting", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop not in ["single", "double", "tb"]:
 			l.extend(["PB", "BR", "PN", "BS"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":
 			l.insert(1, "Line")
+		if dinger:
+			l.append("xHR")
 		output += "\t".join(l) + "\n"
 		bet365output = output
 		reddit = bet365reddit = ""
@@ -1031,6 +1122,7 @@ if __name__ == '__main__':
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
 	parser.add_argument("--summary", action="store_true", help="Summary")
+	parser.add_argument("--lineups", action="store_true", help="Lineups")
 
 	args = parser.parse_args()
 
@@ -1052,22 +1144,24 @@ if __name__ == '__main__':
 	if args.ml:
 		writeActionNetworkML()
 
+	if args.lineups:
+		writeLineups()
 
 	if args.ev:
 		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop, nocz=args.nocz)
 
 	if args.bpp:
-		checkBPP()
+		writeBPPHomers()
 
 	if args.action:
 		writeActionNetwork(args.date)
 
 	if args.print:
-		sortEV()
+		sortEV(args.dinger)
 
 	if args.prop:
 		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365)
-		sortEV()
+		sortEV(args.dinger)
 	#write365()
 	#writeActionNetwork()
 
@@ -1076,40 +1170,60 @@ if __name__ == '__main__':
 	#devigger(data, player="anthony santander", bet365Odds="300/-465", finalOdds=390, avg=True)
 	#print(data)
 
-	if args.summary:
-		with open(f"static/mlbprops/ev_hr.json") as fh:
-			ev = json.load(fh)
-		output = {}
-		for player in ev:
-			if ev[player]["game"] not in output:
-				output[ev[player]["game"]] = []
-			output[ev[player]["game"]].append((float(ev[player]["ev"]), player, ev[player]["fanduel"]))
-		for game in output:
-			output[game] = sorted(output[game], reverse=True)
-			out = game
-			for o in output[game][:3]:
-				out += f" +{o[-1]} {o[1].title()} ({o[0]}%)."
-			print(out)
+	summaryOutput = {}
+	plays = [("max muncy", 350), ("luis robert", 500), ("francisco lindor", 390), ("spencer torkelson", 560), ("nick castellanos", 430), ("fernando tatis", 320), ("matt olson", 280), ("adolis garcia", 360), ("jose siri", 680), ("jake burger", 320)]
 	if args.plays:
 		with open(f"static/mlbprops/ev_hr.json") as fh:
 			ev = json.load(fh)
-		plays = [("salvador perez", 330), ("matt chapman", 440), ("max muncy", 350), ("luis robert", 500), ("francisco lindor", 390), ("spencer torkelson", 560), ("nick castellanos", 430), ("fernando tatis", 320), ("brandon lowe", 430), ("joc pederson", 330), ("matt olson", 280)]
 
+		with open(f"static/freebets/bppExpectedHomers.json") as fh:
+			bppExpectedHomers = json.load(fh)
+		
 		output = []
 		for player, odds in plays:
 			if player not in ev:
 				output.append(f"{player} taken={odds}")
 				continue
 			currOdds = int(ev[player]["fanduel"])
+			game = ev[player]["game"]
 			ou = ev[player]["ou"]
 			currEv = ev[player]["ev"]
 
 			if currOdds != odds:
 				data = {}
+				expectedHR = 0.28
+				if game in bppExpectedHomers and args.dinger:
+					expectedHR = .70 * (bppExpectedHomers[game] / 5)
+
 				devigger(data, player=player, bet365Odds=ou, finalOdds=odds, avg=True, dinger=args.dinger)
 				if data:
 					currEv = data[player]["ev"]
 
 			output.append(f"{player} taken={odds} curr={currOdds} ev={currEv}")
 
+			if game not in output:
+				summaryOutput[game] = []
+			summaryOutput[game].append((float(currEv), player, odds))
 		print("\n".join(output))
+
+	if args.summary:
+		with open(f"static/mlbprops/ev_hr.json") as fh:
+			ev = json.load(fh)
+		for player in ev:
+			if player in [p[0] for p in plays]:
+				continue
+			if ev[player]["game"] not in summaryOutput:
+				summaryOutput[ev[player]["game"]] = []
+			summaryOutput[ev[player]["game"]].append((float(ev[player]["ev"]), player, ev[player]["fanduel"]))
+		for game in summaryOutput:
+			summaryOutput[game] = sorted(summaryOutput[game], reverse=True)
+			out = game
+			for o in summaryOutput[game][:3]:
+				out += " "
+				if o[1] in [p[0] for p in plays]:
+					out += "**"
+				out += f"+{o[-1]} {o[1].title()} ({o[0]}%)"
+				if o[1] in [p[0] for p in plays]:
+					out += "**"
+				out += "."
+			print(out+"\n")

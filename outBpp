@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1F2K4HLD87"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1F2K4HLD87');
+</script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="jquery.easy-autocomplete.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
+	<link rel="stylesheet" href="easy-autocomplete.min.css">
+	<link rel="stylesheet" href="easy-autocomplete.themes.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="CommonStyles.css">
+	<style>
+
+	.runsByInningTable {
+        margin: auto;
+        text-align: center;
+        font-size: 24px;
+	}
+
+    .runsByInningTable th, td {
+      border: 1px solid black;
+      font-family: sans-serif;
+      font: helvetica;
+      padding: 10px;
+    }
+
+    .runsByInningTable th {
+      background-color:#e3e3e3;
+    }
+    
+
+	.boxScoreTable {
+        margin: auto;
+        text-align: center;
+        font-size: 18px;
+	}
+
+    .boxScoreTable th, td {
+      border: 1px solid black;
+      font-family: sans-serif;
+      font: helvetica;
+      padding: 10px;
+    }
+
+    .boxScoreTable th {
+
+    }
+    
+    .boxScoreTable td {
+    }
+    
+	.runMarginTable {
+        margin: auto;
+        text-align: center;
+        font-size: 24px;
+	}
+
+    .runMarginTable th, td {
+      border: 1px solid black;
+      font-family: sans-serif;
+      font: helvetica;
+      padding: 10px;
+    }
+
+    .runMarginTable th {
+
+    }
+    
+	.totalRunsTable {
+        margin: auto;
+        text-align: center;
+        font-size: 24px;
+	}
+
+    .totalRunsTable th, td {
+      border: 1px solid black;
+      font-family: sans-serif;
+      font: helvetica;
+      font-weight: normal;
+      padding: 10px;
+    }
+
+    .totalRunsTable th {
+      
+    }
+    
+    .circle-background {
+        position: absolute;
+        top: -7px;
+        width:120px;
+    }
+
+
+
+	</style>
+</head>
+		<title> LAD @ ARI | Ballpark Pal</title>
+    	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    	<meta http-equiv="Pragma" content="no-cache" />
+    	<meta http-equiv="Expires" content="0" />
+    	<meta name="viewport"
+    									content="user-scalable=0">
+    	<meta name="description" content="Detailed simulation results for the Los Angeles Dodgers vs the Arizona Dbacks">
+    	<link rel="icon" href="Images/MainLogo.png">
+    	</head>
+    	<body style="margin-left:0px; margin-right:0px">
+        <div><div class="container-fluid" style="max-width: 100%; text-align:center;">
+            <p style="font-size:24px; margin:0px;padding:0px;">August 8th  |  9:40  |  <a href="https://ballparkpal.com/Parks/Chase-Field.php">Chase Field</a></p>
+        </div><div class="container-fluid" style="max-width: 100%;">
+              <div class="row">
+                <div class="col-md-6" style="text-align:right; padding:0px;">
+                    <p style="font-size:46px; padding-right:20px; background-color:#005A9C; color:#FFFFFF;">Dodgers<img src="Images/lad-logo.svg" style = "width:150px; position: relative; z-index: 1;"/><img src="Images/WhiteCircle.png" class="circle-background" style="right:34px; z-index:0;" /></p>
+                </div>
+                <div class="col-md-6" style="text-align:left; padding:0px;">
+                    <p style="font-size:46px; padding-left:20px; background-color:#A71930; color:#FFFFFF;"><img src="Images/ari-logo.svg" style = "width:150px; position: relative; z-index: 1;"/><img src="Images/WhiteCircle.png" class="circle-background" style="left:34px; z-index:0;" />Dbacks</p>
+                </div>
+              </div>
+            </div><div class="container-fluid" style="max-width: 100%;">
+              <div class="row">
+                <div class="col-md-5" style="text-align:right; padding:0px;">
+                    <p style="font-size:46px; margin-bottom:0px;">5.20</p>
+                </div>
+                <div class="col-md-2" style="text-align:center; padding:0px;">
+                    <p style="font-size:30px; margin-top:10px; margin-bottom:0px;">Runs</p>
+                </div>
+                <div class="col-md-5" style="text-align:left; padding:0px;">
+                    <p style="font-size:46px; margin-bottom:0px;">4.79</p>
+                </div>
+              </div>
+            </div><div class="container-fluid" style="max-width: 100%;">
+              <div class="row">
+                <div class="col-md-5" style="text-align:right; padding:0px;">
+                    <p style="font-size:30px;">(-107) 51.6%</p>
+                </div>
+                <div class="col-md-2" style="text-align:center; padding:0px;">
+                    <p style="font-size:30px;">Win</p>
+                </div>
+                <div class="col-md-5" style="text-align:left; padding:0px;">
+                    <p style="font-size:30px;">48.4% (+107)</p>
+                </div>
+              </div>
+            </div><div class="container"><div class="row">
+            <div class="col-sm-6 md-6 lg-6 col-xl-6 text-right">
+                <p class="text-center" style="font-size:30px;color:#005A9C; margin-top:0px;">Dodgers win by:</p>
+                <table class="runMarginTable" style="margin-top:0px;">
+                    <tr>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width: 150px; font-size: 30px;">3+</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width: 150px; font-size: 30px;">2+</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width: 150px; font-size: 30px;">1+</th>
+                    </tr><tr><td style="text-align:center;">30.4%</td><td style="text-align:center;">40.6%</td><td style="text-align:center;">51.6%</td></tr><tr><td style="text-align:center;">+229</td><td style="text-align:center;">+146</td><td style="text-align:center;">-107</td></tr></table></div><div class="col-sm-6 md-6 lg-6 col-xl-6 text-left">
+                <p class="text-center" style="font-size:30px;color:#A71930; margin-top:0px;">Dbacks win by:</p>
+                <table class="runMarginTable" style="margin-top:0px;">
+                    <tr>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width: 150px; font-size: 30px;">1+</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width: 150px; font-size: 30px;">2+</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width: 150px; font-size: 30px;">3+</th>
+                    </tr><tr><td style="text-align:center;">48.4%</td><td style="text-align:center;">32.0%</td><td style="text-align:center;">22.8%</td></tr><tr><td style="text-align:center;">+107</td><td style="text-align:center;">+213</td><td style="text-align:center;">+339</td></tr></table></div></div></div><div class="row justify-content-md-center"><p style="font-size:30px;background-color:#ffffe6; padding-left:10px; padding-right:10px; margin-top:30px; margin-bottom:10px;">Projected Box Score</p></div>
+        <div class="container-fluid">
+        <div class="row justify-content-md-center">
+		<p style="font-size:18px; margin-top:0px; margin-bottom:0px;">Official lineups have not been posted for this game</p>
+		</div>
+          <div class="row">
+            <div class="col sm-12 col-md-12 col-lg-12 col-xl-12">
+                <table class="boxScoreTable" style="margin-top:20px;">
+                    <tr>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:150px;">Pitcher</th>
+                    <th style="background-color:#1493FF; text-align:center; color:#1D365E; width:50px;">FD</th>
+                    <th style="text-align:center; background-color:#9AC434;text-align:center; color:#F46C22; width:50px;">DK</th>                           
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">BF</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">Inn</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">R</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">H</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">K</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">BB</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">W</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">L</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">QS</th>
+                    </tr><tr><td style="text-align:center;"><a href="https://BallparkPal.com/Pitcher?PlayerId=628711">J. Urias</a></td><td style="text-align:center; background-color: #ebb5b5">21.8</td><td style="text-align:center; background-color: #f2d0d0">10.6</td><td style="text-align:center;">22.8</td><td style="text-align:center;">5.35</td><td style="text-align:center; background-color: #faeded">2.82</td><td style="text-align:center; background-color: #f2fcf5">5.20</td><td style="text-align:center; background-color: #f2d0d0">3.59</td><td style="text-align:center; background-color: #fcfafa">1.98</td><td style="text-align:center; background-color: #fcfafa">.34</td><td style="text-align:center; background-color: #f2fcf5">.28</td><td style="text-align:center; background-color: #f2d0d0">.36</td></tr></table></div><div class="col sm-12 col-md-12 col-lg-12 col-xl-12">
+                <table class="boxScoreTable" style="margin-top:20px;">
+                    <tr>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:150px;">Pitcher</th>
+                    <th style="background-color:#1493FF; text-align:center; color:#1D365E; width:50px;">FD</th>
+                    <th style="text-align:center; background-color:#9AC434;text-align:center; color:#F46C22; width:50px;">DK</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">BF</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">Inn</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">R</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">H</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">K</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">BB</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">W</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">L</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">QS</th>
+                    </tr><tr><td style="text-align:center;"><a href="https://BallparkPal.com/Pitcher?PlayerId=694297">B. Pfaadt</a></td><td style="text-align:center; background-color: #f2d0d0">24.0</td><td style="text-align:center; background-color: #faeded">12.3</td><td style="text-align:center;">22.7</td><td style="text-align:center;">5.36</td><td style="text-align:center; background-color: #faeded">2.89</td><td style="text-align:center; background-color: #f2fcf5">5.22</td><td style="text-align:center; background-color: #fcfafa">4.52</td><td style="text-align:center; background-color: #d7f5e0">1.68</td><td style="text-align:center; background-color: #faeded">.27</td><td style="text-align:center; background-color: #fcfafa">.33</td><td style="text-align:center; background-color: #faeded">.35</td></tr></table></div></div></div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col sm-12 col-md-12 col-lg-12 col-xl-12">
+                <table class="boxScoreTable" style="margin-top:20px;">
+                    <tr>
+                    <th style="text-align:center; border-top:none; border-left:none;"></th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">PA</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:150px;">Batter</th>
+                    <th style="background-color:#1493FF; text-align:center; color:#1D365E; width:50px;">FD</th> 
+                    <th style="text-align:center; background-color:#9AC434;text-align:center; color:#F46C22; width:50px;">DK</th>             
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">H</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">R</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">RBI</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">BB</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">K</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">1B</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">2B</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">3B</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">HR</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width:50px;">SB</th>
+                    </tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">1</td><td style="text-align:center;">4.9</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=605141">M. Betts</a></td><td style="text-align:center; background-color: #35cc62">13.1</td><td style="text-align:center; background-color: #76e397">10.0</td><td style="text-align:center; background-color: #d7f5e0">1.12</td><td style="text-align:center; background-color: #35cc62">0.74</td><td style="text-align:center; background-color: #d7f5e0">0.61</td><td style="text-align:center; background-color: #f2fcf5">0.46</td><td style="text-align:center; background-color: #b2edc4">0.75</td><td style="text-align:center; background-color: #faeded">0.60</td><td style="text-align:center; background-color: #76e397">.28</td><td style="text-align:center; background-color: #f2fcf5">.03</td><td style="text-align:center; background-color: #b2edc4">.22</td><td style="text-align:center; background-color: #fcfafa">.16</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">2</td><td style="text-align:center;">4.7</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=518692">F. Freeman</a></td><td style="text-align:center; background-color: #76e397">12.7</td><td style="text-align:center; background-color: #76e397">9.7</td><td style="text-align:center; background-color: #76e397">1.26</td><td style="text-align:center; background-color: #76e397">0.68</td><td style="text-align:center; background-color: #76e397">0.69</td><td style="text-align:center; background-color: #f2d0d0">0.33</td><td style="text-align:center; background-color: #d7f5e0">0.85</td><td style="text-align:center; background-color: #d7f5e0">0.71</td><td style="text-align:center; background-color: #35cc62">.29</td><td style="text-align:center; background-color: #fcfafa">.02</td><td style="text-align:center; background-color: #76e397">.24</td><td style="text-align:center; background-color: #db7979">.04</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">3</td><td style="text-align:center;">4.6</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=669257">W. Smith</a></td><td style="text-align:center; background-color: #f2fcf5">10.2</td><td style="text-align:center; background-color: #fcfafa">7.8</td><td style="text-align:center; background-color: #f2fcf5">1.03</td><td style="text-align:center; background-color: #fcfafa">0.55</td><td style="text-align:center; background-color: #fcfafa">0.53</td><td style="text-align:center; background-color: #faeded">0.35</td><td style="text-align:center; background-color: #fcfafa">1.04</td><td style="text-align:center; background-color: #faeded">0.59</td><td style="text-align:center; background-color: #76e397">.26</td><td style="text-align:center; background-color: #fcfafa">.02</td><td style="text-align:center; background-color: #fcfafa">.15</td><td style="text-align:center; background-color: #db7979">.03</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">4</td><td style="text-align:center;">4.5</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=571970">M. Muncy</a></td><td style="text-align:center; background-color: #b2edc4">11.8</td><td style="text-align:center; background-color: #d7f5e0">8.7</td><td style="text-align:center; background-color: #faeded">0.91</td><td style="text-align:center; background-color: #b2edc4">0.64</td><td style="text-align:center; background-color: #b2edc4">0.66</td><td style="text-align:center; background-color: #d7f5e0">0.52</td><td style="text-align:center; background-color: #f2d0d0">1.22</td><td style="text-align:center; background-color: #db7979">0.41</td><td style="text-align:center; background-color: #d7f5e0">.25</td><td style="text-align:center; background-color: #db7979">.01</td><td style="text-align:center; background-color: #76e397">.24</td><td style="text-align:center; background-color: #db7979">.03</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">5</td><td style="text-align:center;">4.4</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=502110">J. Martinez</a></td><td style="text-align:center; background-color: #d7f5e0">11.3</td><td style="text-align:center; background-color: #d7f5e0">8.6</td><td style="text-align:center; background-color: #f2fcf5">1.06</td><td style="text-align:center; background-color: #f2fcf5">0.58</td><td style="text-align:center; background-color: #d7f5e0">0.63</td><td style="text-align:center; background-color: #faeded">0.36</td><td style="text-align:center; background-color: #ebb5b5">1.29</td><td style="text-align:center; background-color: #f2d0d0">0.54</td><td style="text-align:center; background-color: #35cc62">.29</td><td style="text-align:center; background-color: #faeded">.01</td><td style="text-align:center; background-color: #b2edc4">.21</td><td style="text-align:center; background-color: #db7979">.04</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">6</td><td style="text-align:center;">4.3</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=681546">J. Outman</a></td><td style="text-align:center; background-color: #f2fcf5">10.5</td><td style="text-align:center; background-color: #fcfafa">8.0</td><td style="text-align:center; background-color: #faeded">0.89</td><td style="text-align:center; background-color: #fcfafa">0.52</td><td style="text-align:center; background-color: #fcfafa">0.52</td><td style="text-align:center; background-color: #faeded">0.40</td><td style="text-align:center; background-color: #f2d0d0">1.20</td><td style="text-align:center; background-color: #ebb5b5">0.49</td><td style="text-align:center; background-color: #fcfafa">.20</td><td style="text-align:center; background-color: #f2fcf5">.02</td><td style="text-align:center; background-color: #f2fcf5">.17</td><td style="text-align:center; background-color: #faeded">.14</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">7</td><td style="text-align:center;">4.2</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=571771">E. Hernandez</a></td><td style="text-align:center; background-color: #faeded">9.4</td><td style="text-align:center; background-color: #faeded">7.2</td><td style="text-align:center; background-color: #f2fcf5">1.04</td><td style="text-align:center; background-color: #faeded">0.49</td><td style="text-align:center; background-color: #f2d0d0">0.48</td><td style="text-align:center; background-color: #ebb5b5">0.28</td><td style="text-align:center; background-color: #76e397">0.58</td><td style="text-align:center; background-color: #fcfafa">0.64</td><td style="text-align:center; background-color: #76e397">.26</td><td style="text-align:center; background-color: #f2d0d0">.01</td><td style="text-align:center; background-color: #faeded">.12</td><td style="text-align:center; background-color: #db7979">.04</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">8</td><td style="text-align:center;">4.1</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=500743">M. Rojas</a></td><td style="text-align:center; background-color: #f2d0d0">8.5</td><td style="text-align:center; background-color: #f2d0d0">6.7</td><td style="text-align:center; background-color: #fcfafa">1.01</td><td style="text-align:center; background-color: #f2d0d0">0.46</td><td style="text-align:center; background-color: #db7979">0.39</td><td style="text-align:center; background-color: #db7979">0.24</td><td style="text-align:center; background-color: #35cc62">0.50</td><td style="text-align:center; background-color: #d7f5e0">0.71</td><td style="text-align:center; background-color: #f2fcf5">.22</td><td style="text-align:center; background-color: #fcfafa">.02</td><td style="text-align:center; background-color: #db7979">.07</td><td style="text-align:center; background-color: #f2d0d0">.09</td></tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">9</td><td style="text-align:center;">4.0</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=518792">J. Heyward</a></td><td style="text-align:center; background-color: #faeded">8.9</td><td style="text-align:center; background-color: #f2d0d0">6.8</td><td style="text-align:center; background-color: #faeded">0.88</td><td style="text-align:center; background-color: #faeded">0.50</td><td style="text-align:center; background-color: #f2d0d0">0.45</td><td style="text-align:center; background-color: #f2d0d0">0.34</td><td style="text-align:center; background-color: #b2edc4">0.72</td><td style="text-align:center; background-color: #f2d0d0">0.56</td><td style="text-align:center; background-color: #faeded">.19</td><td style="text-align:center; background-color: #d7f5e0">.03</td><td style="text-align:center; background-color: #f2d0d0">.11</td><td style="text-align:center; background-color: #ebb5b5">.06</td></tr></table></div><div class="col sm-12 col-md-12 col-lg-12 col-xl-12">
+                <table class="boxScoreTable" style="margin-top:20px;">
+                    <tr>
+                    <th style="text-align:center; border-top:none; border-left:none;"></th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">PA</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:150px;">Battter</th>
+                    <th style="background-color:#1493FF; text-align:center; color:#1D365E; width:50px;">FD</th> 
+                    <th style="text-align:center; background-color:#9AC434;text-align:center; color:#F46C22; width:50px;">DK</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">H</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">R</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">RBI</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">BB</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">K</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">1B</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">2B</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">3B</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">HR</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width:50px;">SB</th>
+                    </tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">1</td><td style="text-align:center;">4.7</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=672695">G. Perdomo</a></td><td style="text-align:center; background-color: #f2fcf5">10.4</td><td style="text-align:center; background-color: #fcfafa">8.0</td><td style="text-align:center; background-color: #fcfafa">0.99</td><td style="text-align:center; background-color: #d7f5e0">0.60</td><td style="text-align:center; background-color: #db7979">0.41</td><td style="text-align:center; background-color: #f2fcf5">0.48</td><td style="text-align:center; background-color: #d7f5e0">0.77</td><td style="text-align:center; background-color: #fcfafa">0.64</td><td style="text-align:center; background-color: #fcfafa">.21</td><td style="text-align:center; background-color: #76e397">.04</td><td style="text-align:center; background-color: #f2d0d0">.11</td><td style="text-align:center; background-color: #faeded">.13</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">2</td><td style="text-align:center;">4.6</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=606466">K. Marte</a></td><td style="text-align:center; background-color: #f2fcf5">10.6</td><td style="text-align:center; background-color: #f2fcf5">8.1</td><td style="text-align:center; background-color: #fcfafa">1.01</td><td style="text-align:center; background-color: #d7f5e0">0.61</td><td style="text-align:center; background-color: #faeded">0.51</td><td style="text-align:center; background-color: #fcfafa">0.41</td><td style="text-align:center; background-color: #b2edc4">0.68</td><td style="text-align:center; background-color: #fcfafa">0.63</td><td style="text-align:center; background-color: #fcfafa">.21</td><td style="text-align:center; background-color: #35cc62">.04</td><td style="text-align:center; background-color: #faeded">.14</td><td style="text-align:center; background-color: #ebb5b5">.08</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">3</td><td style="text-align:center;">4.4</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=502054">T. Pham</a></td><td style="text-align:center; background-color: #76e397">12.4</td><td style="text-align:center; background-color: #b2edc4">9.5</td><td style="text-align:center; background-color: #d7f5e0">1.11</td><td style="text-align:center; background-color: #b2edc4">0.63</td><td style="text-align:center; background-color: #d7f5e0">0.62</td><td style="text-align:center; background-color: #d7f5e0">0.50</td><td style="text-align:center; background-color: #d7f5e0">0.79</td><td style="text-align:center; background-color: #f2fcf5">0.67</td><td style="text-align:center; background-color: #b2edc4">.25</td><td style="text-align:center; background-color: #fcfafa">.02</td><td style="text-align:center; background-color: #f2fcf5">.18</td><td style="text-align:center; background-color: #fcfafa">.15</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">4</td><td style="text-align:center;">4.3</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=572233">C. Walker</a></td><td style="text-align:center; background-color: #d7f5e0">11.2</td><td style="text-align:center; background-color: #f2fcf5">8.4</td><td style="text-align:center; background-color: #fcfafa">0.99</td><td style="text-align:center; background-color: #f2fcf5">0.59</td><td style="text-align:center; background-color: #b2edc4">0.66</td><td style="text-align:center; background-color: #fcfafa">0.43</td><td style="text-align:center; background-color: #d7f5e0">0.83</td><td style="text-align:center; background-color: #f2d0d0">0.54</td><td style="text-align:center; background-color: #b2edc4">.26</td><td style="text-align:center; background-color: #db7979">.01</td><td style="text-align:center; background-color: #d7f5e0">.19</td><td style="text-align:center; background-color: #db7979">.04</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">5</td><td style="text-align:center;">4.2</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=666971">L. Gurriel Jr.</a></td><td style="text-align:center; background-color: #d7f5e0">11.0</td><td style="text-align:center; background-color: #f2fcf5">8.4</td><td style="text-align:center; background-color: #d7f5e0">1.09</td><td style="text-align:center; background-color: #f2fcf5">0.58</td><td style="text-align:center; background-color: #d7f5e0">0.61</td><td style="text-align:center; background-color: #f2d0d0">0.31</td><td style="text-align:center; background-color: #76e397">0.63</td><td style="text-align:center; background-color: #f2fcf5">0.65</td><td style="text-align:center; background-color: #b2edc4">.25</td><td style="text-align:center; background-color: #db7979">.01</td><td style="text-align:center; background-color: #f2fcf5">.18</td><td style="text-align:center; background-color: #ebb5b5">.06</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">6</td><td style="text-align:center;">4.1</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=664983">J. McCarthy</a></td><td style="text-align:center; background-color: #f2fcf5">10.4</td><td style="text-align:center; background-color: #f2fcf5">8.1</td><td style="text-align:center; background-color: #fcfafa">0.99</td><td style="text-align:center; background-color: #faeded">0.50</td><td style="text-align:center; background-color: #f2d0d0">0.45</td><td style="text-align:center; background-color: #faeded">0.35</td><td style="text-align:center; background-color: #b2edc4">0.66</td><td style="text-align:center; background-color: #f2fcf5">0.66</td><td style="text-align:center; background-color: #fcfafa">.21</td><td style="text-align:center; background-color: #76e397">.04</td><td style="text-align:center; background-color: #ebb5b5">.09</td><td style="text-align:center; background-color: #b2edc4">.26</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">7</td><td style="text-align:center;">4.0</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=656896">E. Rivera</a></td><td style="text-align:center; background-color: #faeded">9.4</td><td style="text-align:center; background-color: #faeded">7.2</td><td style="text-align:center; background-color: #fcfafa">0.96</td><td style="text-align:center; background-color: #ebb5b5">0.45</td><td style="text-align:center; background-color: #fcfafa">0.54</td><td style="text-align:center; background-color: #faeded">0.35</td><td style="text-align:center; background-color: #d7f5e0">0.84</td><td style="text-align:center; background-color: #faeded">0.58</td><td style="text-align:center; background-color: #d7f5e0">.25</td><td style="text-align:center; background-color: #fcfafa">.02</td><td style="text-align:center; background-color: #faeded">.12</td><td style="text-align:center; background-color: #db7979">.03</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">8</td><td style="text-align:center;">3.9</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=677950">A. Thomas</a></td><td style="text-align:center; background-color: #f2d0d0">8.5</td><td style="text-align:center; background-color: #ebb5b5">6.5</td><td style="text-align:center; background-color: #ebb5b5">0.80</td><td style="text-align:center; background-color: #db7979">0.41</td><td style="text-align:center; background-color: #ebb5b5">0.43</td><td style="text-align:center; background-color: #fcfafa">0.43</td><td style="text-align:center; background-color: #d7f5e0">0.82</td><td style="text-align:center; background-color: #f2d0d0">0.53</td><td style="text-align:center; background-color: #ebb5b5">.16</td><td style="text-align:center; background-color: #faeded">.02</td><td style="text-align:center; background-color: #ebb5b5">.09</td><td style="text-align:center; background-color: #f2d0d0">.10</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">9</td><td style="text-align:center;">3.8</td><td style="text-align:center;"><a href="https://BallparkPal.com/Batter?PlayerId=645444">J. Herrera</a></td><td style="text-align:center; background-color: #db7979">6.9</td><td style="text-align:center; background-color: #db7979">5.3</td><td style="text-align:center; background-color: #db7979">0.70</td><td style="text-align:center; background-color: #db7979">0.38</td><td style="text-align:center; background-color: #db7979">0.33</td><td style="text-align:center; background-color: #fcfafa">0.41</td><td style="text-align:center; background-color: #f2fcf5">0.87</td><td style="text-align:center; background-color: #db7979">0.45</td><td style="text-align:center; background-color: #faeded">.20</td><td style="text-align:center; background-color: #db7979">.00</td><td style="text-align:center; background-color: #db7979">.05</td><td style="text-align:center; background-color: #db7979">.03</td></tr></table></div></div></div><div class="row justify-content-md-center"><p style="font-size:30px;background-color:#ffffe6; padding-left:10px; padding-right:10px; margin-top:30px;">Total Runs Scored</p></div><div class="container-fluid" style="max-width: 100%; text-align:center;"><table class="totalRunsTable";>
+                <tr>
+                <th style="text-align:center; font-size:24px; width:70px; font-weight: bold; background-color: #dedede;">Over</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">-506</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">-333</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #cbf5cc;">-199</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #72d674;">-142</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #3c963e;">+102</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #72d674;">+135</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #cbf5cc;">+198</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">+270</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">+378</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">+510</th>
+                </tr>
+                
+                <tr>
+                <td style="text-align:center; font-size:24px; width:70px; font-weight: bold; background-color: #dedede;">Runs</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">5.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">6.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">7.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">8.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">9.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">10.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">11.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">12.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">13.5</td>
+                <td style="text-align:center; font-size:24px; width:70px; background-color: #dedede;">14.5</td>
+                </tr>
+    
+                <tr>
+                <th style="text-align:center; font-size:24px; width:70px; font-weight: bold; background-color: #dedede;">Under</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">+506</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">+333</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #cbf5cc;">+199</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #72d674;">+142</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #3c963e;">-102</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #72d674;">-135</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #cbf5cc;">-198</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">-270</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">-378</th>
+                <th style="text-align:center; font-size:24px; width:70px; background-color: #ffffff;">-510</th>
+                </tr></table></div><div class="container"><div class="row justify-content-md-center">
+            <div class="col-sm-6 md-6 lg-6 col-xl-6 text-right">
+                <p class="text-center" style="font-size:30px;color:#005A9C; margin-top:40px;">Dodgers Runs</p>
+                <table class="runMarginTable" style="margin-top:0px;">
+                    <tr>
+                    <th style="text-align:center; background-color:#dedede; color:black; width: 100px;">Under</th>
+                    <th style="text-align:center; background-color:#dedede; color: black; width: 50px;">Runs</th>
+                    <th style="text-align:center; background-color:#dedede; color:black; width: 100px;">Over</th>
+                    </tr><tr><td style="text-align:center; background-color: #ffffff;">+2400</td><td style="text-align:center; color: black; background-color: #dedede;">0.5</td><td style="text-align:center; background-color: #ffffff;">-2400</td></tr><tr><td style="text-align:center; background-color: #ffffff;">+755</td><td style="text-align:center; color: black; background-color: #dedede;">1.5</td><td style="text-align:center; background-color: #ffffff;">-755</td></tr><tr><td style="text-align:center; background-color: #ffffff;">+357</td><td style="text-align:center; color: black; background-color: #dedede;">2.5</td><td style="text-align:center; background-color: #ffffff;">-357</td></tr><tr><td style="text-align:center; background-color: #cbf5cc;">+184</td><td style="text-align:center; color: black; background-color: #dedede;">3.5</td><td style="text-align:center; background-color: #cbf5cc;">-184</td></tr><tr><td style="text-align:center; background-color: #52b354;">+114</td><td style="text-align:center; color: black; background-color: #dedede;">4.5</td><td style="text-align:center; background-color: #52b354;">-114</td></tr><tr><td style="text-align:center; background-color: #72d674;">-143</td><td style="text-align:center; color: black; background-color: #dedede;">5.5</td><td style="text-align:center; background-color: #72d674;">+143</td></tr><tr><td style="text-align:center; background-color: #cbf5cc;">-218</td><td style="text-align:center; color: black; background-color: #dedede;">6.5</td><td style="text-align:center; background-color: #cbf5cc;">+218</td></tr><tr><td style="text-align:center; background-color: #ffffff;">-341</td><td style="text-align:center; color: black; background-color: #dedede;">7.5</td><td style="text-align:center; background-color: #ffffff;">+341</td></tr><tr><td style="text-align:center; background-color: #ffffff;">-529</td><td style="text-align:center; color: black; background-color: #dedede;">8.5</td><td style="text-align:center; background-color: #ffffff;">+529</td></tr><tr><td style="text-align:center; background-color: #ffffff;">-852</td><td style="text-align:center; color: black; background-color: #dedede;">9.5</td><td style="text-align:center; background-color: #ffffff;">+852</td></tr></table></div><div class="col-sm-6 md-6 lg-6 col-xl-6 text-left">
+                <p class="text-center" style="font-size:30px;color:#A71930; margin-top:40px;">Dbacks Runs</p>
+                <table class="runMarginTable" style="margin-top:0px;">
+                    <tr>
+                    <th style="text-align:center; background-color:#dedede; color:black; width: 100px;">Under</th>
+                    <th style="text-align:center; background-color:#dedede; color: black; width: 50px;">Runs</th>
+                    <th style="text-align:center; background-color:#dedede; color:black; width: 100px;">Over</th>
+                    </tr><tr><td style="text-align:center; background-color: #ffffff;">+2281</td><td style="text-align:center; color: black; background-color: #dedede;">0.5</td><td style="text-align:center; background-color: #ffffff;">-2281</td></tr><tr><td style="text-align:center; background-color: #ffffff;">+700</td><td style="text-align:center; color: black; background-color: #dedede;">1.5</td><td style="text-align:center; background-color: #ffffff;">-700</td></tr><tr><td style="text-align:center; background-color: #ffffff;">+312</td><td style="text-align:center; color: black; background-color: #dedede;">2.5</td><td style="text-align:center; background-color: #ffffff;">-312</td></tr><tr><td style="text-align:center; background-color: #cbf5cc;">+165</td><td style="text-align:center; color: black; background-color: #dedede;">3.5</td><td style="text-align:center; background-color: #cbf5cc;">-165</td></tr><tr><td style="text-align:center; background-color: #52b354;">-110</td><td style="text-align:center; color: black; background-color: #dedede;">4.5</td><td style="text-align:center; background-color: #52b354;">+110</td></tr><tr><td style="text-align:center; background-color: #cbf5cc;">-178</td><td style="text-align:center; color: black; background-color: #dedede;">5.5</td><td style="text-align:center; background-color: #cbf5cc;">+178</td></tr><tr><td style="text-align:center; background-color: #ffffff;">-288</td><td style="text-align:center; color: black; background-color: #dedede;">6.5</td><td style="text-align:center; background-color: #ffffff;">+288</td></tr><tr><td style="text-align:center; background-color: #ffffff;">-452</td><td style="text-align:center; color: black; background-color: #dedede;">7.5</td><td style="text-align:center; background-color: #ffffff;">+452</td></tr><tr><td style="text-align:center; background-color: #ffffff;">-762</td><td style="text-align:center; color: black; background-color: #dedede;">8.5</td><td style="text-align:center; background-color: #ffffff;">+762</td></tr><tr><td style="text-align:center; background-color: #ffffff;">-1251</td><td style="text-align:center; color: black; background-color: #dedede;">9.5</td><td style="text-align:center; background-color: #ffffff;">+1251</td></tr></table></div></div><div class="row justify-content-md-center"><p style="font-size:30px;background-color:#ffffe6; padding-left:10px; padding-right:10px; margin-top:30px;">Runs By Inning</p></div><div class="row justify-content-md-center"><p style="font-size:20px; padding-left:10px; padding-right:10px; margin-top:0px;"><b>YRFI:</b> 54.5% (-120)&emsp;|&emsp;<b>NRFI:</b> 45.5% (+120)</p></div></div><div class="container-fluid" style="max-width: 100%; text-align:center;"><table class="runsByInningTable";>
+        <tr>
+        <th style="text-align:center; font-size:24px; width:70px;">Team</th>
+        <th style="text-align:center; font-size:24px; width:70px;">1</th>
+        <th style="text-align:center; font-size:24px; width:70px;">2</th>
+        <th style="text-align:center; font-size:24px; width:70px;">3</th>
+        <th style="text-align:center; font-size:24px; width:70px;">4</th>
+        <th style="text-align:center; font-size:24px; width:70px;">5</th>
+        <th style="text-align:center; font-size:24px; width:70px;">6</th>
+        <th style="text-align:center; font-size:24px; width:70px;">7</th>
+        <th style="text-align:center; font-size:24px; width:70px;">8</th>
+        <th style="text-align:center; font-size:24px; width:70px;">9</th>
+        <th style="text-align:center; font-size:24px; width:70px;">10+</th>
+        </tr><tr><td style="text-align:center; background-color:#005A9C; color:#FFFFFF;">LAD</td><td style="text-align:center; background-color:#fcfafa;">0.55</td><td style="text-align:center; background-color:#fcfafa;">0.51</td><td style="text-align:center; background-color:#fcfafa;">0.54</td><td style="text-align:center; background-color:#fcfafa;">0.55</td><td style="text-align:center; background-color:#f2fcf5;">0.59</td><td style="text-align:center; background-color:#fcfafa;">0.56</td><td style="text-align:center; background-color:#f2fcf5;">0.60</td><td style="text-align:center; background-color:#fcfafa;">0.56</td><td style="text-align:center; background-color:#fcfafa;">0.54</td><td style="text-align:center;">0.1</td></tr><tr><td style="text-align:center; background-color:#A71930; color:#FFFFFF;">ARI</td><td style="text-align:center; background-color:#f2fcf5;">0.61</td><td style="text-align:center; background-color:#faeded;">0.49</td><td style="text-align:center; background-color:#fcfafa;">0.51</td><td style="text-align:center; background-color:#fcfafa;">0.55</td><td style="text-align:center; background-color:#fcfafa;">0.54</td><td style="text-align:center; background-color:#fcfafa;">0.51</td><td style="text-align:center; background-color:#fcfafa;">0.55</td><td style="text-align:center; background-color:#f2fcf5;">0.58</td><td style="text-align:center; background-color:#db7979;">0.29</td><td style="text-align:center;">0.1</td></tr></table><div class="container-fluid"><div class="row justify-content-md-center"><div class="col-sm-12 md-12 lg-12 col-xl-12">
+                <p style="font-size:24px; padding-left:10px; padding-right:10px; margin-top:20px;">First 5 Innings</p>
+                <table class="runMarginTable" style="margin-top:0px;">
+                    <tr>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width: 100px;">Runs</th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width: 200px;">Lead</th>
+                    <th style="text-align:center; background-color:#dedede; color: black; width: 150px;">Tie</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width: 200px;">Lead</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width: 100px;">Runs</th>
+                    </tr><tr><td style="text-align:center;">2.80</td><td style="text-align:center;">(+129) 43.7%</td><td style="text-align:center; color: black;">13.1%</td><td style="text-align:center;">43.2% (+131)</td><td style="text-align:center;">2.75</td></tr></table></div></div></div><div class="container-fluid"><div class="row justify-content-md-center"><div class="col-sm-12 md-12 lg-12 col-xl-12">
+                <p class="text-center" style="font-size:30px;color:black; margin-top:30px;"><span style="background-color:#ffffe6;">Projected Team Stats</span></p>
+                <table class="runMarginTable" style="margin-top:0px;">
+                    <tr>
+                    <th style="min-width: 200px;background-color:#ffffff;text-align:right; border:none"></th>
+                    <th style="text-align:center; background-color:#005A9C; color:#FFFFFF; width: 150px;">Dodgers</th>
+                    <th style="text-align:center; background-color:#dedede; color: black; width: 150px;">Category</th>
+                    <th style="text-align:center; background-color:#A71930; color:#FFFFFF; width: 150px;">Dbacks</th>
+                    <th style="min-width: 200px;background-color:#ffffff;text-align:left; border:none"></th>
+                    </tr><tr><td style="border:none;text-align:right;"></td><td style="text-align:center;">5.20</td><td style="text-align:center; color: black; background-color: #dedede;">Runs</td><td style="text-align:center;">4.79</td><td style="border:none;text-align:left;"></td></tr><tr><td style="border:none;text-align:right;"></td><td style="text-align:center;">9.19</td><td style="text-align:center; color: black; background-color: #dedede;">Hits</td><td style="text-align:center;">8.65</td><td style="border:none;text-align:left;"></td></tr><tr><td style="border:none;text-align:right;"></td><td style="text-align:center;">1.53</td><td style="text-align:center; color: black; background-color: #dedede;">Home Runs</td><td style="text-align:center;">1.14</td><td style="border:none;text-align:left;"></td></tr><tr><td style="border:none;text-align:right;"></td><td style="text-align:center;">0.17</td><td style="text-align:center; color: black; background-color: #dedede;">Triples</td><td style="text-align:center;">0.19</td><td style="border:none;text-align:left;">&#11088;</td></tr><tr><td style="border:none;text-align:right;">&#11088;</td><td style="text-align:center;">2.24</td><td style="text-align:center; color: black; background-color: #dedede;">Doubles</td><td style="text-align:center;">2.00</td><td style="border:none;text-align:left;"></td></tr><tr><td style="border:none;text-align:right;"></td><td style="text-align:center;">5.26</td><td style="text-align:center; color: black; background-color: #dedede;">Singles</td><td style="text-align:center;">5.32</td><td style="border:none;text-align:left;"></td></tr><tr><td style="border:none;text-align:right;"></td><td style="text-align:center;">3.28</td><td style="text-align:center; color: black; background-color: #dedede;">Walks</td><td style="text-align:center;">3.69</td><td style="border:none;text-align:left;">&#11088;</td></tr><tr><td style="border:none;text-align:right;"></td><td style="text-align:center;">8.14</td><td style="text-align:center; color: black; background-color: #dedede;">Strikeouts</td><td style="text-align:center;">6.89</td><td style="border:none;text-align:left;">&#11088;</td></tr></table></div></div>    </div>
+    
+    <div style="margin-bottom: 100px;"></div>
+    
+	</body>
+</html>
