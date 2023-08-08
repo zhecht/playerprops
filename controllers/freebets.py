@@ -486,18 +486,22 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-32538531",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-cincinnati-reds-32538529",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32538532",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-32538538",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-pittsburgh-pirates-32538533",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-new-york-mets-32538530",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-cleveland-guardians-32538535",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-boston-red-sox-32538537",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-milwaukee-brewers-32538534",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-chicago-white-sox-32538536",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-los-angeles-angels-32538540",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-oakland-athletics-32538539"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32541786",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-cincinnati-reds-32540540",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-32540544",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-tampa-bay-rays-32540552",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-pittsburgh-pirates-32540542",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-baltimore-orioles-32540548",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-new-york-mets-32540539",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32540541",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-cleveland-guardians-32540547",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-boston-red-sox-32540549",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-milwaukee-brewers-32540543",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-chicago-white-sox-32540545",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-los-angeles-angels-32540550",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-arizona-diamondbacks-32540538",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-oakland-athletics-32540546",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-seattle-mariners-32540551"
 ]
 
 	lines = {}
@@ -696,13 +700,22 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
-	with open(f"{prefix}static/mlbprops/ev.json") as fh:
+	with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
 		evData = json.load(fh)
 
 	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
 		bpp = json.load(fh)
 
-	evData = {}
+	if not teamArg and not gameArg:
+		evData = {}
+	elif teamArg:
+		for player in evData.copy():
+			if evData[player]["team"] == teamArg:
+				del evData[player]
+	elif gameArg:
+		for player in evData.copy():
+			if evData[player]["game"] == gameArg:
+				del evData[player]
 
 	for game in fdLines:
 		if gameArg and game != gameArg:
@@ -873,6 +886,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				evData[player]["dk"] = dk
 				evData[player]["value"] = str(handicap)
 
+		with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
+			json.dump(evData, fh, indent=4)
+
 	with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
@@ -1014,6 +1030,7 @@ if __name__ == '__main__':
 	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
+	parser.add_argument("--summary", action="store_true", help="Summary")
 
 	args = parser.parse_args()
 
@@ -1029,7 +1046,7 @@ if __name__ == '__main__':
 
 	if args.update:
 		writeFanduel()
-		writeActionNetwork()
+		writeActionNetwork(args.date)
 		#writeKambi()
 
 	if args.ml:
@@ -1043,7 +1060,7 @@ if __name__ == '__main__':
 		checkBPP()
 
 	if args.action:
-		writeActionNetwork()
+		writeActionNetwork(args.date)
 
 	if args.print:
 		sortEV()
@@ -1059,10 +1076,24 @@ if __name__ == '__main__':
 	#devigger(data, player="anthony santander", bet365Odds="300/-465", finalOdds=390, avg=True)
 	#print(data)
 
+	if args.summary:
+		with open(f"static/mlbprops/ev_hr.json") as fh:
+			ev = json.load(fh)
+		output = {}
+		for player in ev:
+			if ev[player]["game"] not in output:
+				output[ev[player]["game"]] = []
+			output[ev[player]["game"]].append((float(ev[player]["ev"]), player, ev[player]["fanduel"]))
+		for game in output:
+			output[game] = sorted(output[game], reverse=True)
+			out = game
+			for o in output[game][:3]:
+				out += f" +{o[-1]} {o[1].title()} ({o[0]}%)."
+			print(out)
 	if args.plays:
 		with open(f"static/mlbprops/ev_hr.json") as fh:
 			ev = json.load(fh)
-		plays = [("endy rodriguez", 1000), ("luis robert", 350), ("jake burger", 340), ("shohei ohtani", 235), ("mj melendez", 460), ("joey votto", 300), ("mickey moniak", 420), ("gabriel arias", 750), ("eloy jimenez", 420), ("jeremy pena", 750), ("trayce thompson", 480), ("yordan alvarez", 320), ("mark vientos", 900), ("matt olson", 450)]
+		plays = [("salvador perez", 330), ("matt chapman", 440), ("max muncy", 350), ("luis robert", 500), ("francisco lindor", 390), ("spencer torkelson", 560), ("nick castellanos", 430), ("fernando tatis", 320), ("brandon lowe", 430), ("joc pederson", 330), ("matt olson", 280)]
 
 		output = []
 		for player, odds in plays:
@@ -1075,7 +1106,7 @@ if __name__ == '__main__':
 
 			if currOdds != odds:
 				data = {}
-				devigger(data, player=player, bet365Odds=ou, finalOdds=odds, avg=True)
+				devigger(data, player=player, bet365Odds=ou, finalOdds=odds, avg=True, dinger=args.dinger)
 				if data:
 					currEv = data[player]["ev"]
 
