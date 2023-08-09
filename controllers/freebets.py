@@ -547,21 +547,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-cincinnati-reds-32540540",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-32540544",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-tampa-bay-rays-32540552",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-pittsburgh-pirates-32540542",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-baltimore-orioles-32540548",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-new-york-mets-32540539",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32540541",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-cleveland-guardians-32540547",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-boston-red-sox-32540549",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-milwaukee-brewers-32540543",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-chicago-white-sox-32540545",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-los-angeles-angels-32540550",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-arizona-diamondbacks-32540538",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-oakland-athletics-32540546",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-seattle-mariners-32540551"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-cincinnati-reds-32542858",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-milwaukee-brewers-32542865",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-oakland-athletics-32542875",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32542869",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-32542878",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-tampa-bay-rays-32542884",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-pittsburgh-pirates-32542872",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-baltimore-orioles-32542882",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-new-york-mets-32542861",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-cleveland-guardians-32542879",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-boston-red-sox-32542881",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-los-angeles-angels-32542883",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-arizona-diamondbacks-32542863",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-seattle-mariners-32542885"
 ]
 
 	lines = {}
@@ -778,7 +777,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 		evData = {}
 	elif teamArg:
 		for player in evData.copy():
-			if evData[player]["team"] == teamArg:
+			if teamArg in evData[player]["game"]:
 				del evData[player]
 	elif gameArg:
 		for player in evData.copy():
@@ -1055,7 +1054,7 @@ def sortEV(dinger=False):
 
 		dt = datetime.strftime(datetime.now(), "%I:%M %p")
 		output = f"\t\t\tUPD: {dt}\n\n"
-		l = ["EV (AVG)", "Team", "Player", "Starting", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
+		l = ["EV (AVG)", "Team", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop not in ["single", "double", "tb"]:
 			l.extend(["PB", "BR", "PN", "BS"])
 		if prop == "hr":
@@ -1171,7 +1170,7 @@ if __name__ == '__main__':
 	#print(data)
 
 	summaryOutput = {}
-	plays = [("max muncy", 350), ("luis robert", 500), ("francisco lindor", 390), ("spencer torkelson", 560), ("nick castellanos", 430), ("fernando tatis", 320), ("matt olson", 280), ("adolis garcia", 360), ("jose siri", 680), ("jake burger", 320)]
+	plays = [("max muncy", 350), ("fernando tatis", 320), ("tyler soderstrom", 1000)]
 	if args.plays:
 		with open(f"static/mlbprops/ev_hr.json") as fh:
 			ev = json.load(fh)
