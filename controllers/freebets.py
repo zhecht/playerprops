@@ -47,9 +47,7 @@ def writeBovada():
 	url = "https://bv2.digitalsportstech.com/api/game?sb=bovada&league=143"
 	outfile = f"outBV"
 
-
-	ids = [179878, 179930, 180241, 180311, 181637, 181638, 182074, 182090]
-	if False:
+	if True:
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
@@ -628,14 +626,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-pittsburgh-pirates-32545300",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-baltimore-orioles-32545302",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-32545303",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-cleveland-guardians-32545304",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-philadelphia-phillies-32545301",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-tampa-bay-rays-32545306",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-boston-red-sox-32545305",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-los-angeles-dodgers-32545299"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-tampa-bay-rays-32547583",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-miami-marlins-32547591",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-pittsburgh-pirates-32547582",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-washington-nationals-32547592",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-toronto-blue-jays-32547587",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-new-york-mets-32547579",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-boston-red-sox-32547584",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-houston-astros-32547585",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-chicago-white-sox-32547589",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-kansas-city-royals-32547590",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-arizona-diamondbacks-32547581",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-los-angeles-dodgers-32547580",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-seattle-mariners-32547586",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-san-francisco-giants-32547588"
 ]
 
 	lines = {}
@@ -1005,7 +1009,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			else:
 				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
 
-			#line = line * 1.5
+			line = line * 1.3
 
 			if player in evData:
 				continue
