@@ -9,6 +9,114 @@ import argparse
 import unicodedata
 import time
 
+def write365():
+    url = "https://www.oh.bet365.com/?_h=GY_bcYP5idsD_IzQUsW36w%3D%3D#/AC/B12/C20865512/D1/E89363498/F2/"
+    
+    js = """
+
+    const data = {}
+
+    {
+        let header = document.querySelector(".rcl-MarketGroupButton_MarketTitle").innerText.toLowerCase().replace("player ", "").replace(" regular season", "").replace("passing", "pass").replace("yards", "yd").replace("rushing", "rush").replace("receiving", "rec").replace("touchdowns", "td").replace("receptions", "rec").replace(" ", "_");
+
+        if (header.indexOf("_td") >= 0) {
+            for (const row of document.querySelectorAll(".src-FixtureSubGroupWithShowMore")) {
+
+                if (row.className.indexOf("src-FixtureSubGroupWithShowMore_Closed") >= 0) {
+                    row.click();
+                }
+                const player = row.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+
+                if (!data[player]) {
+                    data[player] = {};
+                }
+                const over = row.querySelector(".gl-ParticipantBorderless_Name").innerText.replace("Over ", "o");
+                const odds = row.querySelector(".gl-ParticipantBorderless_Odds").innerText;
+                const under = row.querySelectorAll(".gl-ParticipantBorderless_Odds")[1].innerText;
+                data[player][header] = over+" "+odds+"/"+under;
+            }
+
+        } else if (header.indexOf("_yd") >= 0) {
+            const players = [];
+            for (const row of document.querySelectorAll(".srb-ParticipantLabel_Name")) {
+                const player = row.innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+                if (!data[player]) {
+                    data[player] = {};
+                }
+                players.push(player);
+            }
+
+            let idx = 0;
+            for (const row of document.querySelectorAll(".gl-Market")[1].querySelectorAll(".gl-Participant_General")) {
+                const player = players[idx];
+                const over = row.querySelector(".gl-ParticipantCenteredStacked_Name").innerText.replace("Over ", "o");
+                const odds = row.querySelector(".gl-ParticipantCenteredStacked_Odds").innerText;
+                data[player][header] = over+" "+odds;
+                idx += 1;
+            }
+
+            idx = 0;
+            for (const row of document.querySelectorAll(".gl-Market")[2].querySelectorAll(".gl-Participant_General")) {
+                const player = players[idx];
+                const odds = row.querySelector(".gl-ParticipantCenteredStacked_Odds").innerText;
+                data[player][header] += "/"+odds;
+                idx += 1;
+            }
+        }
+    }
+
+    console.log(data)
+
+"""
+
+def writeCZ():
+    url = 'https://sportsbook.caesars.com/us/mi/bet/americanfootball/futures?id=007d7c61-07a7-4e18-bb40-15104b6eac92'
+
+    js = """
+
+    const data = {};
+
+    {
+        const headers = document.querySelectorAll(".expanderHeader");
+        for (const div of headers) {
+            if (div.innerText.indexOf("Total Regular Season") === 0) {
+
+                if (div.className.indexOf("collapsed") >= 0) {
+                    div.click();
+                }
+
+                const hdr = div.innerText.toLowerCase().replace("passing", "pass").replace("yards", "yd").replace("rushing", "rush").replace("receiving", "rec").replace("touchdowns", "td").replace("receptions", "rec");
+                let hdr1 = hdr.split(" ")[3];
+                if (hdr.split(" ").length > 4) {
+                    hdr1 += "_"+hdr.split(" ")[4];
+                }
+                
+                if (hdr1 === "sacks") {
+                    continue;
+                }
+                if (hdr1 === "touchdown_passes") {
+                    hdr1 = "pass_td";
+                }              
+
+                for (const row of div.parentNode.querySelectorAll(".EventCard")) {
+                    const player = row.querySelector(".marketTemplateTitle").innerText.split(" 2023")[0].toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+                    
+                    if (!data[player]) {
+                        data[player] = {};
+                    }
+                    const btns = row.querySelectorAll("button");
+                    const line = parseFloat(btns[0].querySelector("span").innerText.replace(",", ""));
+                    const odds = btns[0].querySelectorAll("span")[1].innerText+"/"+btns[1].querySelectorAll("span")[1].innerText;
+
+                    data[player][hdr1] = "o"+line+" "+odds;
+                }
+            }
+        }
+    }
+    console.log(data);
+
+"""
+
 def writeYahoo():
     js = """
 
@@ -228,10 +336,33 @@ def writeFantasyPros():
     with open("static/draft/fantasypros.json", "w") as fh:
         json.dump(data, fh, indent=4)
 
+# 0.5ppr, 4pt QB TD
+def calculateFantasyPoints(pos, j, ppr=0.5, qbTd = 4):
+    j["points"] = 0
+    for hdr in j:
+        if hdr == "player" or "book" in hdr:
+            continue
+        if "yd" in hdr:
+            if hdr == "pass_yd":
+                j["points"] += j[hdr] / 25
+            else:
+                j["points"] += j[hdr] / 10
+        elif "td" in hdr:
+            if hdr == "pass_td":
+                j["points"] += j[hdr] * qbTd
+            else:
+                j["points"] += j[hdr] * 6
+        elif hdr == "rec":
+            j["points"] += j[hdr] * ppr
+        elif hdr == "int":
+            j["points"] += j[hdr] * -2
+
+    j["points"] = round(j["points"], 2)
+
 def writeCsv():
     projections = {}
 
-    books = ["draftkings", "fanduel", "fantasypros", "yahoo"]
+    books = ["fantasypros", "draftkings", "fanduel", "caesars", "bet365", "yahoo"]
     for book in books:
         with open(f"static/draft/{book}.json") as fh:
             projections[book] = json.load(fh).copy()
@@ -254,18 +385,22 @@ def writeCsv():
             }
             for hdr in headers:
                 j[hdr] = [projections["fantasypros"][player][hdr]]
-                #j[hdr+"_fantasypros"] = projections["fantasypros"][hdr]
+                j[hdr+"_book_fantasypros"] = projections["fantasypros"][player][hdr]
 
-                for book in ["draftkings", "fanduel", "yahoo"]:
-                    if hdr in projections[book]:
-                        j[hdr].append(float(projections[book][player][hdr]))
-                        #j[hdr+"_"+book] = projections[book][hdr]
+                for book in ["draftkings", "fanduel", "caesars", "bet365", "yahoo"]:
+                    if player in projections[book] and hdr in projections[book][player]:
+                        val = projections[book][player][hdr]
+                        if "o" in str(val):
+                            val = val.split(" ")[0][1:]
+                        j[hdr].append(float(val))
+                        j[hdr+"_book_"+book] = val
 
             for hdr in j:
-                if hdr == "player":
+                if hdr == "player" or "book" in hdr:
                     continue
                 j[hdr] = round(sum(j[hdr]) / len(j[hdr]), 1)
 
+            calculateFantasyPoints(pos, j, ppr=0.5, qbTd=4)
             data.append(j)
 
         sortKey = "pass_yd"
@@ -273,13 +408,31 @@ def writeCsv():
             sortKey = "rec_yd"
         elif pos == "rb":
             sortKey = "rush_yd"
-        output = "\t".join([h.upper() for h in data[0]])+"\n"
-        for row in sorted(data, key=lambda k: k[sortKey], reverse=True):
-            output += "\t".join([str(row[r]) for r in row]) + "\n"
+        output = "\t".join([h.upper() for h in data[0] if "book" not in h])+"\n"
+        for row in sorted(data, key=lambda k: k["points"], reverse=True):
+            output += "\t".join([str(row[r]) for r in row if "book" not in r]) + "\n"
 
         with open(f"static/draft/{pos.replace('/', '_')}.csv", "w") as fh:
             fh.write(output)
 
+        books = ["draftkings", "fanduel", "caesars", "bet365", "fantasypros", "yahoo"]
+        for prop in headers:
+            h = ["Player", "AVG"]
+            h.extend(books)
+            output = "\t".join(h)+"\n"
+
+            for row in sorted(data, key=lambda k: k[prop], reverse=True):
+                a = []
+                for book in books:
+                    try:
+                        a.append(row[prop+"_book_"+book])
+                    except:
+                        a.append("-")
+                h = [row["player"], row[prop]]
+                h.extend(a)
+                output += "\t".join([str(x) for x in h]) + "\n"
+            with open(f"static/draft/{pos.replace('/', '_')}_{prop}.csv", "w") as fh:
+                fh.write(output)
 
 
 if __name__ == '__main__':

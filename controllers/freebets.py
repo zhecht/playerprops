@@ -8,6 +8,7 @@ import re
 import argparse
 import unicodedata
 import time
+from twilio.rest import Client
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -260,7 +261,19 @@ def checkBPP():
 	for row in sorted(data, reverse=True):
 		print(row[1])
 
-def writeLineups():
+def sendText(body=""):
+	accountSid = os.environ["TWILIO_ACCOUNT_SID"]
+	authToken = os.environ["TWILIO_AUTH_TOKEN"]
+
+	client = Client(accountSid, authToken)
+
+	message = client.messages.create(
+		body=body,
+		from_="+18334181767",
+		to=os.environ["TWILIO_TO"]
+	)
+
+def writeLineups(plays = []):
 	url = "https://www.mlb.com/starting-lineups/"
 	outfile = f"outlineups"
 	os.system(f"curl -k \"{url}\" -o {outfile}")
@@ -277,12 +290,44 @@ def writeLineups():
 			data[team] = []
 			for player in table.find("ol", class_=f"starting-lineups__team--{which}").findAll("li"):
 				try:
-					data[team].append(player.find("a").text.strip().lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", ""))
+					player = player.find("a").text.strip().lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 				except:
-					data[team].append(player.text)
+					player = player.text
+
+				data[team].append(player)
+
+	with open(f"{prefix}static/freebets/lineupsSent.json") as fh:
+		lineupsSent = json.load(fh)
+
+	date = datetime.now()
+	date = str(date)[:10]
+
+	if True or datetime.now().hour > 21 or datetime.now().hour < 10:
+		pass
+	else:
+		if date != lineupsSent["updated"]:
+			lineupsSent = {
+				"updated": date,
+				"teams": []
+			}
+		for team in data:
+			if team not in lineupsSent["teams"] and data[team][0] != "TBD":
+				sendText(f"\n\n{team}\n\n"+"\n".join(data[team]))
+				lineupsSent["teams"].append(team)
+
+	for row in plays:
+		if row[-1] in data and len(data[row[-1]]) > 1:
+			if row[0] in data[row[-1]]:
+				print(row[0], "starting")
+			else:
+				print(row[0], "SITTING!!")
+
 
 	with open(f"{prefix}static/freebets/lineups.json", "w") as fh:
 		json.dump(data, fh, indent=4)
+
+	with open(f"{prefix}static/freebets/lineupsSent.json", "w") as fh:
+		json.dump(lineupsSent, fh, indent=4)
 
 
 def writeKambi():
@@ -626,20 +671,13 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-tampa-bay-rays-32547583",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-miami-marlins-32547591",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-pittsburgh-pirates-32547582",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-washington-nationals-32547592",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-toronto-blue-jays-32547587",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-new-york-mets-32547579",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-boston-red-sox-32547584",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-houston-astros-32547585",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-chicago-white-sox-32547589",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-kansas-city-royals-32547590",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-arizona-diamondbacks-32547581",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-los-angeles-dodgers-32547580",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-seattle-mariners-32547586",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-san-francisco-giants-32547588"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-miami-marlins-32555239",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-atlanta-braves-32555237",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-st.-louis-cardinals-32555238",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-texas-rangers-32555234",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-kansas-city-royals-32555235",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-san-diego-padres-32555240",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-san-francisco-giants-32555236"
 ]
 
 	lines = {}
@@ -823,8 +861,11 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	if not date:
 		date = str(datetime.now())[:10]
 
-	with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
-		dkLines = json.load(fh)
+	try:
+		with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
+			dkLines = json.load(fh)
+	except:
+		dkLines = {}
 
 	if prop != "hr":
 		with open(f"{prefix}static/mlbprops/bet365_{prop}s.json") as fh:
@@ -923,6 +964,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				cz = data.get("caesars", "-")
 				pb = data.get("pointsbet", "-")
 
+				if dk == "":
+					dk = data.get("draftkings", "-")
+
 			pn = bs = ""
 			if prop == "k" and team in bpp and player in bpp[team] and "k" in bpp[team][player] and str(handicap) in bpp[team][player]["k"]:
 				pn = bpp[team][player]["k"][str(handicap)].get("pn", "-")
@@ -962,19 +1006,19 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if not nocz:
 					l.append(cz)
 				if not nobr:
-					l.append(br)
+					l.append(br.split("/")[0])
 			elif prop == "k":
 				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, pn, bs]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
-					l.append(br)
+					l.append(br.split("/")[0])
 			if allArg:
 				l = [bet365ou, dk, mgm, pb, pn, bs]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
-					l.append(br)
+					l.append(br.split("/")[0])
 			for book in l:
 				if book and book != "-":
 					avgOver.append(convertDecOdds(int(book.split("/")[0])))
@@ -1009,7 +1053,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			else:
 				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
 
-			line = line * 1.3
+			#line = line * 1.5
 
 			if player in evData:
 				continue
@@ -1028,6 +1072,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if player not in evData:
 					print(player)
 					continue
+				if float(evData[player]["ev"]) > 0:
+					print(player, evData[player]["ev"], line, ou)
 				evData[player]["pitcher"] = strikeouts
 				evData[player]["game"] = game
 				evData[player]["team"] = team
@@ -1090,7 +1136,10 @@ def sortEV(dinger=False):
 			dk = evData[player]["dk"]
 			value = evData[player].get("value", 0)
 			if "/" in dk and int(dk.split("/")[0]) > 0:
-				dk = str(dk)[1:]
+				if dk.startswith("+"):
+					dk = str(dk)[1:]
+				else:
+					dk = str(dk)
 			if team and team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
 				an = actionnetwork[team][player][prop]
 				if prop == "k":
@@ -1216,9 +1265,15 @@ if __name__ == '__main__':
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
 	parser.add_argument("--summary", action="store_true", help="Summary")
+	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 
 	args = parser.parse_args()
+
+	plays = [("spencer torkelson", 360,"det"), ("stone garrett", 470, "wsh"), ("ryan ohearn", 630, "bal"), ("brenton doyle", 900, "col"), ("brandon nimmo", 680, "nym"), ("ketel marte", 630, "ari"), ("tyler soderstrom", 560, "oak"), ("carlos santana", 600, "mil"), ("mookie betts", 240, "lad")]
+
+	if args.lineups:
+		writeLineups(plays)
 
 	dinger = False
 	if args.dinger:
@@ -1236,6 +1291,9 @@ if __name__ == '__main__':
 	if args.bv:
 		checkBovada()
 
+	if args.text:
+		sendText()
+
 	if args.update:
 		writeFanduel()
 		writeActionNetwork(args.date)
@@ -1243,9 +1301,6 @@ if __name__ == '__main__':
 
 	if args.ml:
 		writeActionNetworkML()
-
-	if args.lineups:
-		writeLineups()
 
 	if args.ev:
 		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop, nocz=args.nocz)
@@ -1271,7 +1326,6 @@ if __name__ == '__main__':
 	#print(data)
 
 	summaryOutput = {}
-	plays = [("trea turner", 450), ("max muncy", 370), ("joey votto", 300), ("matt chapman", 400), ("salvador perez", 350), ("jorge polanco", 420), ("spencer torkelson", 390), ("jordan westburg", 680)]
 	if args.plays:
 		with open(f"static/mlbprops/ev_hr.json") as fh:
 			ev = json.load(fh)
@@ -1280,7 +1334,7 @@ if __name__ == '__main__':
 			bppExpectedHomers = json.load(fh)
 		
 		output = []
-		for player, odds in plays:
+		for player, odds, team in plays:
 			if player not in ev:
 				output.append(f"{player} taken={odds}")
 				continue
