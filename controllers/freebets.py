@@ -671,13 +671,15 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-miami-marlins-32555239",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-atlanta-braves-32555237",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-st.-louis-cardinals-32555238",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-texas-rangers-32555234",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-kansas-city-royals-32555235",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-san-diego-padres-32555240",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-san-francisco-giants-32555236"
+  "https://sportsbook.fanduel.com/baseball/mlb/houston-astros-@-miami-marlins-32555239",
+  "https://sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-new-york-mets-32555232",
+  "https://sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-atlanta-braves-32555237",
+  "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-st.-louis-cardinals-32555238",
+  "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-texas-rangers-32555234",
+  "https://sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-kansas-city-royals-32555235",
+  "https://sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-colorado-rockies-32555233",
+  "https://sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-san-diego-padres-32555240",
+  "https://sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-san-francisco-giants-32555236"
 ]
 
 	lines = {}
@@ -1053,7 +1055,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			else:
 				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
 
-			#line = line * 1.5
+			#line = line * 1.3
 
 			if player in evData:
 				continue
@@ -1270,7 +1272,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("spencer torkelson", 360,"det"), ("stone garrett", 470, "wsh"), ("ryan ohearn", 630, "bal"), ("brenton doyle", 900, "col"), ("brandon nimmo", 680, "nym"), ("ketel marte", 630, "ari"), ("tyler soderstrom", 560, "oak"), ("carlos santana", 600, "mil"), ("mookie betts", 240, "lad")]
+	plays = [("matt olson", 300, "atl"), ("nolan arenado", 290, "stl"), ("willson contreras", 340, "stl")]
 
 	if args.lineups:
 		writeLineups(plays)

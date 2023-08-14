@@ -118,6 +118,8 @@ def writeCZ():
 """
 
 def writeYahoo():
+    url = "https://football.fantasysports.yahoo.com/f1/471322/players?&sort=AR&sdir=1&status=A&pos=O&stat1=S_PS_2023&jsenabled=1"
+
     js = """
 
     const data = {};
@@ -359,7 +361,12 @@ def calculateFantasyPoints(pos, j, ppr=0.5, qbTd = 4):
 
     j["points"] = round(j["points"], 2)
 
-def writeCsv():
+def writeCsv(ppr=None, qbTd=None, booksOnly=False):
+    if not ppr:
+        ppr = 0.5
+    if not qbTd:
+        qbTd = 4
+
     projections = {}
 
     books = ["fantasypros", "draftkings", "fanduel", "caesars", "bet365", "yahoo"]
@@ -367,6 +374,8 @@ def writeCsv():
         with open(f"static/draft/{book}.json") as fh:
             projections[book] = json.load(fh).copy()
 
+    allHeaders = ["pass_yd", "pass_td", "int", "rush_att", "rush_yd", "rush_td", "rec", "rec_yd", "rec_td"]
+    allData = []
     for pos in ["qb", "rb", "wr/te"]:
         headers = []
         if pos == "qb":
@@ -384,30 +393,36 @@ def writeCsv():
                 "player": player.title()
             }
             for hdr in headers:
-                j[hdr] = [projections["fantasypros"][player][hdr]]
+                if booksOnly:
+                    j[hdr] = []
+                else:
+                    j[hdr] = [projections["fantasypros"][player][hdr]]
                 j[hdr+"_book_fantasypros"] = projections["fantasypros"][player][hdr]
+                j[hdr+"_book_odds_fantasypros"] = projections["fantasypros"][player][hdr]
 
                 for book in ["draftkings", "fanduel", "caesars", "bet365", "yahoo"]:
                     if player in projections[book] and hdr in projections[book][player]:
                         val = projections[book][player][hdr]
                         if "o" in str(val):
                             val = val.split(" ")[0][1:]
-                        j[hdr].append(float(val))
+
+                        if not booksOnly or book != "yahoo":
+                            j[hdr].append(float(val))
                         j[hdr+"_book_"+book] = val
+                        j[hdr+"_book_odds_"+book] = projections[book][player][hdr]
 
             for hdr in j:
                 if hdr == "player" or "book" in hdr:
                     continue
-                j[hdr] = round(sum(j[hdr]) / len(j[hdr]), 1)
+                if not len(j[hdr]):
+                    j[hdr] = 0
+                else:
+                    j[hdr] = round(sum(j[hdr]) / len(j[hdr]), 1)
 
-            calculateFantasyPoints(pos, j, ppr=0.5, qbTd=4)
+            calculateFantasyPoints(pos, j, ppr, qbTd)
             data.append(j)
+            allData.append(j)
 
-        sortKey = "pass_yd"
-        if pos == "wr/te":
-            sortKey = "rec_yd"
-        elif pos == "rb":
-            sortKey = "rush_yd"
         output = "\t".join([h.upper() for h in data[0] if "book" not in h])+"\n"
         for row in sorted(data, key=lambda k: k["points"], reverse=True):
             output += "\t".join([str(row[r]) for r in row if "book" not in r]) + "\n"
@@ -434,6 +449,39 @@ def writeCsv():
             with open(f"static/draft/{pos.replace('/', '_')}_{prop}.csv", "w") as fh:
                 fh.write(output)
 
+        h = ["Player", "Prop", "AVG"]
+        h.extend(books)
+        output = "\t".join(h)+"\n"
+        for row in sorted(data, key=lambda k: k["points"], reverse=True):
+            output += f"{row['player']}\n"
+            for prop in headers:
+                output += f"\t{prop}\t{row[prop]}\t"
+                a = []
+                for book in books:
+                    try:
+                        a.append(row[prop+"_book_odds_"+book])
+                    except:
+                        a.append("-")
+                output += "\t".join([str(x) for x in a]) + "\n"
+        with open(f"static/draft/{pos.replace('/', '_')}_all.csv", "w") as fh:
+            fh.write(output)
+
+    h = ["Player"]
+    h.extend([x.upper() for x in allHeaders])
+    h.append("Points")
+    output = "\t".join(h)+"\n"
+    for row in sorted(allData, key=lambda k: k["points"], reverse=True):
+        a = [row['player']]
+        for hdr in h:
+            if hdr in row:
+                a.append(str(row[hdr.lower()]))
+            else:
+                a.append("-")
+        output += "\t".join(a)+f"\t{row['points']}\n"
+
+    with open(f"static/draft/all.csv", "w") as fh:
+        fh.write(output)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -441,7 +489,10 @@ if __name__ == '__main__':
     parser.add_argument("--dk", action="store_true", help="Draftkings")
     parser.add_argument("--nf", action="store_true", help="Numberfire")
     parser.add_argument("--fp", action="store_true", help="FantasyPros")
+    parser.add_argument("--booksOnly", action="store_true", help="Books Only")
     parser.add_argument("-p", "--print", action="store_true", help="Print CSVs")
+    parser.add_argument("--ppr", help="PPR", type=int)
+    parser.add_argument("--qbTd", help="PPR", type=int)
 
     args = parser.parse_args()
 
@@ -455,4 +506,4 @@ if __name__ == '__main__':
         writeFantasyPros()
 
     if args.print:
-        writeCsv()
+        writeCsv(args.ppr, args.qbTd, args.booksOnly)
