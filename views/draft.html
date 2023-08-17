@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NFL Draft</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/teams.css" type="text/css">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#header {
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			height: 10%;
+		}
+		#header div {
+			margin-top: 1rem;
+		}
+		#tableDiv {
+			display: flex;
+			height: 90%;
+			justify-content: center;
+		}
+		#positionDiv {
+			display: none;
+			width: 200px;
+			justify-content: space-evenly;
+		}
+	</style>
+	<body>
+		<div id="header">
+			<div>
+				<button onclick="renderDepthChart()">Depth Chart</button>
+				<button onclick="renderProjections()">Projections</button>
+			</div>
+			<div id="positionDiv">
+				<button onclick="filterPos(this)">All</button>
+				<button onclick="filterPos(this)">QB</button>
+				<button onclick="filterPos(this)">RB</button>
+				<button onclick="filterPos(this)">WR/TE</button>
+			</div>
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable"></div>
+		</div>
+	</body>
+	<script>
+		let TABLE;
+		let posArg = "{{pos}}";
+		const teamFormatter = function(cell, params, rendered) {
+			const div = document.createElement("div");
+			div.className = cell.getValue().toLowerCase();
+			div.innerText = cell.getValue().toUpperCase();
+			return div;
+		}
+
+		const depthChartFormatter = function(cell, params, rendered) {
+			const players = cell.getValue();
+			if (cell.getField() == "qb") {
+				return players.split("\n")[0];
+			} else {
+				const div = document.createElement("div");
+				for (const player of players.split("\n")) {
+					div.appendChild(document.createTextNode(player));
+					div.appendChild(document.createElement("br"));
+				}
+				return div;
+			}
+		}
+
+		function filterPos(el) {
+			posArg = el.innerText.toLowerCase();
+			TABLE.setFilter([{field: "pos", type:"=", value:posArg}]);
+			showHideCols();
+		}
+
+		function showHideCols() {
+			console.log(posArg);
+			if (posArg === "all") {
+				return;
+			}
+
+			if (posArg !== "qb") {
+				TABLE.hideColumn("pass_yd");
+				TABLE.hideColumn("pass_td");
+				TABLE.hideColumn("int");
+			}
+			if (posArg !== "rb") {
+				TABLE.hideColumn("rush_att");
+			}
+
+			if (posArg === "wr/te") {
+				TABLE.hideColumn("rush_att");
+				TABLE.hideColumn("rush_yd");
+				TABLE.hideColumn("rush_td");
+				TABLE.showColumn("rec");
+				TABLE.showColumn("rec_yd");
+				TABLE.showColumn("rec_td");
+			} else if (posArg === "rb") {
+				TABLE.showColumn("rush_att");
+				TABLE.showColumn("rush_yd");
+				TABLE.showColumn("rush_td");
+				TABLE.showColumn("rec_yd");
+				TABLE.showColumn("rec_td");
+			} else if (posArg === "qb") {
+				TABLE.hideColumn("rec");
+				TABLE.hideColumn("rec_yd");
+				TABLE.hideColumn("rec_td");
+				TABLE.showColumn("pass_yd");
+				TABLE.showColumn("pass_td");
+				TABLE.showColumn("rush_yd");
+				TABLE.showColumn("rush_td");
+				TABLE.showColumn("int");
+			}
+		}
+
+		function renderProjections() {
+			document.querySelector("#positionDiv").style.display = "flex";
+			TABLE = new Tabulator("#propsTable", {
+				tooltipsHeader: true,
+				ajaxURL: "/getProjections",
+				layout: "fitData",
+				initialSort: [
+					{column: "points", dir: "desc"},
+				],
+				columns: [
+					{title: "Player", field: "player"},
+					{title: "Pos", field: "pos", hozAlign: "center", width: 70},
+					{title: "Tier", field: "tier", hozAlign: "center", width: 50},
+					{title: "Pos Tier", field: "posTier", hozAlign: "center", width: 50},
+					{title: "PASS YD", field: "pass_yd", hozAlign: "center"},
+					{title: "PASS TD", field: "pass_td", hozAlign: "center"},
+					{title: "INT", field: "int", hozAlign: "center"},
+					{title: "RUSH ATT", field: "rush_att", visible: false, hozAlign: "center"},
+					{title: "RUSH YD", field: "rush_yd", hozAlign: "center"},
+					{title: "RUSH TD", field: "rush_td", hozAlign: "center"},
+					{title: "REC", field: "rec", hozAlign: "center"},
+					{title: "REC YD", field: "rec_yd", hozAlign: "center"},
+					{title: "REC TD", field: "rec_td", hozAlign: "center"},
+					{title: "Points", field: "points", sorter: "number", hozAlign: "center" },
+				]
+			});
+
+			setTimeout(function() {
+				showHideCols();
+			}, 500);
+		}
+
+		function renderDepthChart() {
+			TABLE = new Tabulator("#propsTable", {
+				tooltipsHeader: true,
+				ajaxURL: "/getDepthChart",
+				initialSort: [
+					{column: "team", dir: "asc"},
+				],
+				columns: [
+					{title: "Team", field: "team", formatter: teamFormatter, hozAlign: "center"},
+					{title: "QB", field: "qb", formatter: depthChartFormatter},
+					{title: "RB", field: "rb", formatter: depthChartFormatter},
+					{title: "WR1", field: "wr1", formatter: depthChartFormatter},
+					{title: "WR2", field: "wr2", formatter: depthChartFormatter},
+					{title: "WR3", field: "wr3", formatter: depthChartFormatter},
+					{title: "TE", field: "te", formatter: depthChartFormatter},
+				]
+			});
+		}
+
+		renderProjections();
+	</script>
+</html>

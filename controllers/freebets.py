@@ -317,9 +317,7 @@ def writeLineups(plays = []):
 
 	for row in plays:
 		if row[-1] in data and len(data[row[-1]]) > 1:
-			if row[0] in data[row[-1]]:
-				print(row[0], "starting")
-			else:
+			if row[0] not in data[row[-1]]:
 				print(row[0], "SITTING!!")
 
 
@@ -671,15 +669,12 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://sportsbook.fanduel.com/baseball/mlb/houston-astros-@-miami-marlins-32555239",
-  "https://sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-new-york-mets-32555232",
-  "https://sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-atlanta-braves-32555237",
-  "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-st.-louis-cardinals-32555238",
-  "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-texas-rangers-32555234",
-  "https://sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-kansas-city-royals-32555235",
-  "https://sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-colorado-rockies-32555233",
-  "https://sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-san-diego-padres-32555240",
-  "https://sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-san-francisco-giants-32555236"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-kansas-city-royals-32562376",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-washington-nationals-32562378",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-st.-louis-cardinals-32562366",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-cleveland-guardians-32562377",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-san-diego-padres-32562373",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-los-angeles-dodgers-32562369"
 ]
 
 	lines = {}
@@ -762,7 +757,7 @@ def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=Fal
 			finalOdds = f"1={finalOdds};n=0.28x"
 
 	outfile = f"out_{prop}"
-	post = ["curl", 'http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-X", "POST", "-H", 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0', "-H", 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', "-H",'Accept-Language: en-US,en;q=0.5', "-H",'Accept-Encoding: gzip, deflate', "-H",'Content-Type: application/x-www-form-urlencoded', "-H",'Origin: http://crazyninjamike.com', "-H",'Connection: keep-alive', "-H",'Referer: http://crazyninjamike.com/public/sportsbooks/sportsbook_devigger.aspx', "-H",'Cookie: General=KellyMultiplier=.25&KellyBankRoll=1000&DevigMethodIndex=4&WorstCaseDevigMethod_Multiplicative=True&WorstCaseDevigMethod_Additive=True&WorstCaseDevigMethod_Power=True&WorstCaseDevigMethod_Shin=True&MultiplicativeWeight=0&AdditiveWeight=0&PowerWeight=0&ShinWeight=0&ShowEVColorIndicator=False&ShowDetailedDevigInfo=True&CopyToClipboard_Reddit=False&ShowHedgeDevigMethod=False&UseMultilineTextbox=False; ASP.NET_SessionId=h2cklqfayhnovxkckdykfm4o', "-H",'Upgrade-Insecure-Requests: 1', "-H",'Pragma: no-cache', "-H",'Cache-Control: no-cache', "--data-raw", '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwUKLTc1NDAxMDAxOA9kFgICAw9kFhwCJw8PFgIeB1Zpc2libGVoZGQCNQ8PFgQeBFRleHRlHwBoZGQCNw8PFgIfAQX%2FATxiPldvcnN0LWNhc2U6IChQb3dlcik8L2I%2BPC9icj5MZWcjMSAoMzI5KTsgTWFya2V0IEp1aWNlID0gNy4xICU7IExlZydzIEp1aWNlID0gNi4zICU7IEZhaXIgVmFsdWUgPSArNDQwICgxOC41ICUpPC9icj5GaW5hbCBPZGRzICgrNDIwKTsgzqMoTWFya2V0IEp1aWNlKSA9IDcuMTAgJTsgzqMoTGVnJ3MgSnVpY2UpID0gNi4zICU7IEZhaXIgVmFsdWUgPSArNDQwICgxOC41ICUpPC9icj5TdW1tYXJ5OyBFViUgPSAtMy43ICUgKEZCID0gNzcuOCAlKWRkAjkPDxYCHghJbWFnZVVybGVkZAI7Dw8WAh8BBYUFPC9icj48YnV0dG9uIHR5cGU9ImJ1dHRvbiIgb25jbGljaz0iQ29weVRvQ2xpcGJvYXJkKCdUZXh0Ym94Xy0xX3JlZGRpdCcpIj5Db3B5IGZvciBEaXNjb3JkL1JlZGRpdDwvYnV0dG9uPjx0ZXh0YXJlYSBpZD0iVGV4dGJveF8tMV9yZWRkaXQiIG5hbWU9IlRleHQxIiBjb2xzPSI0MCIgcm93cz0iNSIgc3R5bGU9ImRpc3BsYXk6IG5vbmUiPk9kZHM6ICs0MjA7ICoqRVY6IC0zLjcgJSoqDQoNCmAzMjkvLTUxN2AgKDcuMTAgJSBqdWljZSkNCg0KRlY6ICs0NDA7IE1ldGhvZDogd29yc3QtY2FzZSAocCk7IChGQiA9IDc3LjggJSk8L3RleHRhcmVhPjwvYnI%2BPC9icj48YnV0dG9uIHR5cGU9ImJ1dHRvbiIgb25jbGljaz0iQ29weVRvQ2xpcGJvYXJkKCdUZXh0Ym94X0Rldmlnc1VSTF9kZXZpZ3N1cmwnKSI%2BQ29weSBEZXZpZydzIFVSTDwvYnV0dG9uPjx0ZXh0YXJlYSBpZD0iVGV4dGJveF9EZXZpZ3NVUkxfZGV2aWdzdXJsIiBuYW1lPSJUZXh0MSIgY29scz0iNDAiIHJvd3M9IjUiIHN0eWxlPSJkaXNwbGF5OiBub25lIj5odHRwOi8vY3JhenluaW5qYW1pa2UuY29tL1B1YmxpYy9zcG9ydHNib29rcy9zcG9ydHNib29rX2RldmlnZ2VyLmFzcHg%2FYXV0b2ZpbGw9MSZMZWdPZGRzPTMyOSUyZi01MTcmRmluYWxPZGRzPTQyMDwvdGV4dGFyZWE%2BZGQCPQ8PFgIfAWVkZAJBDw8WAh8BZWRkAkMPDxYCHwFlZGQCRw8PFgIfAWVkZAJJDw8WAh8BZWRkAk0PDxYCHwFlZGQCTw8PFgIfAWVkZAJTDw8WAh8BZWRkAl8PEGRkFgFmZBgBBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WFgUTQ2hlY2tCb3hDb3JyZWxhdGlvbgUNQ2hlY2tCb3hCb29zdAUWUmFkaW9CdXR0b25Cb29zdFByb2ZpdAUTUmFkaW9CdXR0b25Cb29zdEFsbAUTUmFkaW9CdXR0b25Cb29zdEFsbAUUQ2hlY2tCb3hEYWlseUZhbnRhc3kFDkNoZWNrQm94UmV3YXJkBSVDaGVja0JveExpc3RXb3JzdENhc2VNZXRob2RTZXR0aW5ncyQwBSVDaGVja0JveExpc3RXb3JzdENhc2VNZXRob2RTZXR0aW5ncyQxBSVDaGVja0JveExpc3RXb3JzdENhc2VNZXRob2RTZXR0aW5ncyQyBSVDaGVja0JveExpc3RXb3JzdENhc2VNZXRob2RTZXR0aW5ncyQzBSVDaGVja0JveExpc3RXb3JzdENhc2VNZXRob2RTZXR0aW5ncyQzBSVDaGVja0JveExpc3RDb3B5VG9DbGlwYm9hcmRTZXR0aW5ncyQwBSVDaGVja0JveExpc3RDb3B5VG9DbGlwYm9hcmRTZXR0aW5ncyQxBSVDaGVja0JveExpc3RDb3B5VG9DbGlwYm9hcmRTZXR0aW5ncyQyBSVDaGVja0JveExpc3RDb3B5VG9DbGlwYm9hcmRTZXR0aW5ncyQzBSVDaGVja0JveExpc3RDb3B5VG9DbGlwYm9hcmRTZXR0aW5ncyQzBRpDaGVja0JveExpc3RNaXNjU2V0dGluZ3MkMAUaQ2hlY2tCb3hMaXN0TWlzY1NldHRpbmdzJDEFGkNoZWNrQm94TGlzdE1pc2NTZXR0aW5ncyQxBRFDaGVja0JveFNob3dIZWRnZQUbQ2hlY2tCb3hVc2VNdWx0aWxpbmVUZXh0Ym94UbpCSL25lwN8W7u8RDDUFamIlgc%3D&__VIEWSTATEGENERATOR=75A63123&__EVENTVALIDATION=%2FwEdAEMPUukO0xM%2FA1OXsjTTUyeDVduh02rwiY5pxbMa1RNJ5aQWjQCmzgVoWED6ZF3QmBhQwDtP%2FiI7M6rA7bM7sw79dcexLTc65mHP6HSLc%2Bf1LffPdxAlAXM62AauCNlhmmvcpkkrUUk0wKmeRC%2Bo5Y4X6geodp8Olur%2BmlGM1%2FKrX0%2FlhO7FgJVfVmSrfexz2O8O1Hi%2Fs4JOEIbuo8tqstA4FSD8tQvxjLeGTr%2FZjbpMMCoLzpV5VCswEluevhpgd9wk6hQu8IzOUf9SV1fT41DJrES61htWrWjs6qQMwbhFAInbbXKrUyuaH0WERw6pAco%2FDYrJ17Id28pC779glSqiyuRmS0vMxthemNSZxFYiWcucIPcus%2FOzSDEyoeofXW3aOzoxxlnSXry0La7j6r%2Fs%2BfHYZidJ9iL1XbUgK8hpdJe%2BtzEYMgx%2BTUfzwbS304A%2FY8oqBpGAsYx8Mop1jRjezzZQ%2B9tmmKZqyksYCdJDpzyJeqLpB5t8%2F2GJQ3xLbuvhfOPVw%2FvZ64GRORAnyiUeAIH4rCiLrkEjcbAVN3KRLGcEq1QxEeM%2Fjkzi4zrZhPrdYjFyIOpXU7VVEH8x6qLFK%2FgiX4R7k%2BePj3bS7J%2BgWBTnTMwDkbtKRoDY9CgTs7Im6q5QJGQ4Zop7C9MPh%2FovUZMCC%2B0SDrnxmEkAW9uYtxLt%2Fyzf7D%2FO38iSXXKKjp%2F7pQZSXQqK%2BkHRq0%2F8hxlteb8BqBsXIQ3Id4DTK3MIxXuZIjIbmxHxK2jQvvnkl2IojkGDopgGMUjBgFQSCSRWR%2BvnMJoIOfBUI43VZFoFoOWmJfOGgotEV0SbRtvJlGGgBtNu745bl1XM%2FNjSIkmj0hpqvWk5jUlJo8y5DJZi2FeCfzTe16FW7YBUVAarIwORcYHwHlUbtxUIovxtp6Fnp9PZDrtAO8BRQYb%2BM2XZoW6ZGCGPI3Vs4qn7bWwKvOZxJ0hkpY3JuBY8dUINwhWy9tBMMMleqCemET2u7gRHPAbTtEEA0M6r7Zrzlm%2BXOIAyERXQ8XPFFqsFxOEZFeuxKH%2FI7Em%2FLOYrJZQEF%2FXmnfJtqlZ119DKEMgOAXJKwTjbHfIVMvqWcHvFBXtSrRli%2BLXSuvmx4sYD3Q%2FsmNkE8GK1s%2FT%2FRpPmdWeEsxFtygifU2vOaYXIhnkpGZxXMYRub%2FxoObcM1wBoVb5Wzqjq1e%2FUwuJUFie73%2BFPJ7NCOPtptpM51QcGXfw1UVjBtUMFQwE9YmMRS%2Fc7ytpgEPqE7kUGVOuNjuWHehORBMX7COGM4yNZD1WpVnhcev8qNkDbxq5sREhC1cwZ55vP6Xc17lsa0lmsoxTXhC3HhrSDnnpSeqYehFSmr8SovWm91KahWi5xvQwY6WQfKYDVBNSRbUN8dPza19tfAj7Bgb95LWIXvHnlu623MCphxMmD59a%2F0w1BFAWLAi4x9vGt53Z%2BLOAyrjU%3D&TextBoxKellyMultiplier=.25&TextBoxBankRoll=1000&RadioButtonListDevigMethod=worstcase&TextBoxLegOdds='+str(bet365Odds)+'&TextBoxFinalOdds='+str(finalOdds)+'&TextBoxCorrelation=0&TextBoxBoost=0%25&Boost=RadioButtonBoostProfit&DropDownListDailyFantasy=0&ButtonCalculate=Calculate&Text1=Odds%3A+%2B420%3B+**EV%3A+-3.7+%25**%0D%0A%0D%0A%60329%2F-517%60+%287.10+%25+juice%29%0D%0A%0D%0AFV%3A+%2B440%3B+Method%3A+worst-case+%28p%29%3B+%28FB+%3D+77.8+%25%29&Text1=http%3A%2F%2Fcrazyninjamike.com%2FPublic%2Fsportsbooks%2Fsportsbook_devigger.aspx%3Fautofill%3D1%26LegOdds%3D329%252f-517%26FinalOdds%3D420&CheckBoxListWorstCaseMethodSettings%240=The+Multiplicative%2FNormalization%2FTraditional+Method&CheckBoxListWorstCaseMethodSettings%241=The+Additive+Method&CheckBoxListWorstCaseMethodSettings%242=The+Power+Method&CheckBoxListWorstCaseMethodSettings%243=The+Shin+Method&TextBoxMultiplicativeWeight=0%25&TextBoxAdditiveWeight=0%25&TextBoxPowerWeight=0%25&TextBoxShinWeight=0%25&CheckBoxListCopyToClipboardSettings%240=devigurl&CheckBoxListCopyToClipboardSettings%241=reddit-button&CheckBoxListCopyToClipboardSettings%242=include-devig-info&CheckBoxListMiscSettings%241=Show+Detailed+Devig+Info', "-o", outfile]
+	post = ["curl", 'https://crazyninjaodds.com/Public/sportsbooks/sportsbook_devigger.aspx', "-X", "POST", "-H", 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0', "-H", 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', "-H",'Accept-Language: en-US,en;q=0.5', "-H",'Accept-Encoding: gzip, deflate', "-H",'Content-Type: application/x-www-form-urlencoded', "-H",'Origin: http://crazyninjamike.com', "-H",'Connection: keep-alive', "-H",'Referer: https://crazyninjaodds.com/Public/sportsbooks/sportsbook_devigger.aspx', "-H",'Cookie: General=KellyMultiplier=.25&KellyBankRoll=1000&DevigMethodIndex=4&WorstCaseDevigMethod_Multiplicative=True&WorstCaseDevigMethod_Additive=True&WorstCaseDevigMethod_Power=True&WorstCaseDevigMethod_Shin=True&MultiplicativeWeight=0&AdditiveWeight=0&PowerWeight=0&ShinWeight=0&ShowEVColorIndicator=False&ShowDetailedDevigInfo=False&CopyToClipboard_Reddit=False&CopyToClipboard_DevigURL=True&CopyToClipboard_Reddit_IncludeDevigURL=False&ShowHedgeDevigMethod=False&UseMultilineTextbox=False; ASP.NET_SessionId=0goq551kin1lvz5orghi4jgy', "-H",'Upgrade-Insecure-Requests: 1', "-H",'Pragma: no-cache', "-H",'Cache-Control: no-cache', "--data-raw", '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=VyfKTreIUUWVIlVmhO9G7YcNvDONC61Q%2BM5WOgC153XaaBUsS5QbxcL7xbLT%2FgOYKL6tYV2XCLJBF4lnR1iiBaCydkpX6QpGO4wl%2FxQ5pTMkCQbJtjmNBZkepD9q%2FwwZMY1OG%2FFpWr2uiJjM3trwoeEfGAJxxCDnT5j6kP825qg45PMk2A%2F52ntt5kMV0hrIpfH7toR5CZrMznv8U6nZRpYuD5GlIOQqd9XVqCJNhdRyXCeHSyXIIwtnwubE%2BrJdEUtGL3LVI10mlK7pOIP4VQ%2BjG1j%2BbSwxMmikHD5JrJLm93PaKe3GgIYhDFOds3eMOfiYxAzOEeWn%2FSABbQc1wmm1vjgq3dKQIZtQmjB%2F%2FBQQK5TG%2BCU7qpKh17Vgr1pIkigQFJtuVRB4Cf5NHgdQ8hsFAzamK1UbOu%2FFesCd6H%2BoezgWC9RWreoSLrPbyCCk1ueyT5h7OuNaUL%2B%2B7lN0c7bR1ElkXLGOW0Y7gCGvnCycCOKIRCbcR1mv3REMrhvBblNpH%2FRQS%2BdR1tqk6FEkQNo41AWWkKNVvZ2QgPTjYACMSuiN7EENAsJm6BWbfeiNzRrlBAVuxpIyoZfvaR7n0pmyDpmdNvfCG6B7r0VPEl1Ir2Cf%2BCMfZd4wJWuWE2kVXXObqVZWSkNc1iTdL8bfzB5Kg66ak2c6ZR%2FtCxY%2FB1iy76KWTgTx6ixBFlmyfmdTzI94TvmXdWqcTSRb%2FsLF95Cff%2BPUGVUabFWNzPB7QS2rofmDY19pokStK1hY0iXXS9RyJmI1Bz0VLjdN0qbF2TnNHFlZMWpi2xo3K3EAF2i3LqMKczSJKACSYEwOMJ6AZXvaIIdLLYqPVFaf1fbnhKTbE9SHfOABs89ElpiHh%2BDghcGj5%2FgA0hiEj0S8LNvoacYrVJB6bwVQhTXeiPDv6FoffgJ%2B8d2iAfs39lwv%2Fu8HmOrfeUDH1GHBr%2BCV52JsThUgpxrPdNrs0PgHN5QSVpY9U41ONw9nD4OjWXtbDLB7zwhLKs58nxH0TVWy9Bkqyw1Jbgl9UIfdihMwDBetA5TwNHH1Bh1E5ys5%2Br3c%2BrvS0NXQSYDOsGyJ7uEGs%2Fpoyt2ttyNvWFD%2FwqZDcXDCZU2midcwnnGPIflXdRHHpM9I6VoBWwSMRw7652Ocbnp%2FNAwXs4plUKt9htqNyz010rZQHDJrqy4uf%2FehXiEBj0gqcPCdEbUup28dELxK9qU0K0XvwFeup3Va5U8aZ55mQbXXN6VghU22tAV2zbZgrJJ3epxnsYUqwHQAuQC0VPk8yAxd5J8VPBir0knDqcs%2F9r8O6y6VJbyQgBVmkho5F7fCFzaHfvyLVlRUHZgO3C9ReIS5r8KVFPAy%2FeN9g6CyljSFeMqdQ5I9SSD09h%2BgtWFfslDEoIW8hPd0fT6e4lAdVz7Oaj8svgudlaSW%2FJC4Rmo4W300afzxAEw93wVqUYk%2B5NIpUcmxAdYDUqGfUpD%2F5VWVGK3EPDH5cgJS8pO4r%2BIXnDIjHObUEhGbALTG6saVaYGWiu8UNu3ckoXj499BHM5xTS2OleoyJg3jrszt51RDjcWYVOJmbYzBUj9WG2kvCucnAfZdSc9KSeIJG0yhMgM975HYVdE314Psn%2BX9c19fXlUZ6K7kq9mhZytpBm1Kzai3kBFQx%2BjHpvFJulxEapHYZWqU30yXnschB6StH02ssAKncNX11KCLRJFxBVvzQfUV0vZSimUuH4W8B3Jy3Etkq5XNcPs8sWnfTgLpr3zInoIwrM%2BGLmyjGove8uMzWAEdwnFp44ei0mwlzSAZPUhX17o7xeGEP8ZvhDnPG1NN5%2BOxZ0MUDwd73gjDnfzTtGoqbsZwCzaZPcgSd78mdE9G4vHy%2BAaWfCOCrPF%2FLVNdQ5Dvsu3Ra9IF6x%2BSS4IhlA4%2BZH3tTxfFn28L2JfkPV0eRJaSgikLmV%2B2caM37A%3D%3D&__VIEWSTATEGENERATOR=75A63123&__EVENTVALIDATION=f36nvsWEvsMzE1rl1yztcubTvrohD%2FTUVC9LdwLLpFa8mqmSkC75mrZi%2FL9AnEaRBcxGEFNEz9DrUqrL%2Fr5Cj%2B3RFmDubi06ZTy6tOJjKUWhg16h6Gm%2FqtjL8T148Abn4ucsMVsh581%2B1NBcHYWr2rd9d%2B7UxbZpBiSKpIP6WH4RFRyyalnjH3GaKyCMVGKDRFBWRRL9tCzyFjfTBgoQlqMTwSXXeBzetRWePJwSWvI%2FVFvkBO0i8QkxP5zhebvBeb6YNtIhaTkLMhmRg5pTWxXfTvnCGzpXNw7yVN33kcKzSKCayTa4nzYbh5c6IoYGN8oApdh4xpIDDmT92Z1mnD6sPC8nr3hA%2Bml9FAkWPx9M%2FWHWmMgt9U51zKoHfHMGKLpqGMyQM5%2B7uFzdM7E298qFHWD8nCwFk7j8Wm9TLW%2BSD6ijIk1OeXlFwBX0HG%2BQSRf8bzYb%2FZvuyqUgcU8w%2FKJw0J0HMzQ6uNJoP5wG2jk4diVCBgmOXnL5GyAAhMG1bPxq6aAfw3Vv8QswlvXyKznMoeJjFSWHSqUQvI8RRjycsFF%2Fd7h%2FUIHbQ8oDw4NpELZ%2FaEoDlJRJ9CsV4ZGEO3GdDMRhbY3z8YpZXP7Kh%2Fk91ejYvOwfbCkhYHsLvlwic%2BWx4dpKTsjMe50aKu7XOl64g%2FfaW5aHnPzKDOIlZM%2F5HZnUl2nMxJo6kqbzv2rYJR0mhK5C6W7V6EVqWeFNEGnOsvAd%2Brt5tWcD9AIAWMcg%2Fstw1cIQI3AVwqBquNqp0QXtLiYFyTJd%2Bvd5AFYSvWJ9QwyLXc644B9DBeRzzrOfHMpW0WSn%2FcXhdzvxGPRzWcTqew5xR%2FYzvOdRFvFKxixjkbJHd%2FB0L9di%2BtShErH5%2FwcWSRJemSD9GWN5WYROpXTACBn0K22p69YC2H9qZEixJ28Csa96QzXwVWTUUU1bJhFraZex9GXgrh1E2pGrApBVEs4NI88otvARi91WzFmUInPn3iGNpF5Sd3YPFzW5%2Fy7xXt%2B88m4t72C7M49XkoIo6YZlVrY0Dc6bLoxtDZiH%2BE2ILKEraaLpL6aJq%2Fgvu1jYDwpjEjPZRFBz5CknFB2W1L49Giq7eLxhgeZ7IcdPNehXh31iIEmZ%2Fs9%2FTigeF0wJUq2HaxxdfU%2BIkBDlX7Nt58QZgvVt%2F3cBZAWvfazcRiCiRVSsDo0sLgukklMCF9UJn3C4KMcD5NsPOCcQnRmalqjLlkTb7Qiv%2FZrqHxEF8Qq9tHmG6d0R1snNhk0h%2BK2M78ntTXYlW4BWkpEmg%2F38LO5WaEzzCpgdkD5uV7NcfoU9fViD1SkOFChVlB2p0CWkyxLbbqsyJvFed2vCxqdOzDtlvnpJKwdoIVG%2B31yOyEPRsK%2BryNsJ6J%2FOohwzSDFc0sEV2Y0zRfqkUrB8ilRXnFCf60zIoqf3IVmkSyxvMo36yH1mnn%2FTxC7R1TS5m%2B7gmlJBZL4%2BfduzOJ5D8J3lz0XT5xRYXc4g1afAvg%3D%3D&TextBoxKellyMultiplier=.25&TextBoxBankRoll=1000&RadioButtonListDevigMethod=worstcase&TextBoxLegOdds='+str(bet365Odds)+'&TextBoxFinalOdds='+str(finalOdds)+'&TextBoxCorrelation=0&TextBoxBoost=0%25&Boost=RadioButtonBoostProfit&DropDownListDailyFantasy=0&ButtonCalculate=Calculate&Text1=https%3A%2F%2Fcrazyninjaodds.com%2FPublic%2Fsportsbooks%2Fsportsbook_devigger.aspx%3Fautofill%3D1%26LegOdds%3D564%252f-993%26FinalOdds%3D500&CheckBoxListWorstCaseMethodSettings%240=The+Multiplicative%2FNormalization%2FTraditional+Method&CheckBoxListWorstCaseMethodSettings%241=The+Additive+Method&CheckBoxListWorstCaseMethodSettings%242=The+Power+Method&CheckBoxListWorstCaseMethodSettings%243=The+Shin+Method&TextBoxMultiplicativeWeight=0%25&TextBoxAdditiveWeight=0%25&TextBoxPowerWeight=0%25&TextBoxShinWeight=0%25&CheckBoxListCopyToClipboardSettings%240=devigurl', "-o", outfile]
 
 	time.sleep(0.3)
 	call(post)
@@ -773,17 +768,15 @@ def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=Fal
 	except:
 		return
 
-	m = re.search(r".* Fair Value = (.*?) \((.*?)\)Summary\; EV% = (.*?) .*FB = (.*?)\)", output)
+	m = re.search(r".* Fair Value = (.*?) \((.*?)\)Summary\; EV% = (.*?)%", output)
 	if m:
 		fairVal = m.group(1)
 		implied = m.group(2)
 		ev = m.group(3)
-		fb = m.group(4)
 		if player not in evData:
 			evData[player] = {}
 		evData[player]["fairVal"] = fairVal
 		evData[player]["implied"] = implied
-		evData[player]["fb"] = fb
 		if avg:
 			evData[player]["ev"] = ev
 		else:
@@ -1269,13 +1262,19 @@ if __name__ == '__main__':
 	parser.add_argument("--summary", action="store_true", help="Summary")
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
+	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 
 	args = parser.parse_args()
 
-	plays = [("matt olson", 300, "atl"), ("nolan arenado", 290, "stl"), ("willson contreras", 340, "stl")]
+	plays = [("tommy pham", 440, "ari"), ("elehuris montero", 560, "col"), ("spencer torkelson", 320, "det"), ("riley greene", 540, "det"), ("ketel marte", 340, "ari"), ("trevor story", 390, "bos"), ("joey gallo", "min", 350), ("pablo reyes", 1000, "bos"), ("stone garrett", 500, "wsh"), ("matt olson", 280, "atl")]
 
 	if args.lineups:
 		writeLineups(plays)
+
+	if args.lineupsLoop:
+		while True:
+			writeLineups(plays)
+			time.sleep(30)
 
 	dinger = False
 	if args.dinger:
@@ -1294,7 +1293,7 @@ if __name__ == '__main__':
 		checkBovada()
 
 	if args.text:
-		sendText()
+		sendText("test")
 
 	if args.update:
 		writeFanduel()

@@ -1,4 +1,4 @@
-
+from flask import *
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
@@ -8,6 +8,98 @@ import re
 import argparse
 import unicodedata
 import time
+
+try:
+    from controllers.functions import *
+except:
+    from functions import *
+
+draft_blueprint = Blueprint('draft', __name__, template_folder='views')
+
+def writeBoris():
+    url = f"http://www.borischen.co/p/half-ppr-draft-tiers.html"
+    outfile = "outnfl"
+    #call(["curl", "-k", url, "-o", outfile])
+    soup = BS(open(outfile, 'rb').read(), "lxml")
+
+    tiers = {}
+    base = "https://s3-us-west-1.amazonaws.com/fftiers/out/text_ALL-HALF-PPR-adjust"
+    for i in range(3):
+        url = f"{base}{i}.txt"
+        time.sleep(0.2)
+        call(["curl", "-k", url, "-o", outfile])
+        
+        with open(outfile) as fh:
+            rows = [row.strip() for row in fh.readlines()]
+
+        for row in rows:
+            tier = row.split(": ")[0].split(" ")[-1]
+            for player in row.split(": ")[1].split(", "):
+                player = parsePlayer(player)
+                tiers[player] = tier
+
+    posTiers = {}
+    base = "https://s3-us-west-1.amazonaws.com/fftiers/out/text_"
+    for pos in ["qb", "rb", "wr", "te"]:
+        if pos == "qb":
+            url = f"{base}{pos.upper()}.txt"
+        else:
+            url = f"{base}{pos.upper()}-HALF.txt"
+        time.sleep(0.2)
+        call(["curl", "-k", url, "-o", outfile])
+        
+        with open(outfile) as fh:
+            rows = [row.strip() for row in fh.readlines()]
+
+        for row in rows:
+            tier = row.split(": ")[0].split(" ")[-1]
+            for player in row.split(": ")[1].split(", "):
+                player = parsePlayer(player)
+                posTiers[player] = tier
+
+    with open("static/draft/tiers.json", "w") as fh:
+        json.dump(tiers, fh, indent=4)
+
+    with open("static/draft/posTiers.json", "w") as fh:
+        json.dump(posTiers, fh, indent=4)
+
+def writeDepthCharts():
+    data = {}
+    for team in SNAP_LINKS:
+        if team == "was":
+            team = "wsh"
+
+        data[team] = {}
+
+        time.sleep(0.2)
+        url = f"https://www.espn.com/nfl/team/depth/_/name/"+team
+        outfile = "outnfl"
+        call(["curl", "-k", url, "-o", outfile])
+        soup = BS(open(outfile, 'rb').read(), "lxml")
+
+        pos = []
+        for row in soup.find("tbody").findAll("tr"):
+            p = row.text.strip().lower()
+            if p == "wr":
+                if "wr1" not in pos:
+                    p = "wr1"
+                elif "wr2" not in pos:
+                    p = "wr2"
+                else:
+                    p = "wr3"
+            pos.append(p)
+
+        for row, p in zip(soup.findAll("tbody")[1].findAll("tr"), pos):
+            data[team][p] = []
+            for a in row.findAll("a"):
+                player = parsePlayer(a.text)
+                data[team][p].append(player)
+
+    with open("static/draft/depthChart.json", "w") as fh:
+        json.dump(data, fh, indent=4)
+
+def parsePlayer(player):
+    return player.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 
 def write365():
     url = "https://www.oh.bet365.com/?_h=GY_bcYP5idsD_IzQUsW36w%3D%3D#/AC/B12/C20865512/D1/E89363498/F2/"
@@ -421,7 +513,9 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
 
             calculateFantasyPoints(pos, j, ppr, qbTd)
             data.append(j)
-            allData.append(j)
+            jj = j.copy()
+            jj["pos"] = pos
+            allData.append(jj)
 
         output = "\t".join([h.upper() for h in data[0] if "book" not in h])+"\n"
         for row in sorted(data, key=lambda k: k["points"], reverse=True):
@@ -473,7 +567,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
     for row in sorted(allData, key=lambda k: k["points"], reverse=True):
         a = [row['player']]
         for hdr in h:
-            if hdr in row:
+            if hdr.lower() in row:
                 a.append(str(row[hdr.lower()]))
             else:
                 a.append("-")
@@ -482,6 +576,49 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
     with open(f"static/draft/all.csv", "w") as fh:
         fh.write(output)
 
+    with open(f"static/draft/all.json", "w") as fh:
+        json.dump(allData, fh, indent=4)
+
+@draft_blueprint.route('/getProjections')
+def projections_route():
+    with open(f"static/draft/all.json") as fh:
+        res = json.load(fh)
+
+    with open(f"static/draft/posTiers.json") as fh:
+        posTiers = json.load(fh)
+
+    with open(f"static/draft/tiers.json") as fh:
+        tiers = json.load(fh)
+
+    for row in res:
+        tier = posTier = ""
+        player = row["player"].lower()
+        if player in tiers:
+            tier = tiers[player]
+
+        if player in posTiers:
+            posTier = posTiers[player]
+
+        row["tier"] = tier
+        row["posTier"] = posTier
+
+    return jsonify(res)
+
+@draft_blueprint.route('/getDepthChart')
+def depthChart_route():
+    with open(f"static/draft/depthChart.json") as fh:
+        depthChart = json.load(fh)
+    res = []
+    for team in depthChart:
+        j = {"team": team}
+        for pos in ["qb", "rb", "wr1", "wr2", "wr3", "te"]:
+            j[pos] = "\n".join(depthChart[team][pos])
+        res.append(j)
+    return jsonify(res)
+
+@draft_blueprint.route('/draft')
+def draft_route():
+    return render_template("draft.html", pos="all")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -491,6 +628,8 @@ if __name__ == '__main__':
     parser.add_argument("--fp", action="store_true", help="FantasyPros")
     parser.add_argument("--booksOnly", action="store_true", help="Books Only")
     parser.add_argument("-p", "--print", action="store_true", help="Print CSVs")
+    parser.add_argument("--boris", action="store_true", help="BorisChen")
+    parser.add_argument("--depth", action="store_true", help="Depth Chart")
     parser.add_argument("--ppr", help="PPR", type=int)
     parser.add_argument("--qbTd", help="PPR", type=int)
 
@@ -504,6 +643,12 @@ if __name__ == '__main__':
 
     if args.fp:
         writeFantasyPros()
+
+    if args.boris:
+        writeBoris()
+
+    if args.depth:
+        writeDepthCharts()
 
     if args.print:
         writeCsv(args.ppr, args.qbTd, args.booksOnly)

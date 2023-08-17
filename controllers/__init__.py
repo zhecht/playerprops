@@ -2,6 +2,7 @@ from controllers.bets import *
 from controllers.betting import *
 from controllers.main import *
 from controllers.altprops import *
+from controllers.draft import *
 from controllers.nbaprops import *
 from controllers.ncaabprops import *
 from controllers.ncaafprops import *
