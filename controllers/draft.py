@@ -101,6 +101,22 @@ def writeDepthCharts():
 def parsePlayer(player):
     return player.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 
+
+def writeMGM():
+    url = "https://sports.mi.betmgm.com/en/sports/events/2023-24-nfl-regular-season-stats-14351210"
+
+def writeKambi():
+    url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/american_football/nfl"
+
+    url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/american_football/nfl/all/all/competitions.json"
+
+    #continue until after 1019484336 (wsh commanders markets)
+    outfile = "outnfl"
+    call(["curl", "-k", url, "-o", outfile])
+
+    rodgersId = "1019465825"
+    url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{rodgersId}.json"
+
 def write365():
     url = "https://www.oh.bet365.com/?_h=GY_bcYP5idsD_IzQUsW36w%3D%3D#/AC/B12/C20865512/D1/E89363498/F2/"
     
@@ -257,6 +273,8 @@ def writeYahoo():
 """
 
 def writeFanduel():
+    url = "https://mi.sportsbook.fanduel.com/navigation/nfl?tab=passing-props"
+
     js = """
 
     const data = {};

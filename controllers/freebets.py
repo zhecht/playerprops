@@ -1090,6 +1090,38 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
+
+def writeBoost():
+
+	with open("out") as fh:
+		out = [line.strip() for line in fh.readlines()]
+
+	data = {}
+	books = ["fd", "cz", "dk", "mgm", "kambi"]
+	for i in range(0, len(out), 6):
+		team = out[i].lower()
+		data[team] = {}
+		for o, book in zip(out[i+1:i+6], books):
+			data[team][book] = o
+
+	ev = {}
+	for team in data:
+		fd = data[team]["fd"]
+		fdBoost = int(fd) * 1.25
+		overs = []
+		unders = []
+		for book in ["cz", "dk", "mgm", "kambi"]:
+			if data[team][book]:
+				overs.append(data[team][book].split("/")[0])
+				unders.append(data[team][book].split("/")[1])
+
+		ou = f"AVG({','.join(overs)})/AVG({','.join(unders)})"
+		devigger(ev, player=team, bet365Odds=ou, finalOdds=fdBoost)
+
+	with open("static/freebets/boost.json", "w") as fh:
+		json.dump(ev, fh, indent=4)
+
+
 def sortEV(dinger=False):
 
 	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
@@ -1263,6 +1295,7 @@ if __name__ == '__main__':
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
+	parser.add_argument("--boost", action="store_true", help="Boost")
 
 	args = parser.parse_args()
 
@@ -1279,6 +1312,9 @@ if __name__ == '__main__':
 	dinger = False
 	if args.dinger:
 		dinger = True
+
+	if args.boost:
+		writeBoost()
 
 	if args.fd:
 		writeFanduel()
