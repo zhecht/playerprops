@@ -99,23 +99,125 @@ def writeDepthCharts():
         json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
-    return player.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+    return player.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace("\u00a0", " ")
 
 
 def writeMGM():
     url = "https://sports.mi.betmgm.com/en/sports/events/2023-24-nfl-regular-season-stats-14351210"
 
+    js = """
+
+const data = {};
+
+async function f() {
+    for (const a1 of document.querySelectorAll(".tab-bar-container")[0].querySelectorAll("a")) {
+        if (a1.innerText === "All") {
+            continue;
+        }
+        a1.click();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        for (const a of document.querySelectorAll(".tab-bar-container")[1].querySelectorAll("a")) {
+            a.click();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const btn = document.querySelector(".show-more-less-button");
+            if (btn.innerText === "Show More") {
+                btn.click();
+            }
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const header = a.innerText.toLowerCase().replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("yards", "yd").replace("touchdowns", "td").replace("interceptions thrown", "int").replace(" ", "_");
+            
+            for (const playerDiv of document.querySelectorAll(".player-props-player-name")) {
+                const player = playerDiv.innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+                if (!data[player]) {
+                    data[player] = {};
+                }
+                const overEl = playerDiv.parentElement.nextElementSibling;
+                const over = overEl.querySelector(".name").innerText.toLowerText().replace("Over ", "o") + " " +overEl.querySelector(".value").innerText;
+                const under = overEl.nextElementSibling.querySelector(".value").innerText;
+                data[player][header] = over+"/"+under;
+            }
+        }
+    }
+}
+
+f();
+
+console.log(data);
+
+"""
+
 def writeKambi():
     url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/american_football/nfl"
 
-    url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/american_football/nfl/all/all/competitions.json"
+    url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/american_football/nfl/all/all/competitions.json?lang=en_US&market=US"
 
     #continue until after 1019484336 (wsh commanders markets)
     outfile = "outnfl"
     call(["curl", "-k", url, "-o", outfile])
 
+    with open(outfile) as fh:
+        events = json.load(fh)
+
+    ids = {}
+    start = False
+    for idx, event in enumerate(events["events"]):
+        #print(idx)
+        player = parsePlayer(event["event"]["name"])
+        if "markets" in player and " vs " not in player:
+            player = player.split(" markets")[0].split(" (")[0]
+            if event["event"]["id"] == 1019484336:
+                start = True
+            elif start:
+                ids[player] = event["event"]["id"]
+
+
     rodgersId = "1019465825"
-    url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{rodgersId}.json"
+    mahomesId = "1019869514"
+    data = {}
+    for player in ids:
+        time.sleep(0.3)
+        url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{ids[player]}.json?lang=en_US&market=US"
+        call(["curl", "-k", url, "-o", outfile])
+
+        with open(outfile) as fh:
+            events = json.load(fh)
+
+        for row in events["betOffers"]:
+            header = row["criterion"]["label"].lower()
+            hdr = ""
+            if "&" in header:
+                continue
+            if "passing yards" in header:
+                hdr = "pass_yd"
+            elif "rushing yards" in header:
+                hdr = "rush_yd"
+            elif "receiving yards" in header:
+                hdr = "rec_yd"
+            elif "passing touchdowns" in header:
+                hdr = "pass_td"
+            elif "receiving touchdowns" in header:
+                hdr = "rec_td"
+            elif "rushing touchdowns" in header:
+                hdr = "rush_td"
+            elif "receptions" in header:
+                hdr = "rec"
+            elif "interceptions thrown" in header:
+                hdr = "int"
+
+            if not hdr:
+                continue
+
+            if player not in data:
+                data[player] = {}
+
+            line = row["outcomes"][0]["line"] / 1000
+            data[player][hdr] = f"o{line} {row['outcomes'][0]['oddsAmerican']}/{row['outcomes'][1]['oddsAmerican']}"
+
+    with open("static/draft/kambi.json", "w") as fh:
+        json.dump(data, fh, indent=4)
+
+
 
 def write365():
     url = "https://www.oh.bet365.com/?_h=GY_bcYP5idsD_IzQUsW36w%3D%3D#/AC/B12/C20865512/D1/E89363498/F2/"
@@ -312,10 +414,16 @@ def writeFanduel():
                 } else if (player.split(" ")[0].indexOf("+") >= 0) {
                     continue;
                 }
-                const over = li.querySelector('[role="button"]');
-                const under = li.querySelectorAll('[role="button"]')[1].querySelectorAll("span")[1].innerText;
-                const line = over.querySelector("span").innerText.toLowerCase().replaceAll(" ", "");
-                const odds = over.querySelectorAll("span")[1].innerText;
+
+                let line = odds = under = over = "";
+                try {
+                    over = li.querySelector('[role="button"]');
+                    under = li.querySelectorAll('[role="button"]')[1].querySelectorAll("span")[1].innerText;
+                    line = over.querySelector("span").innerText.toLowerCase().replaceAll(" ", "");
+                    odds = over.querySelectorAll("span")[1].innerText;
+                } catch {
+                    continue;
+                }
 
                 if (!data[player]) {
                     data[player] = {};
@@ -409,6 +517,16 @@ def writeNumberfire():
 def writeNFL():
     url = "https://fantasy.nfl.com/research/projections#researchProjections=researchProjections%2C%2Fresearch%2Fprojections%253Fposition%253DO%2526sort%253DprojectedPts%2526statCategory%253DprojectedStats%2526statSeason%253D2023%2526statType%253DseasonProjectedStats%2Creplace"
 
+def writeADP():
+    url = "https://www.fantasypros.com/nfl/adp/half-point-ppr-overall.php"
+    outfile = "outnfl"
+    time.sleep(0.3)
+    call(["curl", "-k", url, "-o", outfile])
+    soup = BS(open(outfile, 'rb').read(), "lxml")
+
+
+
+
 def writeFantasyPros():
 
     # avg between numberfire, nfl.com, fantasypros, cbs, fftoday, espn
@@ -471,15 +589,41 @@ def calculateFantasyPoints(pos, j, ppr=0.5, qbTd = 4):
 
     j["points"] = round(j["points"], 2)
 
+def writeECR():
+
+    with open("ecr.csv") as fh:
+        rows = [row.strip() for row in fh.readlines()]
+
+    headers = []
+    for col in rows[4].split(","):
+        headers.append(col.lower())
+
+    data = {}
+    for row in rows[5:]:
+        row = row.split(",")
+        player = ""
+        for col, hdr in zip(row, headers):
+            if not col or not hdr:
+                continue
+            if hdr == "name":
+                player = parsePlayer(col)
+                data[player] = {}
+            else:
+                data[player][hdr] = col
+
+    with open("static/draft/ecr.json", "w") as fh:
+        json.dump(data, fh, indent=4)
+
+
 def writeCsv(ppr=None, qbTd=None, booksOnly=False):
-    if not ppr:
+    if ppr == None:
         ppr = 0.5
     if not qbTd:
         qbTd = 4
 
     projections = {}
 
-    books = ["fantasypros", "draftkings", "fanduel", "caesars", "bet365", "yahoo"]
+    books = ["fantasypros", "draftkings", "fanduel", "caesars", "bet365", "kambi", "mgm", "yahoo"]
     for book in books:
         with open(f"static/draft/{book}.json") as fh:
             projections[book] = json.load(fh).copy()
@@ -510,7 +654,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                 j[hdr+"_book_fantasypros"] = projections["fantasypros"][player][hdr]
                 j[hdr+"_book_odds_fantasypros"] = projections["fantasypros"][player][hdr]
 
-                for book in ["draftkings", "fanduel", "caesars", "bet365", "yahoo"]:
+                for book in ["draftkings", "fanduel", "caesars", "bet365", "kambi", "mgm", "yahoo"]:
                     if player in projections[book] and hdr in projections[book][player]:
                         val = projections[book][player][hdr]
                         if "o" in str(val):
@@ -542,7 +686,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
         with open(f"static/draft/{pos.replace('/', '_')}.csv", "w") as fh:
             fh.write(output)
 
-        books = ["draftkings", "fanduel", "caesars", "bet365", "fantasypros", "yahoo"]
+        books = ["draftkings", "fanduel", "caesars", "bet365", "kambi", "mgm", "fantasypros", "yahoo"]
         for prop in headers:
             h = ["Player", "AVG"]
             h.extend(books)
@@ -608,6 +752,9 @@ def projections_route():
     with open(f"static/draft/tiers.json") as fh:
         tiers = json.load(fh)
 
+    with open(f"static/draft/ecr.json") as fh:
+        ecrData = json.load(fh)
+
     for row in res:
         tier = posTier = ""
         player = row["player"].lower()
@@ -619,6 +766,10 @@ def projections_route():
 
         row["tier"] = tier
         row["posTier"] = posTier
+        if player in ecrData:
+
+            row["val"] = ecrData[player]["val"]
+
 
     return jsonify(res)
 
@@ -647,14 +798,20 @@ if __name__ == '__main__':
     parser.add_argument("--booksOnly", action="store_true", help="Books Only")
     parser.add_argument("-p", "--print", action="store_true", help="Print CSVs")
     parser.add_argument("--boris", action="store_true", help="BorisChen")
+    parser.add_argument("--kambi", action="store_true", help="Kambi")
+    parser.add_argument("--mgm", action="store_true", help="MGM")
+    parser.add_argument("--ecr", action="store_true", help="ECR")
     parser.add_argument("--depth", action="store_true", help="Depth Chart")
-    parser.add_argument("--ppr", help="PPR", type=int)
+    parser.add_argument("--ppr", help="PPR", type=float)
     parser.add_argument("--qbTd", help="PPR", type=int)
 
     args = parser.parse_args()
 
     if args.dk:
         writeDK()
+
+    if args.ecr:
+        writeECR()
 
     if args.nf:
         writeNumberfire()
@@ -667,6 +824,9 @@ if __name__ == '__main__':
 
     if args.depth:
         writeDepthCharts()
+
+    if args.kambi:
+        writeKambi()
 
     if args.print:
         writeCsv(args.ppr, args.qbTd, args.booksOnly)

@@ -5,14 +5,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><title>
 	Devigger
-</title><meta name="viewport" content="width=device-width, initial-scale=1" /></head>
+</title><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+     <!--Start Icons-->
+    <link rel="icon" type="image/x-icon" href="/Assets/FavIcon/favicon.ico" />
+        <!-- Various sizes for different devices -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/Assets/FavIcon/favicon-16x16.png" /><link rel="icon" type="image/png" sizes="32x32" href="/Assets/FavIcon/favicon-32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/Assets/FavIcon/favicon-48x48.png" /><link rel="icon" type="image/png" sizes="64x64" href="/Assets/FavIcon/favicon-64x64.png" />
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/Assets/FavIcon/apple-touch-icon.png" />     
+    
+    <!--End Icons-->
+    
+</head>
 <body>
     <form method="post" action="./sportsbook_devigger.aspx" id="form1">
 <div class="aspNetHidden">
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
 <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
-<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="7V5LziADV3nNjuUQPgq76J6rsxS5saHSMdPdNOmc3PL9D0iMgylMMhfnPNFwOIwtWSVFSLFJj8ZPvQcNjms/Oj8xQBG19T4it9pKQrsHovbFlOBonGtKBS427EH313Q02u26FnRXKDkUJcTTy3A9Sa/TyNy4hFw0o191wfToGTbn5QqCCjbGFSzVY96YqPzd0obUuttbqdlwCBzBGBNLZHotJazxfTQ80drQqHy/AQ5Hs7RCp1s0MnwqS4FpS/uUVtWgjrjIIxh9kqjNFllN+m6iQdpq6gjttsv2kfiRrvHIAd7ZB7gLNCHjqxa59Kx798Fgh21ctdR9fqVwEIabTrNNi44A5d8bpxFpg4EoAgqV7G4jMGRXqcUZFFWV2Wp49XIgWtDchaDbF81FduSPTRvSDyp0S2HfmSYFOxSaWH27Is2tk5iykQIONJiirX1b1qGz0el6Tr41kTnGDDhJZdEyKSD33KnQjfvKO/xjWkAYU4RK+AkvuWxq4YArY+rYzAzJRGIJWkUyEUTZQQ4yPQulvnIhgBKT3buuzRg0GN0ubxlkK+GD6CwIIW+LgxZgtEITGBsugacEuKlFKCi0lppJIGFdd3xnJPCzVS2g8qGqCVGN2PXhM6kwA7F7Ny19UZuy+38kriVAqU5ftUyw9n49Igzpx/pKPNMxyeARAoazmpju8r4PPNaBTLPt5hzocN1nRLd+Isj1YMXZE1cejQHhUkjqgFAJFkaPg8/NUhYsiAbVeHVvxbNNXs/DT/zLgxUiq2Q8yIebMW3jE6neIS5bJvR23rXzYSUpOJWMa3CDh9yFj4eCK9n485wHLhBsi1fh33gmHoGvNFI97jn9UGHAqUDsy0UecAHEZEc+63Mb3QM+/XegfeW2GBn3Q8l5loD7jUJClKTjwAD0xphilCUOE/qHdu/ryTy1qKVW4nDZMavu+rb6tLbXd7moI9LpEp4/MqcDSShN/haL6XDnvCMBmrOtyjg5s5gWdwL0A+kU4TJxifFjHgf+6BMBlqx1AVYMHWpOU8A6tlKOtA13j3Hm1MU4YpbwT5Xhzk2nHtXKDDaMwc0TsCa5JqRQyCIh6KMFALkTWUkp8NSNTaJ0zIRpIKRwiyDItzy1JwwG7BwRsOQDK3jlcCUF4F2XE0ezzTO/EV8Uwf+OxCQBL20GrDvKp1No6Wtp9pqqAaxwXvP/vX1g5RISDfrfyq7Gs7WwQnjjG7DOmxftdn+vNyJxXYPrF73mxHQuQzmAlcUXDEQypefIQTfdJ9FpUjac3c9QujKx/xiXN+5SwaCtZaMow48BbD1i1aCCqTpStuZ9QIAMZNx8bFPSXpFJ8LFMPoCLcx4kZSAtRq1r2XyzwscPOoE6xYLh8ub5F2jtGJHb9f2JZCDXwNFUQgfNyeRTMho69oXtWjTDIJfRxWhI2wxQXTZhL5sSWVRat9P2XkwyY+0M7uT4FRFyQJ2nmb78qeZG326rDUncuNDyM3jnYYD/m7iLGlvABTkPuads6Lyg6o6FwojmdkUaaCGFoR+XTXTFaQDOJZhGD/qjfzbqkLRAMOGXWS4NBZWtg6ePckFWTzM1V0CebNFSYOYkwmDk7Y34OquWqEckzzik8radkkVjzG3Jo3DqyHpxV/2m5chbvvUoP6g+MQMnJanU1uqVyAnFpDPbBSlPYV4awQ1326ftBD6L+CFhGuZBM/iBGewmzBYKIJEHJz4Gi9cpj6YDgiGzetXsyUxzZZZVSpeaE8isHWpuF4cwWP3i70eHNmWEu5PFPX2llxSGgHkcSHiVfI0C3zUptM1Fdm7nvr4Et0BZN0QPGMyO4XvUfG1wg/DVHsv/kbqR+L17MU6bcfpy5tX8B5XFcLOnPrrwNBXRQ9QBSmuPbRNlbkTkwFIXZnADN6lN5UVUseTBY71qp1y4BfF1UeMdIaYGD0T3DPx1n1uHjw==" />
 </div>
 
 <script type="text/javascript">
@@ -35,7 +47,7 @@ function __doPostBack(eventTarget, eventArgument) {
 <div class="aspNetHidden">
 
 	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="75A63123" />
-	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="ZVx/DEkXkTjlMkaUSwfRkeiHCQEO4JHrazEPfzjGeFdiF90Ymgfx0ArYatwjf4UlaLEEbyGFQzI9cELoeWg5o1yXzGTg5iR8Uc59JBq/fErb6CGxIn5pv2iTGPRLABwuBfFuzhQCQJBmCI7wo4zJviNDBW4BxoxvV4zLaJX2MfBD9C/fNAqKJZrWJY5DmjBK84vMsZi6R3x1M9NopG8Chk3mHn5ZntrWAc48LHj+3NeAYrQiCFPXabGash4K+75cJWs2R7EvRrQDyqFgG1Udzt7w/cEwEAOZGyzO+wOWaVYpEFSE2P98FGphd8bSn0Hk0csKALVCic0UQwP7WX3YgKlUMCi37Jwb+nnBzpRC6zaIROiT3U+k6/FNmDGWyxTFnrc6gkOW4DeDxivUPLiEzqYr0EXuRcRgr/SL9z2i95k8Q/vjCIHfPTtTQzO4Fv800AuVZHTyw8GQP7VNgYl7SABT+XivO1vrWFKtPsD06jrbCFpWN28YYQsS/ORy7lwfeIyZSgGIU/xqqEdsNZaheeIyzJFS7E1F8+b+Tze9b/qlpnaK0+1qRQZOSwa9sNkxork/eIElLxtswFgtXC1DqNcWy0vaDQJYqyAawRoVcr54esc5fuO9fMjsEh+GbckQh1i4RR0qWScggXSWIqEk/9D2v7mt+moCf3vNCmRpPrezCCSymJ7tFrCChi3kgtmE2ltY448/MxbURU8CqXOBQRYe/mvampfsQOdVmAICCrdbrV6HYq889aLbQMCkArKFoi6ag4GygcvuapeoBrpGMtyCYZpGYBxZOSyDpkF0fAfvOQrwRm2haR2xdjjUvxDN6/5by188pfCSxPHPCiNJG3Hu55Z+3/6PeyHD0el/Wo9bqr6X34tYJjDWkulHhpHnC44yLNWhzW0yUCri7zMegI6GyC4ZLqVVzAKLFbPsAkDkEQwjnhxkq4tU04b+mbvQHLI+x4ErhPAI0dB3DH3R07Cvywkya6bpgxjT0tBJ/sXkBvHUXxlqeunekTdBO+iE+lrNWBBg5Diey4oIUIjgBPL2DYUWqG+4T6pyWDBkh0skIOhwzY63R5iN3iLzCe3W1p5l7wk8qXdJnd1epeXSQw2IcDIQGUgMOcR0lmkPnkmiFjtGC9BvdFHCHHbACQSZulpVcTcHmBa/a1bZxzBHgDVsJrmzO2iK6SAeZS613OzbF3Rh5c132loEj2RK1OEGotJsYrUFQUKcIcPsjXxK0XJ9L/DBg/vTritTs4dcJkyDLjznRqLdyAxCfywn/Ns3eW4w/6tBuuMyuIIIuvJQc8E0J2onsQxrh7C/OkbcZR35xHk6LktHkA7vNa7xwmZJCbtOyDyiSq1XtmCNtKD/GX/SBaqNmIUhMBCiqqu8UzbQZoaeu8kKiE0jrNjaUWfXkE4sHdzILKFWZn3CCRB7UGCsF23SC+tVPh8+q7X9CguhIjc01WY1GuRo9E3YEtY0mgiT+dRnhaYdCyItWRcmaw==" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="u/Ji/yyxehP9usuCs0u3uHnwQN1iXfr36avEN7x/KZOFkRds6sd62CSQV1upN0s+m1lz2sdfztkhhj3q6WuOGrsFnQepl4tJ1Sry0WQSU8qbYxUc7D3Oq0Jc+ekEt3pT85e8/q+YFg+c2OA/MsXKGQT4QjtF15X7cFD1aWLqgE8Q7M9FUXlWzi/J9pdMOruOiMy6woLWJTSWvwEN8uMVZJMy7JaOGvSGZFFFLcvUJcguCsgbDqULzCeT+A0uv32zQbN6c/7B9Oep2OUdOkebSHRS62Xblqt8sbNeM1sv/v4Sw1boG7iA2DgeTq/D3M8ASWdz9y36upoPz5TJqgWE7umaVaJOY5CsWWbbvpjzaqHC7qIQRS+5Wrt8hXoFT3dAQ48uPfndmXbfO8xBABa/5+/XCW5AakVGSnR7ONyM5BFg9LTqP7ilvJEePvaqZVij+ne/nDBj7oIcM3l6UdNhjC236WNA1Re3mt2KQGJL10fca7HirBmB9RkOWcsPzifdAJpAfaw7b1Fr8xavw4zU/W8qU55ZocJAiOMEq+vYXehd+SwP3QQO7PPPrzxjrA0lj7f8hsu/3RsjP5LgndaWTg8kwWaT9+qBMdNBNl7SBHPq7HdftZ198NQHepgYQzIpr8fyhs3JLz5u51sfbVL6vFdahGFESbTqyPjXbJnztU6go0Zc9UvqOoG6fRwZC5tRmTbMg7IJLp/jB70FJfNNzFt1cWifbpPoK/uDhoQymDb45nM8SJzOa3Mwa+9zjPhWbivvf+zbGniOZaQWGp4yTKqsnZmRalriXYx0eqy3k5MoD2ZtdUL3gOObGfcpD5y6KzVRBH2QM3BXHj1KuEXoB/bpq8CSSiGVfec90BlXePxhGvzUZKW+MprwLbu56ChXJd7fTag0ve/d7jXjqPhEXAFC85LPZkNp/ZkpDHVHI/T+Ktzhm+DNSJHcCevoQKjQh801X1m36SrAktGvKwuoa0v5Loc63n5tKXL8W8jG9fmLPg+Qrhe2C3mcwE3s9PT48AL1P/dc+MU64JY4JUz74OXWD68EMHzi5HYe8mCZ9l/w1s7MQ2cpNxFKudEKmxEQ5jJXo8nCc1HODvunOJtRAFGxm+G7A4YcQv6UbuUfveRE9aBChos7aKCSjv7fkZMApW8sNNJJBuiNWCOPVGOAB5t6c+MyptqLI3rzDsJFXnBtNC2y+yZLzb/9cyc7IKzWGmBkBtV3tDaj1TlSg2kb6eapMrY6hSu3PL2Ys5/rN/+eChgOxj4JXIiqBXe+WC04IGk5Mh0tG9iiEPeRDYL3xz9i+m2xWs7XDOTAuzFkZhZFOxly71paB/yRC69SVBmkF977giYn+HhwbCjSfM5oSl0yWyCP05RocMYeVQ7i0EJIUJ4Lpxm/us9it5d7Ae+eI/4ShIEx2aQabC3Ol3LSkQb40rJCEm6i7yO0h6opxnN52M7UWOSsuMu+Yg7eJ9MhlnH6EIZPIMLhUTFej3ecwg==" />
 </div>
         <div>
 
@@ -86,11 +98,11 @@ function __doPostBack(eventTarget, eventArgument) {
 
             <h2>Odds:</h2>
                Leg Odds:
-            <input name="TextBoxLegOdds" type="text" value="AVG(240,275,260,270)/AVG(-325,-390,-375,-360)" id="TextBoxLegOdds" style="font-family:Arial;width:100%;max-width:790px" /> (Format: "+125/-130,+150/-180")
+            <input name="TextBoxLegOdds" type="text" value="361/-573" id="TextBoxLegOdds" style="font-family:Arial;width:100%;max-width:790px" /> (Format: "+125/-130,+150/-180")
             <br />
                 <br />
                 Final Odds:
-            <input name="TextBoxFinalOdds" type="text" value="300.0" id="TextBoxFinalOdds" style="width:100%;max-width:465px" />
+            <input name="TextBoxFinalOdds" type="text" value="440" id="TextBoxFinalOdds" style="width:100%;max-width:465px" />
                                                &nbsp;(Try <a id="HyperLink1" href="sportsbook_devigger_help.aspx#finaloddsformat" target="_blank">new format</a>)<br />
                 <br />
                                                <input id="CheckBoxCorrelation" type="checkbox" name="CheckBoxCorrelation" /><label for="CheckBoxCorrelation">Correlation:</label>
@@ -174,10 +186,10 @@ function __doPostBack(eventTarget, eventArgument) {
                <h2>Results:</h2>
        
             
-               <span id="LabelOutput"><b>Worst-case: (Power)</b></br>Leg#1 (261); Market Juice = 6.0%; Fair Value = +319 (23.9%)</br>Final Odds (+300); Σ(Market Juice) = 6.01%; Fair Value = +319 (23.9%)</br>Summary; EV% = -4.5% (FB = 71.6%)</span>
+               <span id="LabelOutput"><b>Worst-case: (Power)</b></br>Leg#1 (361); Market Juice = 6.8%; Fair Value = +488 (17.0%)</br>Final Odds (+440); Σ(Market Juice) = 6.83%; Fair Value = +488 (17.0%)</br>Summary; EV% = -8.1% (FB = 74.8%)</span>
                                                
 
-               <span id="LabelOutput_1_AfterImage"></br></br><button type="button" onclick="CopyToClipboard('Textbox_DevigsURL_devigsurl')">Copy Devig's URL</button><textarea id="Textbox_DevigsURL_devigsurl" name="Text1" cols="40" rows="5" style="display: none">https://crazyninjaodds.com/Public/sportsbooks/sportsbook_devigger.aspx?autofill=1&LegOdds=AVG(240%2c275%2c260%2c270)%2fAVG(-325%2c-390%2c-375%2c-360)&FinalOdds=300.0</textarea></span>
+               <span id="LabelOutput_1_AfterImage"></br></br><button type="button" onclick="CopyToClipboard('Textbox_DevigsURL_devigsurl')">Copy Devig's URL</button><textarea id="Textbox_DevigsURL_devigsurl" name="Text1" cols="40" rows="5" style="display: none">https://crazyninjaodds.com/Public/sportsbooks/sportsbook_devigger.aspx?autofill=1&LegOdds=361%2f-573&FinalOdds=440</textarea></span>
                <br />
                <span id="LabelOutput_2"></span>
                                                
