@@ -675,12 +675,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-new-york-yankees-32580626",
-  "https://sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-tampa-bay-rays-32580624",
-  "https://sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-houston-astros-32580619",
-  "https://sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-minnesota-twins-32580622",
-  "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-chicago-white-sox-32580620",
-  "https://sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-arizona-diamondbacks-32580617"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-miami-marlins-32583343",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-detroit-tigers-32583348",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-tampa-bay-rays-32583349",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-pittsburgh-pirates-32583344",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-philadelphia-phillies-32583345",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-baltimore-orioles-32583356",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-toronto-blue-jays-32583347",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-chicago-white-sox-32583350",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-boston-red-sox-32583355",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-new-york-mets-32583357",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-milwaukee-brewers-32583346",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-minnesota-twins-32583354",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-arizona-diamondbacks-32583341",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-seattle-mariners-32583351",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-san-francisco-giants-32583342"
 ]
 
 	lines = {}
@@ -1373,12 +1382,27 @@ if __name__ == '__main__':
 	with open("static/freebets/passing_boost.json") as fh:
 		boost = json.load(fh)
 
+	with open("passing_boost.json") as fh:
+		boostOdds = json.load(fh)
+
 	data = []
 	for player in boost:
 		data.append((float(boost[player]["bet365ev"]), player, boost[player]))
 
+	output = "\t".join(["EV%", "Player", "Prop", "FD", "Bet365", "DK", "MGM", "Kambi", "CZ"])+"\n"
 	for row in sorted(data, reverse=True):
-		print(f"{row[0]}% EV", row[1].replace("_"+row[-1]["prop"], ""), row[-1]["prop"], f"line={row[-1]['fd']*1.25}  ")
+		player = row[1].replace("_"+row[-1]["prop"], "")
+		prop = row[-1]["prop"]
+		arr = [str(row[0]), player.title(), prop, str(row[-1]['fd']*1.25)]
+		for book in ["bet365", "draftkings", "mgm", "kambi", "caesars"]:
+			if book in boostOdds[player] and prop in boostOdds[player][book]:
+				arr.append(boostOdds[player][book][prop])
+			else:
+				arr.append("-")
+		output += "\t".join(arr)+"\n"
+
+	with open("static/freebets/passing_boost.csv", "w") as fh:
+		fh.write(output)
 
 	summaryOutput = {}
 	if args.plays:

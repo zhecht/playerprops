@@ -524,7 +524,15 @@ def writeADP():
     call(["curl", "-k", url, "-o", outfile])
     soup = BS(open(outfile, 'rb').read(), "lxml")
 
+    adp = {}
+    for row in soup.find("table", id="data").findAll("tr")[1:]:
+        player = parsePlayer(row.find("a").text)
+        adp[player] = {}
+        for idx, book in zip([3,4,5], ["yahoo", "sleeper", "rtsports"]):
+            adp[player][book] = row.findAll("td")[idx].text
 
+    with open("static/draft/adp.json", "w") as fh:
+        json.dump(adp, fh, indent=4)
 
 
 def writeFantasyPros():
@@ -567,7 +575,7 @@ def writeFantasyPros():
         json.dump(data, fh, indent=4)
 
 # 0.5ppr, 4pt QB TD
-def calculateFantasyPoints(pos, j, ppr=0.5, qbTd = 4):
+def calculateFantasyPoints(j, ppr=0.5, qbTd = 4):
     j["points"] = 0
     for hdr in j:
         if hdr == "player" or "book" in hdr:
@@ -621,6 +629,9 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
     if not qbTd:
         qbTd = 4
 
+    with open("static/draft/ecr.json") as fh:
+        ecrData = json.load(fh)
+
     projections = {}
 
     books = ["fantasypros", "draftkings", "fanduel", "caesars", "bet365", "kambi", "mgm", "yahoo"]
@@ -630,11 +641,11 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
 
     allHeaders = ["pass_yd", "pass_td", "int", "rush_att", "rush_yd", "rush_td", "rec", "rec_yd", "rec_td"]
     allData = []
-    for pos in ["qb", "rb", "wr/te"]:
+    for pos in ["qb", "rb", "wr", "te"]:
         headers = []
         if pos == "qb":
             headers = ["pass_yd", "pass_td", "int", "rush_yd", "rush_td"]
-        elif pos == "wr/te":
+        elif pos == "wr" or pos == "te":
             headers = ["rec", "rec_yd", "rec_td"]
         elif pos == "rb":
             headers = ["rush_att", "rush_yd", "rush_td", "rec", "rec_yd", "rec_td"]
@@ -673,15 +684,35 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                 else:
                     j[hdr] = round(sum(j[hdr]) / len(j[hdr]), 1)
 
-            calculateFantasyPoints(pos, j, ppr, qbTd)
+            calculateFantasyPoints(j, ppr, qbTd)
             data.append(j)
             jj = j.copy()
             jj["pos"] = pos
             allData.append(jj)
 
-        output = "\t".join([h.upper() for h in data[0] if "book" not in h])+"\n"
+        arr = [h.upper() for h in data[0] if "book" not in h]
+        arr.insert(1, "ECR / ADP")
+        output = "\t".join(arr)+"\n"
         for row in sorted(data, key=lambda k: k["points"], reverse=True):
-            output += "\t".join([str(row[r]) for r in row if "book" not in r]) + "\n"
+            player = row["player"].lower()
+            arr = [str(row[r]) for r in row if "book" not in r]
+            books = [x for x in row if "_book_" in x and "_book_odds_" not in x]
+
+            noLines = 0
+            for idx, hdr in enumerate(headers):
+                a = len([x for x in books if f"{hdr}_book_" in x and "_book_odds_" not in x])
+                if a <= 2:
+                    noLines += 1
+                    #arr[idx+1] = f"*{arr[idx+1]}"
+
+            if noLines == len(arr) - 2:
+                arr[0] = f"*{arr[0]}"
+            ecr = adp = ""
+            if player in ecrData:
+                ecr = ecrData[player]["ecr"]
+                adp = ecrData[player]["adp"]
+            arr.insert(1, f"{ecr} / {adp}")
+            output += "\t".join(arr) + "\n"
 
         with open(f"static/draft/{pos.replace('/', '_')}.csv", "w") as fh:
             fh.write(output)
@@ -699,6 +730,11 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                         a.append(row[prop+"_book_"+book])
                     except:
                         a.append("-")
+
+                player = row["player"].lower()
+                if player in ecrData:
+                    ecr = ecrData[player]["ecr"]
+                    adp = ecrData[player]["adp"]
                 h = [row["player"], row[prop]]
                 h.extend(a)
                 output += "\t".join([str(x) for x in h]) + "\n"
@@ -756,7 +792,7 @@ def projections_route():
         ecrData = json.load(fh)
 
     for row in res:
-        tier = posTier = ""
+        tier = posTier = "50"
         player = row["player"].lower()
         if player in tiers:
             tier = tiers[player]
@@ -766,10 +802,11 @@ def projections_route():
 
         row["tier"] = tier
         row["posTier"] = posTier
+        row["val"] = 0
+        row["ecr"] = row["adp"] = 50
         if player in ecrData:
-
-            row["val"] = ecrData[player]["val"]
-
+            for k in ["val", "ecr", "adp"]:
+                row[k] = ecrData[player][k]
 
     return jsonify(res)
 
@@ -801,6 +838,7 @@ if __name__ == '__main__':
     parser.add_argument("--kambi", action="store_true", help="Kambi")
     parser.add_argument("--mgm", action="store_true", help="MGM")
     parser.add_argument("--ecr", action="store_true", help="ECR")
+    parser.add_argument("--adp", action="store_true", help="ADP")
     parser.add_argument("--depth", action="store_true", help="Depth Chart")
     parser.add_argument("--ppr", help="PPR", type=float)
     parser.add_argument("--qbTd", help="PPR", type=int)
@@ -812,6 +850,9 @@ if __name__ == '__main__':
 
     if args.ecr:
         writeECR()
+
+    if args.adp:
+        writeADP()
 
     if args.nf:
         writeNumberfire()
@@ -830,3 +871,23 @@ if __name__ == '__main__':
 
     if args.print:
         writeCsv(args.ppr, args.qbTd, args.booksOnly)
+
+    js = """
+
+    // Hide the bottom nightmare
+    let divs = document.querySelectorAll("#draft > div");
+    divs[divs.length-1].style.display = "none";
+
+    // Expand Player List to bottom
+    const playerListing = document.querySelector("#player-listing").parentElement.parentElement;
+    let inset = playerListing.style.inset.split(" ");
+    inset[2] = "0px";
+    playerListing.style.inset = inset.join(" ");
+
+    // Expand Draft Order to bottom
+    document.querySelector("#draft-order").parentElement.parentElement.style.bottom = "0px";
+
+    // Expand Chat to bottom
+    document.querySelector("#chat").parentElement.parentElement.parentElement.style.bottom = "0px";
+
+"""

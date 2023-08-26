@@ -20,7 +20,7 @@
 			height: 10%;
 		}
 		#header div {
-			margin-top: 1rem;
+			margin-top: 0.5rem;
 		}
 		#tableDiv {
 			display: flex;
@@ -29,21 +29,26 @@
 		}
 		#positionDiv {
 			display: none;
-			width: 200px;
+			width: 350px;
 			justify-content: space-evenly;
 		}
 	</style>
 	<body>
 		<div id="header">
 			<div>
+				<button onclick="renderNotes()">Notes</button>
 				<button onclick="renderDepthChart()">Depth Chart</button>
 				<button onclick="renderProjections()">Projections</button>
+				<a id="compare" href="https://www.fantasypros.com/nfl/draft/tyreek-hill-travis-kelce.php?scoring=HALF" target="_blank">Compare</a>
 			</div>
 			<div id="positionDiv">
 				<button onclick="filterPos(this)">All</button>
 				<button onclick="filterPos(this)">QB</button>
 				<button onclick="filterPos(this)">RB</button>
+				<button onclick="filterPos(this)">WR</button>
+				<button onclick="filterPos(this)">TE</button>
 				<button onclick="filterPos(this)">WR/TE</button>
+				<button onclick="filterPos(this)">RB/WR/TE</button>
 			</div>
 		</div>
 		<div id="tableDiv">
@@ -53,6 +58,7 @@
 	<script>
 		let TABLE;
 		let posArg = "{{pos}}";
+		const teamNames = ["All", "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LAR", "LV", "MIA", "MIN", "NO", "NE", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WSH"];
 		const teamFormatter = function(cell, params, rendered) {
 			const div = document.createElement("div");
 			div.className = cell.getValue().toLowerCase();
@@ -76,12 +82,29 @@
 
 		function filterPos(el) {
 			posArg = el.innerText.toLowerCase();
-			TABLE.setFilter([{field: "pos", type:"=", value:posArg}]);
+			if (posArg === "all") {
+				TABLE.setFilter([{field: "pos", type:"!=", value:""}]);
+			} else if (posArg.indexOf("/") >= 0) {
+				TABLE.setFilter([{field: "pos", type:"in", value:posArg.split("/")}]);
+			} else {
+				TABLE.setFilter([{field: "pos", type:"=", value:posArg}]);
+			}
 			showHideCols();
 		}
 
 		function showHideCols() {
-			console.log(posArg);
+			TABLE.showColumn("rush_att");
+			TABLE.showColumn("rush_yd");
+			TABLE.showColumn("rush_td");
+			TABLE.showColumn("rec");
+			TABLE.showColumn("rec_yd");
+			TABLE.showColumn("rec_td");
+			TABLE.showColumn("pass_yd");
+			TABLE.showColumn("pass_td");
+			TABLE.showColumn("rush_yd");
+			TABLE.showColumn("rush_td");
+			TABLE.showColumn("int");
+
 			if (posArg === "all") {
 				return;
 			}
@@ -90,34 +113,28 @@
 				TABLE.hideColumn("pass_yd");
 				TABLE.hideColumn("pass_td");
 				TABLE.hideColumn("int");
-			}
-			if (posArg !== "rb") {
+			} else if (posArg !== "rb") {
 				TABLE.hideColumn("rush_att");
 			}
 
-			if (posArg === "wr/te") {
+			if (posArg !== "qb" && posArg.indexOf("rb") < 0) {
 				TABLE.hideColumn("rush_att");
 				TABLE.hideColumn("rush_yd");
 				TABLE.hideColumn("rush_td");
-				TABLE.showColumn("rec");
-				TABLE.showColumn("rec_yd");
-				TABLE.showColumn("rec_td");
-			} else if (posArg === "rb") {
-				TABLE.showColumn("rush_att");
-				TABLE.showColumn("rush_yd");
-				TABLE.showColumn("rush_td");
-				TABLE.showColumn("rec_yd");
-				TABLE.showColumn("rec_td");
-			} else if (posArg === "qb") {
+			}
+
+			if (posArg.indexOf("wr") < 0 && posArg.indexOf("rb") < 0 && posArg.indexOf("te") < 0) {
 				TABLE.hideColumn("rec");
 				TABLE.hideColumn("rec_yd");
 				TABLE.hideColumn("rec_td");
-				TABLE.showColumn("pass_yd");
-				TABLE.showColumn("pass_td");
-				TABLE.showColumn("rush_yd");
-				TABLE.showColumn("rush_td");
-				TABLE.showColumn("int");
 			}
+		}
+
+		function teamFilter(headerValue, rowValue, rowData, filterParams){
+			if (headerValue == "All") {
+				return true;
+			}
+			return rowValue.toUpperCase() == headerValue;
 		}
 
 		function renderProjections() {
@@ -130,8 +147,11 @@
 					{column: "points", dir: "desc"},
 				],
 				columns: [
-					{title: "Player", field: "player"},
+					{title: "Player", field: "player", headerFilter: "input"},
 					{title: "Pos", field: "pos", hozAlign: "center", width: 70},
+					{title: "ECR", field: "ecr", hozAlign: "center", width: 70, sorter: "number"},
+					{title: "ADP", field: "adp", hozAlign: "center", width: 70, sorter: "number"},
+					{title: "VAL", field: "val", hozAlign: "center", width: 70, sorter: "number"},
 					{title: "Tier", field: "tier", hozAlign: "center", width: 50},
 					{title: "Pos Tier", field: "posTier", hozAlign: "center", width: 50},
 					{title: "PASS YD", field: "pass_yd", hozAlign: "center"},
@@ -147,6 +167,10 @@
 				]
 			});
 
+			TABLE.on("rowClick", function(e, row) {
+				row.getElement().querySelector("input").click();
+			});
+
 			setTimeout(function() {
 				showHideCols();
 			}, 500);
@@ -160,7 +184,7 @@
 					{column: "team", dir: "asc"},
 				],
 				columns: [
-					{title: "Team", field: "team", formatter: teamFormatter, hozAlign: "center"},
+					{title: "Team", field: "team", formatter: teamFormatter, hozAlign: "center", editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
 					{title: "QB", field: "qb", formatter: depthChartFormatter},
 					{title: "RB", field: "rb", formatter: depthChartFormatter},
 					{title: "WR1", field: "wr1", formatter: depthChartFormatter},
