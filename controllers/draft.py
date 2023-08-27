@@ -14,6 +14,14 @@ try:
 except:
     from functions import *
 
+prefix = ""
+if os.path.exists("/home/zhecht/playerprops"):
+    # if on linux aka prod
+    prefix = "/home/zhecht/playerprops/"
+elif os.path.exists("/home/playerprops/playerprops"):
+    # if on linux aka prod
+    prefix = "/home/playerprops/playerprops/"
+
 draft_blueprint = Blueprint('draft', __name__, template_folder='views')
 
 def writeBoris():
@@ -57,10 +65,10 @@ def writeBoris():
                 player = parsePlayer(player)
                 posTiers[player] = tier
 
-    with open("static/draft/tiers.json", "w") as fh:
+    with open(f"{prefix}static/draft/tiers.json", "w") as fh:
         json.dump(tiers, fh, indent=4)
 
-    with open("static/draft/posTiers.json", "w") as fh:
+    with open(f"{prefix}static/draft/posTiers.json", "w") as fh:
         json.dump(posTiers, fh, indent=4)
 
 def writeDepthCharts():
@@ -95,7 +103,7 @@ def writeDepthCharts():
                 player = parsePlayer(a.text)
                 data[team][p].append(player)
 
-    with open("static/draft/depthChart.json", "w") as fh:
+    with open(f"{prefix}static/draft/depthChart.json", "w") as fh:
         json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
@@ -215,7 +223,7 @@ def writeKambi():
             line = row["outcomes"][0]["line"] / 1000
             data[player][hdr] = f"o{line} {row['outcomes'][0]['oddsAmerican']}/{row['outcomes'][1]['oddsAmerican']}"
 
-    with open("static/draft/kambi.json", "w") as fh:
+    with open(f"{prefix}static/draft/kambi.json", "w") as fh:
         json.dump(data, fh, indent=4)
 
 
@@ -497,7 +505,7 @@ def writeDK():
 
                         props[player][prop] = row["outcomes"][0]["label"].replace("Over ", "o") + " " + row["outcomes"][0]["oddsAmerican"] + "/" + row["outcomes"][1]["oddsAmerican"]
 
-    with open(f"static/draft/draftkings.json", "w") as fh:
+    with open(f"{prefix}static/draft/draftkings.json", "w") as fh:
         json.dump(props, fh, indent=4)
 
 def writeNumberfire():
@@ -520,7 +528,7 @@ def writeNumberfire():
             hdr = td.get("class")[0]
             data[player][hdr] = td.text.strip()
 
-    with open("static/draft/numberfire.json", "w") as fh:
+    with open(f"{prefix}static/draft/numberfire.json", "w") as fh:
         json.dump(data, fh, indent=4)
 
 def writeNFL():
@@ -540,7 +548,7 @@ def writeADP():
         for idx, book in zip([3,4,5], ["yahoo", "sleeper", "rtsports"]):
             adp[player][book] = row.findAll("td")[idx].text
 
-    with open("static/draft/adp.json", "w") as fh:
+    with open(f"{prefix}static/draft/adp.json", "w") as fh:
         json.dump(adp, fh, indent=4)
 
 
@@ -580,7 +588,7 @@ def writeFantasyPros():
             for col, hdr in zip(row.findAll("td")[1:], headers):
                 data[player][hdr] = float(col.text.strip().replace(",", ""))
 
-    with open("static/draft/fantasypros.json", "w") as fh:
+    with open(f"{prefix}static/draft/fantasypros.json", "w") as fh:
         json.dump(data, fh, indent=4)
 
 # 0.5ppr, 4pt QB TD
@@ -628,7 +636,7 @@ def writeECR():
             else:
                 data[player][hdr] = col
 
-    with open("static/draft/ecr.json", "w") as fh:
+    with open(f"{prefix}static/draft/ecr.json", "w") as fh:
         json.dump(data, fh, indent=4)
 
 
@@ -638,14 +646,14 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
     if not qbTd:
         qbTd = 4
 
-    with open("static/draft/ecr.json") as fh:
+    with open(f"{prefix}static/draft/ecr.json") as fh:
         ecrData = json.load(fh)
 
     projections = {}
 
     books = ["fantasypros", "draftkings", "fanduel", "caesars", "bet365", "kambi", "mgm", "yahoo"]
     for book in books:
-        with open(f"static/draft/{book}.json") as fh:
+        with open(f"{prefix}static/draft/{book}.json") as fh:
             projections[book] = json.load(fh).copy()
 
     allHeaders = ["pass_yd", "pass_td", "int", "rush_att", "rush_yd", "rush_td", "rec", "rec_yd", "rec_td"]
@@ -723,7 +731,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
             arr.insert(1, f"{ecr} / {adp}")
             output += "\t".join(arr) + "\n"
 
-        with open(f"static/draft/{pos.replace('/', '_')}.csv", "w") as fh:
+        with open(f"{prefix}static/draft/{pos.replace('/', '_')}.csv", "w") as fh:
             fh.write(output)
 
         books = ["draftkings", "fanduel", "caesars", "bet365", "kambi", "mgm", "fantasypros", "yahoo"]
@@ -747,7 +755,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                 h = [row["player"], row[prop]]
                 h.extend(a)
                 output += "\t".join([str(x) for x in h]) + "\n"
-            with open(f"static/draft/{pos.replace('/', '_')}_{prop}.csv", "w") as fh:
+            with open(f"{prefix}static/draft/{pos.replace('/', '_')}_{prop}.csv", "w") as fh:
                 fh.write(output)
 
         h = ["Player", "Prop", "AVG"]
@@ -764,7 +772,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                     except:
                         a.append("-")
                 output += "\t".join([str(x) for x in a]) + "\n"
-        with open(f"static/draft/{pos.replace('/', '_')}_all.csv", "w") as fh:
+        with open(f"{prefix}static/draft/{pos.replace('/', '_')}_all.csv", "w") as fh:
             fh.write(output)
 
     h = ["Player"]
@@ -780,24 +788,24 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                 a.append("-")
         output += "\t".join(a)+f"\t{row['points']}\n"
 
-    with open(f"static/draft/all.csv", "w") as fh:
+    with open(f"{prefix}static/draft/all.csv", "w") as fh:
         fh.write(output)
 
-    with open(f"static/draft/all.json", "w") as fh:
+    with open(f"{prefix}static/draft/all.json", "w") as fh:
         json.dump(allData, fh, indent=4)
 
 @draft_blueprint.route('/getProjections')
 def projections_route():
-    with open(f"static/draft/all.json") as fh:
+    with open(f"{prefix}static/draft/all.json") as fh:
         res = json.load(fh)
 
-    with open(f"static/draft/posTiers.json") as fh:
+    with open(f"{prefix}static/draft/posTiers.json") as fh:
         posTiers = json.load(fh)
 
-    with open(f"static/draft/tiers.json") as fh:
+    with open(f"{prefix}static/draft/tiers.json") as fh:
         tiers = json.load(fh)
 
-    with open(f"static/draft/ecr.json") as fh:
+    with open(f"{prefix}static/draft/ecr.json") as fh:
         ecrData = json.load(fh)
 
     for row in res:
@@ -821,7 +829,7 @@ def projections_route():
 
 @draft_blueprint.route('/getDepthChart')
 def depthChart_route():
-    with open(f"static/draft/depthChart.json") as fh:
+    with open(f"{prefix}static/draft/depthChart.json") as fh:
         depthChart = json.load(fh)
     res = []
     for team in depthChart:
