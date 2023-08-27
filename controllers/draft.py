@@ -110,30 +110,31 @@ def writeMGM():
 const data = {};
 
 async function f() {
-    for (const a1 of document.querySelectorAll(".tab-bar-container")[0].querySelectorAll("a")) {
+    const main = document.querySelector("#main-view");
+    for (const a1 of main.querySelectorAll(".tab-bar-container")[0].querySelectorAll("a")) {
         if (a1.innerText === "All") {
             continue;
         }
         a1.click();
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        for (const a of document.querySelectorAll(".tab-bar-container")[1].querySelectorAll("a")) {
+        for (const a of main.querySelectorAll(".tab-bar-container")[1].querySelectorAll("a")) {
             a.click();
             await new Promise(resolve => setTimeout(resolve, 1000));
-            const btn = document.querySelector(".show-more-less-button");
+            const btn = main.querySelector(".show-more-less-button");
             if (btn.innerText === "Show More") {
                 btn.click();
             }
             await new Promise(resolve => setTimeout(resolve, 1000));
             const header = a.innerText.toLowerCase().replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("yards", "yd").replace("touchdowns", "td").replace("interceptions thrown", "int").replace(" ", "_");
             
-            for (const playerDiv of document.querySelectorAll(".player-props-player-name")) {
+            for (const playerDiv of main.querySelectorAll(".player-props-player-name")) {
                 const player = playerDiv.innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
                 if (!data[player]) {
                     data[player] = {};
                 }
                 const overEl = playerDiv.parentElement.nextElementSibling;
-                const over = overEl.querySelector(".name").innerText.toLowerText().replace("Over ", "o") + " " +overEl.querySelector(".value").innerText;
+                const over = overEl.querySelector(".name").innerText.toLowerCase().replace("over ", "o") + " " +overEl.querySelector(".value").innerText;
                 const under = overEl.nextElementSibling.querySelector(".value").innerText;
                 data[player][header] = over+"/"+under;
             }
@@ -338,11 +339,19 @@ def writeYahoo():
         const table = document.querySelector("table");
         const headers = ["pass_yd", "pass_td", "int", "rush_att", "rush_yd", "rush_td", "rec", "rec_yd", "rec_td", "tgt", "2pt", "fumble"];
 
+        let start = 0;
+        for (const th of table.querySelector("thead").querySelectorAll("tr")[1].querySelectorAll("th")) {
+            if (th.innerText === "Yds") {
+                break;
+            }
+            start += 1;
+        }
+
         for (const tr of table.querySelector("tbody").querySelectorAll("tr")) {
             const player = tr.querySelectorAll("a")[2].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
             data[player] = {};
             let idx = 0;
-            for (const td of tr.querySelectorAll("td:not(:nth-child(-n+11)):nth-child(n)")) {
+            for (const td of tr.querySelectorAll("td:not(:nth-child(-n+"+start+")):nth-child(n)")) {
                 if (headers[idx]) {
                     data[player][headers[idx]] = parseFloat(td.innerText);
                 }

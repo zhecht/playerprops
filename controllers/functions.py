@@ -1,4 +1,5 @@
 import re
+import unicodedata
 
 YEAR = 2022
 CURR_WEEK = 19
@@ -109,3 +110,14 @@ def fixName(name):
 	elif name == "def":
 		return "DEF"
 	return name
+
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
+
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+
+def convertCollege(team):
+	return college.get(team, team)

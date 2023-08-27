@@ -2,6 +2,7 @@
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
+import math
 import json
 import os
 import re
@@ -42,7 +43,7 @@ def convertAmericanOdds(avg):
 		avg = (avg - 1) * 100
 	else:
 		avg = -100 / (avg - 1)
-	return int(avg)
+	return round(avg)
 
 def writeBovada():
 	url = "https://bv2.digitalsportstech.com/api/game?sb=bovada&league=143"
@@ -675,21 +676,7 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-miami-marlins-32583343",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-detroit-tigers-32583348",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-tampa-bay-rays-32583349",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-pittsburgh-pirates-32583344",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-philadelphia-phillies-32583345",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-baltimore-orioles-32583356",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-toronto-blue-jays-32583347",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-chicago-white-sox-32583350",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-boston-red-sox-32583355",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-new-york-mets-32583357",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-milwaukee-brewers-32583346",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-minnesota-twins-32583354",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-arizona-diamondbacks-32583341",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-seattle-mariners-32583351",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-san-francisco-giants-32583342"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-san-francisco-giants-32588841"
 ]
 
 	lines = {}
@@ -761,6 +748,64 @@ def writeFanduel():
 	
 	with open(f"{prefix}static/baseballreference/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
+
+def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr"):
+
+	over,under = map(int, ou.split("/"))
+	impliedOver = impliedUnder = 0
+
+	if over > 0:
+		impliedOver = 100 / (over+100)
+	else:
+		impliedOver = -1*over / (-1*over+100)
+
+	if under > 0:
+		impliedUnder = 100 / (under+100)
+	else:
+		impliedUnder = -1*under / (-1*under+100)
+
+	x = impliedOver
+	y = impliedUnder
+	while round(x+y, 8) != 1.0:
+		k = math.log(2) / math.log(2 / (x+y))
+		x = x**k
+		y = y**k
+
+	dec = 1 / x
+	if dec >= 2:
+		fairVal = round((dec - 1)  * 100)
+	else:
+		fairVal = round(-100 / (dec - 1))
+	#fairVal = round((1 / x - 1)  * 100)
+	implied = round(x*100, 2)
+	#ev = round(x * (finalOdds - fairVal), 1)
+
+	#multiplicative 
+	mult = impliedOver / (impliedOver + impliedUnder)
+	add = impliedOver - (impliedOver+impliedUnder-1) / 2
+
+	bet = 100
+	profit = finalOdds / 100 * bet
+	if finalOdds < 0:
+		profit = 100 * bet / (finalOdds * -1)
+
+	evs = []
+	for method in [x, mult, add]:
+		ev = method * profit + (1-method) * -1 * bet
+		ev = round(ev, 1)
+		evs.append(ev)
+
+	ev = min(evs)
+
+	if player not in evData:
+		evData[player] = {}
+	evData[player]["fairVal"] = fairVal
+	evData[player]["implied"] = implied
+	if avg:
+		evData[player]["ev"] = ev
+	else:
+		evData[player]["bet365ev"] = ev
+		evData[player]["bet365Implied"] = implied
 
 def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=False, avg=False, prop="hr", expectedHR=0):
 
@@ -866,10 +911,13 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, prop="hr", under=False, nocz=False, nobr=False, no365=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, prop="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd"):
 
 	if not date:
 		date = str(datetime.now())[:10]
+
+	if not boost:
+		boost = 1
 
 	try:
 		with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
@@ -1003,32 +1051,38 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				kambi = kambiLines[team][player]
 
 			line = fdLine
-			fd = True
-			if False and prop != "hr" and dkLine > fdLine:
-				line = dkLine
-				fd = False
+			l = [dk, bet365ou, mgm, pb]
 
 			avgOver = []
 			avgUnder = []
-			l = [bet365ou, dk, mgm, pb]
 			if prop in ["single", "double"]:
-				l = [bet365ou, dk if fd else str(fdLine), mgm, pb]
+				l = [dk, bet365ou, mgm, pb]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
 					l.append(br.split("/")[0])
 			elif prop == "k":
-				l = [bet365ou, dk if fd else str(fdLine), mgm, pb, pn, bs]
+				l = [dk, bet365ou, mgm, pb, pn, bs]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
 					l.append(br.split("/")[0])
 			if allArg:
-				l = [bet365ou, dk, mgm, pb, pn, bs]
+				l = [dk, bet365ou, mgm, pb, pn, bs]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
 					l.append(br.split("/")[0])
+
+			evBook = "fd"
+			if bookArg == "dk":
+				evBook = "dk"
+				line = dk.split("/")[0]
+				l[0] = str(fdLine)
+
+				if line == "-":
+					continue
+
 			for book in l:
 				if book and book != "-":
 					avgOver.append(convertDecOdds(int(book.split("/")[0])))
@@ -1050,7 +1104,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			else:
 				ou = f"{avgOver}/{avgUnder}"
 
-			if ou == "-/-":
+			if ou.startswith("-/") or ou.endswith("/-"):
 				continue
 
 			sharpUnderdog = 0
@@ -1063,12 +1117,11 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			else:
 				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
 
-			#line = line * 1.25
-			#fdLine = line
+			line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
 
 			if player in evData:
 				continue
-			if dinger or prop == "k" or line > sharpUnderdog:
+			if True or dinger or prop == "k" or line > sharpUnderdog:
 				pass
 				if useDK:
 					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
@@ -1078,24 +1131,24 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					expectedHR = .70 * (bppExpectedHomers[game] / 5)
 
 				if prop == "hr" and bet365ou and not no365:
-					devigger(evData, player, bet365ou, line, dinger)
-				devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
+					devig(evData, player, bet365ou, int(line))
+					#devigger(evData, player, bet365ou, line, dinger)
+				devig(evData, player, ou, int(line), avg=True, prop=prop)
+				#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 				if player not in evData:
 					print(player)
 					continue
 				if float(evData[player]["ev"]) > 0:
-					print(player, evData[player]["ev"], line, ou)
+					print(player, evData[player]["ev"], int(line), ou)
 				evData[player]["pitcher"] = strikeouts
 				evData[player]["game"] = game
+				evData[player]["book"] = bookArg
 				evData[player]["team"] = team
 				evData[player]["ou"] = ou
 				evData[player]["odds"] = l
+				evData[player]["line"] = line
 				evData[player]["under"] = under
 				evData[player]["bet365"] = bet365ou
-				if not fd:
-					fdLine = 0
-					evData[player]["other"] = line
-					evData[player]["otherBook"] = "DK"
 				evData[player]["fanduel"] = str(fdLines[game][player][prop]).split(" ")[-1]
 				evData[player]["dk"] = dk
 				evData[player]["value"] = str(handicap)
@@ -1107,7 +1160,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 		json.dump(evData, fh, indent=4)
 
 
-def writeBoost():
+def writeBoostTMP():
 
 	with open("passing_boost.json") as fh:
 		boost = json.load(fh)
@@ -1175,6 +1228,7 @@ def sortEV(dinger=False):
 			else:
 				bet365ev = float(evData[player]["bet365ev"])
 			bpp = dk = mgm = pb = cz = br = kambi = ""
+			line = evData[player].get("line", 0)
 			game = evData[player]["game"]
 			team = evData[player].get("team", "")
 			dk = evData[player]["dk"]
@@ -1225,7 +1279,7 @@ def sortEV(dinger=False):
 			if team in lineups and player in lineups[team]:
 				starting = "*"
 
-			l = [ev, team.upper(), player.title(), starting, evData[player].get("fanduel", 0), avg, bet365, dk, mgm, cz]
+			l = [ev, team.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 			if prop not in ["single", "double", "tb"]:
 				l.extend([pb, br, pn, bs])
 			if prop == "hr":
@@ -1312,11 +1366,12 @@ if __name__ == '__main__':
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
-	parser.add_argument("--boost", action="store_true", help="Boost")
+	parser.add_argument("--boost", help="Boost", type=float)
+	parser.add_argument("--book", help="Book")
 
 	args = parser.parse_args()
 
-	plays = []
+	plays = [("trea turner", 430, "phi"), ("christian bethancourt", 800, "tb"), ("randy arozarena", 500, "tb"), ("aaron judge", 235, "nyy"), ("jorge soler", 480, "mia"), ("jack suwinski", 540, "pit"), ("mark vientos", 680, "nym")]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1329,9 +1384,6 @@ if __name__ == '__main__':
 	dinger = False
 	if args.dinger:
 		dinger = True
-
-	if args.boost:
-		writeBoost()
 
 	if args.fd:
 		writeFanduel()
@@ -1357,7 +1409,7 @@ if __name__ == '__main__':
 		writeActionNetworkML()
 
 	if args.ev:
-		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop, nocz=args.nocz)
+		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop, nocz=args.nocz, boost=args.boost, bookArg=args.book)
 
 	if args.bpp:
 		writeBPPHomers()
@@ -1369,14 +1421,14 @@ if __name__ == '__main__':
 		sortEV(args.dinger)
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
 		sortEV(args.dinger)
 	#write365()
 	#writeActionNetwork()
 
 	data = {}
 	#devigger(data, player="dean kremer", bet365Odds="-115/-115", finalOdds="-128")
-	#devigger(data, player="anthony santander", bet365Odds="300/-465", finalOdds=390, avg=True)
+	devig(data, player="judge", ou="-110/-120", finalOdds=-105, avg=True)
 	#print(data)
 
 	with open("static/freebets/passing_boost.json") as fh:
@@ -1428,7 +1480,7 @@ if __name__ == '__main__':
 				if game in bppExpectedHomers and args.dinger:
 					expectedHR = .70 * (bppExpectedHomers[game] / 5)
 
-				devigger(data, player=player, bet365Odds=ou, finalOdds=odds, avg=True, dinger=args.dinger)
+				devig(data, player, ou, odds, avg=True)
 				if data:
 					currEv = data[player]["ev"]
 
