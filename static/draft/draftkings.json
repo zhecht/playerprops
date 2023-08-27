@@ -3,19 +3,19 @@
         "pass_yd": "o2800.5 -105/-115",
         "pass_td": "o16.5 -110/-110"
     },
-    "aaron rodgers": {
-        "pass_yd": "o3950.5 -110/-110",
-        "pass_td": "o28.5 -105/-115",
-        "int": "o8.5 +100/-120"
-    },
     "sam howell": {
         "pass_yd": "o3200.5 -110/-110",
         "pass_td": "o18.5 -110/-110",
         "rush_td": "o3.5 -120/+100"
     },
     "brock purdy": {
-        "pass_yd": "o3600.5 -110/-110",
-        "pass_td": "o25.5 -110/-110"
+        "pass_yd": "o3600.5 -105/-115",
+        "pass_td": "o25.5 -105/-115"
+    },
+    "aaron rodgers": {
+        "pass_yd": "o3950.5 -110/-110",
+        "pass_td": "o28.5 -105/-115",
+        "int": "o8.5 +100/-120"
     },
     "bryce young": {
         "pass_yd": "o3200.5 -115/-115",
@@ -51,7 +51,7 @@
         "pass_td": "o15.5 +100/-120"
     },
     "geno smith": {
-        "pass_yd": "o3900.5 -105/-115",
+        "pass_yd": "o3900.5 +105/-130",
         "pass_td": "o26.5 -110/-110",
         "int": "o11.5 +110/-130"
     },
@@ -62,15 +62,15 @@
         "rush_td": "o9.5 -130/+110",
         "int": "o8.5 -110/-110"
     },
-    "joe burrow": {
-        "pass_yd": "o4425.5 +100/-120",
-        "pass_td": "o33.5 +100/-120",
-        "int": "o12.5 +100/-120"
-    },
     "jared goff": {
         "pass_yd": "o4000.5 -105/-115",
         "pass_td": "o25.5 -110/-110",
         "int": "o11.5 +100/-125"
+    },
+    "joe burrow": {
+        "pass_yd": "o4425.5 +100/-120",
+        "pass_td": "o33.5 +100/-120",
+        "int": "o12.5 +100/-120"
     },
     "jordan love": {
         "pass_yd": "o3350.5 +125/-145",
@@ -157,16 +157,12 @@
         "rush_yd": "o850.5 -110/-110",
         "rush_td": "o5.5 +115/-130"
     },
-    "alvin kamara": {
-        "rush_yd": "o600.5 +110/-130"
-    },
-    "dalvin cook": {
-        "rush_yd": "o625.5 +100/-120",
-        "rush_td": "o5.5 +115/-135"
-    },
     "aj dillon": {
         "rush_yd": "o675.5 -115/-115",
         "rush_td": "o6.5 +100/-120"
+    },
+    "alvin kamara": {
+        "rush_yd": "o600.5 +110/-130"
     },
     "alexander mattison": {
         "rush_yd": "o825.5 +105/-125",
@@ -175,6 +171,10 @@
     "josh jacobs": {
         "rush_yd": "o1049.5 +100/-120",
         "rush_td": "o8.5 +100/-120"
+    },
+    "dalvin cook": {
+        "rush_yd": "o625.5 +100/-120",
+        "rush_td": "o5.5 +115/-135"
     },
     "austin ekeler": {
         "rush_yd": "o775.5 -120/+100",
@@ -192,13 +192,13 @@
         "rush_yd": "o1050.5 -110/-110",
         "rush_td": "o7.5 -110/-110"
     },
-    "christian mccaffrey": {
-        "rush_yd": "o900.5 -110/-110",
-        "rush_td": "o7.5 -105/-115"
-    },
     "cam akers": {
         "rush_yd": "o750.5 -110/-110",
         "rush_td": "o6.5 +105/-125"
+    },
+    "christian mccaffrey": {
+        "rush_yd": "o900.5 -110/-110",
+        "rush_td": "o7.5 -105/-115"
     },
     "dameon pierce": {
         "rush_yd": "o900.5 -105/-115",
@@ -274,24 +274,24 @@
     "raheem mostert": {
         "rush_yd": "o500.5 -110/-110"
     },
-    "alec pierce": {
-        "rec_yd": "o575.5 -120/-105",
-        "rec": "o42.5 -110/-110"
-    },
     "aj brown": {
-        "rec_yd": "o1050.5 -110/-110",
+        "rec_yd": "o1050.5 -115/-105",
         "rec_td": "o7.5 -120/+100",
         "rec": "o75.5 -110/-110"
+    },
+    "marquez valdes scantling": {
+        "rec_yd": "o625.5 -130/+110",
+        "rec_td": "o3.5 -110/-110",
+        "rec": "o40.5 -120/+100"
     },
     "brandon aiyuk": {
         "rec_yd": "o775.5 -120/+100",
         "rec_td": "o4.5 -110/-110",
         "rec": "o59.5 -110/-110"
     },
-    "marquez valdes scantling": {
-        "rec_yd": "o625.5 -130/+105",
-        "rec_td": "o3.5 -110/-110",
-        "rec": "o40.5 -120/+100"
+    "alec pierce": {
+        "rec_yd": "o575.5 -120/-105",
+        "rec": "o42.5 -110/-110"
     },
     "adam thielen": {
         "rec_yd": "o550.5 +100/-120",
@@ -389,14 +389,18 @@
         "rec_td": "o4.5 -110/-110",
         "rec": "o59.5 -110/-110"
     },
-    "dj chark": {
-        "rec_yd": "o600.5 -105/-115",
-        "rec": "o44.5 +100/-120"
-    },
     "dj moore": {
         "rec_yd": "o800.5 -125/+105",
         "rec_td": "o4.5 -110/-110",
         "rec": "o62.5 -110/-110"
+    },
+    "dj chark": {
+        "rec_yd": "o600.5 -105/-115",
+        "rec": "o44.5 +100/-120"
+    },
+    "diontae johnson": {
+        "rec_yd": "o825.5 -105/-115",
+        "rec": "o82.5 -110/-110"
     },
     "dk metcalf": {
         "rec_yd": "o900.5 -110/-110",
@@ -406,10 +410,6 @@
     "donovan peoples jones": {
         "rec_yd": "o550.5 -115/-105",
         "rec": "o40.5 -110/-110"
-    },
-    "diontae johnson": {
-        "rec_yd": "o825.5 -105/-115",
-        "rec": "o82.5 -110/-110"
     },
     "elijah moore": {
         "rec_yd": "o575.5 -110/-110",
@@ -431,7 +431,7 @@
         "rec": "o50.5 -110/-110"
     },
     "garrett wilson": {
-        "rec_yd": "o1150.5 -115/-105",
+        "rec_yd": "o1150.5 -120/+100",
         "rec_td": "o8.5 +120/-140",
         "rec": "o86.5 +105/-125"
     },
@@ -491,29 +491,29 @@
         "rec_td": "o4.5 +110/-130",
         "rec": "o70.5 -110/-110"
     },
-    "michael pittman": {
-        "rec_yd": "o800.5 +100/-120",
-        "rec_td": "o4.5 +125/-145",
-        "rec": "o74.5 +110/-130"
-    },
     "michael gallup": {
         "rec_yd": "o600.5 -110/-110",
         "rec_td": "o4.5 +100/-120",
         "rec": "o49.5 -110/-110"
+    },
+    "michael pittman": {
+        "rec_yd": "o800.5 +100/-120",
+        "rec_td": "o4.5 +125/-145",
+        "rec": "o74.5 +110/-130"
     },
     "mike evans": {
         "rec_yd": "o925.5 +115/-140",
         "rec_td": "o6.5 +120/-145",
         "rec": "o65.5 +105/-125"
     },
-    "nico collins": {
-        "rec_yd": "o585.5 -135/+110",
-        "rec": "o45.5 -115/-105"
-    },
     "mike williams": {
         "rec_yd": "o800.5 -115/-105",
         "rec_td": "o5.5 +100/-120",
         "rec": "o57.5 -135/+115"
+    },
+    "nico collins": {
+        "rec_yd": "o585.5 -135/+110",
+        "rec": "o45.5 -115/-105"
     },
     "odell beckham": {
         "rec_yd": "o575.5 -110/-110",
@@ -527,13 +527,13 @@
     "quentin johnston": {
         "rec_yd": "o575.5 -110/-110"
     },
-    "robert woods": {
-        "rec_yd": "o540.5 -105/-115",
-        "rec": "o50.5 -110/-110"
-    },
     "romeo doubs": {
         "rec_yd": "o550.5 -110/-110",
         "rec": "o47.5 -110/-110"
+    },
+    "robert woods": {
+        "rec_yd": "o540.5 -105/-115",
+        "rec": "o50.5 -110/-110"
     },
     "stefon diggs": {
         "rec_yd": "o1125.5 -115/-105",

@@ -185,12 +185,12 @@
 				],
 				columns: [
 					{title: "Team", field: "team", formatter: teamFormatter, hozAlign: "center", editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
-					{title: "QB", field: "qb", formatter: depthChartFormatter},
-					{title: "RB", field: "rb", formatter: depthChartFormatter},
-					{title: "WR1", field: "wr1", formatter: depthChartFormatter},
-					{title: "WR2", field: "wr2", formatter: depthChartFormatter},
-					{title: "WR3", field: "wr3", formatter: depthChartFormatter},
-					{title: "TE", field: "te", formatter: depthChartFormatter},
+					{title: "QB", field: "qb", formatter: depthChartFormatter, headerFilter: "input"},
+					{title: "RB", field: "rb", formatter: depthChartFormatter, headerFilter: "input"},
+					{title: "WR1", field: "wr1", formatter: depthChartFormatter, headerFilter: "input"},
+					{title: "WR2", field: "wr2", formatter: depthChartFormatter, headerFilter: "input"},
+					{title: "WR3", field: "wr3", formatter: depthChartFormatter, headerFilter: "input"},
+					{title: "TE", field: "te", formatter: depthChartFormatter, headerFilter: "input"},
 				]
 			});
 		}
