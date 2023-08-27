@@ -15,5 +15,5 @@ main_blueprint = Blueprint('main', __name__, template_folder='views')
 def main_route():
   #oauth = MyOAuth()
 
-  all_teams = read_standings()
-  return render_template("main.html", players=[], teams=all_teams)
+  #all_teams = read_standings()
+  return render_template("main.html", players=[])
