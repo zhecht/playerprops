@@ -189,7 +189,7 @@ def writeProps(date):
 		outfile = "outmlb2"
 		call(["curl", "-k", url, "-o", outfile])
 
-		with open("outmlb2") as fh:
+		with open(outfile) as fh:
 			data = json.load(fh)
 
 		events = {}
