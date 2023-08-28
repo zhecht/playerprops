@@ -660,7 +660,7 @@ def convertFDTeam(team):
 	team = team.replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "oak").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
 	return team
 
-def writeFanduel():
+def writeFanduel(team=None):
 	apiKey = "FhMFpcPWXMeyZxOx"
 
 	
@@ -1120,15 +1120,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			if ou.startswith("-/") or ou.endswith("/-"):
 				continue
 
-			sharpUnderdog = 0
-			if useDK:
-				sharpUnderdog = dkLine
-			elif avg:
-				if ou.startswith("-/"):
-					continue
-				sharpUnderdog = int(ou.split("/")[0])
-			else:
-				sharpUnderdog = int(bet365Lines[team][player].split("/")[0])
+
+			if not line:
+				continue
 
 			line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
 
@@ -1414,7 +1408,7 @@ if __name__ == '__main__':
 		sendText("test")
 
 	if args.update:
-		writeFanduel()
+		writeFanduel(args.team)
 		writeActionNetwork(args.date)
 		#writeKambi()
 
