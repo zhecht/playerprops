@@ -446,28 +446,21 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/s-kwon-v-eubanks-32584107",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/halys-v-bonzi-32584231",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/safiullin-v-cecchinato-32584009",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/f-auger-aliassime-v-mcdonald-32584238",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/dom-stricker-v-popyrin-32590348",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/shimabukuro-v-hug-gaston-32590390",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/dellien-v-b-gojo-32590341",
   "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/tsitsipas-v-raonic-32583961",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/dellien-v-b-gojo-32590341",
   "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/a-muller-v-djokovic-32584487"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
 
 	womens = [
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/day-v-s-cirstea-32584102",
   "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a.-cornet-v-el-avanesyan-32584363",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a-sasnovich-v-linette-32584341",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kvitova-v-bucsa-32584149",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a-kalinskaya-v-k-siniakova-32584200",
   "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/siegemund-v-gauff-32590227",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/gadecki-v-mirr-andreeva-32590232",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/day-v-s-cirstea-32584102",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a-sasnovich-v-linette-32584341",
   "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ostapenko-v-j-paolini-32584076",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kvitova-v-bucsa-32584149",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/gadecki-v-mirr-andreeva-32590232",
   "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/tati-prozorova-v-wozniacki-32590222"
 ]
 
@@ -1028,7 +1021,7 @@ def writeBoostTMP():
 		json.dump(ev, fh, indent=4)
 
 
-def sortEV(dinger=False):
+def sortEV():
 
 	with open(f"{prefix}static/tennis/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -1131,11 +1124,11 @@ if __name__ == '__main__':
 		writeActionNetwork(args.date)
 
 	if args.print:
-		sortEV(args.dinger)
+		sortEV()
 
 	if args.prop:
 		#writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
-		sortEV(args.dinger)
+		sortEV()
 	#write365()
 	#writeActionNetwork()
 
