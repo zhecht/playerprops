@@ -676,10 +676,21 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-colorado-rockies-32591428",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32591432",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-san-francisco-giants-32591424",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-dodgers-32591427"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-detroit-tigers-32593423",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-philadelphia-phillies-32593429",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-miami-marlins-32593430",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-baltimore-orioles-32593421",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-toronto-blue-jays-32593426",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-boston-red-sox-32593422",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-new-york-mets-32593427",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-minnesota-twins-32593425",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-st.-louis-cardinals-32593417",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-chicago-cubs-32593418",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-kansas-city-royals-32593428",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-colorado-rockies-32593420",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32593424",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-san-francisco-giants-32593416",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-dodgers-32593419"
 ]
 
 	lines = {}
@@ -1368,7 +1379,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("trea turner", 430, "phi"), ("christian bethancourt", 800, "tb"), ("randy arozarena", 500, "tb"), ("aaron judge", 235, "nyy"), ("jorge soler", 480, "mia"), ("jack suwinski", 540, "pit"), ("mark vientos", 680, "nym")]
+	plays = [("adolis garcia", 440, "tex"), ("matt olson", 215, "atl"), ("mark vientos", 520, "nym")]
 
 	if args.lineups:
 		writeLineups(plays)

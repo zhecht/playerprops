@@ -46,294 +46,84 @@ def convertAmericanOdds(avg):
 	return round(avg)
 
 def writeBovada():
-	url = "https://bv2.digitalsportstech.com/api/game?sb=bovada&league=143"
-	outfile = f"outBV"
+	url = "https://www.bovada.lv/sports/tennis/"
 
-	if True:
+	ids = []
+	for gender in ["men", "women"]:
+		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/tennis/us-open/{gender}-s-singles?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
+		outfile = f"outBV"
+
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		ids = []
-		for row in data:
-			ids.append([r for r in row["providers"] if r["name"] == "nix"][0]["id"])
+		ids.extend([r["link"] for r in data[0]["events"]])
 
 	res = {}
-	print(ids)
-	for nixId in ids:
-		for prop in ["tb", "hr"]:
-			url = f"https://bv2.digitalsportstech.com/api/dfm/marketsBySs?sb=bovada&gameId={nixId}&statistic="
-			if prop == "tb":
-				url += "Total%2520bases"
-			else:
-				url += "Home%2520runs"
-			outfile = f"outBV"
-
-			time.sleep(0.31)
-			os.system(f"curl -k \"{url}\" -o {outfile}")
-
-			with open(outfile) as fh:
-				data = json.load(fh)
-
-			for playerRow in data[0]["players"]:
-				player = strip_accents(playerRow["name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
-				team = playerRow["team"].lower()
-
-				if team not in res:
-					res[team] = {}
-
-				if player not in res[team]:
-					res[team][player] = {}
-
-				res[team][player][prop] = {}
-				for market in playerRow["markets"]:
-					tb = market["value"]
-					odds = convertAmericanOdds(market["odds"])
-					res[team][player][prop][tb] = odds
-
-	
-	with open("static/tennis/bovada.json", "w") as fh:
-		json.dump(res, fh, indent=4)
-
-def checkBovada():
-	with open("static/tennis/bovada.json") as fh:
-		bv = json.load(fh)
-
-	with open("static/baseballreference/fanduelLines.json") as fh:
-		fd = json.load(fh)
-
-	for game in fd:
-		team1, team2 = map(str, game.split(" @ "))
-		for player in fd[game]:
-			if "hr" not in fd[game][player]:
-				continue
-
-			hr = fd[game][player]["hr"]
-			team = ""
-			if team1 in bv and player in bv[team1]:
-				team = team1
-			elif team2 in bv and player in bv[team2]:
-				team = team2
-			else:
-				continue
-
-			if "4" not in bv[team][player]["tb"]:
-				continue
-
-			if bv[team][player]["tb"]["4"] > hr:
-				print(team, player, hr, bv[team][player]["tb"]["4"])
-
-def writeBallparkpal():
-	js = """
-		for (btn of document.getElementsByTagName("button")) {
-			if (btn.innerText === "Expanded Book View") {
-				btn.click();
-			}
-		}
-
-		const data = {};
-		for (row of document.getElementsByTagName("tr")) {
-			tds = row.getElementsByTagName("td");
-			if (tds.length === 0) {
-				continue;
-			}
-			let team = tds[0].innerText.toLowerCase();
-			if (team === "was") {
-				team = "wsh";
-			}
-
-			if (data[team] === undefined) {
-				data[team] = {};
-			}
-
-			let player = tds[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "").replace("michael a taylor", "michael taylor");
-
-			if (data[team][player] === undefined) {
-				data[team][player] = {};
-			}
-
-			let prop = tds[2].innerText.toLowerCase().split(" ")[1];
-			let line = tds[2].innerText.split(" ")[2];
-			if (prop === "ks") {
-				prop = "k";
-			} else if (prop === "bases") {
-				prop = "tb";
-			} else if (prop === "hits") {
-				prop = "h";
-			}
-
-			let max = 0;
-			let maxBooks = [];
-			let books = ["fd", "dk", "mgm", "cz", "pn", "bs"];
-			let idx = 4;
-			while (idx < 10) {
-				if (tds[idx].innerText) {
-					const odds = parseInt(tds[idx].innerText);
-					if (odds == max) {
-						maxBooks.push(books[idx-4]);
-					} else if (odds > max) {
-						maxBooks = [books[idx-4]];
-						max = odds;
-					}
-				}
-				idx++;
-			}
-
-			if (data[team][player][prop] === undefined) {
-				data[team][player][prop] = {};
-			}
-
-			data[team][player][prop][line] = {
-				bpp: tds[3].innerText,
-				fd: tds[4].innerText,
-				dk: tds[5].innerText,
-				mgm: tds[6].innerText,
-				cz: tds[7].innerText,
-				pn: tds[8].innerText,
-				bs: tds[9].innerText,
-				max: max,
-				maxBooks: maxBooks
-			}
-		}
-		console.log(data);
-
-	"""
-
-def convertBPPTeam(team):
-	return team.replace("nationals", "wsh").replace("phillies", "phi").replace("twins", "min").replace("tigers", "det").replace("marlins", "mia").replace("reds", "cin").replace("cardinals", "stl").replace("rays", "tb").replace("braves", "atl").replace("pirates", "pit").replace("astros", "hou").replace("orioles", "bal").replace("blue jays", "tor").replace("guardians", "cle").replace("royals", "kc").replace("red sox", "bos").replace("cubs", "chc").replace("mets", "nym").replace("yankees", "nyy").replace("white sox", "chw").replace("rockies", "col").replace("brewers", "mil").replace("giants", "sf").replace("angels", "laa").replace("rangers", "tex").replace("athletics", "oak").replace("padres", "sd").replace("mariners", "sea").replace("dodgers", "lad").replace("dbacks", "ari")
-
-def writeBPPHomers():
-	url = "https://ballparkpal.com/index.php"
-	outfile = f"outBpp"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
-
-	soup = BS(open(outfile, 'rb').read(), "lxml")
-
-	links = []
-	for a in soup.findAll("a"):
-		if a.text == "Details":
-			links.append(a.get("href"))
-
-	data = {}
-	for url in links:
-		outfile = f"outBpp"
+	#print(ids)
+	for link in ids:
+		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description{link}?lang=en"
 		time.sleep(0.3)
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 
-		soup = BS(open(outfile, 'rb').read(), "lxml")
+		with open(outfile) as fh:
+			data = json.load(fh)
 
-		for table in soup.findAll("table", class_="runMarginTable"):
-			if "Home Runs" not in table.text:
-				continue
-			game = convertBPPTeam(table.findAll("th")[1].text.lower()) + " @ " + convertBPPTeam(table.findAll("th")[3].text.lower())
-			if game not in data:
-				tds = table.findAll("tr")[3].findAll("td")
-				data[game] = round(float(tds[1].text) + float(tds[3].text), 2)
-			break
+		comp = data[0]['events'][0]['competitors']
+		game = f"{comp[0]['name'].lower()} @ {comp[1]['name'].lower()}"
 
-	with open(f"{prefix}static/tennis/bppExpectedHomers.json", "w") as fh:
-		json.dump(data, fh, indent=4)
+		player1 = comp[0]['name'].lower()
+		player2 = comp[1]['name'].lower()
+		res[game] = {}
 
+		for row in data[0]["events"][0]["displayGroups"]:
+			desc = row["description"].lower()
 
-def checkBPP():
-	with open(f"{prefix}static/tennis/bet365.json") as fh:
-		bet365Lines = json.load(fh)
+			if desc in ["game lines", "game spreads/totals", "match props", "set props"]:
+				for market in row["markets"]:
+					prop = market["description"].lower()
+					if prop == "moneyline":
+						prop = "ml"
+					elif prop == "total" or prop == "alternate total games":
+						prop = "total"
+					elif prop == "game spread" or prop == "alternate game spread":
+						prop = "spread"
+					elif prop == "total sets":
+						prop = "total_sets"
+					elif prop == f"total games o/u - {player1}":
+						prop = "away_total"
+					elif prop == f"total games o/u - {player2}":
+						prop = "home_total"
+					elif prop == "any set to nil":
+						prop = "6-0"
+					else:
+						continue
 
-	with open(f"{prefix}static/tennis/bpp.json") as fh:
-		bppLines = json.load(fh)
+					if market["period"]["description"].lower() == "1st set":
+						prop = f"set1_{prop}"
+					elif market["period"]["description"].lower() == "2nd set":
+						prop = f"set2_{prop}"
 
-	data = []
-	for team in bppLines:
-		for player in bppLines[team]:
-			try:
-				bet365Underdog = int(bet365Lines[team][player].split("/")[0])
-			except:
-				continue
+					if not len(market["outcomes"]):
+						continue
 
-			maxBpp = bppLines[team][player]["max"]
-			maxBooks = bppLines[team][player]["maxBooks"]
-			fd = bppLines[team][player]["fd"]
-			if maxBpp > bet365Underdog and maxBooks != ["fd"]:
-				summary = f"{player} bet={bet365Lines[team][player]}; max={maxBpp}; maxBooks={maxBooks}; fd={fd}"
-				diff = (maxBpp - bet365Underdog) / bet365Underdog
-				data.append((diff, summary))
+					if "ml" in prop or prop == "6-0":
+						res[game][prop] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
+					elif "spread" in prop or prop in ["total", "set1_total", "set2_total", "away_total", "home_total"]:
+						if prop not in res[game]:
+							res[game][prop] = {}
 
-	for row in sorted(data, reverse=True):
-		print(row[1])
+						outcomes = market["outcomes"]
+						for idx in range(0, len(outcomes), 2):
+							handicap = outcomes[idx]["price"]["handicap"]
+							res[game][prop][handicap] = f"{market['outcomes'][idx]['price']['american']}/{market['outcomes'][idx+1]['price']['american']}".replace("EVEN", "100")
+					else:
+						handicap = market["outcomes"][0]["price"]["handicap"]
+						res[game][prop] = f"{handicap} {market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
 
-def sendText(body=""):
-	accountSid = os.environ["TWILIO_ACCOUNT_SID"]
-	authToken = os.environ["TWILIO_AUTH_TOKEN"]
-
-	client = Client(accountSid, authToken)
-
-	message = client.messages.create(
-		body=body,
-		from_="+18334181767",
-		to=os.environ["TWILIO_TO"]
-	)
-
-def writeLineups(plays = []):
-	url = "https://www.mlb.com/starting-lineups/"
-	outfile = f"outlineups"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
-
-	soup = BS(open(outfile, 'rb').read(), "lxml")
-
-	data = {}
-	for table in soup.findAll("div", class_="starting-lineups__matchup"):
-		for which in ["away", "home"]:
-			team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari")
-
-			if team in data:
-				continue
-			data[team] = []
-			for player in table.find("ol", class_=f"starting-lineups__team--{which}").findAll("li"):
-				try:
-					player = player.find("a").text.strip().lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
-				except:
-					player = player.text
-
-				data[team].append(player)
-
-	with open(f"{prefix}static/tennis/lineupsSent.json") as fh:
-		lineupsSent = json.load(fh)
-
-	date = datetime.now()
-	date = str(date)[:10]
-
-	if True or datetime.now().hour > 21 or datetime.now().hour < 10:
-		pass
-	else:
-		if date != lineupsSent["updated"]:
-			lineupsSent = {
-				"updated": date,
-				"teams": []
-			}
-		for team in data:
-			if team not in lineupsSent["teams"] and data[team][0] != "TBD":
-
-				for row in plays:
-					if row[-1] == team:
-						if row[0] not in data[row[-1]]:
-							pass
-							sendText(f"\n\n{team}\n\n{row[0]} SITTING")
-				#sendText(f"\n\n{team}\n\n"+"\n".join(data[team]))
-				lineupsSent["teams"].append(team)
-
-	for row in plays:
-		if row[-1] in data and len(data[row[-1]]) > 1:
-			if row[0] not in data[row[-1]]:
-				print(row[0], "SITTING!!")
-
-
-	with open(f"{prefix}static/tennis/lineups.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-
-	with open(f"{prefix}static/tennis/lineupsSent.json", "w") as fh:
-		json.dump(lineupsSent, fh, indent=4)
-
+	with open("static/tennis/bovada.json", "w") as fh:
+		json.dump(res, fh, indent=4)
 
 def writeKambi():
 	data = {}
@@ -353,7 +143,7 @@ def writeKambi():
 			game = []
 			for player in [player1, player2]:
 				game.append(f"{player.split(', ')[-1]} {player.split(', ')[0]}")
-			game = " @ ".join(game)
+			game = strip_accents(" @ ".join(game))
 			if game in eventIds:
 				continue
 
@@ -393,7 +183,7 @@ def writeKambi():
 				elif label == "game handicap - set 1":
 					label = "set1_spread"
 				elif label == "total games":
-					label = "total_match"
+					label = "total"
 				elif label == "total sets":
 					label = "total_sets"
 				else:
@@ -406,7 +196,7 @@ def writeKambi():
 						data[game][label] = f"{line} "
 
 					data[game][label] += betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
-				elif label in ["spread", "total_match"]:
+				elif label in ["spread", "total"]:
 					if label not in data[game]:
 						data[game][label] = {}
 					line = betOffer["outcomes"][0]["line"] / 1000
@@ -446,29 +236,38 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/tsitsipas-v-raonic-32583961",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/dellien-v-b-gojo-32590341",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/a-muller-v-djokovic-32584487"
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/to-etcheverry-v-ot-virtanen-32590426",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/y-wu-v-lajovic-32584250",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/wawrinka-v-nishioka-32584224",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/nic-moreno-de-alboran-v-sonego-32590412",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/huesler-v-hurkacz-32584171",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/daniel-v-monfils-32590440",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/l-harris-v-pella-32584427",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/hanfmann-v-sinner-32584274",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-koepfer-32584468",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/vickery-v-vekic-32590313",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a-bogdan-v-kenin-32584154",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/pavlyuchenkova-v-crawley-32590318",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/strycova-v-k-kanepi-32584245",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/blinkova-v-burrage-32584506",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/q-zheng-v-podoroska-32583943",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/minnen-v-v-williams-32590257",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/l-bronzetti-v-b-krejcikova-32584016",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ro-montgomery-v-e-lys-32590323",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/zanevska-v-a-sabalenka-32584195",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/y-kawahashi-v-i-eqbal-32597142",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/n-kunsuwan-v-s-banthia-32597143"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
 
-	womens = [
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a.-cornet-v-el-avanesyan-32584363",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/siegemund-v-gauff-32590227",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/day-v-s-cirstea-32584102",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a-sasnovich-v-linette-32584341",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ostapenko-v-j-paolini-32584076",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kvitova-v-bucsa-32584149",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/gadecki-v-mirr-andreeva-32590232",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/tati-prozorova-v-wozniacki-32590222"
-]
-
+	womens = []
 	games = []
 	games.extend(mens)
 	games.extend(womens)
 
 	lines = {}
+	#games = ["https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/strycova-v-k-kanepi-32584245"]
 	for game in games:
 		gameId = game.split("-")[-1]
 		game = game.split("/")[-1][:-9].replace("-v-", "-@-").replace("-", " ")
@@ -477,7 +276,7 @@ def writeFanduel():
 
 		outfile = "out"
 
-		for tab in [""]:
+		for tab in ["", "total-games-props", "alternatives"]:
 			time.sleep(0.42)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
@@ -497,25 +296,30 @@ def writeFanduel():
 					player1 = data["attachments"]["markets"][market]["runners"][0]["runnerName"].lower()
 					player2 = data["attachments"]["markets"][market]["runners"][1]["runnerName"].lower()
 					game = f"{player1} @ {player2}"
-					lines[game] = {}
+					if game not in lines:
+						lines[game] = {}
 
 			for market in data["attachments"]["markets"]:
 				marketName = data["attachments"]["markets"][market]["marketName"].lower()
 				runners = data["attachments"]["markets"][market]["runners"]
 
-				if marketName in ["moneyline", "game spread", "6-0 set in match", "set betting", "to win 1st set", "to win 2nd set"] or marketName.startswith("total match games") or "total sets" in marketName or "set 1 game handicap" in marketName or marketName.startswith("both"):
-					prop = "ml"
-					if "spread" in marketName:
+				if marketName in ["moneyline", "alternative game spread", "game spread", "alternative set spread", "6-0 set in match", "set betting", "to win 1st set", "set 2 winner"] or marketName.startswith("total match games") or "total sets" in marketName or "set 1 game handicap" in marketName or marketName.startswith("both") or marketName.startswith("player a") or marketName.startswith("player b") or "total games" in marketName:
+					prop = ""
+					if marketName == "moneyline":
+						prop = "ml"
+					elif marketName == "game spread" or marketName == "alternative game spread":
 						prop = "spread"
+					elif marketName == "alternative set spread":
+						prop = "set_spread"
 					elif "total match" in marketName:
-						prop = "total_match"
+						prop = "total"
 					elif "total sets" in marketName:
 						prop = "total_sets"
 					elif marketName == "to win 1st set":
 						prop = "set1_ml"
-					elif marketName == "to win 2nd set":
+					elif marketName == "set 2 winner":
 						prop = "set2_ml"
-					elif "set 1" in marketName:
+					elif "set 1 game handicap" in marketName:
 						prop = "set1_spread"
 					elif "6-0" in marketName:
 						prop = "6-0"
@@ -523,22 +327,51 @@ def writeFanduel():
 						prop = "both"
 					elif marketName == "set betting":
 						prop = "set"
+					elif marketName.startswith("player a") or marketName.startswith("player b"):
+						prop = "away" if marketName.split(" ")[1] == "a" else "home"
+						if "at least one set" in marketName:
+							prop += "_1_set"
+						elif "total games" in marketName:
+							prop += "_total"
+						else:
+							continue
+					elif "total games" in marketName and "3 way" not in marketName:
+						prop = "total"
+						if marketName.startswith("set 1"):
+							prop = "set1_total"
+						elif marketName.startswith("set 2"):
+							prop = "set2_total"
+					else:
+						continue
 
-					if prop in ["ml", "set1_ml", "set2_ml", "total_match", "total_sets", "spread", "set1_spread", "6-0", "both"]:
+					if prop in ["ml", "set1_ml", "set2_ml", "total_sets", "set1_spread", "6-0", "both", "away_1_set", "home_1_set", "away_total", "home_total"]:
 						lines[game][prop] = ""
 
 						for idx, runner in enumerate(runners):
-							if idx == 0 and prop in ["total_match", "total_sets", "spread", "set1_spread"]:
+							if idx == 0 and prop in ["total", "total_sets", "set1_spread", "away_total", "home_total"]:
 								lines[game][prop] = runner["runnerName"].split(" ")[-1].replace("(", "").replace(")", "")+" "
 							elif idx == 1:
 								lines[game][prop] += "/"
-							lines[game][prop] += str(runner["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
+							try:
+								lines[game][prop] += str(runner["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
+							except:
+								print(url, game, prop)
+								continue
 					elif prop == "set":
 						lines[game][prop] = {}
 
 						for idx, runner in enumerate(runners):
 							lines[game][prop][runner["runnerName"].lower()] = str(runner["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
+					elif prop in ["total", "set1_total", "set2_total", "spread", "set_spread"]:
+						if prop not in lines[game]:
+							lines[game][prop] = {}
 
+						handicap = runners[0]["runnerName"].split(" ")[-1].replace("(", "").replace(")", "")
+						try:
+							lines[game][prop][handicap] = str(runners[0]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])+"/"+str(runners[1]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
+						except:
+							print(url, game, prop)
+							continue
 	
 	with open(f"{prefix}static/tennis/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -607,12 +440,14 @@ def writeDK(date):
 
 	mainCats = {
 		"game lines": 488,
-		"sets": 534
+		"sets": 534,
+		"player props": 633
 	}
 
 	subCats = {
 		488: [6364, 10818, 6365],
-		534: [12169, 9535, 5369, 4816]
+		534: [12169, 12170, 11127, 6367, 9535, 5369, 4816],
+		633: [0]
 	}
 
 	lines = {}
@@ -620,7 +455,10 @@ def writeDK(date):
 		for mainCat in mainCats:
 			for subCat in subCats[mainCats[mainCat]]:
 				time.sleep(0.3)
-				url = f"https://sportsbook-us-mi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/{gender}/categories/{mainCats[mainCat]}/subcategories/{subCat}?format=json"
+				url = f"https://sportsbook-us-mi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/{gender}/categories/{mainCats[mainCat]}"
+				if subCat:
+					url += f"/subcategories/{subCat}"
+				url += "?format=json"
 				outfile = "outtennis"
 				call(["curl", "-k", url, "-o", outfile])
 
@@ -663,11 +501,39 @@ def writeDK(date):
 
 								if "label" not in row:
 									continue
-								label = row["label"].lower().replace("moneyline", "ml").replace("spread games", "spread").replace("total games", "total_match").replace("1st set", "set1_ml").replace("correct score", "set").split(" [")[0].replace(" ", "_")
+								label = row["label"].lower().split(" [")[0]
+
+								if label == "moneyline":
+									label = "ml"
+								elif label == "spread games":
+									label = "spread"
+								elif label == "set spread":
+									label = "set_spread"
+								elif "player total games" in label:
+									if game.startswith(label.split(":")[0]):
+										label = "away_total"
+									else:
+										label = "home_total"
+								elif label.startswith("total games"):
+									if "1st set" in label:
+										label = "set1_total"
+									elif "2nd set" in label:
+										label = "set2_total"
+									else:
+										label = "total"
+								elif label == "total sets":
+									label = "total_sets"
+								elif label == "1st set":
+									label = "set1_ml"
+								elif label == "2nd set":
+									label = "set2_ml"
+								elif label == "correct score":
+									label = "set"
+
 								if "6:0" in label:
 									label = "6-0"
 
-								if label in ["ml", "set1_ml", "spread", "total_match", "total_sets", "6-0"]:
+								if label in ["ml", "set1_ml", "set2_ml", "spread", "total", "total_sets", "6-0", "away_total", "home_total"]:
 									lines[game][label] = ""
 
 									if "ml" not in label and label not in ["6-0"]:
@@ -676,6 +542,14 @@ def writeDK(date):
 									lines[game][label] += f"{row['outcomes'][0]['oddsAmerican']}"
 									if len(row['outcomes']) != 1:
 										lines[game][label] += f"/{row['outcomes'][1]['oddsAmerican']}"
+								elif label in ["set_spread", "set1_total", "set2_total"]:
+									if label not in lines[game]:
+										lines[game][label] = {}
+
+									outcomes = row["outcomes"]
+									for i in range(0, len(outcomes), 2):
+										line = str(outcomes[i]["line"])
+										lines[game][label][line] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
 								elif label in ["set"]:
 									lines[game][label] = {}
 
@@ -702,6 +576,8 @@ def write365Props():
 			prop = "total_sets";
 		} else if (prop == "1st set total games") {
 			prop = "set1_total";
+		} else if (prop == "player games won") {
+			prop = "away_total";
 		}
 
 		for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
@@ -710,36 +586,45 @@ def write365Props():
 				data[game] = {};
 			}
 
-			data[game][prop] = {};
 			if (div.classList.contains("src-FixtureSubGroup_Closed")) {
 				div.click();
 			}
 
-			let arr = [];
-			for (const set of div.querySelector(".gl-Market").querySelectorAll(".gl-Market_General-cn1")) {
-				arr.push(set.innerText);
-			}
+			if (prop == "away_total") {
+				let ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[0].innerText.replace("Over ", "");
+				
+				data[game]["away_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[0].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[1].innerText;
 
-			let idx = 0;
-			for (const playerDiv of div.querySelectorAll(".gl-Participant_General")) {
-				let set = arr[idx % arr.length];
-				const odds = playerDiv.querySelector(".gl-ParticipantOddsOnly_Odds").innerText;
-
-				if (prop == "set") {
-					let player = game.split(" @ ")[0];
-					if (idx >= arr.length) {
-						player = game.split(" @ ")[1];
-					}
-					
-					data[game][prop][player+" "+set] = odds;
-				} else {
-					if (idx < arr.length) {
-						data[game][prop][set] = odds;
-					} else {
-						data[game][prop][set] += "/"+odds;
-					}
+				ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[2].innerText.replace("Over ", "");
+				data[game]["home_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[2].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[3].innerText;
+			} else {
+				data[game][prop] = {};
+				let arr = [];
+				for (const set of div.querySelector(".gl-Market").querySelectorAll(".gl-Market_General-cn1")) {
+					arr.push(set.innerText);
 				}
-				idx += 1;
+
+				let idx = 0;
+				for (const playerDiv of div.querySelectorAll(".gl-Participant_General")) {
+					let set = arr[idx % arr.length];
+					const odds = playerDiv.querySelector(".gl-ParticipantOddsOnly_Odds").innerText;
+
+					if (prop == "set") {
+						let player = game.split(" @ ")[0];
+						if (idx >= arr.length) {
+							player = game.split(" @ ")[1];
+						}
+						
+						data[game][prop][player+" "+set] = odds;
+					} else {
+						if (idx < arr.length) {
+							data[game][prop][set] = odds;
+						} else {
+							data[game][prop][set] += "/"+odds;
+						}
+					}
+					idx += 1;
+				}
 			}
 		}
 		console.log(data)
@@ -764,7 +649,7 @@ def write365():
 		if (prop == "spread - games won") {
 			prop = "spread";
 		} else if (prop === "total games") {
-			prop = "total_match";
+			prop = "total";
 		} else if (prop == "first set money line") {
 			prop = "set1_ml";
 		} else if (prop == "first set spread") {
@@ -853,6 +738,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 	with open(f"{prefix}static/tennis/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
 
+	with open(f"{prefix}static/tennis/bovada.json") as fh:
+		bvLines = json.load(fh)
+
 	with open(f"{prefix}static/tennis/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
@@ -879,111 +767,142 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 			if prop in ["set"]:
 				continue
 
-			fd = fdLines[game][prop]
-			handicap = 0
-			if " " in fd:
-				handicap = float(fd.split(" ")[0])
-			fd = fd.split(" ")[-1]
+			if type(fdLines[game][prop]) is dict:
+				arr = fdLines[game][prop]
+			else:
+				arr = [None]
 
-			kambi = ""
-			if game in kambiLines and prop in kambiLines[game]:
-				if handicap:
-					if " " in kambiLines[game][prop]:
-						if handicap == float(kambiLines[game][prop].split(" ")[0]):
-							kambi = kambiLines[game][prop].split(" ")[-1]
-					elif str(handicap) in kambiLines[game][prop]:
-						kambi = kambiLines[game][prop][str(handicap)]
+			for key in arr:
+				fd = fdLines[game][prop]
+				handicap = 0
+				if " " in fd:
+					handicap = str(float(fd.split(" ")[0]))
 
-				elif prop in ["set"]:
-					kambi = kambiLines[game][prop][handicap]
-				else:
-					kambi = kambiLines[game][prop]
+				if key:
+					fd = fdLines[game][prop][key]
+					handicap = key
 
-			bet365 = ""
-			if game in bet365Lines and prop in bet365Lines[game]:
-				if handicap:
-					if handicap == float(bet365Lines[game][prop].split(" ")[0]):
-						bet365 = bet365Lines[game][prop].split(" ")[-1]
-				else:
-					bet365 = bet365Lines[game][prop]
+				fd = fd.split(" ")[-1]
 
-			dk = ""
-			if game in dkLines and prop in dkLines[game]:
-				if handicap:
-					if handicap == float(dkLines[game][prop].split(" ")[0]):
-						dk = dkLines[game][prop].split(" ")[-1]
-				else:
-					dk = dkLines[game][prop]
+				if game == "barbora strycova @ kaia kanepi" and prop == "set1_total":
+					print(handicap, fd)
+
+				kambi = ""
+				if game in kambiLines and prop in kambiLines[game]:
+					if handicap:
+						if " " in kambiLines[game][prop]:
+							if str(handicap) == float(kambiLines[game][prop].split(" ")[0]):
+								kambi = kambiLines[game][prop].split(" ")[-1]
+						elif handicap in kambiLines[game][prop]:
+							kambi = kambiLines[game][prop][handicap]
+
+					elif prop in ["set"]:
+						kambi = kambiLines[game][prop][handicap]
+					else:
+						kambi = kambiLines[game][prop]
+
+				bv = ""
+				if game in bvLines and prop in bvLines[game]:
+					if handicap:
+						if type(bvLines[game][prop]) is dict:
+							if handicap in bvLines[game][prop]:
+								bv = bvLines[game][prop][handicap]
+						elif float(handicap) == float(bvLines[game][prop].split(" ")[0]):
+							bv = bvLines[game][prop].split(" ")[-1]
+					else:
+						bv = bvLines[game][prop]
+
+				bet365 = ""
+				if game in bet365Lines and prop in bet365Lines[game]:
+					if handicap:
+						if type(bet365Lines[game][prop]) is dict:
+							if handicap in bet365Lines[game][prop]:
+								bet365 = bet365Lines[game][prop][handicap]
+						elif float(handicap) == float(bet365Lines[game][prop].split(" ")[0]):
+							bet365 = bet365Lines[game][prop].split(" ")[-1]
+					else:
+						bet365 = bet365Lines[game][prop]
+
+				dk = ""
+				if game in dkLines and prop in dkLines[game]:
+					if handicap:
+						if type(dkLines[game][prop]) is dict:
+							if handicap in dkLines[game][prop]:
+								dk = dkLines[game][prop][handicap]
+						elif float(handicap) == float(dkLines[game][prop].split(" ")[0]):
+							dk = dkLines[game][prop].split(" ")[-1]
+					else:
+						dk = dkLines[game][prop]
 
 
-			for i in range(2):
+				for i in range(2):
 
-				line = fd.split("/")[i]
-				l = [dk, bet365, kambi]
+					line = fd.split("/")[i]
+					l = [dk, bv, bet365, kambi]
 
-				avgOver = []
-				avgUnder = []
+					avgOver = []
+					avgUnder = []
 
-				evBook = "fd"
-				try:
-					if bookArg == "dk" or (bookArg != "fd" and dk and int(dk.split("/")[i]) > int(line)):
-						evBook = "dk"
-						line = dk.split("/")[i]
-						l[0] = str(fd)
-				except:
-					if bookArg == "dk":
+					evBook = "fd"
+					try:
+						if bookArg == "dk" or (bookArg != "fd" and dk and int(dk.split("/")[i]) > int(line)):
+							evBook = "dk"
+							line = dk.split("/")[i]
+							l[0] = str(fd)
+					except:
+						if bookArg == "dk":
+							continue
+						pass
+
+					for book in l:
+						if book:
+							avgOver.append(convertDecOdds(int(book.split("/")[0])))
+							if "/" in book:
+								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
+					if avgOver:
+						avgOver = float(sum(avgOver) / len(avgOver))
+						avgOver = convertAmericanOdds(avgOver)
+					else:
+						avgOver = "-"
+					if avgUnder:
+						avgUnder = float(sum(avgUnder) / len(avgUnder))
+						avgUnder = convertAmericanOdds(avgUnder)
+					else:
+						avgUnder = "-"
+
+					if i == 1:
+						ou = f"{avgUnder}/{avgOver}"
+					else:
+						ou = f"{avgOver}/{avgUnder}"
+
+					if ou == "-/-" or ou.endswith("/-") or ou.startswith("-/"):
 						continue
-					pass
 
-				for book in l:
-					if book:
-						avgOver.append(convertDecOdds(int(book.split("/")[0])))
-						if "/" in book:
-							avgUnder.append(convertDecOdds(int(book.split("/")[1])))
-				if avgOver:
-					avgOver = float(sum(avgOver) / len(avgOver))
-					avgOver = convertAmericanOdds(avgOver)
-				else:
-					avgOver = "-"
-				if avgUnder:
-					avgUnder = float(sum(avgUnder) / len(avgUnder))
-					avgUnder = convertAmericanOdds(avgUnder)
-				else:
-					avgUnder = "-"
-
-				if i == 1:
-					ou = f"{avgUnder}/{avgOver}"
-				else:
-					ou = f"{avgOver}/{avgUnder}"
-
-				if ou == "-/-" or ou.endswith("/-") or ou.startswith("-/"):
-					continue
-
-				if not line:
-					continue
-
-				line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
-				player = f"{game} {prop} {'over' if i == 0 else 'under'}"
-				if player in evData:
-					continue
-				if True:
-					pass
-					devig(evData, player, ou, int(line), prop=prop)
-					#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
-					if player not in evData:
-						print(player)
+					if not line:
 						continue
-					if float(evData[player]["ev"]) > 0:
-						print(evData[player]["ev"], game, prop, handicap, int(line), ou, evBook, "\n\t", l)
-					evData[player]["game"] = game
-					evData[player]["book"] = evBook
-					evData[player]["ou"] = ou
-					evData[player]["under"] = i == 1
-					evData[player]["odds"] = l
-					evData[player]["line"] = line
-					evData[player]["fanduel"] = str(fd).split(" ")[-1]
-					evData[player]["dk"] = dk
-					evData[player]["value"] = str(handicap)
+
+					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
+					player = f"{game} {prop} {handicap} {'over' if i == 0 else 'under'}"
+					if player in evData:
+						continue
+					if True:
+						pass
+						devig(evData, player, ou, int(line), prop=prop)
+						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
+						if player not in evData:
+							print(player)
+							continue
+						if float(evData[player]["ev"]) > 0:
+							print(evData[player]["ev"], game, prop, handicap, int(line), ou, evBook, "\n\t", l)
+						evData[player]["game"] = game
+						evData[player]["book"] = evBook
+						evData[player]["ou"] = ou
+						evData[player]["under"] = i == 1
+						evData[player]["odds"] = l
+						evData[player]["line"] = line
+						evData[player]["fanduel"] = str(fd).split(" ")[-1]
+						evData[player]["dk"] = dk
+						evData[player]["value"] = str(handicap)
 
 	with open(f"{prefix}static/tennis/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
@@ -1096,11 +1015,8 @@ if __name__ == '__main__':
 	if args.kambi:
 		writeKambi()
 
-	if args.writeBV:
-		writeBovada()
-
 	if args.bv:
-		checkBovada()
+		writeBovada()
 
 	if args.text:
 		sendText("test")
@@ -1108,7 +1024,7 @@ if __name__ == '__main__':
 	if args.update:
 		writeFanduel()
 		writeDK(args.date)
-		#writeActionNetwork(args.date)
+		writeBovada()
 		writeKambi()
 
 	if args.ml:

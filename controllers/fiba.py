@@ -45,6 +45,92 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
+def writeBV():
+	url = "https://www.bovada.lv/sports/basketball/fiba-world-cup"
+	url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/basketball/fiba-world-cup?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
+	outfile = f"outBV"
+
+	os.system(f"curl -k \"{url}\" -o {outfile}")
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	ids = [r["link"] for r in data[0]["events"]]
+
+	res = {}
+	#print(ids)
+	for link in ids:
+		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description{link}?lang=en"
+		time.sleep(0.3)
+		os.system(f"curl -k \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		comp = data[0]['events'][0]['competitors']
+		game = f"{comp[0]['name'].lower()} @ {comp[1]['name'].lower()}"
+
+		res[game] = {}
+
+		for row in data[0]["events"][0]["displayGroups"]:
+			desc = row["description"].lower()
+
+			if desc in ["game lines", "player points", "player rebounds", "assists & threes", "blocks & steals", "player turnovers"]:
+				for market in row["markets"]:
+					prop = market["description"].lower()
+					if prop == "moneyline":
+						prop = "ml"
+					elif prop == "total":
+						prop = "total"
+					elif prop == "point spread":
+						prop = "spread"
+					elif prop.startswith("total points"):
+						prop = "pts"
+					elif prop.startswith("total rebounds"):
+						prop = "reb"
+					elif prop.startswith("total made 3 points"):
+						prop = "3ptm"
+					elif prop.startswith("total assists"):
+						prop = "ast"
+					elif prop.startswith("total blocks"):
+						prop = "blk"
+					elif prop.startswith("total steals"):
+						prop = "stl"
+					elif prop.startswith("total turnovers"):
+						prop = "to"
+					else:
+						continue
+
+					if market["period"]["description"].lower() == "first half":
+						prop = f"1st_half_{prop}"
+					elif market["period"]["description"].lower() == "1st quarter":
+						prop = f"1q_{prop}"
+
+					if not len(market["outcomes"]):
+						continue
+
+					if "ml" in prop:
+						res[game][prop] = f"{market['outcomes'][1]['price']['american']}/{market['outcomes'][0]['price']['american']}"
+					elif "total" in prop or prop in ["pts", "reb", "ast", "3ptm", "blk", "stl", "to"]:
+						handicap = market["outcomes"][0]["price"]["handicap"]
+
+						if "total" in prop:
+							res[game][prop] = f"{handicap} {market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}"
+						else:
+							if prop not in res[game]:
+								res[game][prop] = {}
+							player = parsePlayer(market["descriptionKey"].split(" - ")[-1])
+							res[game][prop][player] = f"{handicap} {market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
+					else:
+						handicap = market["outcomes"][1]["price"]["handicap"]
+						res[game][prop] = f"{handicap} {market['outcomes'][1]['price']['american']}/{market['outcomes'][0]['price']['american']}"
+
+					if prop not in ["pts", "reb", "ast", "3ptm", "blk", "stl", "to"]:
+						res[game][prop] = res[game][prop].replace("EVEN", "100")
+
+
+	with open("static/fiba/bovada.json", "w") as fh:
+		json.dump(res, fh, indent=4)
 
 def writeKambi():
 	data = {}
@@ -214,8 +300,10 @@ def writeFanduel():
 				runners = data["attachments"]["markets"][market]["runners"]
 
 				if marketName in ["moneyline", "total points", "spread"] or " - points" in marketName or " - rebounds" in marketName or " - assists" in marketName or " - made threes" in marketName or marketName.startswith("1st half"):
-					prop = "ml"
-					if marketName == "total points":
+					prop = ""
+					if marketName == "moneyline":
+						prop = "ml"
+					elif marketName == "total points":
 						prop = "total"
 					elif marketName == "1st half total points":
 						prop = "1st_half_total"
@@ -233,6 +321,8 @@ def writeFanduel():
 						prop = "1st_half_ml"
 					elif marketName == "1st half spread":
 						prop = "1st_half_spread"
+					else:
+						continue
 
 					if prop in ["ml", "total", "spread", "1st_half_total", "1st_half_spread", "1st_half_ml"]:
 						lines[game][prop] = ""
@@ -415,10 +505,10 @@ def writeDK(date):
 								lines[game][label] = ""
 
 							if mainCat in ["pts", "reb", "ast"]:
-								try:
-									lines[game][mainCat][label] = f"{row['outcomes'][0]['line']} {row['outcomes'][0]['oddsAmerican']}/{row['outcomes'][1]['oddsAmerican']}"
-								except:
-									continue
+								lines[game][mainCat][label] = f"{row['outcomes'][0]['line']} {row['outcomes'][0]['oddsAmerican']}"
+
+								if len(row["outcomes"]) > 1:
+									lines[game][mainCat][label] += f"/{row['outcomes'][1]['oddsAmerican']}"
 							else:
 								if "ml" not in label:
 									lines[game][label] = f"{row['outcomes'][1]['line']} "
@@ -502,7 +592,11 @@ def write365():
 
 	{
 		const main = document.querySelector(".gl-MarketGroupContainer");
-
+		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
+		let prefix = "";
+		if (title === "1st half") {
+			prefix = "1st_half_";
+		}
 		let games = [];
 		let idx = 0;
 		for (div of main.querySelector(".gl-Market_General").children) {
@@ -515,7 +609,7 @@ def write365():
 			}
 			const away = div.querySelectorAll(".scb-ParticipantFixtureDetailsHigherBasketball_Team")[0].innerText.toLowerCase();
 			const home = div.querySelectorAll(".scb-ParticipantFixtureDetailsHigherBasketball_Team")[1].innerText.toLowerCase();
-			const game = away+" @ "+home
+			const game = away+" @ "+home;
 			games.push(game);
 
 			if (!data[game]) {
@@ -532,15 +626,15 @@ def write365():
 				break;
 			}
 
-			data[game]["spread"] = "";
+			data[game][prefix+"spread"] = "";
 			let line = divs[i].querySelector(".sac-ParticipantCenteredStacked50OTB_Handicap").innerText;
-			data[game]["spread"] = line+" ";
+			data[game][prefix+"spread"] = line+" ";
 
 			let odds = divs[i].querySelector(".sac-ParticipantCenteredStacked50OTB_Odds").innerText;
-			data[game]["spread"] += odds+"/";
+			data[game][prefix+"spread"] += odds+"/";
 
 			odds = divs[i+1].querySelector(".sac-ParticipantCenteredStacked50OTB_Odds").innerText;
-			data[game]["spread"] += odds;
+			data[game][prefix+"spread"] += odds;
 			idx += 1;
 		}
 
@@ -553,15 +647,15 @@ def write365():
 				break;
 			}
 
-			data[game]["total"] = "";
+			data[game][prefix+"total"] = "";
 			let line = divs[i].querySelector(".sac-ParticipantCenteredStacked50OTB_Handicap").innerText.replace("O ", "");
-			data[game]["total"] = line+" ";
+			data[game][prefix+"total"] = line+" ";
 
 			let odds = divs[i].querySelector(".sac-ParticipantCenteredStacked50OTB_Odds").innerText;
-			data[game]["total"] += odds+"/";
+			data[game][prefix+"total"] += odds+"/";
 
 			odds = divs[i+1].querySelector(".sac-ParticipantCenteredStacked50OTB_Odds").innerText;
-			data[game]["total"] += odds;
+			data[game][prefix+"total"] += odds;
 			idx += 1;
 		}
 
@@ -574,14 +668,14 @@ def write365():
 				break;
 			}
 
-			data[game]["ml"] = "";
+			data[game][prefix+"ml"] = "";
 			let odds = divs[i].querySelector(".sac-ParticipantOddsOnly50OTB_Odds").innerText;
-			data[game]["ml"] += odds+"/";
+			data[game][prefix+"ml"] += odds+"/";
 
 			odds = divs[i+1].querySelector(".sac-ParticipantOddsOnly50OTB_Odds").innerText;
-			data[game]["ml"] += odds;
+			data[game][prefix+"ml"] += odds;
 
-			if (data[game]["ml"] === "/") {
+			if (data[game][prefix+"ml"] === "/") {
 				delete data[game]["ml"];
 			}
 			idx += 1;
@@ -607,6 +701,9 @@ def writeEV(prop="", bookArg="fd", teamArg=""):
 	with open(f"{prefix}static/fiba/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
+	with open(f"{prefix}static/fiba/bovada.json") as fh:
+		bovadaLines = json.load(fh)
+
 	with open(f"{prefix}static/fiba/ev.json") as fh:
 		evData = json.load(fh)
 
@@ -624,46 +721,60 @@ def writeEV(prop="", bookArg="fd", teamArg=""):
 		switchGame = f"{team2} @ {team1}"
 		for prop in dkLines[game]:
 			a = dkLines[game][prop]
-			if prop in ["ml", "total", "spread"]:
+			if prop in ["ml", "total", "spread", "1st_half_ml", "1st_half_total", "1st_half_spread", "away_total", "home_total"]:
 				a = [" "]
 			for player in a:
-				if prop in ["ml", "total", "spread"]:
+				if prop in ["ml", "total", "spread", "1st_half_ml", "1st_half_total", "1st_half_spread", "away_total", "home_total"]:
 					dk = dkLines[game][prop]
 				else:
 					dk = dkLines[game][prop][player]
 				handicap = ""
-				if prop != "ml":
-					handicap = dk.split(" ")[0]
+				if "ml" not in prop:
+					handicap = str(float(dk.split(" ")[0]))
 				dk = dk.split(" ")[-1]
 
 				kambi = ""
 				if game in kambiLines and prop in kambiLines[game]:
 
-					if prop == "ml":
+					if "ml" in prop:
 						kambi = kambiLines[game][prop]
-					if prop in ["spread", "total"]:
+					if prop in ["spread", "total", "1st_half_spread", "away_total", "home_total"]:
 						if handicap in kambiLines[game][prop]:
 							kambi = kambiLines[game][prop][handicap]
+					elif prop in ["1st_half_total"]:
+						if kambiLines[game][prop].startswith(handicap):
+							kambi = kambiLines[game][prop].split(" ")[-1]
 					else:
 						if player in kambiLines[game][prop] and kambiLines[game][prop][player].startswith(handicap):
 							kambi = kambiLines[game][prop][player].split(" ")[-1]
 
 				bet365 = ""
 				if game in bet365Lines and prop in bet365Lines[game]:
-					if prop == "ml":
+					if "ml" in prop:
 						bet365 = bet365Lines[game][prop]
-					if prop in ["spread", "total"]:
+					if prop in ["spread", "total", "1st_half_total", "1st_half_spread", "away_total", "home_total"]:
 						if bet365Lines[game][prop].startswith(handicap):
 							bet365 = bet365Lines[game][prop].split(" ")[-1]
 					else:
 						if player in bet365Lines[game][prop] and bet365Lines[game][prop][player].startswith(handicap):
 							bet365 = bet365Lines[game][prop][player].split(" ")[-1]
 
+				bovada = ""
+				if game in bovadaLines and prop in bovadaLines[game]:
+					if "ml" in prop:
+						bovada = bovadaLines[game][prop]
+					if prop in ["spread", "total", "1st_half_total", "1st_half_spread", "away_total", "home_total"]:
+						if bovadaLines[game][prop].startswith(handicap):
+							bovada = bovadaLines[game][prop].split(" ")[-1]
+					else:
+						if player in bovadaLines[game][prop] and bovadaLines[game][prop][player].startswith(handicap):
+							bovada = bovadaLines[game][prop][player].split(" ")[-1]
+
 				fd = ""
 				if game in fdLines and prop in fdLines[game]:
-					if prop == "ml":
+					if "ml" in prop:
 						fd = fdLines[game][prop]
-					if prop in ["spread", "total"]:
+					if prop in ["spread", "total", "1st_half_total", "1st_half_spread", "away_total", "home_total"]:
 						if fdLines[game][prop].startswith(handicap):
 							fd = fdLines[game][prop].split(" ")[-1]
 					else:
@@ -673,7 +784,7 @@ def writeEV(prop="", bookArg="fd", teamArg=""):
 				for i in range(2):
 					#print(game, prop, player)
 					line = dk.split("/")[i]
-					l = [fd, bet365, kambi]
+					l = [fd, bovada, bet365, kambi]
 
 					avgOver = []
 					avgUnder = []
@@ -721,7 +832,7 @@ def writeEV(prop="", bookArg="fd", teamArg=""):
 							print(key)
 							continue
 						if float(evData[key]["ev"]) > 0:
-							print(key, prop, evData[key]["ev"], game, int(line), ou, evBook)
+							print(evData[key]["ev"], key, prop, game, int(line), ou, evBook)
 						evData[key]["game"] = game
 						evData[key]["book"] = evBook
 						evData[key]["ou"] = ou
@@ -803,6 +914,9 @@ if __name__ == '__main__':
 
 	if args.kambi:
 		writeKambi()
+
+	if args.bv:
+		writeBV()
 
 	if args.update:
 		writeFanduel()
