@@ -126,6 +126,7 @@ def checkBovada():
 
 def writeBallparkpal():
 	js = """
+	{
 		for (btn of document.getElementsByTagName("button")) {
 			if (btn.innerText === "Expanded Book View") {
 				btn.click();
@@ -197,7 +198,7 @@ def writeBallparkpal():
 			}
 		}
 		console.log(data);
-
+	}
 	"""
 
 def convertBPPTeam(team):
@@ -676,21 +677,12 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-detroit-tigers-32593423",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-philadelphia-phillies-32593429",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-miami-marlins-32593430",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-baltimore-orioles-32593421",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-toronto-blue-jays-32593426",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-boston-red-sox-32593422",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-new-york-mets-32593427",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-minnesota-twins-32593425",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-st.-louis-cardinals-32593417",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-chicago-cubs-32593418",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-kansas-city-royals-32593428",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-colorado-rockies-32593420",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-32593424",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-san-francisco-giants-32593416",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-dodgers-32593419"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-detroit-tigers-32595872",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-new-york-mets-32595875",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-miami-marlins-32595878",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-kansas-city-royals-32595876",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-colorado-rockies-32595868",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-dodgers-32595867"
 ]
 
 	lines = {}
@@ -859,6 +851,7 @@ def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=Fal
 
 def write365():
 	js = """
+	{
 		let data = {};
 		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
 		for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
@@ -921,7 +914,7 @@ def write365():
 			
 		}
 		console.log(data)
-
+	}
 	"""
 	pass
 
@@ -1379,7 +1372,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("adolis garcia", 440, "tex"), ("matt olson", 215, "atl"), ("mark vientos", 520, "nym")]
+	plays = [("adolis garcia", 300, "tex"), ("matt olson", 255, "atl"), ("corey seager", 260, "tex"), ("alec bohm", 500, "phi"), ("marcell ozuna", 260, "atl"),("carlos santana", 630, "mil"), ("riley greene", 1100, "det")]
 
 	if args.lineups:
 		writeLineups(plays)

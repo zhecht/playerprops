@@ -45,20 +45,224 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
+def writePinnacle(date):
+	if not date:
+		date = str(datetime.now())[:10]
+
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/sports/33/markets/straight?primaryOnly=false&withSpecials=false" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o outPN'
+
+	os.system(url)
+	outfile = f"outPN"
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	ids = []
+	for row in data:
+		if str(datetime.strptime(row["cutoffAt"][:-6].split(".")[0], "%Y-%m-%dT%H:%M:%S") - timedelta(hours=4))[:10] != date:
+			continue
+		if row["matchupId"] not in ids:
+			ids.append(row["matchupId"])
+
+	res = {}
+	for bid in ids:
+		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(bid)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
+
+		time.sleep(0.3)
+		os.system(url)
+		with open(outfile) as fh:
+			related = json.load(fh)
+
+		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(bid)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
+
+		time.sleep(0.3)
+		os.system(url)
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		try:
+			gamesMatchup = related[0]["id"] if related[0]["units"] == "Games" else related[1]["id"]
+		except:
+			gamesMatchup = ""
+		try:
+			player1 = related[0]["participants"][0]["name"].lower()
+			player2 = related[0]["participants"][1]["name"].lower()
+		except:
+			continue
+
+		game = strip_accents(f"{player1} @ {player2}")
+
+		if game in res:
+			continue
+		res[game] = {}
+
+		for row in data:
+			prop = row["type"]
+			keys = row["key"].split(";")
+
+			prefix = ""
+			if keys[1] == "1":
+				prefix = "set1_"
+
+			if prop == "moneyline":
+				prop = f"{prefix}ml"
+			elif prop == "spread":
+				prop = f"{prefix}spread"
+				if gamesMatchup != row["matchupId"] and not prefix:
+					prop = f"set_spread"
+			elif prop == "total":
+				prop = f"{prefix}total"
+				if gamesMatchup != row["matchupId"] and not prefix:
+					prop = f"total_sets"
+			elif prop == "team_total":
+				awayHome = "away" if row['side'] == "home" else "home"
+				prop = f"{prefix}{awayHome}_total"
+
+
+			prices = row["prices"]
+			ou = f"{prices[0]['price']}/{prices[1]['price']}"
+			if "points" in prices[0]:
+				handicap = str(prices[0]["points"])
+				if prop not in res[game]:
+					res[game][prop] = {}
+				res[game][prop][handicap] = ou
+			else:
+				res[game][prop] = ou
+
+	with open("static/tennis/pinnacle.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+
+def writeMGM():
+
+	res = {}
+
+	tourneys = {
+		"mens": {
+			"virtual": 6,
+			"real": 4628
+		},
+		"womens": {
+			"virtual": 7,
+			"real": 4630
+		},
+		"mens doubles": {
+			"virtual": 8,
+			"real": 6622
+		},
+		"womens": {
+			"virtual": 9,
+			"real": 6625
+		},
+		"mixed": {
+			"virtual": 10,
+			"real": 6688
+		}
+	}
+
+	for tourney in tourneys:
+		url = f"https://sports.mi.betmgm.com/en/sports/api/widget?layoutSize=Large&page=CompetitionLobby&sportId=5&tournamentId=5&virtualCompetitionId=2&virtualCompetitionGroupId={tourneys[tourney]['virtual']}&realCompetitionId={tourneys[tourney]['real']}&forceFresh=1"
+		outfile = f"outMGM"
+
+		time.sleep(0.3)
+		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		try:
+			rows = data["widgets"][0]["payload"]["items"][0]["activeChildren"][0]["payload"]["fixtures"]
+		except:
+			print(tourney)
+			continue
+		ids = []
+		for row in rows:
+			if row["stage"].lower() == "live":
+				continue
+			ids.append(row["id"])
+
+		for mgmid in ids:
+			url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
+			time.sleep(0.3)
+			os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+
+			with open(outfile) as fh:
+				data = json.load(fh)
+
+			data = data["fixture"]
+			game = strip_accents(data["name"]["value"].lower())
+
+			p1, p2 = map(str, game.split(" - "))
+			p1 = p1.split(" (")[0]
+			p2 = p2.split(" (")[0]
+			game = f"{p1} @ {p2}"
+
+			res[game] = {}
+			for row in data["games"]:
+				prop = row["name"]["value"].lower()
+
+				if prop == "match winner":
+					prop = "ml"
+				elif prop == "set 1 winner":
+					prop = "set1_ml"
+				elif prop == "set 2 winner":
+					prop = "set2_ml"
+				elif prop == "set betting":
+					prop = "set"
+				elif prop == "total games - set 1":
+					prop = "set1_total"
+				elif prop == "total games - match":
+					prop = "total"
+				elif "at least 1" in prop:
+					p = "away_1_set"
+					if "player 2" in prop:
+						p = "home_1_set"
+					prop = p
+				elif "set spread" in prop:
+					prop = "set_spread"
+				elif "player spread" in prop:
+					prop = "player_spread"
+				else:
+					continue
+
+				results = row['results']
+				ou = f"{results[0]['americanOdds']}/{results[1]['americanOdds']}"
+				if "ml" in prop or prop in ["away_1_set", "home_1_set"]:
+					res[game][prop] = ou
+				elif len(results) >= 2:
+					if prop not in res[game]:
+						res[game][prop] = {}
+
+					skip = 1 if prop == "set" else 2
+					for idx in range(0, len(results), skip):
+						val = results[idx]["name"]["value"].lower()
+						if "over" not in val and "under" not in val and prop not in ["set_spread", "player_spread"]:
+							continue
+						else:
+							val = val.split(" ")[-1]
+						ou = str(results[idx]["americanOdds"])
+						if prop != "set":
+							ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
+						res[game][prop][val] = ou
+
+	with open("static/tennis/mgm.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
 def writeBovada():
 	url = "https://www.bovada.lv/sports/tennis/"
 
 	ids = []
 	for gender in ["men", "women"]:
-		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/tennis/us-open/{gender}-s-singles?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
-		outfile = f"outBV"
+		for which in ["singles", "doubles"]:
+			url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/tennis/us-open/{gender}-s-{which}?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
+			outfile = f"outBV"
 
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+			time.sleep(0.3)
+			os.system(f"curl -k \"{url}\" -o {outfile}")
 
-		with open(outfile) as fh:
-			data = json.load(fh)
+			with open(outfile) as fh:
+				data = json.load(fh)
 
-		ids.extend([r["link"] for r in data[0]["events"]])
+			ids.extend([r["link"] for r in data[0]["events"]])
 
 	res = {}
 	#print(ids)
@@ -71,10 +275,13 @@ def writeBovada():
 			data = json.load(fh)
 
 		comp = data[0]['events'][0]['competitors']
-		game = f"{comp[0]['name'].lower()} @ {comp[1]['name'].lower()}"
-
 		player1 = comp[0]['name'].lower()
 		player2 = comp[1]['name'].lower()
+		if "/" in player1:
+			player1 = f"{player1.split(' / ')[0].split(' ')[-2]} / {player1.split(' / ')[1].split(' ')[-2]}"
+			player2 = f"{player2.split(' / ')[0].split(' ')[-2]} / {player2.split(' / ')[1].split(' ')[-2]}"
+		game = f"{player1} @ {player2}"
+
 		res[game] = {}
 
 		for row in data[0]["events"][0]["displayGroups"]:
@@ -129,7 +336,7 @@ def writeKambi():
 	data = {}
 	outfile = f"out.json"
 
-	for gender in ["", "_women"]:
+	for gender in ["", "_doubles", "_women", "_women_doubles"]:
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/tennis/grand_slam/us_open{gender}/all/matches.json?lang=en_US&market=US"
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 		
@@ -142,7 +349,11 @@ def writeKambi():
 			player1, player2 = map(str, game.split(f" {event['event']['nameDelimiter']} "))
 			game = []
 			for player in [player1, player2]:
-				game.append(f"{player.split(', ')[-1]} {player.split(', ')[0]}")
+				if "/" in player:
+					p1,p2 = map(str, player.split("/"))
+					game.append(f"{p1.split(', ')[0]} / {p2.split(', ')[0]}")
+				else:
+					game.append(f"{player.split(', ')[-1]} {player.split(', ')[0]}")
 			game = strip_accents(" @ ".join(game))
 			if game in eventIds:
 				continue
@@ -236,27 +447,23 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/to-etcheverry-v-ot-virtanen-32590426",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/y-wu-v-lajovic-32584250",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/wawrinka-v-nishioka-32584224",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/nic-moreno-de-alboran-v-sonego-32590412",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/huesler-v-hurkacz-32584171",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/daniel-v-monfils-32590440",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/l-harris-v-pella-32584427",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/hanfmann-v-sinner-32584274",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-koepfer-32584468",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/vickery-v-vekic-32590313",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/a-bogdan-v-kenin-32584154",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/pavlyuchenkova-v-crawley-32590318",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/strycova-v-k-kanepi-32584245",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/blinkova-v-burrage-32584506",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/q-zheng-v-podoroska-32583943",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/minnen-v-v-williams-32590257",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/l-bronzetti-v-b-krejcikova-32584016",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ro-montgomery-v-e-lys-32590323",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/zanevska-v-a-sabalenka-32584195",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/y-kawahashi-v-i-eqbal-32597142",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/n-kunsuwan-v-s-banthia-32597143"
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/manuel-cerundolo-v-davidovich-fokina-32594405",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/ti-droguet-v-mensik-32594698",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/purcell-thompson-v-harris-kecmanovic-32592131",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/ruud-v-zh-zhang-32594494",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/cabal-farah-v-godsick-quinn-32592162",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/ofner-v-tiafoe-32594455",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/jua-varillas-v-fritz-32594620",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/bronzetti-hozumi-v-pliskova-vekic-32592122",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ostapenko-v-el-avanesyan-32594933",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/bolsova-masarova-v-cornet-piter-32597384",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/brady-v-linette-32594898",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kvitova-v-wozniacki-32595051",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/c-congcar-v-s-tang-32599368",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/p-oplustil-v-t-ichikawa-32599369",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/k-pearson-v-f-musitelli-32599538",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/t-suksumrarn-v-m-jones-32599539",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/s-banthia-v-l-vithoontien-32599543"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
@@ -267,7 +474,7 @@ def writeFanduel():
 	games.extend(womens)
 
 	lines = {}
-	#games = ["https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/strycova-v-k-kanepi-32584245"]
+	#games = ["https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/o'connell-vukic-v-bopanna-ebden-32592142"]
 	for game in games:
 		gameId = game.split("-")[-1]
 		game = game.split("/")[-1][:-9].replace("-v-", "-@-").replace("-", " ")
@@ -451,7 +658,7 @@ def writeDK(date):
 	}
 
 	lines = {}
-	for gender in [72778, 72779]:
+	for gender in [72778, 72779, 101899, 101901]:
 		for mainCat in mainCats:
 			for subCat in subCats[mainCats[mainCat]]:
 				time.sleep(0.3)
@@ -476,6 +683,9 @@ def writeDK(date):
 						continue
 						pass
 					game = event["name"].lower().replace(" vs ", " @ ")
+					player1, player2 = map(str, game.split(" @ "))
+					if "/" in player1:
+						game = f"{player1.split(' / ')[0].split(' ')[-1]} / {player1.split(' / ')[1].split(' ')[-1]} @ {player2.split(' / ')[0].split(' ')[-1]} / {player2.split(' / ')[1].split(' ')[-1]}"
 					if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
 						continue
 
@@ -538,7 +748,8 @@ def writeDK(date):
 
 									if "ml" not in label and label not in ["6-0"]:
 										lines[game][label] = f"{row['outcomes'][0]['line']} "
-									
+									if len(row['outcomes']) == 0:
+										continue
 									lines[game][label] += f"{row['outcomes'][0]['oddsAmerican']}"
 									if len(row['outcomes']) != 1:
 										lines[game][label] += f"/{row['outcomes'][1]['oddsAmerican']}"
@@ -559,79 +770,6 @@ def writeDK(date):
 	with open("static/tennis/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def write365Props():
-	url = "https://www.oh.bet365.com/?_h=MHxK6gn5idsD_JJ0gjhGEQ%3D%3D#/AC/B18/C20902960/D43/E181378/F43/"
-
-	js = """
-
-	const data = {};
-
-	{
-		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
-		let prop = title;
-
-		if (prop === "set betting") {
-			prop = "set";
-		} else if (prop == "total sets") {
-			prop = "total_sets";
-		} else if (prop == "1st set total games") {
-			prop = "set1_total";
-		} else if (prop == "player games won") {
-			prop = "away_total";
-		}
-
-		for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
-			const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " @ ").replaceAll(".", "");
-			if (data[game] === undefined) {
-				data[game] = {};
-			}
-
-			if (div.classList.contains("src-FixtureSubGroup_Closed")) {
-				div.click();
-			}
-
-			if (prop == "away_total") {
-				let ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[0].innerText.replace("Over ", "");
-				
-				data[game]["away_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[0].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[1].innerText;
-
-				ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[2].innerText.replace("Over ", "");
-				data[game]["home_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[2].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[3].innerText;
-			} else {
-				data[game][prop] = {};
-				let arr = [];
-				for (const set of div.querySelector(".gl-Market").querySelectorAll(".gl-Market_General-cn1")) {
-					arr.push(set.innerText);
-				}
-
-				let idx = 0;
-				for (const playerDiv of div.querySelectorAll(".gl-Participant_General")) {
-					let set = arr[idx % arr.length];
-					const odds = playerDiv.querySelector(".gl-ParticipantOddsOnly_Odds").innerText;
-
-					if (prop == "set") {
-						let player = game.split(" @ ")[0];
-						if (idx >= arr.length) {
-							player = game.split(" @ ")[1];
-						}
-						
-						data[game][prop][player+" "+set] = odds;
-					} else {
-						if (idx < arr.length) {
-							data[game][prop][set] = odds;
-						} else {
-							data[game][prop][set] += "/"+odds;
-						}
-					}
-					idx += 1;
-				}
-			}
-		}
-		console.log(data)
-	}
-	"""
-	pass
-
 def write365():
 
 	lines = ""
@@ -640,6 +778,8 @@ def write365():
 	js = """
 	
 	const data = {};
+
+	// All Main other than, Set: set1_spread, Games: away_total
 
 	{
 		const main = document.querySelector(".gl-MarketGroupContainer");
@@ -654,78 +794,135 @@ def write365():
 			prop = "set1_ml";
 		} else if (prop == "first set spread") {
 			prop = "set1_spread";
+		} else if (prop === "set betting") {
+			prop = "set";
+		} else if (prop == "total sets") {
+			prop = "total_sets";
+		} else if (prop == "1st set total games") {
+			prop = "set1_total";
+		} else if (prop == "player games won") {
+			prop = "away_total";
 		} else {
 			prop = "ml";
 		}
 
-		let games = [];
-		let idx = 0;
-		for (div of main.querySelector(".gl-Market_General").children) {
-			if (idx === 0 || div.classList.contains("Hidden")) {
+		if (["set", "total_sets", "set1_total", "away_total"].indexOf(prop) >= 0) {
+			for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
+				const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " @ ").replaceAll(".", "").replace("/", " / ");
+
+				if (data[game] === undefined) {
+					data[game] = {};
+				}
+
+				if (div.classList.contains("src-FixtureSubGroup_Closed")) {
+					div.click();
+				}
+
+				if (prop == "away_total") {
+					let ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[0].innerText.replace("Over ", "");
+					
+					data[game]["away_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[0].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[1].innerText;
+
+					ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[2].innerText.replace("Over ", "");
+					data[game]["home_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[2].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[3].innerText;
+				} else {
+					data[game][prop] = {};
+					let arr = [];
+					for (const set of div.querySelector(".gl-Market").querySelectorAll(".gl-Market_General-cn1")) {
+						arr.push(set.innerText);
+					}
+
+					let idx = 0;
+					for (const playerDiv of div.querySelectorAll(".gl-Participant_General")) {
+						let set = arr[idx % arr.length];
+						const odds = playerDiv.querySelector(".gl-ParticipantOddsOnly_Odds").innerText;
+
+						if (prop == "set") {
+							let player = game.split(" @ ")[0];
+							if (idx >= arr.length) {
+								player = game.split(" @ ")[1];
+							}
+							
+							data[game][prop][player+" "+set] = odds;
+						} else {
+							if (idx < arr.length) {
+								data[game][prop][set] = odds;
+							} else {
+								data[game][prop][set] += "/"+odds;
+							}
+						}
+						idx += 1;
+					}
+				}
+			}
+		} else {
+			let games = [];
+			let idx = 0;
+			for (div of main.querySelector(".gl-Market_General").children) {
+				if (idx === 0 || div.classList.contains("Hidden")) {
+					idx += 1;
+					continue;
+				}
+				if (div.classList.contains("rcl-MarketHeaderLabel-isdate")) {
+					break;
+				}
+				const away = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[0].innerText.toLowerCase().replaceAll(".", "");
+				const home = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[1].innerText.toLowerCase().replaceAll(".", "");
+				const game = away+" @ "+home;
+				games.push(game.replace("/", " / "));
+
+				if (data[game] === undefined) {
+					data[game] = {};
+				}
+			}
+
+			idx = 0;
+			let divs = main.querySelectorAll(".gl-Market_General")[1].querySelectorAll(".gl-Participant_General");
+			for (let i = 0; i < divs.length; i += 1) {
+				let game = games[idx];
+
+				if (!game) {
+					break;
+				}
+
+				if (prop.indexOf("ml") >= 0) {
+					let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
+					data[game][prop] = odds;
+				} else {
+					let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
+					let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
+					data[game][prop] = line+" "+odds;
+				}
 				idx += 1;
-				continue;
 			}
-			if (div.classList.contains("rcl-MarketHeaderLabel-isdate")) {
-				break;
-			}
-			const away = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[0].innerText.toLowerCase().replaceAll(".", "");
-			const home = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[1].innerText.toLowerCase().replaceAll(".", "");
-			const game = away+" @ "+home;
-			games.push(game);
 
-			if (data[game] === undefined) {
-				data[game] = {};
+			idx = 0;
+			divs = main.querySelectorAll(".gl-Market_General")[2].querySelectorAll(".gl-Participant_General");
+			for (let i = 0; i < divs.length; i += 1) {
+				let game = games[idx];
+
+				if (!game) {
+					break;
+				}
+
+				if (prop.indexOf("ml") >= 0) {
+					let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
+					data[game][prop] += "/"+odds;
+				} else {
+					let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
+					let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
+					data[game][prop] += "/"+odds;
+				}
+				idx += 1;
 			}
 		}
-
-		idx = 0;
-		let divs = main.querySelectorAll(".gl-Market_General")[1].querySelectorAll(".gl-Participant_General");
-		for (let i = 0; i < divs.length; i += 1) {
-			let game = games[idx];
-
-			if (!game) {
-				break;
-			}
-
-			if (prop.indexOf("ml") >= 0) {
-				let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
-				data[game][prop] = odds;
-			} else {
-				let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
-				let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
-				data[game][prop] = line+" "+odds;
-			}
-			idx += 1;
-		}
-
-		idx = 0;
-		divs = main.querySelectorAll(".gl-Market_General")[2].querySelectorAll(".gl-Participant_General");
-		for (let i = 0; i < divs.length; i += 1) {
-			let game = games[idx];
-
-			if (!game) {
-				break;
-			}
-
-			if (prop.indexOf("ml") >= 0) {
-				let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
-				data[game][prop] += "/"+odds;
-			} else {
-				let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
-				let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
-				data[game][prop] += "/"+odds;
-			}
-			idx += 1;
-		}
-
 		console.log(data);
-
 	}
 
 	"""
 	pass
 
-def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
+def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doubles=None):
 	if not boost:
 		boost = 1
 
@@ -740,6 +937,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 
 	with open(f"{prefix}static/tennis/bovada.json") as fh:
 		bvLines = json.load(fh)
+
+	with open(f"{prefix}static/tennis/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/tennis/pinnacle.json") as fh:
+		pnLines = json.load(fh)
 
 	with open(f"{prefix}static/tennis/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -757,14 +960,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 	for game in fdLines:
 		if teamArg and teamArg not in game:
 			continue
+
+		if singles and "/" in game:
+			continue
+		if doubles and "/" not in game:
+			continue
 		team1, team2 = map(str, game.split(" @ "))
-		switchGame = f"{team2} @ {team1}"
 		for prop in fdLines[game]:
 
-			if propArg and prop != propArg:
+			if prop == "set":
 				continue
-
-			if prop in ["set"]:
+				
+			if propArg and prop != propArg:
 				continue
 
 			if type(fdLines[game][prop]) is dict:
@@ -783,9 +990,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 					handicap = key
 
 				fd = fd.split(" ")[-1]
-
-				if game == "barbora strycova @ kaia kanepi" and prop == "set1_total":
-					print(handicap, fd)
 
 				kambi = ""
 				if game in kambiLines and prop in kambiLines[game]:
@@ -812,6 +1016,28 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 					else:
 						bv = bvLines[game][prop]
 
+				mgm = ""
+				if game in mgmLines and prop in mgmLines[game]:
+					if handicap:
+						if type(mgmLines[game][prop]) is dict:
+							if handicap in mgmLines[game][prop]:
+								mgm = mgmLines[game][prop][handicap]
+						elif float(handicap) == float(mgmLines[game][prop].split(" ")[0]):
+							mgm = mgmLines[game][prop].split(" ")[-1]
+					else:
+						mgm = mgmLines[game][prop]
+
+				pn = ""
+				if game in pnLines and prop in pnLines[game]:
+					if handicap:
+						if type(pnLines[game][prop]) is dict:
+							if handicap in pnLines[game][prop]:
+								pn = pnLines[game][prop][handicap]
+						elif float(handicap) == float(pnLines[game][prop].split(" ")[0]):
+							pn = pnLines[game][prop].split(" ")[-1]
+					else:
+						pn = pnLines[game][prop]
+
 				bet365 = ""
 				if game in bet365Lines and prop in bet365Lines[game]:
 					if handicap:
@@ -837,8 +1063,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 
 				for i in range(2):
 
+					if "/" not in fd and i == 1:
+						continue
+
 					line = fd.split("/")[i]
-					l = [dk, bv, bet365, kambi]
+					l = [dk, bv, mgm, pn, bet365, kambi]
 
 					avgOver = []
 					avgUnder = []
@@ -875,7 +1104,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 					else:
 						ou = f"{avgOver}/{avgUnder}"
 
-					if ou == "-/-" or ou.endswith("/-") or ou.startswith("-/"):
+					if ou == "-/-" or ou.startswith("-/"):
 						continue
 
 					if not line:
@@ -970,6 +1199,8 @@ if __name__ == '__main__':
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
+	parser.add_argument("--mgm", action="store_true", help="MGM")
+	parser.add_argument("--pn", action="store_true", help="Pinnacle")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
 	parser.add_argument("-g", "--game", help="Game")
 	parser.add_argument("-t", "--team", help="Team")
@@ -986,25 +1217,14 @@ if __name__ == '__main__':
 	parser.add_argument("--summary", action="store_true", help="Summary")
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
+	parser.add_argument("--singles", action="store_true", help="Singles")
+	parser.add_argument("--doubles", action="store_true", help="Doubles")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
+	parser.add_argument("--player", help="Player")
 
 	args = parser.parse_args()
-
-	plays = [("trea turner", 430, "phi"), ("christian bethancourt", 800, "tb"), ("randy arozarena", 500, "tb"), ("aaron judge", 235, "nyy"), ("jorge soler", 480, "mia"), ("jack suwinski", 540, "pit"), ("mark vientos", 680, "nym")]
-
-	if args.lineups:
-		writeLineups(plays)
-
-	if args.lineupsLoop:
-		while True:
-			writeLineups(plays)
-			time.sleep(30)
-
-	dinger = False
-	if args.dinger:
-		dinger = True
 
 	if args.fd:
 		writeFanduel()
@@ -1018,34 +1238,74 @@ if __name__ == '__main__':
 	if args.bv:
 		writeBovada()
 
-	if args.text:
-		sendText("test")
+	if args.mgm:
+		writeMGM()
+
+	if args.pn:
+		writePinnacle(args.date)
 
 	if args.update:
 		writeFanduel()
 		writeDK(args.date)
 		writeBovada()
 		writeKambi()
-
-	if args.ml:
-		writeActionNetworkML()
+		writeMGM()
+		#writePinnacle()
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, boost=args.boost)
-
-	if args.bpp:
-		writeBPPHomers()
-
-	if args.action:
-		writeActionNetwork(args.date)
+		writeEV(propArg=args.prop, bookArg=args.book, boost=args.boost, doubles=args.doubles, singles=args.singles)
 
 	if args.print:
 		sortEV()
 
 	if args.prop:
 		#writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
-		sortEV()
-	#write365()
-	#writeActionNetwork()
+		#sortEV()
+		pass
 
+	if args.player:
+		with open(f"{prefix}static/tennis/draftkings.json") as fh:
+			dkLines = json.load(fh)
+
+		with open(f"{prefix}static/tennis/bet365.json") as fh:
+			bet365Lines = json.load(fh)
+
+		with open(f"{prefix}static/tennis/fanduelLines.json") as fh:
+			fdLines = json.load(fh)
+
+		with open(f"{prefix}static/tennis/bovada.json") as fh:
+			bvLines = json.load(fh)
+
+		with open(f"{prefix}static/tennis/kambi.json") as fh:
+			kambiLines = json.load(fh)
 	
+		player = args.player
+
+		for game in fdLines:
+			if player not in game:
+				continue
+
+			for prop in fdLines[game]:
+				if args.prop and args.prop != prop:
+					continue
+
+				fd = fdLines[game][prop]
+				dk = bet365 = kambi = bv = ""
+				try:
+					dk = dkLines[game][prop]
+				except:
+					pass
+				try:
+					bet365 = bet365Lines[game][prop]
+				except:
+					pass
+				try:
+					kambi = kambiLines[game][prop]
+				except:
+					pass
+				try:
+					bv = bvLines[game][prop]
+				except:
+					pass
+
+				print(f"{prop} fd='{fd}', dk='{dk}', 365='{bet365}', kambi='{kambi}', bv='{bv}'")
