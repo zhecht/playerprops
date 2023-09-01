@@ -45,6 +45,72 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
+def writePinnacle(date):
+	if not date:
+		date = str(datetime.now())[:10]
+
+	url = "https://www.pinnacle.com/en/basketball/fiba-world-cup/matchups#period:0"
+
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/9585/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o outPN'
+
+	os.system(url)
+	outfile = f"outPN"
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	games = {}
+	for row in data:
+		if str(datetime.strptime(row["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+			continue
+		player1 = row["participants"][0]["name"].lower()
+		player2 = row["participants"][1]["name"].lower()
+		games[str(row["id"])] = f"{player1} @ {player2}"
+
+	
+	res = {}
+	for gameId in games:
+		game = games[gameId]
+		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
+
+		time.sleep(0.3)
+		os.system(url)
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		res[game] = {}
+
+		for row in data:
+			prop = row["type"]
+			keys = row["key"].split(";")
+
+			prefix = ""
+			if keys[1] == "1":
+				prefix = "1h_"
+
+			if prop == "moneyline":
+				prop = f"{prefix}ml"
+			elif prop == "spread":
+				prop = f"{prefix}spread"
+			elif prop == "total":
+				prop = f"{prefix}total"
+			elif prop == "team_total":
+				awayHome = "away" if row['side'] == "home" else "home"
+				prop = f"{prefix}{awayHome}_total"
+
+
+			prices = row["prices"]
+			ou = f"{prices[0]['price']}/{prices[1]['price']}"
+			if "points" in prices[0]:
+				handicap = str(prices[0]["points"])
+				if prop not in res[game]:
+					res[game][prop] = {}
+				res[game][prop][handicap] = ou
+			else:
+				res[game][prop] = ou
+
+	with open("static/fiba/pinnacle.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
 def writeBV():
 	url = "https://www.bovada.lv/sports/basketball/fiba-world-cup"
 	url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/basketball/fiba-world-cup?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
@@ -110,26 +176,119 @@ def writeBV():
 						continue
 
 					if "ml" in prop:
-						res[game][prop] = f"{market['outcomes'][1]['price']['american']}/{market['outcomes'][0]['price']['american']}"
+						res[game][prop] = f"{market['outcomes'][1]['price']['american']}/{market['outcomes'][0]['price']['american']}".replace("EVEN", "100")
 					elif "total" in prop or prop in ["pts", "reb", "ast", "3ptm", "blk", "stl", "to"]:
 						handicap = market["outcomes"][0]["price"]["handicap"]
+						if prop not in res[game]:
+							res[game][prop] = {}
 
 						if "total" in prop:
-							res[game][prop] = f"{handicap} {market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}"
+							res[game][prop][handicap] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
 						else:
-							if prop not in res[game]:
-								res[game][prop] = {}
 							player = parsePlayer(market["descriptionKey"].split(" - ")[-1])
 							res[game][prop][player] = f"{handicap} {market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
 					else:
+						if prop not in res[game]:
+							res[game][prop] = {}
 						handicap = market["outcomes"][1]["price"]["handicap"]
-						res[game][prop] = f"{handicap} {market['outcomes'][1]['price']['american']}/{market['outcomes'][0]['price']['american']}"
-
-					if prop not in ["pts", "reb", "ast", "3ptm", "blk", "stl", "to"]:
-						res[game][prop] = res[game][prop].replace("EVEN", "100")
+						res[game][prop][handicap] = f"{market['outcomes'][1]['price']['american']}/{market['outcomes'][0]['price']['american']}".replace("EVEN", "100")
 
 
 	with open("static/fiba/bovada.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+def writeMGM():
+
+	res = {}
+
+	url = f"https://sports.mi.betmgm.com/en/sports/api/widget?layoutSize=Large&page=CompetitionLobby&sportId=7&regionId=6&competitionId=9029&compoundCompetitionId=1:9029&forceFresh=1"
+	outfile = f"outMGM"
+
+	time.sleep(0.3)
+	os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	rows = data["widgets"][0]["payload"]["items"][0]["activeChildren"][0]["payload"]["fixtures"]
+	ids = []
+	for row in rows:
+		if row["stage"].lower() == "live":
+			continue
+		ids.append(row["id"])
+
+	for mgmid in ids:
+		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
+		time.sleep(0.3)
+		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		data = data["fixture"]
+		if " - " not in data["name"]["value"]:
+			continue
+		game = strip_accents(data["name"]["value"].lower()).replace(" - ", " @ ")
+		team1, team2 = game.split(" @ ")
+
+		res[game] = {}
+		for row in data["games"]:
+			prop = row["name"]["value"].lower()
+
+			prefix = player = ""
+			if "1st half" in prop:
+				prefix = "1h_"
+			elif "1st quarter" in prop:
+				prefix = "1q_"
+
+			if prop.endswith("money line"):
+				prop = "ml"
+			elif prop == "total games" or "totals" in prop:
+				prop = "total"
+			elif "spread" in prop:
+				prop = "spread"
+			elif prop.startswith("how many "):
+				if prop.startswith("how many points will be scored in the game"):
+					continue
+				if team1 in prop or team2 in prop:
+					prop = "away_total"
+					team = prop.split(" will ")[-1].split(" score")[0]
+					if game.endswith(team):
+						prop = "home_total"
+				else:
+					player = prop.split(" (")[0].split(" will ")[-1]
+					prop = prop.split(" ")[2].replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("blocks", "blk").replace("steals", "stl").replace("three-pointers", "3ptm")
+					if prop == "total":
+						continue
+			else:
+				continue
+
+			prop = prefix+prop
+
+			results = row['results']
+			ou = f"{results[0]['americanOdds']}/{results[1]['americanOdds']}"
+			if "ml" in prop:
+				res[game][prop] = ou
+			elif len(results) >= 2:
+				if prop not in res[game]:
+					res[game][prop] = {}
+
+				skip = 2
+				for idx in range(0, len(results), skip):
+					val = results[idx]["name"]["value"].lower()
+					if "over" not in val and "under" not in val and "spread" not in prop:
+						continue
+					else:
+						val = val.split(" ")[-1]
+					#print(game, prop, player)
+					ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
+
+					if player:
+						res[game][prop][player] = val+" "+ou
+					else:
+						res[game][prop][val] = ou
+
+	with open("static/fiba/mgm.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
 def writeKambi():
@@ -212,8 +371,10 @@ def writeKambi():
 				else:
 					data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 			elif label in ["1h_total", "2h_total", "1h_away_total", "1h_home_total"]:
+				if label not in data[game]:
+					data[game][label] = {}
 				line = betOffer["outcomes"][0]["line"] / 1000
-				data[game][label] = str(line)+" "+betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+				data[game][label][str(line)] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 			elif label in ["spread", "1h_spread", "2h_spread"]:
 				if label not in data[game]:
 					data[game][label] = {}
@@ -257,7 +418,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("basketball/international") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.getAttribute("datetime").split("T")[0] === "2023-08-30") {
+				if (time && time.getAttribute("datetime").split("T")[0] === "2023-08-31") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -267,9 +428,14 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/china-v-puerto-rico-32593410",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/greece-v-new-zealand-32592990",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/iran-v-spain-32592991"
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/cape-verde-v-finland-32598779",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/angola-v-china-32598882",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/new-zealand-v-mexico-32598987",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/ivory-coast-v-lebanon-32598989",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/japan-v-venezuela-32598780",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/south-sudan-v-philippines-32598886",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/egypt-v-jordan-32598992",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/france-v-iran-32598994"
 ]
 
 	lines = {}
@@ -282,7 +448,7 @@ def writeFanduel():
 
 		outfile = "out"
 
-		for tab in ["", "player-points", "player-rebounds", "player-assists", "player-threes", "half", "alternates", "1st quarter"]:
+		for tab in ["", "player-points", "player-rebounds", "player-assists", "player-threes", "half", "alternates", "1st-quarter"]:
 			time.sleep(0.42)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
@@ -329,35 +495,21 @@ def writeFanduel():
 					else:
 						continue
 
-					if prop in ["ml"] or prop.startswith("1h_") or prop.startswith("1q_"):
-						lines[game][prop] = ""
+					handicap = runners[0]["handicap"]
+					ou = str(runners[0]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])+"/"+str(runners[1]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
 
-						for idx, runner in enumerate(runners):
-							if idx == 0 and prop in ["1h_total", "1h_spread"]:
-								lines[game][prop] = f"{runner['handicap']} "
-							elif idx == 1:
-								lines[game][prop] += "/"	
-							lines[game][prop] += str(runner["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
-					elif prop in ["total", "spread"]:
-						if prop not in lines[game]:
-							lines[game][prop] = {}
-
-						handicap = runners[0]["handicap"]
-						lines[game][prop][str(handicap)] = str(runners[0]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])+"/"+str(runners[1]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
+					if "ml" in prop:
+						lines[game][prop] = ou
 					else:
-						player = parsePlayer(marketName.split(" - ")[0])
-
 						if prop not in lines[game]:
 							lines[game][prop] = {}
 
-						lines[game][prop][player] = ""
+						if "spread" in prop or "total" in prop:
+							lines[game][prop][str(handicap)] = ou
+						else:
 
-						for idx, runner in enumerate(runners):
-							if idx == 0:
-								lines[game][prop][player] = f"{runner['handicap']} "
-							elif idx == 1:
-								lines[game][prop][player] += "/"	
-							lines[game][prop][player] += str(runner["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
+							player = parsePlayer(marketName.split(" - ")[0])
+							lines[game][prop][player] = f"{handicap} {ou}"
 	
 	with open(f"{prefix}static/fiba/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -500,6 +652,12 @@ def writeDK(date):
 								label = "1h_total"
 							elif label == "ml 1st half":
 								label = "1h_ml"
+							elif label == "spread 1st quarter":
+								label = "1q_spread"
+							elif label == "total 1st quarter":
+								label = "1q_total"
+							elif label == "ml 1st quarter":
+								label = "1q_ml"
 							elif label.endswith("team total points - 1st half"):
 								team = label.split(":")[0]
 								if game.startswith(team):
@@ -518,41 +676,38 @@ def writeDK(date):
 							if label == "halftime/fulltime":
 								continue
 
-							if mainCat in ["pts", "reb", "ast", "3ptm", "blk", "to", "stl"]:
+							if "ml" in label:
+								lines[game][label] = ""
+							elif "total" in label or "spread" in label:
+								if label not in lines[game]:
+									lines[game][label] = {}
+							else:
 								label = parsePlayer(label)
 								if mainCat not in lines[game]:
 									lines[game][mainCat] = {}
-								lines[game][mainCat][label] = ""
-							elif label in ["total", "spread"]:
-								if label not in lines[game]:
-									lines[game][label] = {}
-							else:	
-								lines[game][label] = ""
 
-							if mainCat in ["pts", "reb", "ast", "3ptm", "blk", "to", "stl"]:
-								lines[game][mainCat][label] = f"{row['outcomes'][0]['line']} {row['outcomes'][0]['oddsAmerican']}"
+							outcomes = row["outcomes"]
+							ou = ""
+							try:
+								ou = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
+								switchedOU = ou = f"{outcomes[1]['oddsAmerican']}/{outcomes[0]['oddsAmerican']}"
+							except:
+								continue
 
-								if len(row["outcomes"]) > 1:
-									lines[game][mainCat][label] += f"/{row['outcomes'][1]['oddsAmerican']}"
-							elif label in ["total", "spread"]:
-								if label not in lines[game]:
-									lines[game][label] = {}
-
-								outcomes = row["outcomes"]
+							if "ml" in label:
+								lines[game][label] = switchedOU
+							elif "total" in label or "spread" in label:
 								for i in range(0, len(outcomes), 2):
-									if label == "total":
+									if "total" in label:
 										line = outcomes[i]["line"]
 										lines[game][label][str(line)] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
 									else:
 										line = outcomes[i+1]["line"]
 										lines[game][label][str(line)] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
 							else:
-								if "ml" not in label:
-									lines[game][label] = f"{row['outcomes'][1]['line']} "
-								if "total" in label:
-									lines[game][label] += f"{row['outcomes'][0]['oddsAmerican']}/{row['outcomes'][1]['oddsAmerican']}"
-								else:
-									lines[game][label] += f"{row['outcomes'][1]['oddsAmerican']}/{row['outcomes'][0]['oddsAmerican']}"
+								lines[game][mainCat][label] = f"{outcomes[0]['line']} {outcomes[0]['oddsAmerican']}"
+								if len(row["outcomes"]) > 1:
+									lines[game][mainCat][label] += f"/{outcomes[1]['oddsAmerican']}"
 
 	with open("static/fiba/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -569,9 +724,9 @@ def write365():
 		const main = document.querySelector(".gl-MarketGroupContainer");
 		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
 		let prefix = "";
-		if (title === "1st half") {
+		if (title.indexOf("1st half") >= 0) {
 			prefix = "1h_";
-		} else if (title == "1st quarter") {
+		} else if (title.indexOf("1st quarter") >= 0) {
 			prefix = "1q_";
 		}
 
@@ -591,13 +746,13 @@ def write365():
 			title = "blk";
 		} else if (title === "player threes made") {
 			title = "3ptm";
-		} else if (title === "alternative point spread") {
-			title = "spread";
+		} else if (title === "alternative point spread" || title == "alternative spread" || title == "alternative 1st quarter point spread") {
+			title = prefix+"spread";
 		} else if (title === "alternative game total") {
-			title = "total";
+			title = prefix+"total";
 		}
 
-		if (title == "spread" || title == "total") {
+		if (title.indexOf("spread") >= 0 || title.indexOf("total") >= 0) {
 			for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
 				const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" v ", " @ ");
 				if (div.classList.contains("src-FixtureSubGroup_Closed")) {
@@ -791,6 +946,12 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 	with open(f"{prefix}static/fiba/bovada.json") as fh:
 		bovadaLines = json.load(fh)
 
+	with open(f"{prefix}static/fiba/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/fiba/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
 	with open(f"{prefix}static/fiba/ev.json") as fh:
 		evData = json.load(fh)
 
@@ -848,6 +1009,28 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 					else:
 						kambi = kambiLines[game][prop]
 
+				pn = ""
+				if game in pnLines and prop in pnLines[game]:
+					if type(pnLines[game][prop]) is dict:
+						if handicap in pnLines[game][prop]:
+							pn = pnLines[game][prop][handicap]
+					else:
+						pn = pnLines[game][prop]
+
+				mgm = ""
+				if game in mgmLines and prop in mgmLines[game]:
+					if type(mgmLines[game][prop]) is dict:
+						if handicap in mgmLines[game][prop]:
+							mgm = mgmLines[game][prop][handicap]
+							if " " in mgm:
+								if float(mgm.split(" ")[0]) == float(propHandicap):
+									mgm = mgm.split(" ")[-1]
+								else:
+									mgm = ""
+
+					else:
+						mgm = mgmLines[game][prop]
+
 				bet365 = ""
 				if game in bet365Lines and prop in bet365Lines[game]:
 					if handicap:
@@ -903,7 +1086,7 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 					if "/" not in dk:
 						continue
 					line = dk.split("/")[i]
-					l = [fd, bovada, bet365, kambi]
+					l = [fd, bovada, mgm, pn, bet365, kambi]
 
 					avgOver = []
 					avgUnder = []
@@ -999,6 +1182,8 @@ if __name__ == '__main__':
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
+	parser.add_argument("--pn", action="store_true", help="Pinnacle")
+	parser.add_argument("--mgm", action="store_true", help="MGM")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
 	parser.add_argument("-g", "--game", help="Game")
 	parser.add_argument("-t", "--team", help="Team")
@@ -1018,6 +1203,7 @@ if __name__ == '__main__':
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
+	parser.add_argument("--player", help="Book")
 
 	args = parser.parse_args()
 
@@ -1036,11 +1222,17 @@ if __name__ == '__main__':
 	if args.fd:
 		writeFanduel()
 
+	if args.mgm:
+		writeMGM()
+
 	if args.dk:
 		writeDK(args.date)
 
 	if args.kambi:
 		writeKambi()
+
+	if args.pn:
+		writePinnacle(args.date)
 
 	if args.bv:
 		writeBV()
@@ -1048,9 +1240,10 @@ if __name__ == '__main__':
 	if args.update:
 		writeFanduel()
 		writeDK(args.date)
-		#writeActionNetwork(args.date)
+		writePinnacle(args.date)
 		writeKambi()
 		writeBV()
+		writeMGM()
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book)
@@ -1063,5 +1256,66 @@ if __name__ == '__main__':
 		sortEV()
 	#write365()
 	#writeActionNetwork()
+
+	if args.player:
+		with open(f"{prefix}static/fiba/draftkings.json") as fh:
+			dkLines = json.load(fh)
+
+		with open(f"{prefix}static/fiba/bet365.json") as fh:
+			bet365Lines = json.load(fh)
+
+		with open(f"{prefix}static/fiba/fanduelLines.json") as fh:
+			fdLines = json.load(fh)
+
+		with open(f"{prefix}static/fiba/bovada.json") as fh:
+			bvLines = json.load(fh)
+
+		with open(f"{prefix}static/fiba/kambi.json") as fh:
+			kambiLines = json.load(fh)
+
+		with open(f"{prefix}static/fiba/mgm.json") as fh:
+			mgmLines = json.load(fh)
+
+		with open(f"{prefix}static/fiba/pinnacle.json") as fh:
+			pnLines = json.load(fh)
+	
+		player = args.player
+
+		for game in dkLines:
+			if player not in game:
+				continue
+
+			for prop in fdLines[game]:
+				if args.prop and args.prop != prop:
+					continue
+
+				dk = dkLines[game][prop]
+				fd = bet365 = kambi = bv = mgm = pn = ""
+				try:
+					fd = fdLines[game][prop]
+				except:
+					pass
+				try:
+					bet365 = bet365Lines[game][prop]
+				except:
+					pass
+				try:
+					kambi = kambiLines[game][prop]
+				except:
+					pass
+				try:
+					bv = bvLines[game][prop]
+				except:
+					pass
+				try:
+					pn = pnLines[game][prop]
+				except:
+					pass
+				try:
+					mgm = mgmLines[game][prop]
+				except:
+					pass
+
+				print(f"{prop} fd='{fd}'\ndk='{dk}'\n365='{bet365}'\nkambi='{kambi}'\nbv='{bv}'\npn={pn}\nmgm={mgm}")
 
 	

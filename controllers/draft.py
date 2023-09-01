@@ -126,7 +126,7 @@ async function f() {
         a1.click();
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        for (const a of main.querySelectorAll(".tab-bar-container")[1].querySelectorAll("a")) {
+        for (const a of main.querySelectorAll(".tab-bar-container")[0].querySelectorAll("a")) {
             a.click();
             await new Promise(resolve => setTimeout(resolve, 1000));
             const btn = main.querySelector(".show-more-less-button");

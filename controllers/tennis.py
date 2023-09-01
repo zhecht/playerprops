@@ -86,6 +86,9 @@ def writePinnacle(date):
 		try:
 			player1 = related[0]["participants"][0]["name"].lower()
 			player2 = related[0]["participants"][1]["name"].lower()
+			if " / " in player1:
+				player1 = player1.split(" / ")[0].split(" ")[0] + " / " + player1.split(" / ")[-1].split(" ")[0] 
+				player2 = player2.split(" / ")[0].split(" ")[0] + " / " + player2.split(" / ")[-1].split(" ")[0] 
 		except:
 			continue
 
@@ -160,7 +163,7 @@ def writeMGM():
 	}
 
 	for tourney in tourneys:
-		url = f"https://sports.mi.betmgm.com/en/sports/api/widget?layoutSize=Large&page=CompetitionLobby&sportId=5&tournamentId=5&virtualCompetitionId=2&virtualCompetitionGroupId={tourneys[tourney]['virtual']}&realCompetitionId={tourneys[tourney]['real']}&forceFresh=1"
+		url = f"https://sports.mi.betmgm.com/en/sports/api/widget/widgetdata?layoutSize=Large&page=CompetitionLobby&sportId=5&tournamentId=5&virtualCompetitionId=2&virtualCompetitionGroupId={tourneys[tourney]['virtual']}&realCompetitionId={tourneys[tourney]['real']}&widgetId=/mobilesports-v1.0/layout/layout_standards/modules/competition/defaultcontainer&shouldIncludePayload=true"
 		outfile = f"outMGM"
 
 		time.sleep(0.3)
@@ -194,6 +197,10 @@ def writeMGM():
 			p1, p2 = map(str, game.split(" - "))
 			p1 = p1.split(" (")[0]
 			p2 = p2.split(" (")[0]
+
+			if "/" in game:
+				p1 = p1.split("/")[0].split(" ")[-1]+" / "+p1.split("/")[-1].split(" ")[-1]
+				p2 = p2.split("/")[0].split(" ")[-1]+" / "+p2.split("/")[-1].split(" ")[-1]
 			game = f"{p1} @ {p2}"
 
 			res[game] = {}
@@ -220,7 +227,7 @@ def writeMGM():
 				elif "set spread" in prop:
 					prop = "set_spread"
 				elif "player spread" in prop:
-					prop = "player_spread"
+					prop = "spread"
 				else:
 					continue
 
@@ -334,7 +341,7 @@ def writeBovada():
 
 def writeKambi():
 	data = {}
-	outfile = f"out.json"
+	outfile = f"tennisout.json"
 
 	for gender in ["", "_doubles", "_women", "_women_doubles"]:
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/tennis/grand_slam/us_open{gender}/all/matches.json?lang=en_US&market=US"
@@ -400,20 +407,10 @@ def writeKambi():
 				else:
 					continue
 
-				if label in ["ml", "set1_ml", "set2_ml", "set_spread", "total_sets", "set1_spread"]:
-					data[game][label] = ""
-					if "ml" not in label:
-						line = betOffer["outcomes"][0]["line"] / 1000
-						data[game][label] = f"{line} "
-
-					data[game][label] += betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
-				elif label in ["spread", "total"]:
-					if label not in data[game]:
-						data[game][label] = {}
-					line = betOffer["outcomes"][0]["line"] / 1000
-					line2 = betOffer["outcomes"][1]["line"] / 1000
-					data[game][label][line] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
-				else:
+				ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+				if "ml" in label:
+					data[game][label] = ou
+				elif label == "set":
 					#print(game, url, label)
 					data[game][label] = {}
 					for outcome in betOffer["outcomes"]:
@@ -421,6 +418,11 @@ def writeKambi():
 						if int(outcome['awayScore']) > int(outcome['homeScore']):
 							key = f"{player2} {outcome['awayScore']}-{outcome['homeScore']}"
 						data[game][label][key] = outcome["oddsAmerican"]
+				else:
+					if label not in data[game]:
+						data[game][label] = {}
+					line = betOffer["outcomes"][0]["line"] / 1000
+					data[game][label][line] = ou
 
 		with open(f"{prefix}static/tennis/kambi.json", "w") as fh:
 			json.dump(data, fh, indent=4)
@@ -438,6 +440,7 @@ def writeFanduel():
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
 				if (time && time.innerText.split(" ").length < 3) {
+				//if (time && time.innerText.split(" ")[0] === "THU") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -447,23 +450,50 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/manuel-cerundolo-v-davidovich-fokina-32594405",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/ti-droguet-v-mensik-32594698",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/purcell-thompson-v-harris-kecmanovic-32592131",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/ruud-v-zh-zhang-32594494",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/cabal-farah-v-godsick-quinn-32592162",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/ofner-v-tiafoe-32594455",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/jua-varillas-v-fritz-32594620",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/bronzetti-hozumi-v-pliskova-vekic-32592122",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ostapenko-v-el-avanesyan-32594933",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/bolsova-masarova-v-cornet-piter-32597384",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/brady-v-linette-32594898",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kvitova-v-wozniacki-32595051",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/c-congcar-v-s-tang-32599368",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/p-oplustil-v-t-ichikawa-32599369",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/k-pearson-v-f-musitelli-32599538",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/t-suksumrarn-v-m-jones-32599539",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/s-banthia-v-l-vithoontien-32599543"
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/krawietz-puetz-v-barrere-halys-32592160",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carballes-b-zapata-mira-v-dodig-krajicek-32592167",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/berrettini-v-rinderknech-32596992",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/to-etcheverry-v-wawrinka-32597680",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/golubev-safiullin-v-kovacevic-moreno-de-alb-32592174",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/muller-ofner-v-kirkov-kudla-32592171",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/fils-v-arnaldi-32597119",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/herbert-mahut-v-fucsovics-popyrin-32592166",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/y-wu-v-de-minaur-32597480",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/jarry-v-al-michelsen-32597069",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/yu-hsu-v-norrie-32597188",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/monfils-v-rublev-32597564",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/galloway-olivetti-v-isner-sock-32592133",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/meligeni-alves-v-se-baez-32597282",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/galan-zhang-v-granollers-zeballos-32592173",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/mannarino-rinderknech-v-spizzirri-zink-32592163",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/van-de-zandschulp-v-evans-32597406",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-l-harris-32597618",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/medvedev-v-o'connell-32597020",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/collins-kichenok-v-hunter-mertens-32592118",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/e-lys-v-l-bronzetti-32597625",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/azarenka-haddad-maia-v-babos-bondar-32592175",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/eikeri-neel-v-chan-olmos-32592152",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/l-samsonova-v-korpatsch-32596962",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/burrage-v-a-sabalenka-32597739",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/alexandrova-v-tsurenko-32597289",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/m-trevisan-v-vondrousova-32597195",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ka-pliskova-v-burel-32597301",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/wickmayer-v-keys-32597152",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/boulter-putintseva-v-wu-zhu-32592168",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/chan-yang-v-blinkova-gracheva-32592172",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/svitolina-v-pavlyuchenkova-32597401",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/p-martic-v-m-bouzkova-32597076",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kichenok-ostapenko-v-gamiz-sorribes-tormo-32592155",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/avanesyan-rakhimova-v-burel-parry-32594769",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/navarro-stearns-v-danilina-watson-32592134",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/o-jabeur-v-l-noskova-32596987",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/minnen-v-vickery-32597487",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kalinskaya-pavlyuchenko-v-brady-stefani-32592153",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/d-kasatkina-v-kenin-32597687",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/maria-tig-v-j-pegula-32597247",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/j-p-hartenstein-p-pavlenko-v-r-michalik-p-nad-32600384",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/m-mikula-y-wojcik-v-m-kulakowski-o-pieczkowski-32600539",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/i-kremenchutskyi-t-vaise-v-a-beckley-j-szajryc-32601185"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
@@ -474,14 +504,14 @@ def writeFanduel():
 	games.extend(womens)
 
 	lines = {}
-	#games = ["https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/o'connell-vukic-v-bopanna-ebden-32592142"]
+	#games = ["https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/boulter-putintseva-v-wu-zhu-32592168"]
 	for game in games:
 		gameId = game.split("-")[-1]
 		game = game.split("/")[-1][:-9].replace("-v-", "-@-").replace("-", " ")
 		if game in lines:
 			continue
 
-		outfile = "out"
+		outfile = "tennisout"
 
 		for tab in ["", "total-games-props", "alternatives"]:
 			time.sleep(0.42)
@@ -551,13 +581,11 @@ def writeFanduel():
 					else:
 						continue
 
-					if prop in ["ml", "set1_ml", "set2_ml", "total_sets", "set1_spread", "6-0", "both", "away_1_set", "home_1_set", "away_total", "home_total"]:
+					if prop in ["ml", "set1_ml", "set2_ml", "6-0", "both", "away_1_set", "home_1_set"]:
 						lines[game][prop] = ""
 
 						for idx, runner in enumerate(runners):
-							if idx == 0 and prop in ["total", "total_sets", "set1_spread", "away_total", "home_total"]:
-								lines[game][prop] = runner["runnerName"].split(" ")[-1].replace("(", "").replace(")", "")+" "
-							elif idx == 1:
+							if idx == 1:
 								lines[game][prop] += "/"
 							try:
 								lines[game][prop] += str(runner["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
@@ -569,7 +597,7 @@ def writeFanduel():
 
 						for idx, runner in enumerate(runners):
 							lines[game][prop][runner["runnerName"].lower()] = str(runner["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
-					elif prop in ["total", "set1_total", "set2_total", "spread", "set_spread"]:
+					else:
 						if prop not in lines[game]:
 							lines[game][prop] = {}
 
@@ -743,17 +771,18 @@ def writeDK(date):
 								if "6:0" in label:
 									label = "6-0"
 
-								if label in ["ml", "set1_ml", "set2_ml", "spread", "total", "total_sets", "6-0", "away_total", "home_total"]:
-									lines[game][label] = ""
-
-									if "ml" not in label and label not in ["6-0"]:
-										lines[game][label] = f"{row['outcomes'][0]['line']} "
+								if "ml" in label or label == "6-0":
 									if len(row['outcomes']) == 0:
 										continue
-									lines[game][label] += f"{row['outcomes'][0]['oddsAmerican']}"
+									lines[game][label] = f"{row['outcomes'][0]['oddsAmerican']}"
 									if len(row['outcomes']) != 1:
 										lines[game][label] += f"/{row['outcomes'][1]['oddsAmerican']}"
-								elif label in ["set_spread", "set1_total", "set2_total"]:
+								elif label in ["set"]:
+									lines[game][label] = {}
+
+									for outcome in row["outcomes"]:
+										lines[game][label][f"{outcome['participant'].lower()} {outcome['label'].replace(':', '-')}"] = outcome['oddsAmerican']
+								else:
 									if label not in lines[game]:
 										lines[game][label] = {}
 
@@ -761,11 +790,7 @@ def writeDK(date):
 									for i in range(0, len(outcomes), 2):
 										line = str(outcomes[i]["line"])
 										lines[game][label][line] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
-								elif label in ["set"]:
-									lines[game][label] = {}
-
-									for outcome in row["outcomes"]:
-										lines[game][label][f"{outcome['participant'].lower()} {outcome['label'].replace(':', '-')}"] = outcome['oddsAmerican']
+								
 
 	with open("static/tennis/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -868,10 +893,10 @@ def write365():
 				}
 				const away = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[0].innerText.toLowerCase().replaceAll(".", "");
 				const home = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[1].innerText.toLowerCase().replaceAll(".", "");
-				const game = away+" @ "+home;
-				games.push(game.replace("/", " / "));
+				const game = (away+" @ "+home).replaceAll("/", " / ");
+				games.push(game);
 
-				if (data[game] === undefined) {
+				if (!data[game]) {
 					data[game] = {};
 				}
 			}
@@ -970,7 +995,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 
 			if prop == "set":
 				continue
-				
+
 			if propArg and prop != propArg:
 				continue
 
@@ -1250,7 +1275,7 @@ if __name__ == '__main__':
 		writeBovada()
 		writeKambi()
 		writeMGM()
-		#writePinnacle()
+		writePinnacle(args.date)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, boost=args.boost, doubles=args.doubles, singles=args.singles)
@@ -1278,6 +1303,12 @@ if __name__ == '__main__':
 
 		with open(f"{prefix}static/tennis/kambi.json") as fh:
 			kambiLines = json.load(fh)
+
+		with open(f"{prefix}static/tennis/pinnacle.json") as fh:
+			pnines = json.load(fh)
+
+		with open(f"{prefix}static/tennis/mgm.json") as fh:
+			mgmines = json.load(fh)
 	
 		player = args.player
 
@@ -1290,7 +1321,10 @@ if __name__ == '__main__':
 					continue
 
 				fd = fdLines[game][prop]
-				dk = bet365 = kambi = bv = ""
+
+				handicap = type(fd) is dict
+				dk = bet365 = kambi = bv = pn = mgm = ""
+
 				try:
 					dk = dkLines[game][prop]
 				except:
@@ -1307,5 +1341,13 @@ if __name__ == '__main__':
 					bv = bvLines[game][prop]
 				except:
 					pass
+				try:
+					pn = pnLines[game][prop]
+				except:
+					pass
+				try:
+					mgm = mgmLines[game][prop]
+				except:
+					pass
 
-				print(f"{prop} fd='{fd}', dk='{dk}', 365='{bet365}', kambi='{kambi}', bv='{bv}'")
+				print(f"{prop} fd='{fd}'\ndk='{dk}'\n365='{bet365}'\nkambi='{kambi}'\nbv='{bv}'\nmgm={mgm}\npn={pn}")
