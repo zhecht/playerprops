@@ -45,6 +45,91 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
+def writePointsbet():
+	url = "https://api.mi.pointsbet.com/api/v2/competitions/12864/events/featured?includeLive=false&page=1"
+	outfile = f"outPB"
+	os.system(f"curl -k \"{url}\" -o {outfile}")
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	games = []
+	for row in data["events"]:
+		games.append(row["key"])
+
+	res = {}
+	for gameId in games:
+		url = f"https://api.mi.pointsbet.com/api/mes/v3/events/{gameId}"
+		time.sleep(0.3)
+		outfile = f"outPB"
+		os.system(f"curl -k \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		game = data["name"].lower().replace(" v ", " @ ")
+		away, home = map(str, game.split(" @ "))
+		res[game] = {}
+
+		for market in data["fixedOddsMarkets"]:
+			prop = market["name"].lower().split(" (")[0]
+
+			if prop == "point spread":
+				prop = "spread"
+			elif prop == "spread 1st half":
+				prop = "1h_spread"
+			elif prop == "spread 1st quarter":
+				prop = "1q_spread"
+			elif prop == "moneyline":
+				prop = "ml"
+			elif prop == "moneyline 1st half":
+				prop = "1h_ml"
+			elif prop == "moneyline 1st quarter":
+				prop = "1q_ml"
+			elif prop == "total":
+				prop = "total"
+			elif prop == "total 1st half":
+				prop = "1h_total"
+			elif prop == "total 1st quarter":
+				prop = "1q_total"
+			elif prop == f"{away} total":
+				prop = "away_total"
+			elif prop == f"{home} total":
+				prop = "home_total"
+			elif prop == f"{away} total 1st quarter":
+				prop = "1q_away_total"
+			elif prop == f"{home} total 1st quarter":
+				prop = "1q_home_total"
+			elif prop.startswith("player"):
+				if " + " in prop:
+					continue
+				else:
+					prop = prop.split(" ")[1].replace("points", "pts").replace("assists", "ast").replace("rebounds", "reb")
+			else:
+				continue
+
+			if "ml" not in prop:
+				if prop not in res[game]:
+					res[game][prop] = {}
+
+			outcomes = market["outcomes"]
+			for i in range(0, len(outcomes), 2):
+				points = str(outcomes[i]["points"])
+				over = convertAmericanOdds(outcomes[i]["price"])
+				under = convertAmericanOdds(outcomes[i+1]["price"])
+				ou = f"{over}/{under}"
+
+				if "ml" in prop:
+					res[game][prop] = ou
+				elif prop in ["pts", "reb", "ast"]:
+					player = outcomes[i]["name"].lower().split(" over")[0]
+					res[game][prop][player] = f"{outcomes[i]['name'].split(' ')[-1]} {ou}"
+				else:
+					res[game][prop][points] = ou
+
+	with open("static/fiba/pointsbet.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
 def writePinnacle(date):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -201,7 +286,9 @@ def writeMGM():
 
 	res = {}
 
-	url = f"https://sports.mi.betmgm.com/en/sports/api/widget?layoutSize=Large&page=CompetitionLobby&sportId=7&regionId=6&competitionId=9029&compoundCompetitionId=1:9029&forceFresh=1"
+	url = "https://sports.mi.betmgm.com/en/sports/basketball-7/betting/world-6/fiba-world-cup-men-9029"
+
+	url = f"https://sports.mi.betmgm.com/en/sports/api/widget?layoutSize=Large&page=CompetitionLobby&sportId=7&regionId=6&competitionId=9029&compoundCompetitionId=1:9029&forceFresh=1&shouldIncludePayload=true"
 	outfile = f"outMGM"
 
 	time.sleep(0.3)
@@ -251,10 +338,11 @@ def writeMGM():
 				if prop.startswith("how many points will be scored in the game"):
 					continue
 				if team1 in prop or team2 in prop:
-					prop = "away_total"
+					p = "away_total"
 					team = prop.split(" will ")[-1].split(" score")[0]
 					if game.endswith(team):
-						prop = "home_total"
+						p = "home_total"
+					prop = p
 				else:
 					player = prop.split(" (")[0].split(" will ")[-1]
 					prop = prop.split(" ")[2].replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("blocks", "blk").replace("steals", "stl").replace("three-pointers", "3ptm")
@@ -335,10 +423,18 @@ def writeKambi():
 				label = "1h_spread"
 			elif "handicap - 2nd half" in label:
 				label = "2h_spread"
+			elif "handicap - quarter 1" in label:
+				label = "1q_spread"
 			elif "total points - 1st half" in label:
 				label = "1h_total"
 			elif "total points - 2nd half" in label:
 				label = "2h_total"
+			elif "total points - quarter 1" in label:
+				label = "1q_total"
+			elif f"total points by {away} - quarter 1" in label:
+				label = "1q_away_total"
+			elif f"total points by {home} - quarter 1" in label:
+				label = "1q_home_total"
 			elif f"total points by {away} - 1st half" in label:
 				label = "1h_away_total"
 			elif f"total points by {home} - 1st half" in label:
@@ -353,6 +449,8 @@ def writeKambi():
 				label = "1h_ml"
 			elif label == "draw no bet - 2nd half":
 				label = "2h_ml"
+			elif label == "draw no bet - quarter 1":
+				label = "1q_ml"
 			elif label.startswith("points scored"):
 				label = "pts"
 			elif label.startswith("rebounds"):
@@ -362,7 +460,7 @@ def writeKambi():
 			elif label.startswith("3-point"):
 				label = "3ptm"
 
-			if label in ["ml", "1h_ml", "2h_ml"]:
+			if label in ["ml", "1h_ml", "2h_ml", "1q_ml"]:
 				team = betOffer["outcomes"][0]["label"].lower()
 				if label != "ml":
 					team = betOffer["outcomes"][0]["participant"].lower()
@@ -370,12 +468,12 @@ def writeKambi():
 					data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 				else:
 					data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
-			elif label in ["1h_total", "2h_total", "1h_away_total", "1h_home_total"]:
+			elif label in ["1h_total", "2h_total", "1q_total", "1h_away_total", "1h_home_total", "1q_away_total", "1q_home_total"]:
 				if label not in data[game]:
 					data[game][label] = {}
 				line = betOffer["outcomes"][0]["line"] / 1000
 				data[game][label][str(line)] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
-			elif label in ["spread", "1h_spread", "2h_spread"]:
+			elif label in ["spread", "1h_spread", "2h_spread", "1q_spread"]:
 				if label not in data[game]:
 					data[game][label] = {}
 				line = betOffer["outcomes"][0]["line"] / 1000
@@ -418,7 +516,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("basketball/international") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.getAttribute("datetime").split("T")[0] === "2023-08-31") {
+				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-01") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -428,14 +526,14 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/cape-verde-v-finland-32598779",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/angola-v-china-32598882",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/new-zealand-v-mexico-32598987",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/ivory-coast-v-lebanon-32598989",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/japan-v-venezuela-32598780",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/south-sudan-v-philippines-32598886",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/egypt-v-jordan-32598992",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/france-v-iran-32598994"
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/serbia-v-italy-32598995",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/germany-v-georgia-32598808",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/usa-v-montenegro-32598996",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/spain-v-latvia-32599001",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/dominican-republic-v-puerto-rico-32599002",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/slovenia-v-australia-32598817",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/lithuania-v-greece-32599004",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/canada-v-brazil-32599005"
 ]
 
 	lines = {}
@@ -497,6 +595,9 @@ def writeFanduel():
 
 					handicap = runners[0]["handicap"]
 					ou = str(runners[0]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])+"/"+str(runners[1]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
+
+					if runners[0]["runnerName"] == "Under":
+						ou = str(runners[1]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])+"/"+str(runners[0]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
 
 					if "ml" in prop:
 						lines[game][prop] = ou
@@ -949,6 +1050,9 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 	with open(f"{prefix}static/fiba/pinnacle.json") as fh:
 		pnLines = json.load(fh)
 
+	with open(f"{prefix}static/fiba/pointsbet.json") as fh:
+		pbLines = json.load(fh)
+
 	with open(f"{prefix}static/fiba/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
@@ -1050,7 +1154,7 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 					if "undefined" in bet365:
 						bet365 = ""
 
-				bovada = ""
+				bv = ""
 				if game in bovadaLines and prop in bovadaLines[game]:
 					if handicap:
 						if type(bovadaLines[game][prop]) is dict:
@@ -1062,9 +1166,25 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 									else:
 										bv = ""
 						elif float(handicap) == float(bovadaLines[game][prop].split(" ")[0]):
-							bovada = bovadaLines[game][prop].split(" ")[-1]
+							bv = bovadaLines[game][prop].split(" ")[-1]
 					else:
-						bovada = bovadaLines[game][prop]
+						bv = bovadaLines[game][prop]
+
+				pb = ""
+				if game in pbLines and prop in pbLines[game]:
+					if handicap:
+						if type(pbLines[game][prop]) is dict:
+							if handicap in pbLines[game][prop]:
+								pb = pbLines[game][prop][handicap]
+								if " " in pb:
+									if float(pb.split(" ")[0]) == float(propHandicap):
+										pb = pb.split(" ")[-1]
+									else:
+										pb = ""
+						elif float(handicap) == float(pbLines[game][prop].split(" ")[0]):
+							pb = pbLines[game][prop].split(" ")[-1]
+					else:
+						fd = fdLines[game][prop]
 
 				fd = ""
 				if game in fdLines and prop in fdLines[game]:
@@ -1086,7 +1206,7 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 					if "/" not in dk:
 						continue
 					line = dk.split("/")[i]
-					l = [fd, bovada, mgm, pn, bet365, kambi]
+					l = [fd, bv, mgm, pn, pb, bet365, kambi]
 
 					avgOver = []
 					avgUnder = []
@@ -1179,6 +1299,7 @@ if __name__ == '__main__':
 	parser.add_argument("--dk", action="store_true", help="Fanduel")
 	parser.add_argument("--writeBV", action="store_true", help="Bovada")
 	parser.add_argument("--bv", action="store_true", help="Bovada")
+	parser.add_argument("--pb", action="store_true", help="Pointsbet")
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
@@ -1225,6 +1346,9 @@ if __name__ == '__main__':
 	if args.mgm:
 		writeMGM()
 
+	if args.pb:
+		writePointsbet()
+
 	if args.dk:
 		writeDK(args.date)
 
@@ -1244,18 +1368,13 @@ if __name__ == '__main__':
 		writeKambi()
 		writeBV()
 		writeMGM()
+		writePointsbet()
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book)
 
 	if args.print:
 		sortEV()
-
-	if args.prop:
-		#writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
-		sortEV()
-	#write365()
-	#writeActionNetwork()
 
 	if args.player:
 		with open(f"{prefix}static/fiba/draftkings.json") as fh:
@@ -1282,37 +1401,37 @@ if __name__ == '__main__':
 		player = args.player
 
 		for game in dkLines:
-			if player not in game:
-				continue
-
-			for prop in fdLines[game]:
+			for prop in dkLines[game]:
 				if args.prop and args.prop != prop:
 					continue
 
-				dk = dkLines[game][prop]
+				if player not in dkLines[game][prop]:
+					continue
+
+				dk = dkLines[game][prop][player]
 				fd = bet365 = kambi = bv = mgm = pn = ""
 				try:
-					fd = fdLines[game][prop]
+					fd = fdLines[game][prop][player]
 				except:
 					pass
 				try:
-					bet365 = bet365Lines[game][prop]
+					bet365 = bet365Lines[game][prop][player]
 				except:
 					pass
 				try:
-					kambi = kambiLines[game][prop]
+					kambi = kambiLines[game][prop][player]
 				except:
 					pass
 				try:
-					bv = bvLines[game][prop]
+					bv = bvLines[game][prop][player]
 				except:
 					pass
 				try:
-					pn = pnLines[game][prop]
+					pn = pnLines[game][prop][player]
 				except:
 					pass
 				try:
-					mgm = mgmLines[game][prop]
+					mgm = mgmLines[game][prop][player]
 				except:
 					pass
 

@@ -450,50 +450,39 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/krawietz-puetz-v-barrere-halys-32592160",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carballes-b-zapata-mira-v-dodig-krajicek-32592167",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/berrettini-v-rinderknech-32596992",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/to-etcheverry-v-wawrinka-32597680",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/golubev-safiullin-v-kovacevic-moreno-de-alb-32592174",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/muller-ofner-v-kirkov-kudla-32592171",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/fils-v-arnaldi-32597119",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/herbert-mahut-v-fucsovics-popyrin-32592166",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/y-wu-v-de-minaur-32597480",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/jarry-v-al-michelsen-32597069",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/yu-hsu-v-norrie-32597188",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/monfils-v-rublev-32597564",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/galloway-olivetti-v-isner-sock-32592133",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/meligeni-alves-v-se-baez-32597282",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/galan-zhang-v-granollers-zeballos-32592173",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/mannarino-rinderknech-v-spizzirri-zink-32592163",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/van-de-zandschulp-v-evans-32597406",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-l-harris-32597618",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/medvedev-v-o'connell-32597020",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/collins-kichenok-v-hunter-mertens-32592118",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/e-lys-v-l-bronzetti-32597625",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/azarenka-haddad-maia-v-babos-bondar-32592175",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/eikeri-neel-v-chan-olmos-32592152",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/l-samsonova-v-korpatsch-32596962",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/burrage-v-a-sabalenka-32597739",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/alexandrova-v-tsurenko-32597289",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/m-trevisan-v-vondrousova-32597195",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ka-pliskova-v-burel-32597301",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/wickmayer-v-keys-32597152",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/boulter-putintseva-v-wu-zhu-32592168",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/chan-yang-v-blinkova-gracheva-32592172",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/svitolina-v-pavlyuchenkova-32597401",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/p-martic-v-m-bouzkova-32597076",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kichenok-ostapenko-v-gamiz-sorribes-tormo-32592155",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/avanesyan-rakhimova-v-burel-parry-32594769",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/navarro-stearns-v-danilina-watson-32592134",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/o-jabeur-v-l-noskova-32596987",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/minnen-v-vickery-32597487",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kalinskaya-pavlyuchenko-v-brady-stefani-32592153",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/d-kasatkina-v-kenin-32597687",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/maria-tig-v-j-pegula-32597247",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/j-p-hartenstein-p-pavlenko-v-r-michalik-p-nad-32600384",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/m-mikula-y-wojcik-v-m-kulakowski-o-pieczkowski-32600539",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/i-kremenchutskyi-t-vaise-v-a-beckley-j-szajryc-32601185"
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/behar-pavlasek-v-lammons-withrow-32599672",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/barrere-halys-v-cash-patten-32601971",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/paul-v-davidovich-fokina-32599867",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/be-shelton-v-karatsev-32599551",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/golubev-safiullin-v-bopanna-ebden-32601961",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/arevalo-rojer-v-arnaldi-stevens-32602045",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/koolhof-skupski-v-cabal-farah-32601862",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/zh-zhang-v-ri-hijikata-32600012",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/dom-stricker-v-bonzi-32599449",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/griekspoor-kokkinakis-v-cabral-matos-32599252",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/mannarino-v-tiafoe-32599900",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/murray-venus-v-herbert-mahut-32602012",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/b-gojo-v-vesely-32599639",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/mensik-v-fritz-32600085",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/djere-v-djokovic-32599381",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/muchova-v-townsend-32599340",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/x-wang-v-karolina-schmiedlova-32599375",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/chan-yang-v-pliskova-vekic-32601972",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/maria-rus-v-collins-kichenok-32601861",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ostapenko-v-pera-32600037",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/i-swiatek-v-k-juvan-32599388",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/wozniacki-v-brady-32600092",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/krejcikova-siniakova-v-strycova-vondrousova-32599637",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/montgomery-ngounoue-v-kolodziejova-noskova-32599568",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kato-sutjiadi-v-danilina-watson-32602277",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/mattek-sands-potapova-v-hsieh-wang-32601777",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/l-zhu-v-bencic-32599558",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/mertens-v-gauff-32599247",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/e-rybakina-v-s-cirstea-32599563",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-germany-futures/t-gentzsch-v-c-negritu-32602786",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/r-michalik-p-nad-v-h-j-escurra-isnardi-l-j-rod-32602783",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/l-lane-v-p-zahraj-32602832",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-thailand-futures/s-tang-v-m-bouzige-32602142"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
@@ -613,56 +602,62 @@ def writeFanduel():
 
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
 
-	over,under = map(int, ou.split("/"))
-	impliedOver = impliedUnder = 0
+	if player not in evData:
+		evData[player] = {}
 
+	impliedOver = impliedUnder = 0
+	over = int(ou.split("/")[0])
 	if over > 0:
 		impliedOver = 100 / (over+100)
 	else:
 		impliedOver = -1*over / (-1*over+100)
-
-	if under > 0:
-		impliedUnder = 100 / (under+100)
-	else:
-		impliedUnder = -1*under / (-1*under+100)
-
-	x = impliedOver
-	y = impliedUnder
-	while round(x+y, 8) != 1.0:
-		k = math.log(2) / math.log(2 / (x+y))
-		x = x**k
-		y = y**k
-
-	dec = 1 / x
-	if dec >= 2:
-		fairVal = round((dec - 1)  * 100)
-	else:
-		fairVal = round(-100 / (dec - 1))
-	#fairVal = round((1 / x - 1)  * 100)
-	implied = round(x*100, 2)
-	#ev = round(x * (finalOdds - fairVal), 1)
-
-	#multiplicative 
-	mult = impliedOver / (impliedOver + impliedUnder)
-	add = impliedOver - (impliedOver+impliedUnder-1) / 2
 
 	bet = 100
 	profit = finalOdds / 100 * bet
 	if finalOdds < 0:
 		profit = 100 * bet / (finalOdds * -1)
 
-	evs = []
-	for method in [x, mult, add]:
-		ev = method * profit + (1-method) * -1 * bet
+	if "/" not in ou:
+		ev = impliedOver * profit + (1-impliedOver) * -1 * bet
 		ev = round(ev, 1)
-		evs.append(ev)
+	else:
+		under = int(ou.split("/")[1])
+		if under > 0:
+			impliedUnder = 100 / (under+100)
+		else:
+			impliedUnder = -1*under / (-1*under+100)
 
-	ev = min(evs)
+		x = impliedOver
+		y = impliedUnder
+		while round(x+y, 8) != 1.0:
+			k = math.log(2) / math.log(2 / (x+y))
+			x = x**k
+			y = y**k
 
-	if player not in evData:
-		evData[player] = {}
-	evData[player]["fairVal"] = fairVal
-	evData[player]["implied"] = implied
+		dec = 1 / x
+		if dec >= 2:
+			fairVal = round((dec - 1)  * 100)
+		else:
+			fairVal = round(-100 / (dec - 1))
+		#fairVal = round((1 / x - 1)  * 100)
+		implied = round(x*100, 2)
+		#ev = round(x * (finalOdds - fairVal), 1)
+
+		#multiplicative 
+		mult = impliedOver / (impliedOver + impliedUnder)
+		add = impliedOver - (impliedOver+impliedUnder-1) / 2
+
+		evs = []
+		for method in [x, mult, add]:
+			ev = method * profit + (1-method) * -1 * bet
+			ev = round(ev, 1)
+			evs.append(ev)
+
+		ev = min(evs)
+
+		evData[player]["fairVal"] = fairVal
+		evData[player]["implied"] = implied
+	
 	evData[player]["ev"] = ev
 
 def writeDK(date):
@@ -789,7 +784,10 @@ def writeDK(date):
 									outcomes = row["outcomes"]
 									for i in range(0, len(outcomes), 2):
 										line = str(outcomes[i]["line"])
-										lines[game][label][line] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+										try:
+											lines[game][label][line] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+										except:
+											continue
 								
 
 	with open("static/tennis/draftkings.json", "w") as fh:
@@ -807,7 +805,7 @@ def write365():
 	// All Main other than, Set: set1_spread, Games: away_total
 
 	{
-		const main = document.querySelector(".gl-MarketGroupContainer");
+		const main = document.querySelectorAll(".gl-MarketGroupContainer")[0];
 		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
 		let prop = title.replace("moneyline", "ml");
 
@@ -1131,6 +1129,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 
 					if ou == "-/-" or ou.startswith("-/"):
 						continue
+
+					if ou.endswith("/-"):
+						ou = ou.split("/")[0]
 
 					if not line:
 						continue
