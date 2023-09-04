@@ -142,6 +142,7 @@
 			TABLE = new Tabulator("#propsTable", {
 				tooltipsHeader: true,
 				ajaxURL: "/getProjections",
+				ajaxParams:{books: "{{books}}"},
 				layout: "fitData",
 				initialSort: [
 					{column: "points", dir: "desc"},

@@ -658,6 +658,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
 
     allHeaders = ["pass_yd", "pass_td", "int", "rush_att", "rush_yd", "rush_td", "rec", "rec_yd", "rec_td"]
     allData = []
+    allDataBooks = []
     for pos in ["qb", "rb", "wr", "te"]:
         headers = []
         if pos == "qb":
@@ -674,7 +675,9 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
             j = {
                 "player": player.title()
             }
+            booksJ = j.copy()
             for hdr in headers:
+                booksJ[hdr] = []
                 if booksOnly:
                     j[hdr] = []
                 else:
@@ -688,24 +691,36 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                         if "o" in str(val):
                             val = val.split(" ")[0][1:]
 
+                        if book != "yahoo":
+                            booksJ[hdr].append(float(val))
                         if not booksOnly or book != "yahoo":
                             j[hdr].append(float(val))
                         j[hdr+"_book_"+book] = val
                         j[hdr+"_book_odds_"+book] = projections[book][player][hdr]
+                        booksJ[hdr+"_book_"+book] = val
+                        booksJ[hdr+"_book_odds_"+book] = projections[book][player][hdr]
 
             for hdr in j:
                 if hdr == "player" or "book" in hdr:
                     continue
+                if not len(booksJ[hdr]):
+                    booksJ[hdr] = 0
+                else:
+                    booksJ[hdr] = round(sum(booksJ[hdr]) / len(booksJ[hdr]), 1)
+
                 if not len(j[hdr]):
                     j[hdr] = 0
                 else:
                     j[hdr] = round(sum(j[hdr]) / len(j[hdr]), 1)
 
             calculateFantasyPoints(j, ppr, qbTd)
+            calculateFantasyPoints(booksJ, ppr, qbTd)
             data.append(j)
             jj = j.copy()
             jj["pos"] = pos
+            booksJ["pos"] = pos
             allData.append(jj)
+            allDataBooks.append(booksJ)
 
         arr = [h.upper() for h in data[0] if "book" not in h]
         arr.insert(1, "ECR / ADP")
@@ -794,10 +809,19 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
     with open(f"{prefix}static/draft/all.json", "w") as fh:
         json.dump(allData, fh, indent=4)
 
+    with open(f"{prefix}static/draft/allBooks.json", "w") as fh:
+        json.dump(allDataBooks, fh, indent=4)
+
 @draft_blueprint.route('/getProjections')
 def projections_route():
+    books = request.args.get("books")
+
     with open(f"{prefix}static/draft/all.json") as fh:
         res = json.load(fh)
+
+    if books != "None":
+        with open(f"{prefix}static/draft/allBooks.json") as fh:
+            res = json.load(fh)
 
     with open(f"{prefix}static/draft/posTiers.json") as fh:
         posTiers = json.load(fh)
@@ -841,7 +865,8 @@ def depthChart_route():
 
 @draft_blueprint.route('/draft')
 def draft_route():
-    return render_template("draft.html", pos="all")
+    books = request.args.get("books")
+    return render_template("draft.html", pos="all", books=books)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -857,10 +882,20 @@ if __name__ == '__main__':
     parser.add_argument("--ecr", action="store_true", help="ECR")
     parser.add_argument("--adp", action="store_true", help="ADP")
     parser.add_argument("--depth", action="store_true", help="Depth Chart")
+    parser.add_argument("-u", "--update", action="store_true", help="Update")
     parser.add_argument("--ppr", help="PPR", type=float)
     parser.add_argument("--qbTd", help="PPR", type=int)
 
     args = parser.parse_args()
+
+    if args.update:
+        writeDK()
+        writeECR()
+        writeADP()
+        writeBoris()
+        writeDepthCharts()
+        writeKambi()
+        writeFantasyPros()
 
     if args.dk:
         writeDK()
