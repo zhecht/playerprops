@@ -496,8 +496,11 @@ def writeKambi():
 							)
 					else:
 						last, first = map(str, player.split(" "))
+					ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+					if betOffer["outcomes"][0]["label"] == "Under":
+						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 					player = parsePlayer(f"{first} {last}")
-					data[game][label][player] = str(line)+" "+betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+					data[game][label][player] = str(line)+" "+ou
 
 
 	with open(f"{prefix}static/fiba/kambi.json", "w") as fh:
@@ -516,7 +519,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("basketball/international") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-01") {
+				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-05") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -526,14 +529,8 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/serbia-v-italy-32598995",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/germany-v-georgia-32598808",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/usa-v-montenegro-32598996",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/spain-v-latvia-32599001",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/dominican-republic-v-puerto-rico-32599002",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/slovenia-v-australia-32598817",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/lithuania-v-greece-32599004",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/canada-v-brazil-32599005"
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/lithuania-v-serbia-32608743",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/italy-v-usa-32608744"
 ]
 
 	lines = {}

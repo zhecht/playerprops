@@ -386,12 +386,18 @@
 				const data = cell.getRow().getData();
 				const vals = cell.getValue().split(" - ");
 				let val1 = vals[0];
+				let field = "";
+				try {
+					field = cell.getField();	
+				} catch {
+					return "";
+				}
 				if (parseFloat(val1) >= 50) {
 					val1 = "<div class='positive'>"+val1+"</div>";
 				} else {
 					val1 = "<div class='negative'>"+val1+"</div>";
 				}
-				if (cell.getField().indexOf("HomeSplits") >= 0 && data.awayHome == "@") {
+				if (field.indexOf("HomeSplits") >= 0 && data.awayHome == "@") {
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
 				}
 				let val2 = vals[1];
@@ -400,7 +406,7 @@
 				} else {
 					val2 = "<div class='negative'>"+val2+"</div>";
 				}
-				if (cell.getField().indexOf("HomeSplits") >= 0 && data.awayHome == "v") {
+				if (field.indexOf("HomeSplits") >= 0 && data.awayHome == "v") {
 					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
 				}
 				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";

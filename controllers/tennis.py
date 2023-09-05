@@ -440,7 +440,7 @@ def writeFanduel():
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
 				if (time && time.innerText.split(" ").length < 3) {
-				//if (time && time.innerText.split(" ")[0] === "THU") {
+				//if (time && time.innerText.split(" ")[0] === "TUE") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -450,39 +450,13 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/behar-pavlasek-v-lammons-withrow-32599672",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/barrere-halys-v-cash-patten-32601971",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/paul-v-davidovich-fokina-32599867",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/be-shelton-v-karatsev-32599551",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/koolhof-skupski-v-cabal-farah-32601862",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/zh-zhang-v-ri-hijikata-32600012",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/dom-stricker-v-bonzi-32599449",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/griekspoor-kokkinakis-v-cabral-matos-32599252",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/mannarino-v-tiafoe-32599900",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/murray-venus-v-herbert-mahut-32602012",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/harris-kecmanovic-v-granollers-zeballos-32602158",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/b-gojo-v-vesely-32599639",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/mensik-v-fritz-32600085",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/djere-v-djokovic-32599381",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/muchova-v-townsend-32599340",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/x-wang-v-karolina-schmiedlova-32599375",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/chan-yang-v-pliskova-vekic-32601972",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/maria-rus-v-collins-kichenok-32601861",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/ostapenko-v-pera-32600037",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/i-swiatek-v-k-juvan-32599388",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/wozniacki-v-brady-32600092",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/krejcikova-siniakova-v-strycova-vondrousova-32599637",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/montgomery-ngounoue-v-kolodziejova-noskova-32599568",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kato-sutjiadi-v-danilina-watson-32602277",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/mattek-sands-potapova-v-hsieh-wang-32601777",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/l-zhu-v-bencic-32599558",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/kichenok-ostapenko-v-avanesyan-rakhimova-32602329",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/mertens-v-gauff-32599247",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/e-rybakina-v-s-cirstea-32599563",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-germany-futures/t-ruehl-v-n-kuhn-32602973",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-germany-futures/k-lemstra-v-d-de-jonge-32603130",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-germany-futures/f-broska-g-ramskogler-v-h-naw-m-wallner-32603409",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/m-rajski-v-k-filar-32603531"
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/nys-zielinski-v-dodig-krajicek-32611369",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/fritz-v-djokovic-32609445",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/lammons-withrow-v-bopanna-ebden-32611457",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/tiafoe-v-be-shelton-32609209",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/linette-pera-v-brady-stefani-32611125",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/dabrowski-routliffe-v-fernandez-townsend-32611324",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/s-cirstea-v-muchova-32609025"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"

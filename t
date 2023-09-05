@@ -1,1877 +1,512 @@
-[
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired OF AJ Pollock and INF Mark Mathias along with cash considerations from Seattle in exchange for a player to be named later or cash considerations. Optioned INF Mark Mathias to Sacramento (PCL). Transferred RHP John Brebbia to the 60-day IL. Recalled INF Isan Diaz from Sacramento. Placed OF Mike Yastrzemski on the 10-day IL.",
-        "team": {
-            "id": "26",
-            "location": "San Francisco",
-            "name": "Giants",
-            "abbreviation": "SF",
-            "displayName": "San Francisco Giants",
-            "color": "000000",
-            "alternateColor": "fd5a1e",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/sf.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/sf.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/sf.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/sf.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/sf/san-francisco-giants",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+{
+    "1577959459": {
+        "player": "travis kelce",
+        "prop": "rec_yd",
+        "over": 1577959460,
+        "under": 1577959461
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired a player to be named later or cash considerations from San Francisco Giants for OF AJ Pollock and INF Mark Mathias along with cash considerations.",
-        "team": {
-            "id": "12",
-            "location": "Seattle",
-            "name": "Mariners",
-            "abbreviation": "SEA",
-            "displayName": "Seattle Mariners",
-            "color": "005c5c",
-            "alternateColor": "0c2c56",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/sea.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/sea.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/sea.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/sea.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/sea/seattle-mariners",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959462": {
+        "player": "travis kelce",
+        "prop": "ftd",
+        "over": 1577959463,
+        "under": 1577959464
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired LHP Sam Moll and international pool money from Oakland Athletics for RHP Joe Boyle.",
-        "team": {
-            "id": "17",
-            "location": "Cincinnati",
-            "name": "Reds",
-            "abbreviation": "CIN",
-            "displayName": "Cincinnati Reds",
-            "color": "c6011f",
-            "alternateColor": "ffffff",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/cin.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/cin.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/cin.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/cin.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/cin/cincinnati-reds",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959465": {
+        "player": "travis kelce",
+        "prop": "last touchdown",
+        "over": 1577959466,
+        "under": 1577959467
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired RHP Chad Patrick from Arizona in exchange for INF Jace Peterson and cash considerations. Acquired RHP Joe Boyle from Cincinnati in exchange for LHP Sam Moll and international pool money.",
-        "team": {
-            "id": "11",
-            "location": "Oakland",
-            "name": "Athletics",
-            "abbreviation": "OAK",
-            "displayName": "Oakland Athletics",
-            "color": "006241",
-            "alternateColor": "efb21e",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/oak.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/oak.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/oak.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/oak.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/oak/oakland-athletics",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959468": {
+        "player": "travis kelce",
+        "prop": "attd",
+        "over": 1577959469,
+        "under": 1577959470
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired OF Mark Canha and cash considerations from New York Mets for minor league RHP Justin Jarvis.",
-        "team": {
-            "id": "8",
-            "location": "Milwaukee",
-            "name": "Brewers",
-            "abbreviation": "MIL",
-            "displayName": "Milwaukee Brewers",
-            "color": "13294b",
-            "alternateColor": "ffc72c",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/mil.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2019-11-22T21:19Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/mil.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2019-11-22T21:18Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/mil.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2023-05-05T13:22Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/mil.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2023-05-05T13:23Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/mil/milwaukee-brewers",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959474": {
+        "player": "marvin jones",
+        "prop": "attd",
+        "over": 1577959475,
+        "under": 1577959476
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired minor league RHP Justin Jarvis from Milwaukee in exchange for OF Mark Canha and cash considerations.",
-        "team": {
-            "id": "21",
-            "location": "New York",
-            "name": "Mets",
-            "abbreviation": "NYM",
-            "displayName": "New York Mets",
-            "color": "002d72",
-            "alternateColor": "ff5910",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/nym.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/nym.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/nym.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/nym.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/nym/new-york-mets",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959477": {
+        "player": "blake bell",
+        "prop": "attd",
+        "over": 1577959478,
+        "under": 1577959479
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired OF Nelson Velazquez from Chicago Cubs for RHP Jose Cuas.",
-        "team": {
-            "id": "7",
-            "location": "Kansas City",
-            "name": "Royals",
-            "abbreviation": "KC",
-            "displayName": "Kansas City Royals",
-            "color": "004687",
-            "alternateColor": "7ab2dd",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/kc/kansas-city-royals",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959480": {
+        "player": "jerick mckinnon",
+        "prop": "ftd",
+        "over": 1577959481,
+        "under": 1577959482
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Recalled OF Kyle Lewis and INF Diego Castillo from Reno (PCL). Acquired RHP Paul Sewald from Seattle in exchange for INFs Josh Rojas, Ryan Bliss and OF Dominic Canzone.",
-        "team": {
-            "id": "29",
-            "location": "Arizona",
-            "name": "Diamondbacks",
-            "abbreviation": "ARI",
-            "displayName": "Arizona Diamondbacks",
-            "color": "aa182c",
-            "alternateColor": "dac89e",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/ari.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/ari.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/ari.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/ari.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/ari/arizona-diamondbacks",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959483": {
+        "player": "jerick mckinnon",
+        "prop": "last touchdown",
+        "over": 1577959484,
+        "under": 1577959485
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Signed C Luke Scherrer to a minor league contract.",
-        "team": {
-            "id": "23",
-            "location": "Pittsburgh",
-            "name": "Pirates",
-            "abbreviation": "PIT",
-            "displayName": "Pittsburgh Pirates",
-            "color": "000000",
-            "alternateColor": "fdb827",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/pit.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2019-03-25T15:21Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/pit.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2019-03-25T15:22Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/pit.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2019-03-25T15:21Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/pit.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2019-03-25T15:22Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/pit/pittsburgh-pirates",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959486": {
+        "player": "jerick mckinnon",
+        "prop": "attd",
+        "over": 1577959487,
+        "under": 1577959488
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Acquired INF Jeimer Candelario and cash considerations from Washington in exchange for minor league LHP DJ Herz and minor league INF Kevin Made. Acquired RHP Jose Cuas from Kansas City in exchange for OF Nelson Velazquez.",
-        "team": {
-            "id": "16",
-            "location": "Chicago",
-            "name": "Cubs",
-            "abbreviation": "CHC",
-            "displayName": "Chicago Cubs",
-            "color": "0e3386",
-            "alternateColor": "cc3433",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/chc/chicago-cubs",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959489": {
+        "player": "kalif raymond",
+        "prop": "attd",
+        "over": 1577959490,
+        "under": 1577959491
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Recalled RHP Ryan Thompson from Durham (IL). Optioned RHP Taj Bradley to Durham.",
-        "team": {
-            "id": "30",
-            "location": "Tampa Bay",
-            "name": "Rays",
-            "abbreviation": "TB",
-            "displayName": "Tampa Bay Rays",
-            "color": "092c5c",
-            "alternateColor": "8fbce6",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/tb.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2019-04-22T20:56Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/tb.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2019-04-22T20:56Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/tb.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/tb.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/tb/tampa-bay-rays",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959492": {
+        "player": "jared goff",
+        "prop": "pass_yd",
+        "over": 1577959493,
+        "under": 1577959494
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Reinstated RHP Noah Syndergaard from the 15-day IL. Traded RHP Aaron Civale to Tampa Bay in exchange for 1B Kyle Manzardo.",
-        "team": {
-            "id": "5",
-            "location": "Cleveland",
-            "name": "Guardians",
-            "abbreviation": "CLE",
-            "displayName": "Cleveland Guardians",
-            "color": "002b5c",
-            "alternateColor": "e31937",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/cle.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2021-11-17T22:35Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/cle.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2022-10-27T15:31Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/cle.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2022-10-31T16:06Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/cle.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2022-10-31T16:40Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/cle/cleveland-guardians",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959495": {
+        "player": "jared goff",
+        "prop": "pass_td",
+        "over": 1577959496,
+        "under": 1577959497
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Placed LHP Joely Rodriguez on the 15-day IL, retroactive to July 29. Recalled LHP Joe Jacques from Worcester (IL).",
-        "team": {
-            "id": "2",
-            "location": "Boston",
-            "name": "Red Sox",
-            "abbreviation": "BOS",
-            "displayName": "Boston Red Sox",
-            "color": "0d2b56",
-            "alternateColor": "bd3039",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/bos.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/bos.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/bos.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/bos.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/bos/boston-red-sox",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959498": {
+        "player": "jared goff",
+        "prop": "int",
+        "over": 1577959499,
+        "under": 1577959500
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Reinstated INF Brendan Rodgers from the 60-day IL. Recalled INF/OF Coco Montes from Albuquerque (PCL).",
-        "team": {
-            "id": "27",
-            "location": "Colorado",
-            "name": "Rockies",
-            "abbreviation": "COL",
-            "displayName": "Colorado Rockies",
-            "color": "33006f",
-            "alternateColor": "c4ced4",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/col.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/col.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/col.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/col.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/col/colorado-rockies",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959501": {
+        "player": "jared goff",
+        "prop": "longest_pass",
+        "over": 1577959502,
+        "under": 1577959503
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Activated RHP Jordan Hicks. Placed RHP Jay Jackson on family medical emergency leave. Recalled RHP Bowden Francis from Buffalo (IL).",
-        "team": {
-            "id": "14",
-            "location": "Toronto",
-            "name": "Blue Jays",
-            "abbreviation": "TOR",
-            "displayName": "Toronto Blue Jays",
-            "color": "134a8e",
-            "alternateColor": "6cace5",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/tor.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2020-02-10T20:49Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/tor.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2020-02-10T21:04Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/tor.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2020-02-10T21:03Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/tor.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2020-02-10T21:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/tor/toronto-blue-jays",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959504": {
+        "player": "jared goff",
+        "prop": "attd",
+        "over": 1577959505,
+        "under": 1577959506
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Claimed RHP Jake Cousins off waivers from Milwaukee and optioned him to Sugar Land (IL). Recalled LHP Matt Gage from Sugar Land. Optioned RHP Brandon Bielak to Sugar Land. Designated LHP Blake Taylor for assignment.",
-        "team": {
-            "id": "18",
-            "location": "Houston",
-            "name": "Astros",
-            "abbreviation": "HOU",
-            "displayName": "Houston Astros",
-            "color": "002d62",
-            "alternateColor": "eb6e1f",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/hou.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/hou.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/hou.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/hou.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/hou/houston-astros",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959507": {
+        "player": "marquez valdes scantling",
+        "prop": "rec_yd",
+        "over": 1577959508,
+        "under": 1577959509
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Recalled RHP Hobie Harris from Rochester (IL). Placed RHP Trevor Williams on the bereavement list.",
-        "team": {
-            "id": "20",
-            "location": "Washington",
-            "name": "Nationals",
-            "abbreviation": "WSH",
-            "displayName": "Washington Nationals",
-            "color": "ab0003",
-            "alternateColor": "11225b",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/wsh.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/wsh.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/wsh.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/wsh/washington-nationals",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959513": {
+        "player": "marquez valdes scantling",
+        "prop": "attd",
+        "over": 1577959514,
+        "under": 1577959515
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Agreed to terms with 2B Bennett Pierce and RHP Brandon Beckel on contract.",
-        "team": {
-            "id": "22",
-            "location": "Philadelphia",
-            "name": "Phillies",
-            "abbreviation": "PHI",
-            "displayName": "Philadelphia Phillies",
-            "color": "e81828",
-            "alternateColor": "003278",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/phi.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2019-02-13T21:43Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/phi.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2019-02-13T21:43Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/phi.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2019-02-22T21:13Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/phi.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2019-02-22T21:13Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/phi/philadelphia-phillies",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959516": {
+        "player": "harrison butker",
+        "prop": "kickingpoints",
+        "over": 1577959517,
+        "under": 1577959518
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Reinstated LHP A.J. Minter from the 15-day IL. Optioned RHP A.J. Smith-Shawver to Gwinnett (IL). Designated 3B Charlie Culberson for assignment. Activated SS Nicky Lopez.",
-        "team": {
-            "id": "15",
-            "location": "Atlanta",
-            "name": "Braves",
-            "abbreviation": "ATL",
-            "displayName": "Atlanta Braves",
-            "color": "0c2340",
-            "alternateColor": "ba0c2f",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/atl.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/atl.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/atl.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/atl.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/atl/atlanta-braves",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959519": {
+        "player": "josh reynolds",
+        "prop": "attd",
+        "over": 1577959520,
+        "under": 1577959521
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Agreed to terms with 2B Roc Riggio on a contract. Agreed to terms with RHPs Aaron Nixon and Trent Sellers on minor league contracts. Optioned RHP Ron Marinaccio to Scranton/Wilkes-Barre (IL). Recalled HP Jhony Brito from Scranton/Wilkes-Barre.",
-        "team": {
-            "id": "10",
-            "location": "New York",
-            "name": "Yankees",
-            "abbreviation": "NYY",
-            "displayName": "New York Yankees",
-            "color": "132448",
-            "alternateColor": "c4ced4",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/nyy.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/nyy.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/nyy.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/nyy/new-york-yankees",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959522": {
+        "player": "richie james",
+        "prop": "attd",
+        "over": 1577959523,
+        "under": 1577959524
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Designated 3B Kevin Padlo for assignment. Transferred 3B Taylor Ward from the 10-day IL to the 60-day IL. Activated INF C.J. Cron and OF Randal Grichuk. Optioned INF Trey Cabbage to Salt Lake (PCL).",
-        "team": {
-            "id": "3",
-            "location": "Los Angeles",
-            "name": "Angels",
-            "abbreviation": "LAA",
-            "displayName": "Los Angeles Angels",
-            "color": "ba0021",
-            "alternateColor": "c4ced4",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/laa.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/laa.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/laa.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/laa.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/laa/los-angeles-angels",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959525": {
+        "player": "justin watson",
+        "prop": "attd",
+        "over": 1577959526,
+        "under": 1577959527
     },
-    {
-        "date": "2023-07-31T07:00Z",
-        "description": "Sent RHP Mychal Givens and LHP Keegan Akin to the Floridia Complex League (FCL) on rehab assignments.",
-        "team": {
-            "id": "1",
-            "location": "Baltimore",
-            "name": "Orioles",
-            "abbreviation": "BAL",
-            "displayName": "Baltimore Orioles",
-            "color": "df4601",
-            "alternateColor": "000000",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/bal.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/bal.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/bal.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/bal.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/bal/baltimore-orioles",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959528": {
+        "player": "patrick mahomes",
+        "prop": "pass_yd",
+        "over": 1577959529,
+        "under": 1577959530
     },
-    {
-        "date": "2023-07-30T07:00Z",
-        "description": "Sent 3B Edwin Rios outright to Iowa (IL).",
-        "team": {
-            "id": "16",
-            "location": "Chicago",
-            "name": "Cubs",
-            "abbreviation": "CHC",
-            "displayName": "Chicago Cubs",
-            "color": "0e3386",
-            "alternateColor": "cc3433",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/chc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/chc/chicago-cubs",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959531": {
+        "player": "patrick mahomes",
+        "prop": "pass_td",
+        "over": 1577959532,
+        "under": 1577959533
     },
-    {
-        "date": "2023-07-30T07:00Z",
-        "description": "Acquired LHP Taylor Hearn from Atlanta in exchange for INF Nicky Lopez. Optioned LHP Taylor Hearn to Omaha (IL).",
-        "team": {
-            "id": "7",
-            "location": "Kansas City",
-            "name": "Royals",
-            "abbreviation": "KC",
-            "displayName": "Kansas City Royals",
-            "color": "004687",
-            "alternateColor": "7ab2dd",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/kc.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/kc/kansas-city-royals",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959534": {
+        "player": "patrick mahomes",
+        "prop": "int",
+        "over": 1577959535,
+        "under": 1577959536
     },
-    {
-        "date": "2023-07-30T07:00Z",
-        "description": "Activated RHP Lance Lynn. Optioned RHP Tyson Miller to Oklahoma City (PCL).",
-        "team": {
-            "id": "19",
-            "location": "Los Angeles",
-            "name": "Dodgers",
-            "abbreviation": "LAD",
-            "displayName": "Los Angeles Dodgers",
-            "color": "005a9c",
-            "alternateColor": "ef3e42",
-            "logos": [
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/lad.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "default"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/lad.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500/scoreboard/lad.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                },
-                {
-                    "href": "https://a.espncdn.com/i/teamlogos/mlb/500-dark/scoreboard/lad.png",
-                    "width": 500,
-                    "height": 500,
-                    "alt": "",
-                    "rel": [
-                        "full",
-                        "scoreboard",
-                        "dark"
-                    ],
-                    "lastUpdated": "2018-06-05T12:07Z"
-                }
-            ],
-            "links": [
-                {
-                    "language": "en-US",
-                    "rel": [
-                        "clubhouse",
-                        "desktop",
-                        "team"
-                    ],
-                    "href": "https://www.espn.com/mlb/team/_/name/lad/los-angeles-dodgers",
-                    "text": "Clubhouse",
-                    "shortText": "Clubhouse",
-                    "isExternal": false,
-                    "isPremium": false
-                }
-            ]
-        }
+    "1577959537": {
+        "player": "patrick mahomes",
+        "prop": "longest_pass",
+        "over": 1577959538,
+        "under": 1577959539
+    },
+    "1577959540": {
+        "player": "patrick mahomes",
+        "prop": "rush_yd",
+        "over": 1577959541,
+        "under": 1577959542
+    },
+    "1577959543": {
+        "player": "patrick mahomes",
+        "prop": "attd",
+        "over": 1577959544,
+        "under": 1577959545
+    },
+    "1577959546": {
+        "player": "david montgomery",
+        "prop": "rec_yd",
+        "over": 1577959547,
+        "under": 1577959548
+    },
+    "1577959549": {
+        "player": "david montgomery",
+        "prop": "rush_yd",
+        "over": 1577959550,
+        "under": 1577959551
+    },
+    "1577959552": {
+        "player": "david montgomery",
+        "prop": "ftd",
+        "over": 1577959553,
+        "under": 1577959554
+    },
+    "1577959555": {
+        "player": "david montgomery",
+        "prop": "last touchdown",
+        "over": 1577959556,
+        "under": 1577959557
+    },
+    "1577959558": {
+        "player": "david montgomery",
+        "prop": "attd",
+        "over": 1577959559,
+        "under": 1577959560
+    },
+    "1577959561": {
+        "player": "clyde edwards helaire",
+        "prop": "attd",
+        "over": 1577959563,
+        "under": 1577959564
+    },
+    "1577959565": {
+        "player": "brock wright",
+        "prop": "attd",
+        "over": 1577959566,
+        "under": 1577959567
+    },
+    "1577959568": {
+        "player": "noah gray",
+        "prop": "attd",
+        "over": 1577959569,
+        "under": 1577959570
+    },
+    "1577959572": {
+        "player": "isiah pacheco",
+        "prop": "rush_yd",
+        "over": 1577959573,
+        "under": 1577959574
+    },
+    "1577959575": {
+        "player": "isiah pacheco",
+        "prop": "ftd",
+        "over": 1577959576,
+        "under": 1577959577
+    },
+    "1577959578": {
+        "player": "isiah pacheco",
+        "prop": "last touchdown",
+        "over": 1577959579,
+        "under": 1577959580
+    },
+    "1577959582": {
+        "player": "isiah pacheco",
+        "prop": "attd",
+        "over": 1577959583,
+        "under": 1577959584
+    },
+    "1577959589": {
+        "player": "amon ra st brown",
+        "prop": "rec_yd",
+        "over": 1577959590,
+        "under": 1577959591
+    },
+    "1577959592": {
+        "player": "amon ra st brown",
+        "prop": "ftd",
+        "over": 1577959593,
+        "under": 1577959594
+    },
+    "1577959596": {
+        "player": "amon ra st brown",
+        "prop": "last touchdown",
+        "over": 1577959597,
+        "under": 1577959598
+    },
+    "1577959599": {
+        "player": "amon ra st brown",
+        "prop": "attd",
+        "over": 1577959600,
+        "under": 1577959601
+    },
+    "1577959602": {
+        "player": "antoine green",
+        "prop": "attd",
+        "over": 1577959603,
+        "under": 1577959604
+    },
+    "1577959609": {
+        "player": "sam laporta",
+        "prop": "attd",
+        "over": 1577959610,
+        "under": 1577959611
+    },
+    "1577959612": {
+        "player": "rashee rice",
+        "prop": "attd",
+        "over": 1577959613,
+        "under": 1577959614
+    },
+    "1577959615": {
+        "player": "skyy moore",
+        "prop": "rec_yd",
+        "over": 1577959616,
+        "under": 1577959617
+    },
+    "1577959619": {
+        "player": "skyy moore",
+        "prop": "ftd",
+        "over": 1577959620,
+        "under": 1577959621
+    },
+    "1577959622": {
+        "player": "skyy moore",
+        "prop": "last touchdown",
+        "over": 1577959623,
+        "under": 1577959624
+    },
+    "1577959628": {
+        "player": "skyy moore",
+        "prop": "attd",
+        "over": 1577959629,
+        "under": 1577959630
+    },
+    "1577959631": {
+        "player": "jahmyr gibbs",
+        "prop": "rec_yd",
+        "over": 1577959632,
+        "under": 1577959633
+    },
+    "1577959634": {
+        "player": "jahmyr gibbs",
+        "prop": "longest_rec",
+        "over": 1577959635,
+        "under": 1577959636
+    },
+    "1577959637": {
+        "player": "jahmyr gibbs",
+        "prop": "rush_yd",
+        "over": 1577959638,
+        "under": 1577959639
+    },
+    "1577959640": {
+        "player": "jahmyr gibbs",
+        "prop": "ftd",
+        "over": 1577959641,
+        "under": 1577959642
+    },
+    "1577959644": {
+        "player": "jahmyr gibbs",
+        "prop": "last touchdown",
+        "over": 1577959645,
+        "under": 1577959646
+    },
+    "1577959647": {
+        "player": "jahmyr gibbs",
+        "prop": "attd",
+        "over": 1577959648,
+        "under": 1577959649
+    },
+    "1578004652": {
+        "player": "amon ra st brown",
+        "prop": "rec",
+        "over": 1578004653,
+        "under": 1578004654
+    },
+    "1578004655": {
+        "player": "marvin jones",
+        "prop": "rec_yd",
+        "over": 1578004656,
+        "under": 1578004657
+    },
+    "1578004658": {
+        "player": "amon ra st brown",
+        "prop": "longest_rec",
+        "over": 1578004659,
+        "under": 1578004660
+    },
+    "1578015076": {
+        "player": "jerick mckinnon",
+        "prop": "rec_yd",
+        "over": 1578015077,
+        "under": 1578015078
+    },
+    "1578015079": {
+        "player": "travis kelce",
+        "prop": "longest_rec",
+        "over": 1578015080,
+        "under": 1578015081
+    },
+    "1578015082": {
+        "player": "noah gray",
+        "prop": "rec_yd",
+        "over": 1578015083,
+        "under": 1578015084
+    },
+    "1578084377": {
+        "player": "travis kelce",
+        "prop": "rec",
+        "over": 1578084378,
+        "under": 1578084379
+    },
+    "1578090730": {
+        "player": "richie james",
+        "prop": "rec_yd",
+        "over": 1578090731,
+        "under": 1578090732
+    },
+    "1578090801": {
+        "player": "jared goff",
+        "prop": "rush_yd",
+        "over": 1578090802,
+        "under": 1578090803
+    },
+    "1578090931": {
+        "player": "sam laporta",
+        "prop": "rec_yd",
+        "over": 1578090932,
+        "under": 1578090933
+    },
+    "1578107395": {
+        "player": "jahmyr gibbs",
+        "prop": "rec",
+        "over": 1578107396,
+        "under": 1578107397
+    },
+    "1578107398": {
+        "player": "sam laporta",
+        "prop": "rec",
+        "over": 1578107399,
+        "under": 1578107400
+    },
+    "1578108490": {
+        "player": "jerick mckinnon",
+        "prop": "longest_rec",
+        "over": 1578108491,
+        "under": 1578108492
+    },
+    "1578108493": {
+        "player": "jerick mckinnon",
+        "prop": "rec",
+        "over": 1578108494,
+        "under": 1578108495
+    },
+    "1578108496": {
+        "player": "jerick mckinnon",
+        "prop": "rush_yd",
+        "over": 1578108497,
+        "under": 1578108498
+    },
+    "1578108499": {
+        "player": "isiah pacheco",
+        "prop": "rec_yd",
+        "over": 1578108500,
+        "under": 1578108501
+    },
+    "1578108502": {
+        "player": "isiah pacheco",
+        "prop": "longest_rec",
+        "over": 1578108503,
+        "under": 1578108504
+    },
+    "1578108505": {
+        "player": "skyy moore",
+        "prop": "rec",
+        "over": 1578108506,
+        "under": 1578108507
+    },
+    "1578108508": {
+        "player": "kadarius toney",
+        "prop": "attd",
+        "over": 1578108509,
+        "under": 1578108510
+    },
+    "1578108513": {
+        "player": "marquez valdes scantling",
+        "prop": "longest_rec",
+        "over": 1578108514,
+        "under": 1578108515
+    },
+    "1578108516": {
+        "player": "justin watson",
+        "prop": "rec_yd",
+        "over": 1578108517,
+        "under": 1578108518
+    },
+    "1578108519": {
+        "player": "justin watson",
+        "prop": "longest_rec",
+        "over": 1578108520,
+        "under": 1578108521
+    },
+    "1578108522": {
+        "player": "marquez valdes scantling",
+        "prop": "rec",
+        "over": 1578108523,
+        "under": 1578108524
+    },
+    "1578135054": {
+        "player": "jared goff",
+        "prop": "passattempts",
+        "over": 1578135055,
+        "under": 1578135056
+    },
+    "1578135071": {
+        "player": "jared goff",
+        "prop": "completions",
+        "over": 1578135072,
+        "under": 1578135073
+    },
+    "1578135126": {
+        "player": "riley patterson",
+        "prop": "kickingpoints",
+        "over": 1578135127,
+        "under": 1578135128
+    },
+    "1578135129": {
+        "player": "sam laporta",
+        "prop": "longest_rec",
+        "over": 1578135130,
+        "under": 1578135131
+    },
+    "1578135132": {
+        "player": "david montgomery",
+        "prop": "longest_rec",
+        "over": 1578135133,
+        "under": 1578135134
+    },
+    "1578135135": {
+        "player": "marvin jones",
+        "prop": "longest_rec",
+        "over": 1578135136,
+        "under": 1578135137
     }
-]
+}
