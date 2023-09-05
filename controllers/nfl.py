@@ -579,6 +579,8 @@ def writeKambi():
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
+	eventIds = {'det lions @ kc chiefs': 1019645125}
+	data['det lions @ kc chiefs'] = {}
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
 		eventId = eventIds[game]
@@ -634,6 +636,7 @@ def writeKambi():
 			elif label == "td scorer":
 				label = "attd"
 			elif label.endswith("by the player") and label.startswith("total"):
+				print("here")
 				playerProp = True
 				label = "_".join(label[6:].split(" by the player")[0].split(" "))
 				label = label.replace("passing", "pass").replace("yards", "yd").replace("rushing", "rush").replace("receiving", "rec").replace("touchdowns", "td").replace("receptions", "rec").replace("interceptions", "int")
@@ -655,22 +658,24 @@ def writeKambi():
 				continue
 
 			ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
-			player = parsePlayer(betOffer["outcomes"][0]["participant"])
-			last, first = map(str, player.split(", "))
-			player = f"{first} {last}"
+			player = ""
+			if playerProp:
+				player = parsePlayer(betOffer["outcomes"][0]["participant"])
+				last, first = map(str, player.split(", "))
+				player = f"{first} {last}"
 			if "ml" in label:
 				data[game][label] = ou
 			else:
 				if label not in data[game]:
 					data[game][label] = {}
 				line = betOffer["outcomes"][0]["line"] / 1000
-				if playerProp:
+				if not playerProp:
 					data[game][label][line] = ou
 				else:
 					if label in ["attd"]:
 						data[game][label][player] = ou
 					else:
-						data[game][label][player] = line+" "+ou
+						data[game][label][player] = f"{line} {ou}"
 
 
 
