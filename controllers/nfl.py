@@ -19,6 +19,32 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
+def convertNFLTeam(team):
+	team = team.lower()
+	if team.endswith("packers"):
+		return "gb"
+	elif team.endswith("49ers"):
+		return "sf"
+	elif team.endswith("patriots"):
+		return "ne"
+	elif team.endswith("giants"):
+		return "nyg"
+	elif team.endswith("jets"):
+		return "nyj"
+	elif team.endswith("chargers"):
+		return "lac"
+	elif team.endswith("rams"):
+		return "lar"
+	elif team.endswith("raiders"):
+		return "lv"
+	elif team.endswith("chiefs"):
+		return "kc"
+	elif team.endswith("saints"):
+		return "no"
+	elif team.endswith("buccaneers"):
+		return "tb"
+	return team[:3]
+
 def strip_accents(text):
 	try:
 		text = unicode(text, 'utf-8')
@@ -82,7 +108,7 @@ def writeActionNetwork(dateArg = None):
 			if "anytime" in actionProp:
 				prop = "attd"
 		else:
-			prop = "_".join(actionProp.split("_")[1:]).replace("rushing", "rush").replace("passing", "pass").replace("receiving", "rec").replace("yards", "yd").replace("attempts", "att")
+			prop = "_".join(actionProp.split("_")[1:]).replace("rushing", "rush").replace("passing", "pass").replace("receiving", "rec").replace("yards", "yd").replace("attempts", "att").replace("reception", "rec")
 
 		if prop.endswith("s"):
 			prop = prop[:-1]
@@ -102,7 +128,10 @@ def writeActionNetwork(dateArg = None):
 
 		teamIds = {}
 		for row in market["teams"]:
-			teamIds[row["id"]] = row["abbr"].lower()
+			team = row["abbr"].lower()
+			if team == "la":
+				team = "lar"
+			teamIds[row["id"]] = team
 
 		playerIds = {}
 		for row in market["players"]:
@@ -237,6 +266,8 @@ def writePointsbet():
 		json.dump(res, fh, indent=4)
 
 def writePinnacle(date):
+	debug = False
+
 	if not date:
 		date = str(datetime.now())[:10]
 
@@ -254,9 +285,9 @@ def writePinnacle(date):
 		#if str(datetime.strptime(row["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 		#	continue
 		if row["type"] == "matchup" and not row["parent"]:
-			player1 = row["participants"][0]["name"].lower()
-			player2 = row["participants"][1]["name"].lower()
-			games[str(row["id"])] = f"{player1} @ {player2}"
+			player1 = convertNFLTeam(row["participants"][0]["name"].lower())
+			player2 = convertNFLTeam(row["participants"][1]["name"].lower())
+			games[str(row["id"])] = f"{player2} @ {player1}"
 
 	res = {}
 	#games = {'1573148914': 'kansas city chiefs @ detroit lions'}
@@ -299,11 +330,12 @@ def writePinnacle(date):
 					"under": under
 				}
 
-		with open("t", "w") as fh:
-			json.dump(relatedData, fh, indent=4)
+		if debug:
+			with open("t", "w") as fh:
+				json.dump(relatedData, fh, indent=4)
 
-		with open("t2", "w") as fh:
-			json.dump(related, fh, indent=4)
+			with open("t2", "w") as fh:
+				json.dump(related, fh, indent=4)
 
 		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
 
@@ -311,6 +343,10 @@ def writePinnacle(date):
 		os.system(url)
 		with open(outfile) as fh:
 			data = json.load(fh)
+
+		if debug:
+			with open("t3", "w") as fh:
+				json.dump(data, fh, indent=4)
 
 		res[game] = {}
 
@@ -327,7 +363,9 @@ def writePinnacle(date):
 			overId = underId = 0
 			player = ""
 
-			if row["matchupId"] != int(gameId) and row["matchupId"] in relatedData:
+			if row["matchupId"] != int(gameId):
+				if row["matchupId"] not in relatedData:
+					continue
 				player = relatedData[row["matchupId"]]["player"]
 				prop = relatedData[row["matchupId"]]["prop"]
 				overId = relatedData[row["matchupId"]]["over"]
@@ -340,10 +378,11 @@ def writePinnacle(date):
 				elif prop == "total":
 					prop = f"{prefix}total"
 				elif prop == "team_total":
-					awayHome = "away" if row['side'] == "home" else "home"
+					awayHome = row['side']
 					prop = f"{prefix}{awayHome}_total"
 
-			#print(prop, row["matchupId"], keys)
+			if debug:
+				print(prop, row["matchupId"], keys)
 
 			prices = row["prices"]
 			switched = 0
@@ -353,13 +392,14 @@ def writePinnacle(date):
 					ou = f"{prices[1]['price']}/{prices[0]['price']}"
 					switched = 1
 
+				if player not in res[game]:
+					res[game][player] = {}
+
 				if "points" in prices[0] and prop not in ["ftd", "attd", "last touchdown"]:
 					handicap = str(prices[switched]["points"])
-					if player not in res[game]:
-						res[game][player] = {}
 					res[game][player][prop] = handicap+" "+ou
 				else:
-					res[game][prop] = ou
+					res[game][player][prop] = ou
 			else:
 				ou = f"{prices[0]['price']}/{prices[1]['price']}"
 				if prices[0]["designation"] in ["home", "under"]:
@@ -467,9 +507,9 @@ def writeMGM():
 
 	res = {}
 
-	url = "https://sports.mi.betmgm.com/en/sports/basketball-7/betting/world-6/fiba-world-cup-men-9029"
+	url = "https://sports.mi.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35"
 
-	url = f"https://sports.mi.betmgm.com/en/sports/api/widget?layoutSize=Large&page=CompetitionLobby&sportId=7&regionId=6&competitionId=9029&compoundCompetitionId=1:9029&forceFresh=1&shouldIncludePayload=true"
+	url = f"https://sports.mi.betmgm.com/en/sports/api/widget/widgetdata?layoutSize=Large&page=CompetitionLobby&sportId=11&regionId=9&competitionId=35&compoundCompetitionId=1:35&widgetId=/mobilesports-v1.0/layout/layout_us/modules/competition/defaultcontainereventsfutures-redesign&shouldIncludePayload=true"
 	outfile = f"outMGM"
 
 	time.sleep(0.3)
@@ -483,8 +523,11 @@ def writeMGM():
 	for row in rows:
 		if row["stage"].lower() == "live":
 			continue
+		if "2023/2024" in row["name"]["value"] or "2023/24" in row["name"]["value"]:
+			continue
 		ids.append(row["id"])
 
+	#ids = ["14277289"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
@@ -494,10 +537,12 @@ def writeMGM():
 			data = json.load(fh)
 
 		data = data["fixture"]
-		if " - " not in data["name"]["value"]:
+
+		if " at " not in data["name"]["value"]:
 			continue
-		game = strip_accents(data["name"]["value"].lower()).replace(" - ", " @ ")
-		team1, team2 = game.split(" @ ")
+		game = strip_accents(data["name"]["value"].lower()).replace(" at ", " @ ")
+		fullTeam1, fullTeam2 = game.split(" @ ")
+		game = f"{convertNFLTeam(fullTeam1)} @ {convertNFLTeam(fullTeam2)}"
 
 		res[game] = {}
 		for row in data["games"]:
@@ -515,20 +560,39 @@ def writeMGM():
 				prop = "total"
 			elif "spread" in prop:
 				prop = "spread"
+			elif prop == "which player will score a touchdown in the game?":
+				prop = "attd"
 			elif prop.startswith("how many "):
-				if prop.startswith("how many points will be scored in the game"):
+				if prop.startswith("how many points will be scored in the game") or "field goals" in prop or "kicking" in prop or "extra points" in prop:
 					continue
-				if team1 in prop or team2 in prop:
+				if fullTeam1 in prop or fullTeam2 in prop:
 					p = "away_total"
 					team = prop.split(" will ")[-1].split(" score")[0]
-					if game.endswith(team):
+					if fullTeam2 in prop:
 						p = "home_total"
 					prop = p
 				else:
 					player = prop.split(" (")[0].split(" will ")[-1]
-					prop = prop.split(" ")[2].replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("blocks", "blk").replace("steals", "stl").replace("three-pointers", "3ptm")
-					if prop == "total":
-						continue
+					p = prop.split(" ")[2].replace("interceptions", "int")
+					if "longest" in prop:
+						end = prop.split(" ")[-1][:-1].replace("completion", "pass").replace("reception", "rec")
+						if end not in ["rush", "pass", "rec"]:
+							continue
+						p = "longest_"+end
+					elif "tackles" in prop:
+						if "tackles and assists" in prop:
+							p = "tackles_assists"
+						else:
+							continue
+					elif p == "passing":
+						p = "pass_"+prop.split(" ")[3].replace("yards", "yd").replace("attempts", "att").replace("touchdowns", "td")
+					elif p == "rushing":
+						p = "rush_"+prop.split(" ")[3].replace("yards", "yd").replace("attempts", "att").replace("touchdowns", "td")
+					elif p == "receiving":
+						p = "rec_"+prop.split(" ")[3].replace("yards", "yd").replace("attempts", "att").replace("touchdowns", "td")
+					elif p == "receptions":
+						p = "rec"
+					prop = p
 			else:
 				continue
 
@@ -539,23 +603,37 @@ def writeMGM():
 			if "ml" in prop:
 				res[game][prop] = ou
 			elif len(results) >= 2:
-				if prop not in res[game]:
-					res[game][prop] = {}
-
-				skip = 2
+				skip = 1 if prop == "attd" else 2
 				for idx in range(0, len(results), skip):
 					val = results[idx]["name"]["value"].lower()
-					if "over" not in val and "under" not in val and "spread" not in prop:
+					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["attd"]:
 						continue
 					else:
 						val = val.split(" ")[-1]
 					#print(game, prop, player)
-					ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
-
-					if player:
-						res[game][prop][player] = val+" "+ou
+					if prop == "attd":
+						ou = str(results[idx]['americanOdds'])
 					else:
-						res[game][prop][val] = ou
+						ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
+
+					if prop == "attd":
+						player = results[idx]["name"]["value"].lower()
+						player = parsePlayer(player)
+						if player not in res[game]:
+							res[game][player] = {}
+						res[game][player][prop] = ou
+					elif player:
+						player = parsePlayer(player)
+						if player not in res[game]:
+							res[game][player] = {}
+						res[game][player][prop] = val+" "+ou
+					else:
+						if prop not in res[game]:
+							res[game][prop] = {}
+						try:
+							res[game][prop][str(float(val))] = ou
+						except:
+							pass
 
 	with open("static/nfl/mgm.json", "w") as fh:
 		json.dump(res, fh, indent=4)
@@ -570,19 +648,37 @@ def writeKambi():
 	with open(outfile) as fh:
 		j = json.load(fh)
 
+	fullTeam = {}
 	eventIds = {}
 	for event in j["events"]:
 		game = event["event"]["name"].lower()
+		away, home = map(str, game.split(" @ "))
+		games = []
+		for team in [away, home]:
+			t = team.split(" ")[0]
+			if t == "la":
+				t = "lac"
+				if "rams" in team:
+					t = "lar"
+			elif t == "ny":
+				t = "nyj"
+				if "giants" in team:
+					t = "nyg"
+			elif t == "jax":
+				t = "jac"
+			games.append(t)
+		game = " @ ".join(games)
 		if game in eventIds:
 			continue
 			#pass
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	eventIds = {'det lions @ kc chiefs': 1019645125}
-	data['det lions @ kc chiefs'] = {}
+	#eventIds = {'det @ kc': 1019645125}
+	#data['det lions @ kc chiefs'] = {}
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
+		#away, home = fullTeam[away], fullTeam[home]
 		eventId = eventIds[game]
 		teamIds = {}
 		
@@ -633,13 +729,13 @@ def writeKambi():
 				label = "2h_ml"
 			elif label == "draw no bet - quarter 1":
 				label = "1q_ml"
-			elif label == "td scorer":
-				label = "attd"
-			elif label.endswith("by the player") and label.startswith("total"):
-				print("here")
+			elif label == "touchdown scorer - including overtime":
 				playerProp = True
-				label = "_".join(label[6:].split(" by the player")[0].split(" "))
-				label = label.replace("passing", "pass").replace("yards", "yd").replace("rushing", "rush").replace("receiving", "rec").replace("touchdowns", "td").replace("receptions", "rec").replace("interceptions", "int")
+				label = "attd"
+			elif (label.endswith("by the player - including overtime") or label.endswith("by the player")) and label.startswith("total"):
+				playerProp = True
+				label = "_".join(label[6:].replace(" - including overtime", "").split(" by the player")[0].split(" "))
+				label = label.replace("passing", "pass").replace("yards", "yd").replace("rushing", "rush").replace("receiving", "rec").replace("touchdowns", "td").replace("receptions", "rec").replace("interceptions_thrown", "int")
 				if "&" in label:
 					continue
 				if label == "touchdown_passes_thrown":
@@ -655,28 +751,40 @@ def writeKambi():
 				elif "defensive_tackles" in label:
 					label = "tackles_assists"
 			else:
+				#print(label)
 				continue
 
-			ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+			try:
+				ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+			except:
+				ou = betOffer["outcomes"][0]["oddsAmerican"]
 			player = ""
 			if playerProp:
 				player = parsePlayer(betOffer["outcomes"][0]["participant"])
 				last, first = map(str, player.split(", "))
 				player = f"{first} {last}"
 			if "ml" in label:
-				data[game][label] = ou
+				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 			else:
-				if label not in data[game]:
-					data[game][label] = {}
-				line = betOffer["outcomes"][0]["line"] / 1000
 				if not playerProp:
+					line = betOffer["outcomes"][0]["line"] / 1000
+					if betOffer["outcomes"][0]["label"] == "Under" or convertNFLTeam(betOffer["outcomes"][0]["label"].lower()) == home:
+						line = betOffer["outcomes"][1]["line"] / 1000
+						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+					if label not in data[game]:
+						data[game][label] = {}
 					data[game][label][line] = ou
+				elif label in ["attd"]:
+					if player not in data[game]:
+						data[game][player] = {}
+					data[game][player][label] = ou
 				else:
-					if label in ["attd"]:
-						data[game][label][player] = ou
-					else:
-						data[game][label][player] = f"{line} {ou}"
-
+					line = betOffer["outcomes"][0]["line"] / 1000
+					if player not in data[game]:
+						data[game][player] = {}
+					if label not in data[game][player]:
+						data[game][player][label] = {}
+					data[game][player][label][line] = ou
 
 
 	with open(f"{prefix}static/nfl/kambi.json", "w") as fh:
@@ -1218,24 +1326,36 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None):
 	with open(f"{prefix}static/nfl/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
-	#with open(f"{prefix}static/nfl/kambi.json") as fh:
-	#	kambiLines = json.load(fh)
+	with open(f"{prefix}static/nfl/kambi.json") as fh:
+		kambiLines = json.load(fh)
 
 	#with open(f"{prefix}static/nfl/bovada.json") as fh:
 	#	bovadaLines = json.load(fh)
 
-	#with open(f"{prefix}static/nfl/pinnacle.json") as fh:
-	#	pnLines = json.load(fh)
+	with open(f"{prefix}static/nfl/pinnacle.json") as fh:
+		pnLines = json.load(fh)
 
-	#with open(f"{prefix}static/nfl/mgm.json") as fh:
-	#	mgmLines = json.load(fh)
+	with open(f"{prefix}static/nfl/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines
+	}
 
 	with open(f"{prefix}static/nfl/ev.json") as fh:
 		evData = json.load(fh)
 
 	evData = {}
 
+	teamGame = {}
+	for game in pnLines:
+		away, home = map(str, game.split(" @ "))
+		teamGame[away] = teamGame[home] = game
+
 	for team in actionnetwork:
+		game = teamGame[team]
 		if teamArg and team not in teamArg.split(","):
 			continue
 		for player in actionnetwork[team]:
@@ -1248,6 +1368,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None):
 				for i in range(2):
 					handicaps = {}
 					for book in actionnetwork[team][player][prop]:
+						if book in ["betrivers", "mgm"]:
+							continue
 						val = actionnetwork[team][player][prop][book]
 						h = "yes"
 						if " " in val:
@@ -1272,6 +1394,44 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None):
 						handicaps[h]["highestOdds"].append(int(o))
 						handicaps[h]["odds"].append(ou)
 						handicaps[h]["books"].append(book)
+
+					for book in lines:
+						lineData = lines[book]
+						if game in lineData and player in lineData[game] and prop in lineData[game][player]:
+							val = lineData[game][player][prop]
+							h = "yes"
+							if " " in val:
+								h = val.split(" ")[0]
+
+							if type(val) is dict:
+								arr = val
+							else:
+								arr = [h]
+
+							for hand in arr:
+								v = val
+								if type(v) is dict:
+									v = lineData[game][player][prop][hand]
+								if hand not in handicaps:
+									handicaps[hand] = {
+										"books": [],
+										"odds": [],
+										"highestOdds": []
+									}
+
+								try:
+									o = v.split(" ")[-1].split("/")[i]
+									ou = v.split(" ")[-1]
+								except:
+									if i == 1:
+										continue
+									o = v
+									ou = v
+
+								handicaps[hand]["highestOdds"].append(int(o))
+								handicaps[hand]["odds"].append(ou)
+								handicaps[hand]["books"].append(book)
+
 
 					for handicap in handicaps:
 						
@@ -1308,7 +1468,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None):
 						else:
 							ou = f"{avgOver}/{avgUnder}"
 
-						if ou == "-/-":
+						if ou == "-/-" or ou.startswith("-/"):
 							continue
 
 						if ou.endswith("/-"):
@@ -1331,8 +1491,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None):
 							evData[key]["book"] = books
 							evData[key]["ou"] = ou
 							evData[key]["under"] = i == 1
-							evData[key]["odds"] = handicaps[handicap]["odds"]
 							evData[key]["line"] = line
+							evData[key]["odds"] = [f"{b}:{o}" for b, o in zip(handicaps[handicap]["books"], handicaps[handicap]["odds"])]
 
 	with open(f"{prefix}static/nfl/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
@@ -1428,13 +1588,14 @@ if __name__ == '__main__':
 		writeBV()
 
 	if args.update:
-		writeFanduel()
-		writeDK(args.date)
+		writeActionNetwork()
 		writePinnacle(args.date)
 		writeKambi()
-		writeBV()
 		writeMGM()
-		writePointsbet()
+		#writeFanduel()
+		#writeDK(args.date)
+		#writeBV()
+		#writePointsbet()
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd)

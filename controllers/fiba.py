@@ -271,7 +271,10 @@ def writeBV():
 							res[game][prop][handicap] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
 						else:
 							player = parsePlayer(market["descriptionKey"].split(" - ")[-1])
-							res[game][prop][player] = f"{handicap} {market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
+							try:
+								res[game][prop][player] = f"{handicap} {market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
+							except:
+								pass
 					else:
 						if prop not in res[game]:
 							res[game][prop] = {}
@@ -519,7 +522,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("basketball/international") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-05") {
+				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-07") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -529,8 +532,8 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/lithuania-v-serbia-32608743",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/italy-v-usa-32608744"
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/italy-v-latvia-32615273",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/lithuania-v-slovenia-32615834"
 ]
 
 	lines = {}
@@ -1203,20 +1206,33 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 					if "/" not in dk:
 						continue
 					line = dk.split("/")[i]
-					l = [fd, bv, mgm, pn, pb, bet365, kambi]
+					l = [dk, fd, bv, mgm, pn, pb]
+					books = ["dk", "fd", "bv", "mgm", "pn", "pb"]
+					maxOdds = []
+					for odds in l:
+						try:
+							maxOdds.append(int(odds.split("/")[i]))
+						except:
+							maxOdds.append(-10000)
+
+					maxOdds = max(maxOdds)
+					maxOU = ""
+					for odds, book in zip(l, books):
+						try:
+							if odds.split("/")[i] == str(maxOdds):
+								evBook = book
+								maxOU = odds
+								break
+						except:
+							pass
+
+					line = maxOdds
+					evBookIdx = books.index(evBook)
+					l.remove(maxOU)
+					l.extend([bet365, kambi])
 
 					avgOver = []
 					avgUnder = []
-
-					evBook = "dk"
-					try:
-						if bookArg == "fd" or not line or (fd and int(fd.split("/")[i]) > int(line)):
-							evBook = "fd"
-							line = fd.split("/")[i]
-							l[0] = str(dk)
-					except:
-						continue
-
 
 					#print(game, prop, key, l)
 					for book in l:

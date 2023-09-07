@@ -1,512 +1,272 @@
 {
-    "1577959459": {
-        "player": "travis kelce",
-        "prop": "rec_yd",
-        "over": 1577959460,
-        "under": 1577959461
-    },
-    "1577959462": {
-        "player": "travis kelce",
+    "1578125315": {
+        "player": "aaron jones",
         "prop": "ftd",
-        "over": 1577959463,
-        "under": 1577959464
+        "over": 1578125316,
+        "under": 1578125317
     },
-    "1577959465": {
-        "player": "travis kelce",
+    "1578125318": {
+        "player": "aaron jones",
         "prop": "last touchdown",
-        "over": 1577959466,
-        "under": 1577959467
+        "over": 1578125319,
+        "under": 1578125320
     },
-    "1577959468": {
-        "player": "travis kelce",
+    "1578125321": {
+        "player": "aaron jones",
         "prop": "attd",
-        "over": 1577959469,
-        "under": 1577959470
+        "over": 1578125322,
+        "under": 1578125323
     },
-    "1577959474": {
-        "player": "marvin jones",
+    "1578125327": {
+        "player": "jordan love",
         "prop": "attd",
-        "over": 1577959475,
-        "under": 1577959476
+        "over": 1578125328,
+        "under": 1578125329
     },
-    "1577959477": {
-        "player": "blake bell",
-        "prop": "attd",
-        "over": 1577959478,
-        "under": 1577959479
-    },
-    "1577959480": {
-        "player": "jerick mckinnon",
+    "1578125333": {
+        "player": "aj dillon",
         "prop": "ftd",
-        "over": 1577959481,
-        "under": 1577959482
+        "over": 1578125334,
+        "under": 1578125335
     },
-    "1577959483": {
-        "player": "jerick mckinnon",
+    "1578125336": {
+        "player": "aj dillon",
         "prop": "last touchdown",
-        "over": 1577959484,
-        "under": 1577959485
+        "over": 1578125337,
+        "under": 1578125338
     },
-    "1577959486": {
-        "player": "jerick mckinnon",
+    "1578125339": {
+        "player": "aj dillon",
         "prop": "attd",
-        "over": 1577959487,
-        "under": 1577959488
+        "over": 1578125340,
+        "under": 1578125341
     },
-    "1577959489": {
-        "player": "kalif raymond",
+    "1578135195": {
+        "player": "donta foreman",
         "prop": "attd",
-        "over": 1577959490,
-        "under": 1577959491
+        "over": 1578135196,
+        "under": 1578135197
     },
-    "1577959492": {
-        "player": "jared goff",
-        "prop": "pass_yd",
-        "over": 1577959493,
-        "under": 1577959494
+    "1578135198": {
+        "player": "dj moore",
+        "prop": "ftd",
+        "over": 1578135199,
+        "under": 1578135200
     },
-    "1577959495": {
-        "player": "jared goff",
+    "1578135201": {
+        "player": "dj moore",
+        "prop": "last touchdown",
+        "over": 1578135202,
+        "under": 1578135203
+    },
+    "1578135204": {
+        "player": "dj moore",
+        "prop": "attd",
+        "over": 1578135205,
+        "under": 1578135206
+    },
+    "1578135207": {
+        "player": "equanimeous st brown",
+        "prop": "attd",
+        "over": 1578135208,
+        "under": 1578135209
+    },
+    "1578135213": {
+        "player": "darnell mooney",
+        "prop": "attd",
+        "over": 1578135214,
+        "under": 1578135215
+    },
+    "1578135219": {
+        "player": "khalil herbert",
+        "prop": "ftd",
+        "over": 1578135220,
+        "under": 1578135221
+    },
+    "1578135222": {
+        "player": "khalil herbert",
+        "prop": "last touchdown",
+        "over": 1578135223,
+        "under": 1578135224
+    },
+    "1578135225": {
+        "player": "khalil herbert",
+        "prop": "attd",
+        "over": 1578135226,
+        "under": 1578135227
+    },
+    "1578135228": {
+        "player": "chase claypool",
+        "prop": "attd",
+        "over": 1578135229,
+        "under": 1578135230
+    },
+    "1578135231": {
+        "player": "cole kmet",
+        "prop": "attd",
+        "over": 1578135232,
+        "under": 1578135233
+    },
+    "1578135234": {
+        "player": "justin fields",
+        "prop": "ftd",
+        "over": 1578135235,
+        "under": 1578135236
+    },
+    "1578135237": {
+        "player": "justin fields",
+        "prop": "last touchdown",
+        "over": 1578135238,
+        "under": 1578135239
+    },
+    "1578135240": {
+        "player": "justin fields",
+        "prop": "attd",
+        "over": 1578135241,
+        "under": 1578135242
+    },
+    "1578135243": {
+        "player": "roschon johnson",
+        "prop": "attd",
+        "over": 1578135244,
+        "under": 1578135245
+    },
+    "1578147548": {
+        "player": "justin fields",
         "prop": "pass_td",
-        "over": 1577959496,
-        "under": 1577959497
+        "over": 1578147549,
+        "under": 1578147550
     },
-    "1577959498": {
-        "player": "jared goff",
+    "1578147570": {
+        "player": "justin fields",
         "prop": "int",
-        "over": 1577959499,
-        "under": 1577959500
+        "over": 1578147571,
+        "under": 1578147572
     },
-    "1577959501": {
-        "player": "jared goff",
+    "1578147609": {
+        "player": "justin fields",
         "prop": "longest_pass",
-        "over": 1577959502,
-        "under": 1577959503
+        "over": 1578147610,
+        "under": 1578147611
     },
-    "1577959504": {
-        "player": "jared goff",
-        "prop": "attd",
-        "over": 1577959505,
-        "under": 1577959506
-    },
-    "1577959507": {
-        "player": "marquez valdes scantling",
+    "1578147849": {
+        "player": "khalil herbert",
         "prop": "rec_yd",
-        "over": 1577959508,
-        "under": 1577959509
+        "over": 1578147850,
+        "under": 1578147851
     },
-    "1577959513": {
-        "player": "marquez valdes scantling",
-        "prop": "attd",
-        "over": 1577959514,
-        "under": 1577959515
+    "1578147852": {
+        "player": "khalil herbert",
+        "prop": "rush_yd",
+        "over": 1578147853,
+        "under": 1578147854
     },
-    "1577959516": {
-        "player": "harrison butker",
-        "prop": "kickingpoints",
-        "over": 1577959517,
-        "under": 1577959518
+    "1578148077": {
+        "player": "donta foreman",
+        "prop": "rush_yd",
+        "over": 1578148078,
+        "under": 1578148079
     },
-    "1577959519": {
-        "player": "josh reynolds",
-        "prop": "attd",
-        "over": 1577959520,
-        "under": 1577959521
+    "1578148323": {
+        "player": "dj moore",
+        "prop": "longest_rec",
+        "over": 1578148324,
+        "under": 1578148325
     },
-    "1577959522": {
-        "player": "richie james",
-        "prop": "attd",
-        "over": 1577959523,
-        "under": 1577959524
+    "1578148387": {
+        "player": "darnell mooney",
+        "prop": "rec_yd",
+        "over": 1578148389,
+        "under": 1578148390
     },
-    "1577959525": {
-        "player": "justin watson",
-        "prop": "attd",
-        "over": 1577959526,
-        "under": 1577959527
+    "1578148437": {
+        "player": "darnell mooney",
+        "prop": "longest_rec",
+        "over": 1578148438,
+        "under": 1578148439
     },
-    "1577959528": {
-        "player": "patrick mahomes",
+    "1578148593": {
+        "player": "cole kmet",
+        "prop": "longest_rec",
+        "over": 1578148594,
+        "under": 1578148595
+    },
+    "1578148596": {
+        "player": "aaron jones",
+        "prop": "rush_yd",
+        "over": 1578148597,
+        "under": 1578148598
+    },
+    "1578148599": {
+        "player": "aj dillon",
+        "prop": "rush_yd",
+        "over": 1578148600,
+        "under": 1578148601
+    },
+    "1578149505": {
+        "player": "dj moore",
+        "prop": "rec_yd",
+        "over": 1578149506,
+        "under": 1578149507
+    },
+    "1578149511": {
+        "player": "cole kmet",
+        "prop": "rec_yd",
+        "over": 1578149512,
+        "under": 1578149513
+    },
+    "1578149517": {
+        "player": "justin fields",
         "prop": "pass_yd",
-        "over": 1577959529,
-        "under": 1577959530
+        "over": 1578149518,
+        "under": 1578149519
     },
-    "1577959531": {
-        "player": "patrick mahomes",
-        "prop": "pass_td",
-        "over": 1577959532,
-        "under": 1577959533
-    },
-    "1577959534": {
-        "player": "patrick mahomes",
-        "prop": "int",
-        "over": 1577959535,
-        "under": 1577959536
-    },
-    "1577959537": {
-        "player": "patrick mahomes",
-        "prop": "longest_pass",
-        "over": 1577959538,
-        "under": 1577959539
-    },
-    "1577959540": {
-        "player": "patrick mahomes",
+    "1578150045": {
+        "player": "justin fields",
         "prop": "rush_yd",
-        "over": 1577959541,
-        "under": 1577959542
+        "over": 1578150046,
+        "under": 1578150047
     },
-    "1577959543": {
-        "player": "patrick mahomes",
-        "prop": "attd",
-        "over": 1577959544,
-        "under": 1577959545
-    },
-    "1577959546": {
-        "player": "david montgomery",
-        "prop": "rec_yd",
-        "over": 1577959547,
-        "under": 1577959548
-    },
-    "1577959549": {
-        "player": "david montgomery",
-        "prop": "rush_yd",
-        "over": 1577959550,
-        "under": 1577959551
-    },
-    "1577959552": {
-        "player": "david montgomery",
-        "prop": "ftd",
-        "over": 1577959553,
-        "under": 1577959554
-    },
-    "1577959555": {
-        "player": "david montgomery",
-        "prop": "last touchdown",
-        "over": 1577959556,
-        "under": 1577959557
-    },
-    "1577959558": {
-        "player": "david montgomery",
-        "prop": "attd",
-        "over": 1577959559,
-        "under": 1577959560
-    },
-    "1577959561": {
-        "player": "clyde edwards helaire",
-        "prop": "attd",
-        "over": 1577959563,
-        "under": 1577959564
-    },
-    "1577959565": {
-        "player": "brock wright",
-        "prop": "attd",
-        "over": 1577959566,
-        "under": 1577959567
-    },
-    "1577959568": {
-        "player": "noah gray",
-        "prop": "attd",
-        "over": 1577959569,
-        "under": 1577959570
-    },
-    "1577959572": {
-        "player": "isiah pacheco",
-        "prop": "rush_yd",
-        "over": 1577959573,
-        "under": 1577959574
-    },
-    "1577959575": {
-        "player": "isiah pacheco",
-        "prop": "ftd",
-        "over": 1577959576,
-        "under": 1577959577
-    },
-    "1577959578": {
-        "player": "isiah pacheco",
-        "prop": "last touchdown",
-        "over": 1577959579,
-        "under": 1577959580
-    },
-    "1577959582": {
-        "player": "isiah pacheco",
-        "prop": "attd",
-        "over": 1577959583,
-        "under": 1577959584
-    },
-    "1577959589": {
-        "player": "amon ra st brown",
-        "prop": "rec_yd",
-        "over": 1577959590,
-        "under": 1577959591
-    },
-    "1577959592": {
-        "player": "amon ra st brown",
-        "prop": "ftd",
-        "over": 1577959593,
-        "under": 1577959594
-    },
-    "1577959596": {
-        "player": "amon ra st brown",
-        "prop": "last touchdown",
-        "over": 1577959597,
-        "under": 1577959598
-    },
-    "1577959599": {
-        "player": "amon ra st brown",
-        "prop": "attd",
-        "over": 1577959600,
-        "under": 1577959601
-    },
-    "1577959602": {
-        "player": "antoine green",
-        "prop": "attd",
-        "over": 1577959603,
-        "under": 1577959604
-    },
-    "1577959609": {
-        "player": "sam laporta",
-        "prop": "attd",
-        "over": 1577959610,
-        "under": 1577959611
-    },
-    "1577959612": {
-        "player": "rashee rice",
-        "prop": "attd",
-        "over": 1577959613,
-        "under": 1577959614
-    },
-    "1577959615": {
-        "player": "skyy moore",
-        "prop": "rec_yd",
-        "over": 1577959616,
-        "under": 1577959617
-    },
-    "1577959619": {
-        "player": "skyy moore",
-        "prop": "ftd",
-        "over": 1577959620,
-        "under": 1577959621
-    },
-    "1577959622": {
-        "player": "skyy moore",
-        "prop": "last touchdown",
-        "over": 1577959623,
-        "under": 1577959624
-    },
-    "1577959628": {
-        "player": "skyy moore",
-        "prop": "attd",
-        "over": 1577959629,
-        "under": 1577959630
-    },
-    "1577959631": {
-        "player": "jahmyr gibbs",
-        "prop": "rec_yd",
-        "over": 1577959632,
-        "under": 1577959633
-    },
-    "1577959634": {
-        "player": "jahmyr gibbs",
-        "prop": "longest_rec",
-        "over": 1577959635,
-        "under": 1577959636
-    },
-    "1577959637": {
-        "player": "jahmyr gibbs",
-        "prop": "rush_yd",
-        "over": 1577959638,
-        "under": 1577959639
-    },
-    "1577959640": {
-        "player": "jahmyr gibbs",
-        "prop": "ftd",
-        "over": 1577959641,
-        "under": 1577959642
-    },
-    "1577959644": {
-        "player": "jahmyr gibbs",
-        "prop": "last touchdown",
-        "over": 1577959645,
-        "under": 1577959646
-    },
-    "1577959647": {
-        "player": "jahmyr gibbs",
-        "prop": "attd",
-        "over": 1577959648,
-        "under": 1577959649
-    },
-    "1578004652": {
-        "player": "amon ra st brown",
-        "prop": "rec",
-        "over": 1578004653,
-        "under": 1578004654
-    },
-    "1578004655": {
-        "player": "marvin jones",
-        "prop": "rec_yd",
-        "over": 1578004656,
-        "under": 1578004657
-    },
-    "1578004658": {
-        "player": "amon ra st brown",
-        "prop": "longest_rec",
-        "over": 1578004659,
-        "under": 1578004660
-    },
-    "1578015076": {
-        "player": "jerick mckinnon",
-        "prop": "rec_yd",
-        "over": 1578015077,
-        "under": 1578015078
-    },
-    "1578015079": {
-        "player": "travis kelce",
-        "prop": "longest_rec",
-        "over": 1578015080,
-        "under": 1578015081
-    },
-    "1578015082": {
-        "player": "noah gray",
-        "prop": "rec_yd",
-        "over": 1578015083,
-        "under": 1578015084
-    },
-    "1578084377": {
-        "player": "travis kelce",
-        "prop": "rec",
-        "over": 1578084378,
-        "under": 1578084379
-    },
-    "1578090730": {
-        "player": "richie james",
-        "prop": "rec_yd",
-        "over": 1578090731,
-        "under": 1578090732
-    },
-    "1578090801": {
-        "player": "jared goff",
-        "prop": "rush_yd",
-        "over": 1578090802,
-        "under": 1578090803
-    },
-    "1578090931": {
-        "player": "sam laporta",
-        "prop": "rec_yd",
-        "over": 1578090932,
-        "under": 1578090933
-    },
-    "1578107395": {
-        "player": "jahmyr gibbs",
-        "prop": "rec",
-        "over": 1578107396,
-        "under": 1578107397
-    },
-    "1578107398": {
-        "player": "sam laporta",
-        "prop": "rec",
-        "over": 1578107399,
-        "under": 1578107400
-    },
-    "1578108490": {
-        "player": "jerick mckinnon",
-        "prop": "longest_rec",
-        "over": 1578108491,
-        "under": 1578108492
-    },
-    "1578108493": {
-        "player": "jerick mckinnon",
-        "prop": "rec",
-        "over": 1578108494,
-        "under": 1578108495
-    },
-    "1578108496": {
-        "player": "jerick mckinnon",
-        "prop": "rush_yd",
-        "over": 1578108497,
-        "under": 1578108498
-    },
-    "1578108499": {
-        "player": "isiah pacheco",
-        "prop": "rec_yd",
-        "over": 1578108500,
-        "under": 1578108501
-    },
-    "1578108502": {
-        "player": "isiah pacheco",
-        "prop": "longest_rec",
-        "over": 1578108503,
-        "under": 1578108504
-    },
-    "1578108505": {
-        "player": "skyy moore",
-        "prop": "rec",
-        "over": 1578108506,
-        "under": 1578108507
-    },
-    "1578108508": {
-        "player": "kadarius toney",
-        "prop": "attd",
-        "over": 1578108509,
-        "under": 1578108510
-    },
-    "1578108513": {
-        "player": "marquez valdes scantling",
-        "prop": "longest_rec",
-        "over": 1578108514,
-        "under": 1578108515
-    },
-    "1578108516": {
-        "player": "justin watson",
-        "prop": "rec_yd",
-        "over": 1578108517,
-        "under": 1578108518
-    },
-    "1578108519": {
-        "player": "justin watson",
-        "prop": "longest_rec",
-        "over": 1578108520,
-        "under": 1578108521
-    },
-    "1578108522": {
-        "player": "marquez valdes scantling",
-        "prop": "rec",
-        "over": 1578108523,
-        "under": 1578108524
-    },
-    "1578135054": {
-        "player": "jared goff",
-        "prop": "passattempts",
-        "over": 1578135055,
-        "under": 1578135056
-    },
-    "1578135071": {
-        "player": "jared goff",
+    "1578182495": {
+        "player": "justin fields",
         "prop": "completions",
-        "over": 1578135072,
-        "under": 1578135073
+        "over": 1578182496,
+        "under": 1578182497
     },
-    "1578135126": {
-        "player": "riley patterson",
+    "1578182522": {
+        "player": "justin fields",
+        "prop": "passattempts",
+        "over": 1578182523,
+        "under": 1578182524
+    },
+    "1578182550": {
+        "player": "dj moore",
+        "prop": "rec",
+        "over": 1578182551,
+        "under": 1578182552
+    },
+    "1578182553": {
+        "player": "darnell mooney",
+        "prop": "rec",
+        "over": 1578182554,
+        "under": 1578182555
+    },
+    "1578182575": {
+        "player": "cole kmet",
+        "prop": "rec",
+        "over": 1578182576,
+        "under": 1578182577
+    },
+    "1578182578": {
+        "player": "cairo santos",
         "prop": "kickingpoints",
-        "over": 1578135127,
-        "under": 1578135128
+        "over": 1578182579,
+        "under": 1578182580
     },
-    "1578135129": {
-        "player": "sam laporta",
-        "prop": "longest_rec",
-        "over": 1578135130,
-        "under": 1578135131
-    },
-    "1578135132": {
-        "player": "david montgomery",
-        "prop": "longest_rec",
-        "over": 1578135133,
-        "under": 1578135134
-    },
-    "1578135135": {
-        "player": "marvin jones",
-        "prop": "longest_rec",
-        "over": 1578135136,
-        "under": 1578135137
+    "1578182630": {
+        "player": "chase claypool",
+        "prop": "rec_yd",
+        "over": 1578182631,
+        "under": 1578182632
     }
 }

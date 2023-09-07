@@ -439,8 +439,8 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.innerText.split(" ").length < 3) {
-				//if (time && time.innerText.split(" ")[0] === "TUE") {
+				//if (time && time.innerText.split(" ").length < 3) {
+				if (time && time.innerText.split(" ")[0] === "WED") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -450,13 +450,19 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/nys-zielinski-v-dodig-krajicek-32611369",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/fritz-v-djokovic-32609445",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/lammons-withrow-v-bopanna-ebden-32611457",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/tiafoe-v-be-shelton-32609209",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/linette-pera-v-brady-stefani-32611125",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/dabrowski-routliffe-v-fernandez-townsend-32611324",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/s-cirstea-v-muchova-32609025"
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/medvedev-v-rublev-32611757",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-a-zverev-32612207",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/siegemund-zvonareva-v-azarenka-haddad-maia-32611347",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/q-zheng-v-a-sabalenka-32611706",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/gauff-pegula-v-hsieh-wang-32611458",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/vondrousova-v-keys-32611184",
+  "https://mi.sportsbook.fanduel.com/tennis/mixed-us-open-2023/shibahara-pavic-v-danilina-heliovaara-32613750",
+  "https://mi.sportsbook.fanduel.com/tennis/mixed-us-open-2023/pegula-krajicek-v-townsend-shelton-32614134",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/v-perruzza-v-p-kusiewicz-32614210",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/p-zahraj-v-f-marchetti-32614211",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/a-beckley-v-j-szajrych-32614212",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/k-cubelic-v-l-lane-32614213",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/m-lis-v-m-terczynski-32614335"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
@@ -805,7 +811,7 @@ def write365():
 
 		if (["set", "total_sets", "set1_total", "away_total"].indexOf(prop) >= 0) {
 			for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
-				const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " @ ").replaceAll(".", "").replace("/", " / ");
+				const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " @ ").replaceAll(".", "").replaceAll("/", " / ");
 
 				if (data[game] === undefined) {
 					data[game] = {};
@@ -861,7 +867,8 @@ def write365():
 					continue;
 				}
 				if (div.classList.contains("rcl-MarketHeaderLabel-isdate")) {
-					break;
+					//break;
+					continue;
 				}
 				const away = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[0].innerText.toLowerCase().replaceAll(".", "");
 				const home = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[1].innerText.toLowerCase().replaceAll(".", "");
