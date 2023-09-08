@@ -269,7 +269,10 @@ def writeBovada():
 			with open(outfile) as fh:
 				data = json.load(fh)
 
-			ids.extend([r["link"] for r in data[0]["events"]])
+			try:
+				ids.extend([r["link"] for r in data[0]["events"]])
+			except:
+				continue
 
 	res = {}
 	#print(ids)
@@ -440,7 +443,7 @@ def writeFanduel():
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
 				//if (time && time.innerText.split(" ").length < 3) {
-				if (time && time.innerText.split(" ")[0] === "WED") {
+				if (time && time.innerText.split(" ")[0] === "FRI") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -450,19 +453,12 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/medvedev-v-rublev-32611757",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-a-zverev-32612207",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/siegemund-zvonareva-v-azarenka-haddad-maia-32611347",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/q-zheng-v-a-sabalenka-32611706",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/gauff-pegula-v-hsieh-wang-32611458",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/vondrousova-v-keys-32611184",
-  "https://mi.sportsbook.fanduel.com/tennis/mixed-us-open-2023/shibahara-pavic-v-danilina-heliovaara-32613750",
-  "https://mi.sportsbook.fanduel.com/tennis/mixed-us-open-2023/pegula-krajicek-v-townsend-shelton-32614134",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/v-perruzza-v-p-kusiewicz-32614210",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/p-zahraj-v-f-marchetti-32614211",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/a-beckley-v-j-szajrych-32614212",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/k-cubelic-v-l-lane-32614213",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/m-lis-v-m-terczynski-32614335"
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/bopanna-ebden-v-ram-salisbury-32618564",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/be-shelton-v-djokovic-32614490",
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-medvedev-32616968",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/dabrowski-routliffe-v-hsieh-wang-32616388",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/siegemund-zvonareva-v-brady-stefani-32616250",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/p-brunclik-v-l-lane-32618941"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
@@ -1071,21 +1067,39 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 						continue
 
 					line = fd.split("/")[i]
-					l = [dk, bv, mgm, pn, bet365, kambi]
+					l = [fd, dk, bv, mgm, pn]
+					evBook = ""
+
+
+					books = ["fd", "dk", "bv", "mgm", "pn"]
+					maxOdds = []
+					for odds in l:
+						try:
+							maxOdds.append(int(odds.split("/")[i]))
+						except:
+							maxOdds.append(-10000)
+
+					maxOdds = max(maxOdds)
+					maxOU = ""
+					for odds, book in zip(l, books):
+						try:
+							if odds.split("/")[i] == str(maxOdds):
+								evBook = book
+								maxOU = odds
+								break
+						except:
+							pass
+
+					if not evBook:
+						continue
+
+					line = maxOdds
+					l.remove(maxOU)
+					l.extend([bet365, kambi])
+
 
 					avgOver = []
 					avgUnder = []
-
-					evBook = "fd"
-					try:
-						if bookArg == "dk" or (bookArg != "fd" and dk and int(dk.split("/")[i]) > int(line)):
-							evBook = "dk"
-							line = dk.split("/")[i]
-							l[0] = str(fd)
-					except:
-						if bookArg == "dk":
-							continue
-						pass
 
 					for book in l:
 						if book:

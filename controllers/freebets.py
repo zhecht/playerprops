@@ -560,7 +560,8 @@ def writeActionNetworkML():
 	with open(f"{prefix}static/freebets/actionnetworkML.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-
+def parsePlayer(player):
+    return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace("\u00a0", " ")
 
 def writeActionNetwork(dateArg = None):
 	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles", "77_total_bases"]
@@ -604,7 +605,7 @@ def writeActionNetwork(dateArg = None):
 
 		playerIds = {}
 		for row in market["players"]:
-			playerIds[row["id"]] = row["full_name"].lower().replace(".", "").replace("-", " ").replace("'", "").replace(" jr", "").replace(" ii", "")
+			playerIds[row["id"]] = parsePlayer(row["full_name"])
 
 		books = market["books"]
 		for bookData in books:
@@ -677,15 +678,21 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-miami-marlins-32612733",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-tampa-bay-rays-32612738",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-cincinnati-reds-32612742",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-washington-nationals-32612734",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-new-york-yankees-32612737",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-atlanta-braves-32612728",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-kansas-city-royals-32612735",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-texas-rangers-32612736",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-los-angeles-angels-32612741"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-chicago-cubs-32617604",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32617602",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-detroit-tigers-32617609",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-tampa-bay-rays-32617612",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-philadelphia-phillies-32617607",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-washington-nationals-32617608",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-32617615",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-toronto-blue-jays-32617610",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-boston-red-sox-32617614",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-atlanta-braves-32617606",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-texas-rangers-32617613",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-houston-astros-32617616",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-minnesota-twins-32617617",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-los-angeles-angels-32617611",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-san-francisco-giants-32617605"
 ]
 
 	lines = {}
@@ -1382,7 +1389,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("aaron judge", 196, "nyy"), ("matt olson", 300, "atl"), ("marcell ozuna", 330, "atl"), ("adolis garcia", 320, "tex"), ("leody taveras", 1060, "tex"), ("dominic canzone", 430, "sea"), ("teoscar hernandez", 390, "sea"), ("jorge polanco", 450, "min")]
+	plays = []
 
 	if args.lineups:
 		writeLineups(plays)

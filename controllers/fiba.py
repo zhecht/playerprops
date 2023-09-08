@@ -522,7 +522,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("basketball/international") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-07") {
+				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-08") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -532,8 +532,8 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/italy-v-latvia-32615273",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/lithuania-v-slovenia-32615834"
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/serbia-v-canada-32615833",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/usa-v-germany-32615274"
 ]
 
 	lines = {}
@@ -1031,7 +1031,11 @@ def write365():
 	"""
 	pass
 
-def writeEV(propArg="", bookArg="fd", teamArg=""):
+def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
+
+	if not boost:
+		boost = 1
+
 	with open(f"{prefix}static/fiba/draftkings.json") as fh:
 		dkLines = json.load(fh)
 
@@ -1059,13 +1063,7 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 	with open(f"{prefix}static/fiba/ev.json") as fh:
 		evData = json.load(fh)
 
-	if not teamArg:
-		evData = {}
-	elif teamArg:
-		for player in evData.copy():
-			if teamArg in evData[player]["game"]:
-				del evData[player]
-
+	evData = {}
 	for game in dkLines:
 		if teamArg and teamArg not in game:
 			continue
@@ -1208,26 +1206,38 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 					line = dk.split("/")[i]
 					l = [dk, fd, bv, mgm, pn, pb]
 					books = ["dk", "fd", "bv", "mgm", "pn", "pb"]
-					maxOdds = []
-					for odds in l:
+					evBook = ""
+					if bookArg:
+						if bookArg not in books:
+							continue
+						evBook = bookArg
+						idx = books.index(bookArg)
+						maxOU = l[idx]
 						try:
-							maxOdds.append(int(odds.split("/")[i]))
+							line = maxOU.split("/")[i]
 						except:
-							maxOdds.append(-10000)
+							continue
+					else:
+						maxOdds = []
+						for odds in l:
+							try:
+								maxOdds.append(int(odds.split("/")[i]))
+							except:
+								maxOdds.append(-10000)
 
-					maxOdds = max(maxOdds)
-					maxOU = ""
-					for odds, book in zip(l, books):
-						try:
-							if odds.split("/")[i] == str(maxOdds):
-								evBook = book
-								maxOU = odds
-								break
-						except:
-							pass
+						maxOdds = max(maxOdds)
+						maxOU = ""
+						for odds, book in zip(l, books):
+							try:
+								if odds.split("/")[i] == str(maxOdds):
+									evBook = book
+									maxOU = odds
+									break
+							except:
+								pass
 
-					line = maxOdds
-					evBookIdx = books.index(evBook)
+						line = maxOdds
+
 					l.remove(maxOU)
 					l.extend([bet365, kambi])
 
@@ -1261,8 +1271,8 @@ def writeEV(propArg="", bookArg="fd", teamArg=""):
 
 					if not line:
 						continue
-						
-					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1))
+
+					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
 					
 					player = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"
 					if player in evData:
@@ -1384,7 +1394,7 @@ if __name__ == '__main__':
 		writePointsbet()
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book)
+		writeEV(propArg=args.prop, bookArg=args.book, boost=args.boost, teamArg=args.team)
 
 	if args.print:
 		sortEV()
