@@ -522,7 +522,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("basketball/international") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-08") {
+				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-09") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -532,8 +532,8 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/serbia-v-canada-32615833",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/usa-v-germany-32615274"
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/italy-v-slovenia-32618190",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/latvia-v-lithuania-32618191"
 ]
 
 	lines = {}

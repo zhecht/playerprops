@@ -391,7 +391,8 @@ def writeKambi():
 		json.dump(data, fh, indent=4)
 
 actionNetworkBookIds = {
-	68: "draftkings",
+	#68: "draftkings",
+	1541: "draftkings",
 	69: "fanduel",
 	#15: "betmgm",
 	283: "mgm",
@@ -565,7 +566,7 @@ def parsePlayer(player):
 
 def writeActionNetwork(dateArg = None):
 	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles", "77_total_bases"]
-	#props = ["32_singles"]
+	#props = ["33_hr"]
 
 	odds = {}
 	optionTypes = {}
@@ -582,7 +583,7 @@ def writeActionNetwork(dateArg = None):
 	for actionProp in props:
 		time.sleep(0.2)
 		path = f"out.json"
-		url = f"https://api.actionnetwork.com/web/v1/leagues/8/props/core_bet_type_{actionProp}?bookIds=69,68,283,348,351,355&date={date.replace('-', '')}"
+		url = f"https://api.actionnetwork.com/web/v1/leagues/8/props/core_bet_type_{actionProp}?bookIds=69,283,348,351,355,1541&date={date.replace('-', '')}"
 		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {path}")
 
 		prop = actionProp.split("_")[-1].replace("strikeouts", "k").replace("base", "tb")
@@ -621,6 +622,9 @@ def writeActionNetwork(dateArg = None):
 				overUnder = optionTypes[oddData["option_type_id"]]
 				book = actionNetworkBookIds.get(bookId, "")
 				value = oddData["value"]
+
+				if book == "pointsbet" and oddData["grade"] == None:
+					continue
 
 				if team not in odds:
 					odds[team] = {}
@@ -678,21 +682,18 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-chicago-cubs-32617604",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32617602",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-detroit-tigers-32617609",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-tampa-bay-rays-32617612",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-philadelphia-phillies-32617607",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-washington-nationals-32617608",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-32617615",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-toronto-blue-jays-32617610",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-boston-red-sox-32617614",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-atlanta-braves-32617606",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-texas-rangers-32617613",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-houston-astros-32617616",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-minnesota-twins-32617617",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-los-angeles-angels-32617611",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-san-francisco-giants-32617605"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-32619980",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-minnesota-twins-32619981",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-chicago-cubs-32619968",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-washington-nationals-32619969",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-tampa-bay-rays-32619975",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-boston-red-sox-32619977",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-philadelphia-phillies-32619970",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32619966",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-houston-astros-32619979",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-atlanta-braves-32619965",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-san-francisco-giants-32619967",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-los-angeles-angels-32619972"
 ]
 
 	lines = {}
@@ -715,6 +716,10 @@ def writeFanduel(team=None):
 
 			if "markets" not in data["attachments"]:
 				continue
+
+			if data["attachments"]["events"][str(gameId)]["inPlay"]:
+				continue
+
 			for market in data["attachments"]["markets"]:
 				marketName = data["attachments"]["markets"][market]["marketName"].lower()
 
@@ -1389,7 +1394,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = []
+	plays = [("mitch garver", 420, "tex"), ("luken baker", 560, "stl"), ("tommy edman", 560, "stl"), ("tyler oneill", 300, "stl"), ("nolan arenado", 330, "stl"), ("corey seager", 350, "tex")]
 
 	if args.lineups:
 		writeLineups(plays)

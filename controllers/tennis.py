@@ -443,7 +443,7 @@ def writeFanduel():
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
 				//if (time && time.innerText.split(" ").length < 3) {
-				if (time && time.innerText.split(" ")[0] === "FRI") {
+				if (time && time.innerText.split(" ")[0] === "SAT") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -453,12 +453,8 @@ def writeFanduel():
 	"""
 
 	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/bopanna-ebden-v-ram-salisbury-32618564",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/be-shelton-v-djokovic-32614490",
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/carlos-alcaraz-v-medvedev-32616968",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/dabrowski-routliffe-v-hsieh-wang-32616388",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/siegemund-zvonareva-v-brady-stefani-32616250",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-poland-futures/p-brunclik-v-l-lane-32618941"
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/gauff-v-a-sabalenka-32619114",
+  "https://mi.sportsbook.fanduel.com/tennis/mixed-us-open-2023/pegula-krajicek-v-danilina-heliovaara-32616669"
 ]
 
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
