@@ -347,7 +347,7 @@ def writeMGM():
 						p = "home_total"
 					prop = p
 				else:
-					player = prop.split(" (")[0].split(" will ")[-1]
+					player = parsePlayer(prop.split(" (")[0].split(" will ")[-1])
 					prop = prop.split(" ")[2].replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("blocks", "blk").replace("steals", "stl").replace("three-pointers", "3ptm")
 					if prop == "total":
 						continue
@@ -522,7 +522,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("basketball/international") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-09") {
+				if (time && time.getAttribute("datetime").split("T")[0] === "2023-09-10") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -532,8 +532,8 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/italy-v-slovenia-32618190",
-  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/latvia-v-lithuania-32618191"
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/usa-v-canada-32620584",
+  "https://mi.sportsbook.fanduel.com/basketball/international---fiba-world-cup---men/germany-v-serbia-32620587"
 ]
 
 	lines = {}

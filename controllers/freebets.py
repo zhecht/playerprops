@@ -685,11 +685,14 @@ def writeFanduel(team=None):
   "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-32619980",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-minnesota-twins-32619981",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-chicago-cubs-32619968",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-toronto-blue-jays-32619974",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-washington-nationals-32619969",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-tampa-bay-rays-32619975",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-boston-red-sox-32619977",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-philadelphia-phillies-32619970",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-detroit-tigers-32619976",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32619966",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-texas-rangers-32619973",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-houston-astros-32619979",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-atlanta-braves-32619965",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-san-francisco-giants-32619967",
@@ -1394,7 +1397,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("mitch garver", 420, "tex"), ("luken baker", 560, "stl"), ("tommy edman", 560, "stl"), ("tyler oneill", 300, "stl"), ("nolan arenado", 330, "stl"), ("corey seager", 350, "tex")]
+	plays = [("mark vientos", 630, "nym"), ("ronny mauricio", 800, "nym"), ("joc pederson", 750, "sf"), ("aaron judge", 255, "nyy"), ("max muncy", 235, "lad"), ("dominic canzone", 560, "sea")]
 
 	if args.lineups:
 		writeLineups(plays)

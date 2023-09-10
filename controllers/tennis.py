@@ -443,7 +443,7 @@ def writeFanduel():
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
 				//if (time && time.innerText.split(" ").length < 3) {
-				if (time && time.innerText.split(" ")[0] === "SAT") {
+				if (time && time.innerText.split(" ")[0] === "SUN") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -452,17 +452,10 @@ def writeFanduel():
 	}
 	"""
 
-	mens = [
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/gauff-v-a-sabalenka-32619114",
-  "https://mi.sportsbook.fanduel.com/tennis/mixed-us-open-2023/pegula-krajicek-v-danilina-heliovaara-32616669"
+	games = [
+  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/medvedev-v-djokovic-32621608",
+  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/dabrowski-routliffe-v-siegemund-zvonareva-32621078"
 ]
-
-	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=women%27s-matches"
-
-	womens = []
-	games = []
-	games.extend(mens)
-	games.extend(womens)
 
 	lines = {}
 	#games = ["https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/boulter-putintseva-v-wu-zhu-32592168"]
