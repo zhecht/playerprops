@@ -140,30 +140,19 @@ def writeMGM():
 	res = {}
 
 	tourneys = {
-		"mens": {
-			"virtual": 6,
-			"real": 4628
+		"wta": {
+			"id": 7
 		},
-		"womens": {
-			"virtual": 7,
-			"real": 4630
+		"itf women": {
+			"id": 8
 		},
-		"mens doubles": {
-			"virtual": 8,
-			"real": 6622
-		},
-		"womens": {
-			"virtual": 9,
-			"real": 6625
-		},
-		"mixed": {
-			"virtual": 10,
-			"real": 6688
+		"itf men": {
+			"id": 9
 		}
 	}
 
 	for tourney in tourneys:
-		url = f"https://sports.mi.betmgm.com/en/sports/api/widget/widgetdata?layoutSize=Large&page=CompetitionLobby&sportId=5&tournamentId=5&virtualCompetitionId=2&virtualCompetitionGroupId={tourneys[tourney]['virtual']}&realCompetitionId={tourneys[tourney]['real']}&widgetId=/mobilesports-v1.0/layout/layout_standards/modules/competition/defaultcontainer&shouldIncludePayload=true"
+		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixtures?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&fixtureTypes=Standard&state=Latest&offerMapping=Filtered&offerCategories=Gridable&fixtureCategories=Gridable,NonGridable,Other&sportIds=5&tournamentIds={tourneys[tourney]['id']}&competitionIds=&conferenceIds=&isPriceBoost=false&statisticsModes=None"
 		outfile = f"outMGM"
 
 		time.sleep(0.3)
@@ -172,15 +161,8 @@ def writeMGM():
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		try:
-			rows = data["widgets"][0]["payload"]["items"][0]["activeChildren"][0]["payload"]["fixtures"]
-		except:
-			print(tourney)
-			continue
 		ids = []
-		for row in rows:
-			if row["stage"].lower() == "live":
-				continue
+		for row in data["fixtures"]:
 			ids.append(row["id"])
 
 		for mgmid in ids:
@@ -258,21 +240,20 @@ def writeBovada():
 	url = "https://www.bovada.lv/sports/tennis/"
 
 	ids = []
-	for gender in ["men", "women"]:
-		for which in ["singles", "doubles"]:
-			url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/tennis/us-open/{gender}-s-{which}?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
-			outfile = f"outBV"
+	for which in ["wta", "wta-doubles", "wta-125k", "challenger", "itf-men", "itf-women"]:
+		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/tennis/{which}?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
+		outfile = f"outBV"
 
-			time.sleep(0.3)
-			os.system(f"curl -k \"{url}\" -o {outfile}")
+		time.sleep(0.3)
+		os.system(f"curl -k \"{url}\" -o {outfile}")
 
-			with open(outfile) as fh:
-				data = json.load(fh)
+		with open(outfile) as fh:
+			data = json.load(fh)
 
-			try:
-				ids.extend([r["link"] for r in data[0]["events"]])
-			except:
-				continue
+		try:
+			ids.extend([r["link"] for r in data[0]["events"]])
+		except:
+			continue
 
 	res = {}
 	#print(ids)
@@ -346,14 +327,18 @@ def writeKambi():
 	data = {}
 	outfile = f"tennisout.json"
 
-	for gender in ["", "_doubles", "_women", "_women_doubles"]:
-		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/tennis/grand_slam/us_open{gender}/all/matches.json?lang=en_US&market=US"
+	for gender in [None]:
+		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/tennis/all/all/all/matches.json?lang=en_US&market=US"
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 		
 		with open(outfile) as fh:
 			j = json.load(fh)
 
 		eventIds = {}
+
+		if "events" not in j:
+			continue
+
 		for event in j["events"]:
 			game = event["event"]["name"].lower()
 			player1, player2 = map(str, game.split(f" {event['event']['nameDelimiter']} "))
@@ -443,7 +428,7 @@ def writeFanduel():
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
 				//if (time && time.innerText.split(" ").length < 3) {
-				if (time && time.innerText.split(" ")[0] === "SUN") {
+				if (time && time.innerText.split(" ")[0] === "TUE") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -453,8 +438,99 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/tennis/men's-us-open-2023/medvedev-v-djokovic-32621608",
-  "https://mi.sportsbook.fanduel.com/tennis/women's-us-open-2023/dabrowski-routliffe-v-siegemund-zvonareva-32621078"
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/contreras-g-papamichail-v-fruhvirtova-shnaider-32624629",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/l-pigato-v-o-simion-32628543",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/e-meri-v-y-konstantinova-32628546",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/e-ivanova-v-i-ghioroaie-32628545",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/sakatsume-v-al-eala-32624906",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/barnett-nicholls-v-friedsam-kichenok-32624627",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/hartono-v-doi-32624901",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/j-martin-manzano-v-m-benson-32628607",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/r-baiant-v-m-onofrei-32628606",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/f-bara-v-v-horak-32628605",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/s-agostini-v-v-yehorov-32628604",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/a-massara-v-i-kountourakis-32628706",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/t-sach-v-s-bianchet-32628589",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/l-sorensen-v-z-adam-gedge-32628588",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-delaney-v-c-hewitt-32628591",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/g-inoue-v-s-oster-32628590",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/fetecau-v-sara-popa-32627933",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/dar-semenistaja-v-berfu-cengiz-32625487",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/maria-tig-v-mar-carle-32625507",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/d-marcinkevica-v-r-zelnickova-32628616",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/d-glushkova-v-m-hoedt-32628613",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/d-pavlou-v-e-christofi-32628615",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/a-van-impe-v-d-maric-32628614",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/a-cohen-v-p-manzano-lapuerta-32628709",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/v-oliver-moratalla-v-j-plans-32628708",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/b-kumaran-v-r-zusman-32628710",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/m-rosenkranz-v-l-massard-32628715",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/c-sauvant-v-l-karatancheva-32628637",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/d-evtimova-v-a-laboutkova-32628640",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/v-olianovskaia-v-m-andrienko-32628638",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/a-pecci-v-d-bagnolini-32628717",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/m-zhukov-v-m-giunta-32628712",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/f-salle-v-m-rivet-32628714",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/a-gautier-v-m-alkotop-32628711",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/p-trochu-v-a-aitkulov-32628713",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/r-michalik-v-a-cuceu-32628665",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/d-baranec-v-m-sakellaridis-32628668",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/d-ducariu-v-s-konov-32628669",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/m-zeljenka-v-e-schipor-32628671",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/l-vojinovic-v-m-furlanetto-32628705",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/k-pearson-v-j-bradshaw-32628700",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/b-ellis-v-t-gadecki-32628702",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-delaney-v-s-ryan-ziegann-32628703",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-beale-v-t-fancutt-32628701",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/m-masiianskaia-v-d-kuczer-32628667",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/g-parentini-vallega-montebruno-v-t-lukic-32628670",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/k-diatlova-v-l-morreale-32628672",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/astakhova-v-v-tomova-32627978",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/car-martinez-cirez-v-mitu-32625512",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/jimenez-kasintseva-v-errani-32625497",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/falkner-v-rek-jani-32627647",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/ole-oliynykova-v-zeyn-sonmez-32627628",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/ela-milic-v-d-galfi-32625964",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/l-mair-v-a-aksu-32628720",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/l-stevens-v-m-stoilkovska-32628719",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/i-daneva-v-k-laskutova-32628722",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/y-saigo-v-d-herdzelas-32628721",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/i-de-rueda-de-genover-v-d-totikashvili-32628765",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/j-simundza-v-i-marrero-curbelo-32628770",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/m-martinez-v-p-pohjola-32628768",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/h-garcia-gomez-v-a-civera-martinez-32628772",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/l-rottoli-v-a-gola-32628773",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/k-tsygourova-v-o-gavrila-32628774",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/iri-bara-v-rosatello-32627928",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/benoit-v-paquet-32627938",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/a-bogdan-v-nur-brancaccio-32625517",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/ash-lahey-v-mir-bulgaru-32627657",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/kawa-v-jakupovic-32625914",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/bassols-ribera-v-lol-radivojevic-32625944",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/grammatikopoulou-v-a-bondar-32625527",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/anshba-v-bejlek-32625934",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/erjavec-v-er-andreeva-32625929",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/t-zidansek-v-bayerlova-32627633",
+  "https://mi.sportsbook.fanduel.com/tennis/davis-cup-2023/sweden-v-chile-32628255",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/j-cristian-v-lulu-sun-32625576",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/k-juvan-v-ga-knutson-32627652",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/mag-linette-v-m-kostyuk-32621530",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/chirico-v-d-collins-32626600",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/sof-kenin-v-v-kudermetova-32621555",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/alexandrova-v-ostapenko-32621540",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/kostyuk-parks-v-collins-vandeweghe-32626250",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/chan-olmos-v-kato-sutjiadi-32626236",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/alexandrova-sasnovich-v-dolehide-liu-32626227",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/parry-podoroska-v-bains-lumsden-32624626",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/savinykh-v-putintseva-32627234",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/hartono-schoofs-v-hibino-hontama-32624625",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/naito-uchijima-v-kalinskaya-putintseva-32624624",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/danilina-mattek-sands-v-eikeri-neel-32626251",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/no-noha-akugue-v-ili-amariei-32627565",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/lu-ciric-bagaric-v-aliona-bolsova-32628040",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/stephens-v-mertens-32621535",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/guarachi-niculescu-v-aoyama-yang-32626248",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/b-haddad-maia-v-l-fernandez-32621525"
 ]
 
 	lines = {}
@@ -646,7 +722,7 @@ def writeDK(date):
 	}
 
 	lines = {}
-	for gender in [72778, 72779, 101899, 101901]:
+	for gender in [209022, 209024, 44044, 211362, 17019, 17021, 103606, 92024, 59457, 210505, 210469, 96898, 144342, 199314, 105008]:
 		for mainCat in mainCats:
 			for subCat in subCats[mainCats[mainCat]]:
 				time.sleep(0.3)
@@ -1060,7 +1136,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 					evBook = ""
 
 
-					books = ["fd", "dk", "bv", "mgm", "pn"]
+					books = ["fd", "dk", "bv", "mgm"]
 					maxOdds = []
 					for odds in l:
 						try:
@@ -1084,7 +1160,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 
 					line = maxOdds
 					l.remove(maxOU)
-					l.extend([bet365, kambi])
+					l.extend([pn, bet365, kambi])
 
 
 					avgOver = []

@@ -565,8 +565,8 @@ def parsePlayer(player):
     return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace("\u00a0", " ")
 
 def writeActionNetwork(dateArg = None):
-	props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles", "77_total_bases"]
-	#props = ["33_hr"]
+	#props = ["35_doubles", "33_hr", "37_strikeouts", "32_singles", "77_total_bases", "34_rbi"]
+	props = ["33_hr", "37_strikeouts", "34_rbi"]
 
 	odds = {}
 	optionTypes = {}
@@ -653,6 +653,9 @@ def writeActionNetwork(dateArg = None):
 					sp = odds[team][player][prop][book].split("/")
 					if odds[team][player][prop][book].count("/") == 3:
 						odds[team][player][prop][book] = sp[1]+"/"+sp[2]
+					if prop == "hr" and book == "caesars" and odds[team][player][prop][book].count("/") == 1:
+						odds[team][player][prop][book] = sp[0]
+
 
 					if prop == "hr":
 						sp = odds[team][player][prop][book].split("/")
@@ -682,21 +685,16 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-32619980",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-minnesota-twins-32619981",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-chicago-cubs-32619968",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-toronto-blue-jays-32619974",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-washington-nationals-32619969",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-tampa-bay-rays-32619975",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-boston-red-sox-32619977",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-philadelphia-phillies-32619970",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-detroit-tigers-32619976",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-cincinnati-reds-32619966",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-texas-rangers-32619973",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-houston-astros-32619979",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-atlanta-braves-32619965",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-san-francisco-giants-32619967",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-los-angeles-angels-32619972"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32628536",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-baltimore-orioles-32627351",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-32627339",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-toronto-blue-jays-32627344",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32627349",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32627347",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-colorado-rockies-32627343",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-seattle-mariners-32627348",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-san-francisco-giants-32627350",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-los-angeles-dodgers-32627337"
 ]
 
 	lines = {}
@@ -1238,7 +1236,7 @@ def sortEV(dinger=False):
 	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
 		bppExpectedHomers = json.load(fh)
 
-	for prop in ["hr", "k", "single", "double", "tb"]:
+	for prop in ["hr", "k", "single", "double", "tb", "rbi"]:
 		with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
 			evData = json.load(fh)
 
@@ -1397,7 +1395,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("mark vientos", 630, "nym"), ("ronny mauricio", 800, "nym"), ("joc pederson", 750, "sf"), ("aaron judge", 255, "nyy"), ("max muncy", 235, "lad"), ("dominic canzone", 560, "sea")]
+	plays = [("ronny mauricio", 750, "nym"), ("aaron judge", 210, "nyy"), ("mj melendez", 500, "kc"), ("jake bauers", 600, "nyy"), ("drew waters", 800, "kc"), ("teoscar hernandez", 370, "sea"), ("austin wells", 600, "nyy"), ("joey wiemer", 1100, "mil"), ("randal grichuk", 830, "laa"), ("matt olson", 280, "atl")]
 
 	if args.lineups:
 		writeLineups(plays)
