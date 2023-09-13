@@ -210,6 +210,8 @@ def writeMGM():
 					prop = "set_spread"
 				elif "player spread" in prop:
 					prop = "spread"
+				elif prop.startswith("how many sets will be played") and "best of three" in prop:
+					prop = "total_sets"
 				else:
 					continue
 
@@ -217,6 +219,14 @@ def writeMGM():
 				ou = f"{results[0]['americanOdds']}/{results[1]['americanOdds']}"
 				if "ml" in prop or prop in ["away_1_set", "home_1_set"]:
 					res[game][prop] = ou
+				elif prop == "total_sets":
+					if prop not in res[game]:
+						res[game][prop] = {}
+					ou = f"{results[0]['americanOdds']}/{results[1]['americanOdds']}"
+					if results[0]['name']['value'] == '2 sets':
+						ou = f"{results[1]['americanOdds']}/{results[0]['americanOdds']}"
+
+					res[game][prop]["2.5"] = ou
 				elif len(results) >= 2:
 					if prop not in res[game]:
 						res[game][prop] = {}
@@ -224,14 +234,14 @@ def writeMGM():
 					skip = 1 if prop == "set" else 2
 					for idx in range(0, len(results), skip):
 						val = results[idx]["name"]["value"].lower()
-						if "over" not in val and "under" not in val and prop not in ["set_spread", "player_spread"]:
+						if "over" not in val and "under" not in val and prop not in ["set_spread", "spread"]:
 							continue
 						else:
 							val = val.split(" ")[-1]
 						ou = str(results[idx]["americanOdds"])
 						if prop != "set":
 							ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
-						res[game][prop][val] = ou
+						res[game][prop][str(float(val))] = ou
 
 	with open("static/tennis/mgm.json", "w") as fh:
 		json.dump(res, fh, indent=4)
@@ -265,7 +275,10 @@ def writeBovada():
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		comp = data[0]['events'][0]['competitors']
+		try:
+			comp = data[0]['events'][0]['competitors']
+		except:
+			continue
 		player1 = comp[0]['name'].lower()
 		player2 = comp[1]['name'].lower()
 		if "/" in player1:
@@ -287,14 +300,16 @@ def writeBovada():
 						prop = "total"
 					elif prop == "game spread" or prop == "alternate game spread":
 						prop = "spread"
-					elif prop == "total sets":
-						prop = "total_sets"
 					elif prop == f"total games o/u - {player1}":
 						prop = "away_total"
 					elif prop == f"total games o/u - {player2}":
 						prop = "home_total"
 					elif prop == "any set to nil":
 						prop = "6-0"
+					elif prop == "number of sets played" or prop == "total sets":
+						prop = "total_sets"
+					elif prop == "set spread" or prop == "alternate set spread":
+						prop = "set_spread"
 					else:
 						continue
 
@@ -308,13 +323,21 @@ def writeBovada():
 
 					if "ml" in prop or prop == "6-0":
 						res[game][prop] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
+					elif prop == "total_sets":
+						if prop not in res[game]:
+							res[game][prop] = {}
+						ou = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}"
+						if market['outcomes'][0]['description'] == '2 sets':
+							ou = f"{market['outcomes'][1]['price']['american']}/{market['outcomes'][0]['price']['american']}"
+						res[game][prop]["2.5"] = ou.replace("EVEN", "100")
 					elif "spread" in prop or prop in ["total", "set1_total", "set2_total", "away_total", "home_total"]:
 						if prop not in res[game]:
 							res[game][prop] = {}
 
 						outcomes = market["outcomes"]
 						for idx in range(0, len(outcomes), 2):
-							handicap = outcomes[idx]["price"]["handicap"]
+							handicap = str(float(outcomes[idx]["price"]["handicap"]))
+
 							res[game][prop][handicap] = f"{market['outcomes'][idx]['price']['american']}/{market['outcomes'][idx+1]['price']['american']}".replace("EVEN", "100")
 					else:
 						handicap = market["outcomes"][0]["price"]["handicap"]
@@ -427,8 +450,8 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				//if (time && time.innerText.split(" ").length < 3) {
-				if (time && time.innerText.split(" ")[0] === "TUE") {
+				if (time && time.innerText.split(" ").length < 3) {
+				//if (time && time.innerText.split(" ")[0] === "TUE") {
 					urls[a.href] = 1;	
 				}
 			}
@@ -438,82 +461,57 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/contreras-g-papamichail-v-fruhvirtova-shnaider-32624629",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/l-pigato-v-o-simion-32628543",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/e-meri-v-y-konstantinova-32628546",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/e-ivanova-v-i-ghioroaie-32628545",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/sakatsume-v-al-eala-32624906",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/barnett-nicholls-v-friedsam-kichenok-32624627",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/hartono-v-doi-32624901",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/j-martin-manzano-v-m-benson-32628607",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/r-baiant-v-m-onofrei-32628606",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/f-bara-v-v-horak-32628605",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/s-agostini-v-v-yehorov-32628604",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/a-massara-v-i-kountourakis-32628706",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/t-sach-v-s-bianchet-32628589",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/l-sorensen-v-z-adam-gedge-32628588",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-delaney-v-c-hewitt-32628591",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/g-inoue-v-s-oster-32628590",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/fetecau-v-sara-popa-32627933",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/dar-semenistaja-v-berfu-cengiz-32625487",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/maria-tig-v-mar-carle-32625507",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/d-marcinkevica-v-r-zelnickova-32628616",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/d-glushkova-v-m-hoedt-32628613",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/d-pavlou-v-e-christofi-32628615",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/a-van-impe-v-d-maric-32628614",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/a-cohen-v-p-manzano-lapuerta-32628709",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/v-oliver-moratalla-v-j-plans-32628708",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/b-kumaran-v-r-zusman-32628710",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/m-rosenkranz-v-l-massard-32628715",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/c-sauvant-v-l-karatancheva-32628637",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/d-evtimova-v-a-laboutkova-32628640",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/v-olianovskaia-v-m-andrienko-32628638",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/a-pecci-v-d-bagnolini-32628717",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/m-zhukov-v-m-giunta-32628712",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/f-salle-v-m-rivet-32628714",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/a-gautier-v-m-alkotop-32628711",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/p-trochu-v-a-aitkulov-32628713",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/r-michalik-v-a-cuceu-32628665",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/d-baranec-v-m-sakellaridis-32628668",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/d-ducariu-v-s-konov-32628669",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/m-zeljenka-v-e-schipor-32628671",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/l-vojinovic-v-m-furlanetto-32628705",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/k-pearson-v-j-bradshaw-32628700",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/b-ellis-v-t-gadecki-32628702",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-delaney-v-s-ryan-ziegann-32628703",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-beale-v-t-fancutt-32628701",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/m-masiianskaia-v-d-kuczer-32628667",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/g-parentini-vallega-montebruno-v-t-lukic-32628670",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/k-diatlova-v-l-morreale-32628672",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/astakhova-v-v-tomova-32627978",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/car-martinez-cirez-v-mitu-32625512",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/jimenez-kasintseva-v-errani-32625497",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/falkner-v-rek-jani-32627647",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/ole-oliynykova-v-zeyn-sonmez-32627628",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/ela-milic-v-d-galfi-32625964",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/l-mair-v-a-aksu-32628720",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/l-stevens-v-m-stoilkovska-32628719",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/i-daneva-v-k-laskutova-32628722",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/y-saigo-v-d-herdzelas-32628721",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/i-de-rueda-de-genover-v-d-totikashvili-32628765",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/j-simundza-v-i-marrero-curbelo-32628770",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/m-martinez-v-p-pohjola-32628768",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/h-garcia-gomez-v-a-civera-martinez-32628772",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/l-rottoli-v-a-gola-32628773",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/k-tsygourova-v-o-gavrila-32628774",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/iri-bara-v-rosatello-32627928",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/benoit-v-paquet-32627938",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/a-bogdan-v-nur-brancaccio-32625517",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/ash-lahey-v-mir-bulgaru-32627657",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/kawa-v-jakupovic-32625914",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/bassols-ribera-v-lol-radivojevic-32625944",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/grammatikopoulou-v-a-bondar-32625527",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/anshba-v-bejlek-32625934",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/erjavec-v-er-andreeva-32625929",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/t-zidansek-v-bayerlova-32627633",
-  "https://mi.sportsbook.fanduel.com/tennis/davis-cup-2023/sweden-v-chile-32628255",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-dijon/s-deppner-v-a-chekanskaya-32629823",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-le-neubourg/n-berecoechea-v-ryser-v-m-drazic-a-nagy-32629620",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/and-gamiz-v-er-andreeva-32629739",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-portugal-futures/d-marques-m-simoes-v-v-de-carvalho-g-oliveira-32629241",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-le-neubourg/m-arcangioli-v-f-ferro-32629694",
   "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/j-cristian-v-lulu-sun-32625576",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/a-barroso-campos-s-perez-contri-v-m-riepkin-r-32629141",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/s-corbinais-e-lagarde-v-p-cayre-a-garcian-32629457",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/j-bilardo-c-a-caniato-v-a-colombo-d-pozzi-32629301",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/m-guth-v-m-chudejova-32628989",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/l-udvardy-a-van-impe-v-l-jeanjean-s-nahimana-32629139",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/l-gjorcheska-d-herdzelas-v-e-christofi-d-pavlo-32629140",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/gamiz-bolsova-v-abduraimova-cascino-32625574",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/ciric-bagar-radivojevic-v-lahey-osborne-32625615",
+  "https://mi.sportsbook.fanduel.com/tennis/davis-cup-2023/u-humbert-v-s-wawrinka-32629889",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/m-ramos-cabrera-o-szymczak-v-j-echeverria-r-vi-32629755",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-dijon/a-shubladze-v-m-ciocan-32629142",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/c-buyukakcay-a-krunic-v-i-primorac-n-siedliska-32629289",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-portugal-futures/j-mackinlay-m-walters-v-t-hilderbrand-n-schach-32629240",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-portugal-futures/g-falcao-d-vale-v-t-curras-abasolo-a-turrizian-32629239",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-germany-futures/y-kelm-v-m-ujvary-32629339",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-monastir/a-lukosiute-n-miller-v-g-arangio-a-volkov-32629695",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-leiria/f-jorge-m-jorge-v-d-hewitt-h-inoue-32629423",
   "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/k-juvan-v-ga-knutson-32627652",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-dijon/s-erler-v-b-klincov-32629464",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/k-laskutova-a-vangelova-v-a-stankovic-m-stoilk-32629137",
+  "https://mi.sportsbook.fanduel.com/tennis/davis-cup-2023/laslo-djere-v-soonwoo-kwon-32629983",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-monastir/v-adkar-s-bhasin-v-g-gulin-v-koussenkova-32629538",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-portugal-futures/t-almeida-m-m-amaral-guedes-de-almeida-v-d-blanc-32629242",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-monastir/s-kenzhibayeva-j-ristic-v-v-turini-a-urso-32629536",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/j-loutit-v-l-renard-32629551",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/l-draxl-v-a-karahan-32629550",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/radisic-wagner-v-fomina-klotz-lohoff-32625575",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-leiria/k-pavlova-a-zakharova-v-c-brace-s-daavettila-32629412",
+  "https://mi.sportsbook.fanduel.com/tennis/davis-cup-2023/e-ymer-v-n-jarry-32629937",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-dijon/v-podrez-v-m-szostak-32629465",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-leiria/g-pereira-de-aguiar-m-sequeira-v-k-hance-f-tia-32629338",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-le-neubourg/j-jebawy-c-noel-v-f-ferro-a-korneeva-32629345",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-le-neubourg/a-albie-m-rouvroy-v-l-cortez-llorca-s-b-grey-32629337",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/m-damas-a-romero-de-avila-senise-v-j-sanchez-pra-32629879",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/a-arsic-v-s-drugdova-32629180",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/z-kulambayeva-j-mikulskyte-v-a-aksu-e-kajevic-32629287",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/p-alvarado-h-barrett-v-n-benito-fernandez-s-ca-32629288",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/n-catini-g-m-noce-v-g-oradini-l-rottoli-32629302",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-dijon/n-gadient-c-janssen-v-d-mpetshi-perricard-l-pa-32629989",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/j-lopez-dominguez-p-manzano-lapuerta-v-i-marrero-32629880",
+  "https://mi.sportsbook.fanduel.com/tennis/davis-cup-2023/cacic-kecmanovic-v-nam-song-32629985",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/r-balzerani-v-f-arnaboldi-32629672",
+  "https://mi.sportsbook.fanduel.com/tennis/davis-cup-2023/f-bergevi-a-goransson-v-m-t-barrios-vera-a-tab-32629950",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-le-neubourg/e-appleton-i-haverlag-v-c-naef-a-robbe-32629759",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/l-rossi-l-vatteroni-v-a-marigliano-c-sorrentin-32629987",
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/mag-linette-v-m-kostyuk-32621530",
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/chirico-v-d-collins-32626600",
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/sof-kenin-v-v-kudermetova-32621555",
@@ -521,16 +519,26 @@ def writeFanduel():
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/kostyuk-parks-v-collins-vandeweghe-32626250",
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/chan-olmos-v-kato-sutjiadi-32626236",
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/alexandrova-sasnovich-v-dolehide-liu-32626227",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/parry-podoroska-v-bains-lumsden-32624626",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/savinykh-v-putintseva-32627234",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/hartono-schoofs-v-hibino-hontama-32624625",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/naito-uchijima-v-kalinskaya-putintseva-32624624",
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/danilina-mattek-sands-v-eikeri-neel-32626251",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/a-kalinina-v-b-krejcikova-32629200",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/m-sakkari-v-camila-osorio-32628688",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/o-jabeur-v-a-potapova-32628437",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/emm-navarro-v-a-sasnovich-32628848",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/mar-carle-v-je-bouzas-maneiro-32629540",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/an-todoni-v-v-tomova-32629492",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/dar-semenistaja-v-iri-bara-32629903",
   "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/no-noha-akugue-v-ili-amariei-32627565",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/sara-popa-v-errani-32629702",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/milic-potocnik-v-anshba-gleason-32625614",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/rosca-sakellaridi-v-falkowska-kawa-32625613",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/zeyn-sonmez-v-ruzic-32629571",
   "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/lu-ciric-bagaric-v-aliona-bolsova-32628040",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/rek-jani-v-d-galfi-32629798",
   "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/stephens-v-mertens-32621535",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/guarachi-niculescu-v-aoyama-yang-32626248",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/b-haddad-maia-v-l-fernandez-32621525"
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/savinykh-v-putintseva-32627234",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/b-haddad-maia-v-l-fernandez-32621525",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/a-kalinskaya-v-h-dart-32629122",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/podoroska-v-mai-hontama-32629053"
 ]
 
 	lines = {}
@@ -562,7 +570,11 @@ def writeFanduel():
 				if marketName == "moneyline":
 					player1 = data["attachments"]["markets"][market]["runners"][0]["runnerName"].lower()
 					player2 = data["attachments"]["markets"][market]["runners"][1]["runnerName"].lower()
-					game = f"{player1} @ {player2}"
+					game = []
+					for player in [player1, player2]:
+						p = [p for p in player.split(" ") if len(p) > 1]
+						game.append(" ".join(p))
+					game = " @ ".join(game)
 					if game not in lines:
 						lines[game] = {}
 
@@ -579,6 +591,8 @@ def writeFanduel():
 					elif marketName == "alternative set spread":
 						prop = "set_spread"
 					elif "total match" in marketName:
+						if "3-way" in marketName:
+							continue
 						prop = "total"
 					elif "total sets" in marketName:
 						prop = "total_sets"
@@ -631,7 +645,7 @@ def writeFanduel():
 						if prop not in lines[game]:
 							lines[game][prop] = {}
 
-						handicap = runners[0]["runnerName"].split(" ")[-1].replace("(", "").replace(")", "")
+						handicap = str(float(runners[0]["runnerName"].split(" ")[-1].replace("(", "").replace(")", "")))
 						try:
 							lines[game][prop][handicap] = str(runners[0]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])+"/"+str(runners[1]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
 						except:
@@ -827,12 +841,125 @@ def writeDK(date):
 										line = str(outcomes[i]["line"])
 										try:
 											lines[game][label][line] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+											if outcomes[i]['label'] == 'Under':
+												lines[game][label][line] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
+
 										except:
 											continue
 								
 
 	with open("static/tennis/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
+
+def writePointsbet():
+	url = "https://api.mi.pointsbet.com/api/v2/sports/tennis/events/nextup"
+	outfile = f"outPB"
+	os.system(f"curl -k \"{url}\" -o {outfile}")
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	games = []
+	for row in data["events"]:
+		games.append(row["key"])
+
+	res = {}
+	#games = ["335404"]
+	for gameId in games:
+		url = f"https://api.mi.pointsbet.com/api/mes/v3/events/{gameId}"
+		time.sleep(0.3)
+		outfile = f"outPB"
+		os.system(f"curl -k \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		game = ""
+		for market in data["fixedOddsMarkets"]:
+			if market["eventName"] == "Match Result":
+				away = market["outcomes"][0]["name"].lower().replace("/", " / ")
+				home = market["outcomes"][1]["name"].lower().replace("/", " / ")
+				game = []
+				for player in [away, home]:
+					p = player
+					if "/" in player:
+						p1, p2 = map(str, player.split(" / "))
+						p1 = p1.split(", ")[0]
+						p2 = p2.split(", ")[0]
+						p = " / ".join([p1, p2])
+					game.append(p)
+				game = " @ ".join(game)
+				break
+
+		res[game] = {}
+
+		for market in data["fixedOddsMarkets"]:
+			prop = market["name"].lower().split(" (")[0]
+
+			prefix = ""
+			if "1st set" in prop:
+				prefix = "set1_"
+			elif "2nd set" in prop:
+				prefix = "set2_"
+
+			if "games handicap" in prop:
+				prop = f"{prefix}spread"
+			if prop.startswith("sets handicap"):
+				prop = f"{prefix}set_spread"
+			elif prop.startswith("match result") or "set winner" in prop:
+				prop = f"{prefix}ml"
+			elif "total games" in prop:
+				if "odd/even" in market["name"].lower() or "3 way" in prop:
+					continue
+				prop = f"{prefix}total"
+			elif prop == "total sets":
+				prop = "total_sets"
+			elif prop.startswith(f"to win a set"):
+				prop = f"away_1_set"
+			elif prop == "6-0 set in match":
+				prop = "6-0"
+			else:
+				continue
+
+			if "ml" not in prop and prop != "6-0":
+				if prop not in res[game]:
+					res[game][prop] = {}
+
+			outcomes = market["outcomes"]
+			skip = 1 if prop in ["set1_spread", "set2_spread"] else 2
+			for i in range(0, len(outcomes), skip):
+				points = outcomes[i]["name"].split(" ")[-1]
+				if outcomes[i]["price"] == 1:
+					continue
+				over = convertAmericanOdds(outcomes[i]["price"])
+				under = ""
+				try:
+					under = convertAmericanOdds(outcomes[i+1]["price"])
+				except:
+					pass
+				ou = f"{over}"
+
+				if under:
+					ou += f"/{under}"
+
+				if "ml" in prop or prop in ["6-0"]:
+					res[game][prop] = ou
+				elif prop in ["set1_spread", "set2_spread"]:
+					if game.endswith(outcomes[i]["name"].split(" ")[0].lower()):
+						points = str(float(points) * -1)
+						res[game][prop][points] += f"/{ou}"
+					else:
+						res[game][prop][points] = ou
+				elif prop == "total_sets":
+					res[game][prop]["2.5"] = f"{under}/{over}"
+				elif prop == "away_1_set":
+					res[game][prop] = str(over)
+					res[game]["home_1_set"] = str(under)
+				else:
+					res[game][prop][points] = ou
+
+	with open("static/tennis/pointsbet.json", "w") as fh:
+		json.dump(res, fh, indent=4)
 
 def write365():
 
@@ -846,139 +973,157 @@ def write365():
 	// All Main other than, Set: set1_spread, Games: away_total
 
 	{
-		const main = document.querySelectorAll(".gl-MarketGroupContainer")[0];
-		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
-		let prop = title.replace("moneyline", "ml");
+		for (const main of document.querySelectorAll(".gl-MarketGroupContainer")) {
+			let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
+			let prop = title.replace("moneyline", "ml");
 
-		if (prop == "spread - games won") {
-			prop = "spread";
-		} else if (prop === "total games") {
-			prop = "total";
-		} else if (prop == "first set money line") {
-			prop = "set1_ml";
-		} else if (prop == "first set spread") {
-			prop = "set1_spread";
-		} else if (prop === "set betting") {
-			prop = "set";
-		} else if (prop == "total sets") {
-			prop = "total_sets";
-		} else if (prop == "1st set total games") {
-			prop = "set1_total";
-		} else if (prop == "player games won") {
-			prop = "away_total";
-		} else {
-			prop = "ml";
-		}
+			if (prop == "spread - games won") {
+				prop = "spread";
+			} else if (prop === "total games") {
+				prop = "total";
+			} else if (prop == "first set money line") {
+				prop = "set1_ml";
+			} else if (prop == "first set spread") {
+				prop = "set1_spread";
+			} else if (prop === "set betting") {
+				prop = "set";
+			} else if (prop == "total sets") {
+				prop = "total_sets";
+			} else if (prop == "1st set total games") {
+				prop = "set1_total";
+			} else if (prop == "player games won") {
+				prop = "away_total";
+			} else {
+				prop = "ml";
+			}
 
-		if (["set", "total_sets", "set1_total", "away_total"].indexOf(prop) >= 0) {
-			for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
-				const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " @ ").replaceAll(".", "").replaceAll("/", " / ");
+			if (["set", "total_sets", "set1_total", "away_total"].indexOf(prop) >= 0) {
+				for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
+					const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " @ ").replaceAll(".", "").replaceAll("/", " / ");
 
-				if (data[game] === undefined) {
-					data[game] = {};
-				}
-
-				if (div.classList.contains("src-FixtureSubGroup_Closed")) {
-					div.click();
-				}
-
-				if (prop == "away_total") {
-					let ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[0].innerText.replace("Over ", "");
-					
-					data[game]["away_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[0].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[1].innerText;
-
-					ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[2].innerText.replace("Over ", "");
-					data[game]["home_total"] = ou+" "+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[2].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[3].innerText;
-				} else {
-					data[game][prop] = {};
-					let arr = [];
-					for (const set of div.querySelector(".gl-Market").querySelectorAll(".gl-Market_General-cn1")) {
-						arr.push(set.innerText);
+					if (data[game] === undefined) {
+						data[game] = {};
 					}
 
-					let idx = 0;
-					for (const playerDiv of div.querySelectorAll(".gl-Participant_General")) {
-						let set = arr[idx % arr.length];
-						const odds = playerDiv.querySelector(".gl-ParticipantOddsOnly_Odds").innerText;
+					if (div.classList.contains("src-FixtureSubGroup_Closed")) {
+						div.click();
+					}
 
-						if (prop == "set") {
-							let player = game.split(" @ ")[0];
-							if (idx >= arr.length) {
-								player = game.split(" @ ")[1];
-							}
-							
-							data[game][prop][player+" "+set] = odds;
-						} else {
-							if (idx < arr.length) {
-								data[game][prop][set] = odds;
-							} else {
-								data[game][prop][set] += "/"+odds;
-							}
+					if (prop == "away_total") {
+						let ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[0].innerText.replace("Over ", "");
+						
+						data[game]["away_total"] = {};
+						data[game]["away_total"][ou] = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[0].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[1].innerText;
+
+						ou = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Handicap")[2].innerText.replace("Over ", "");
+						data[game]["home_total"] = {};
+						data[game]["home_total"][ou] = div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[2].innerText+"/"+div.querySelectorAll(".srb-ParticipantCenteredStackedWithMarketBorders_Odds")[3].innerText;
+					} else if (prop == "total_sets") {
+						data[game][prop] = {};
+
+						let ou = div.querySelectorAll(".gl-Participant_General")[1].querySelector(".gl-ParticipantBorderless_Odds").innerText+"/"+div.querySelectorAll(".gl-Participant_General")[0].querySelector(".gl-ParticipantBorderless_Odds").innerText;
+						data[game][prop]["2.5"] = ou;
+					} else {
+						data[game][prop] = {};
+						let arr = [];
+						for (const set of div.querySelector(".gl-Market").querySelectorAll(".gl-Market_General-cn1")) {
+							arr.push(set.innerText);
 						}
-						idx += 1;
+
+						let idx = 0;
+						for (const playerDiv of div.querySelectorAll(".gl-Participant_General")) {
+							let set = arr[idx % arr.length];
+							const odds = playerDiv.querySelector(".gl-ParticipantOddsOnly_Odds").innerText;
+
+							if (prop == "set") {
+								let player = game.split(" @ ")[0];
+								if (idx >= arr.length) {
+									player = game.split(" @ ")[1];
+								}
+								
+								data[game][prop][player+" "+set] = odds;
+							} else {
+								if (idx < arr.length) {
+									data[game][prop][set] = odds;
+								} else {
+									data[game][prop][set] += "/"+odds;
+								}
+							}
+							idx += 1;
+						}
 					}
 				}
-			}
-		} else {
-			let games = [];
-			let idx = 0;
-			for (div of main.querySelector(".gl-Market_General").children) {
-				if (idx === 0 || div.classList.contains("Hidden")) {
+			} else {
+				let games = [];
+				let idx = 0;
+				for (div of main.querySelector(".gl-Market_General").children) {
+					if (idx === 0 || div.classList.contains("Hidden")) {
+						idx += 1;
+						continue;
+					}
+					if (div.classList.contains("rcl-MarketHeaderLabel-isdate")) {
+						//break;
+						continue;
+					}
+					const away = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[0].innerText.toLowerCase().replaceAll(".", "");
+					const home = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[1].innerText.toLowerCase().replaceAll(".", "");
+					const game = (away+" @ "+home).replaceAll("/", " / ");
+					games.push(game);
+
+					if (!data[game]) {
+						data[game] = {};
+					}
+				}
+
+				idx = 0;
+				let divs = main.querySelectorAll(".gl-Market_General")[1].querySelectorAll(".gl-Participant_General");
+				for (let i = 0; i < divs.length; i += 1) {
+					let game = games[idx];
+
+					if (!game) {
+						break;
+					}
+
+					if (prop.indexOf("ml") >= 0) {
+						let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
+						data[game][prop] = odds;
+					} else {
+						let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
+						let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
+						if (!data[game][prop]) {
+							data[game][prop] = {};
+						}
+						line = parseFloat(line).toString();
+						data[game][prop][line] = odds;
+					}
 					idx += 1;
-					continue;
-				}
-				if (div.classList.contains("rcl-MarketHeaderLabel-isdate")) {
-					//break;
-					continue;
-				}
-				const away = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[0].innerText.toLowerCase().replaceAll(".", "");
-				const home = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[1].innerText.toLowerCase().replaceAll(".", "");
-				const game = (away+" @ "+home).replaceAll("/", " / ");
-				games.push(game);
-
-				if (!data[game]) {
-					data[game] = {};
-				}
-			}
-
-			idx = 0;
-			let divs = main.querySelectorAll(".gl-Market_General")[1].querySelectorAll(".gl-Participant_General");
-			for (let i = 0; i < divs.length; i += 1) {
-				let game = games[idx];
-
-				if (!game) {
-					break;
 				}
 
-				if (prop.indexOf("ml") >= 0) {
-					let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
-					data[game][prop] = odds;
-				} else {
-					let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
-					let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
-					data[game][prop] = line+" "+odds;
-				}
-				idx += 1;
-			}
+				idx = 0;
+				divs = main.querySelectorAll(".gl-Market_General")[2].querySelectorAll(".gl-Participant_General");
+				for (let i = 0; i < divs.length; i += 1) {
+					let game = games[idx];
 
-			idx = 0;
-			divs = main.querySelectorAll(".gl-Market_General")[2].querySelectorAll(".gl-Participant_General");
-			for (let i = 0; i < divs.length; i += 1) {
-				let game = games[idx];
+					if (!game) {
+						break;
+					}
 
-				if (!game) {
-					break;
-				}
+					if (prop.indexOf("ml") >= 0) {
+						let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
+						data[game][prop] += "/"+odds;
+					} else {
+						let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
+						let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
+						if (prop.indexOf("spread") >= 0) {
+							line = (parseFloat(line) * -1).toString();
+						} else {
+							line = parseFloat(line).toString();
+						}
 
-				if (prop.indexOf("ml") >= 0) {
-					let odds = divs[i].querySelector(".sgl-ParticipantOddsOnly80_Odds").innerText;
-					data[game][prop] += "/"+odds;
-				} else {
-					let line = divs[i].querySelector(".src-ParticipantCenteredStacked80_Handicap").innerText;
-					let odds = divs[i].querySelector(".src-ParticipantCenteredStacked80_Odds").innerText;
-					data[game][prop] += "/"+odds;
+						data[game][prop][line] += "/"+odds;
+					}
+					idx += 1;
 				}
-				idx += 1;
 			}
 		}
 		console.log(data);
@@ -1009,19 +1154,28 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 	with open(f"{prefix}static/tennis/pinnacle.json") as fh:
 		pnLines = json.load(fh)
 
+	with open(f"{prefix}static/tennis/pointsbet.json") as fh:
+		pbLines = json.load(fh)
+
 	with open(f"{prefix}static/tennis/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
 	with open(f"{prefix}static/tennis/ev.json") as fh:
 		evData = json.load(fh)
 
-	if not teamArg:
-		evData = {}
-	elif teamArg:
-		for player in evData.copy():
-			if teamArg in evData[player]["game"]:
-				del evData[player]
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"pb": pbLines,
+		"bv": bvLines,
+		"dk": dkLines,
+		"bet365": bet365Lines,
+		#"cz": czLines
+	}
 
+	evData = {}
 	for game in fdLines:
 		if teamArg and teamArg not in game:
 			continue
@@ -1031,7 +1185,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 		if doubles and "/" not in game:
 			continue
 		team1, team2 = map(str, game.split(" @ "))
-		for prop in fdLines[game]:
+
+		props = {}
+		for book in lines:
+			if game not in lines[book]:
+				continue
+			for prop in lines[book][game]:
+				props[prop] = 1
+
+		for prop in props:
 
 			if prop == "set":
 				continue
@@ -1039,129 +1201,146 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 			if propArg and prop != propArg:
 				continue
 
-			if type(fdLines[game][prop]) is dict:
-				arr = fdLines[game][prop]
-			else:
-				arr = [None]
+			handicaps = {}
+			for book in lines:
+				lineData = lines[book]
+				if game in lineData and prop in lineData[game]:
+					if type(lineData[game][prop]) is not dict:
+						handicaps[("", "")] = ""
+						break
+					for handicap in lineData[game][prop]:
+						player = playerHandicap = ""
+						try:
+							player = float(handicap)
+							player = ""
+						except:
+							player = handicap
+							playerHandicap = ""
+							if " " in lineData[game][prop][player]:
+								playerHandicap = lineData[game][prop][player].split(" ")[0]
+						handicaps[(handicap, playerHandicap)] = player
 
-			for key in arr:
-				fd = fdLines[game][prop]
-				handicap = 0
-				if " " in fd:
-					handicap = str(float(fd.split(" ")[0]))
-
-				if key:
-					fd = fdLines[game][prop][key]
-					handicap = key
-
-				fd = fd.split(" ")[-1]
-
-				kambi = ""
-				if game in kambiLines and prop in kambiLines[game]:
-					if handicap:
-						if " " in kambiLines[game][prop]:
-							if str(handicap) == float(kambiLines[game][prop].split(" ")[0]):
-								kambi = kambiLines[game][prop].split(" ")[-1]
-						elif handicap in kambiLines[game][prop]:
-							kambi = kambiLines[game][prop][handicap]
-
-					elif prop in ["set"]:
-						kambi = kambiLines[game][prop][handicap]
-					else:
-						kambi = kambiLines[game][prop]
-
-				bv = ""
-				if game in bvLines and prop in bvLines[game]:
-					if handicap:
-						if type(bvLines[game][prop]) is dict:
-							if handicap in bvLines[game][prop]:
-								bv = bvLines[game][prop][handicap]
-						elif float(handicap) == float(bvLines[game][prop].split(" ")[0]):
-							bv = bvLines[game][prop].split(" ")[-1]
-					else:
-						bv = bvLines[game][prop]
-
-				mgm = ""
-				if game in mgmLines and prop in mgmLines[game]:
-					if handicap:
-						if type(mgmLines[game][prop]) is dict:
-							if handicap in mgmLines[game][prop]:
-								mgm = mgmLines[game][prop][handicap]
-						elif float(handicap) == float(mgmLines[game][prop].split(" ")[0]):
-							mgm = mgmLines[game][prop].split(" ")[-1]
-					else:
-						mgm = mgmLines[game][prop]
-
-				pn = ""
-				if game in pnLines and prop in pnLines[game]:
-					if handicap:
-						if type(pnLines[game][prop]) is dict:
-							if handicap in pnLines[game][prop]:
-								pn = pnLines[game][prop][handicap]
-						elif float(handicap) == float(pnLines[game][prop].split(" ")[0]):
-							pn = pnLines[game][prop].split(" ")[-1]
-					else:
-						pn = pnLines[game][prop]
-
-				bet365 = ""
-				if game in bet365Lines and prop in bet365Lines[game]:
-					if handicap:
-						if type(bet365Lines[game][prop]) is dict:
-							if handicap in bet365Lines[game][prop]:
-								bet365 = bet365Lines[game][prop][handicap]
-						elif float(handicap) == float(bet365Lines[game][prop].split(" ")[0]):
-							bet365 = bet365Lines[game][prop].split(" ")[-1]
-					else:
-						bet365 = bet365Lines[game][prop]
-
-				dk = ""
-				if game in dkLines and prop in dkLines[game]:
-					if handicap:
-						if type(dkLines[game][prop]) is dict:
-							if handicap in dkLines[game][prop]:
-								dk = dkLines[game][prop][handicap]
-						elif float(handicap) == float(dkLines[game][prop].split(" ")[0]):
-							dk = dkLines[game][prop].split(" ")[-1]
-					else:
-						dk = dkLines[game][prop]
-
+			for handicap, playerHandicap in handicaps:
+				player = handicaps[(handicap, playerHandicap)]
 
 				for i in range(2):
+					highestOdds = []
+					books = []
+					odds = []
 
-					if "/" not in fd and i == 1:
+					for book in lines:
+						lineData = lines[book]
+						if game in lineData and prop in lineData[game] and handicap in lineData[game][prop]:
+
+							if type(lineData[game][prop]) is not dict:
+								val = lineData[game][prop]
+							else:
+								val = lineData[game][prop][handicap]
+
+								if player:
+									if type(val) is dict:
+										if playerHandicap not in val:
+											continue
+										val = lineData[game][prop][handicap][playerHandicap]
+									else:
+										if prop not in [] and playerHandicap != val.split(" ")[0]:
+											continue
+										val = lineData[game][prop][handicap].split(" ")[-1]
+
+							try:
+								o = val.split(" ")[-1].split("/")[i]
+								ou = val.split(" ")[-1]
+							except:
+								if i == 1:
+									continue
+								o = val
+								ou = val
+
+							if not o:
+								continue
+							highestOdds.append(int(o))
+							odds.append(ou)
+							books.append(book)
+
+					if len(books) < 2:
 						continue
 
-					line = fd.split("/")[i]
-					l = [fd, dk, bv, mgm, pn]
+					kambi = ""
+					try:
+						bookIdx = books.index("kambi")
+						kambi = odds[bookIdx]
+						odds.remove(kambi)
+						books.remove("kambi")
+					except:
+						pass
+
+					pn = ""
+					try:
+						bookIdx = books.index("pn")
+						pn = odds[bookIdx]
+						odds.remove(pn)
+						books.remove("pn")
+					except:
+						pass
+
+					bet365 = ""
+					try:
+						bookIdx = books.index("bet365")
+						bet365 = odds[bookIdx]
+						odds.remove(bet365)
+						books.remove("bet365")
+					except:
+						pass
+
 					evBook = ""
-
-
-					books = ["fd", "dk", "bv", "mgm"]
-					maxOdds = []
-					for odds in l:
+					l = odds
+					if bookArg:
+						if bookArg not in books:
+							continue
+						evBook = bookArg
+						idx = books.index(bookArg)
+						maxOU = odds[idx]
 						try:
-							maxOdds.append(int(odds.split("/")[i]))
+							line = maxOU.split("/")[i]
 						except:
-							maxOdds.append(-10000)
+							continue
+					else:
+						maxOdds = []
+						for odds in l:
+							try:
+								maxOdds.append(int(odds.split("/")[i]))
+							except:
+								maxOdds.append(-10000)
 
-					maxOdds = max(maxOdds)
-					maxOU = ""
-					for odds, book in zip(l, books):
-						try:
-							if odds.split("/")[i] == str(maxOdds):
-								evBook = book
-								maxOU = odds
-								break
-						except:
-							pass
+						if not maxOdds:
+							continue
 
-					if not evBook:
-						continue
+						maxOdds = max(maxOdds)
+						maxOU = ""
+						for odds, book in zip(l, books):
+							try:
+								if str(int(odds.split("/")[i])) == str(maxOdds):
+									evBook = book
+									maxOU = odds
+									break
+							except:
+								pass
 
-					line = maxOdds
+						line = maxOdds
+
+					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
+
 					l.remove(maxOU)
-					l.extend([pn, bet365, kambi])
-
+					books.remove(evBook)
+					if kambi:
+						books.append("kambi")
+						l.append(kambi)
+					if pn:
+						books.append("pn")
+						l.append(pn)
+					if bet365:
+						books.append("bet365")
+						l.append(bet365)
 
 					avgOver = []
 					avgUnder = []
@@ -1196,28 +1375,31 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 					if not line:
 						continue
 
-					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
-					player = f"{game} {prop} {handicap} {'over' if i == 0 else 'under'}"
-					if player in evData:
+					key = f"{game} {prop} {handicap} {'over' if i == 0 else 'under'}"
+					if key in evData:
 						continue
 					if True:
 						pass
-						devig(evData, player, ou, int(line), prop=prop)
+						devig(evData, key, ou, line, prop=prop)
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
-						if player not in evData:
-							print(player)
+						if key not in evData:
+							print(key)
 							continue
-						if float(evData[player]["ev"]) > 0:
-							print(evData[player]["ev"], game, prop, handicap, int(line), ou, evBook, "\n\t", l)
-						evData[player]["game"] = game
-						evData[player]["book"] = evBook
-						evData[player]["ou"] = ou
-						evData[player]["under"] = i == 1
-						evData[player]["odds"] = l
-						evData[player]["line"] = line
-						evData[player]["fanduel"] = str(fd).split(" ")[-1]
-						evData[player]["dk"] = dk
-						evData[player]["value"] = str(handicap)
+						if float(evData[key]["ev"]) > 0:
+							print(evData[key]["ev"], game, prop, handicap, int(line), ou, evBook, "\n\t", l)
+						evData[key]["game"] = game
+						evData[key]["book"] = evBook
+						evData[key]["books"] = books
+						evData[key]["ou"] = ou
+						evData[key]["under"] = i == 1
+						evData[key]["odds"] = l
+						evData[key]["line"] = line
+						evData[key]["fullLine"] = maxOU
+						evData[key]["handicap"] = handicap
+						evData[key]["playerHandicap"] = playerHandicap
+						j = {b: o for o, b in zip(l, books)}
+						j[evBook] = maxOU
+						evData[key]["bookOdds"] = j
 
 	with open(f"{prefix}static/tennis/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
@@ -1266,7 +1448,8 @@ def sortEV():
 	data = []
 	for game in evData:
 		d = evData[game]
-		data.append((d["ev"], game, d["line"], d["book"], d["odds"]))
+		j = [f"{k}:{d['bookOdds'][k]}" for k in d["bookOdds"] if k != d["book"]]
+		data.append((d["ev"], game, d["line"], d["book"], j))
 
 	for row in sorted(data):
 		print(row)
@@ -1280,6 +1463,7 @@ if __name__ == '__main__':
 	parser.add_argument("--all", action="store_true", help="ALL AVGs")
 	parser.add_argument("--fd", action="store_true", help="Fanduel")
 	parser.add_argument("--dk", action="store_true", help="Fanduel")
+	parser.add_argument("--pb", action="store_true", help="Pointsbet")
 	parser.add_argument("--writeBV", action="store_true", help="Bovada")
 	parser.add_argument("--bv", action="store_true", help="Bovada")
 	parser.add_argument("--ev", action="store_true", help="EV")
@@ -1330,12 +1514,16 @@ if __name__ == '__main__':
 	if args.pn:
 		writePinnacle(args.date)
 
+	if args.pb:
+		writePointsbet()
+
 	if args.update:
 		writeFanduel()
 		writeDK(args.date)
 		writeBovada()
 		writeKambi()
 		writeMGM()
+		writePointsbet()
 		writePinnacle(args.date)
 
 	if args.ev:
@@ -1348,6 +1536,25 @@ if __name__ == '__main__':
 		#writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
 		#sortEV()
 		pass
+
+	if False:
+		with open(f"{prefix}static/tennis/bet365.json") as fh:
+			bet365Lines = json.load(fh)
+
+		res = {}
+		for game in bet365Lines:
+			res[game] = {}
+			for prop in bet365Lines[game]:
+				if type(bet365Lines[game][prop]) is str and " " in bet365Lines[game][prop]:
+					handicap, odds = map(str, bet365Lines[game][prop].split(" "))
+					res[game][prop] = {
+						handicap: odds
+					}
+				else:
+					res[game][prop] = bet365Lines[game][prop]
+
+		with open(f"{prefix}static/tennis/bet365.json", "w") as fh:
+			json.dump(res, fh, indent=4)
 
 	if args.player:
 		with open(f"{prefix}static/tennis/draftkings.json") as fh:

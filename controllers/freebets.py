@@ -686,9 +686,16 @@ def writeFanduel(team=None):
 
 	games = [
   "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32628536",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32628476",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-pittsburgh-pirates-32627338",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-baltimore-orioles-32627351",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-32627339",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-detroit-tigers-32627352",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-toronto-blue-jays-32627344",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-new-york-mets-32627336",
+  #"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32627345",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-milwaukee-brewers-32627340",
+  #"https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32627346",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32627349",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32627347",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-colorado-rockies-32627343",
@@ -1395,7 +1402,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("ronny mauricio", 750, "nym"), ("aaron judge", 210, "nyy"), ("mj melendez", 500, "kc"), ("jake bauers", 600, "nyy"), ("drew waters", 800, "kc"), ("teoscar hernandez", 370, "sea"), ("austin wells", 600, "nyy"), ("joey wiemer", 1100, "mil"), ("randal grichuk", 830, "laa"), ("matt olson", 280, "atl")]
+	plays = [("max muncy", 320, "lad"), ("joey meneses", 900, "wsh"), ("tyler oneill", 430, "stl"), ("jd martinez", 390, "lad"), ("mj melendez", 450, "kc"), ("matt wallner", 480, "min"), ("mark vientos", 630, "nym"), ("pete alonso", 330, "nym"), ("nolan arenado", 400, "stl")]
 
 	if args.lineups:
 		writeLineups(plays)
