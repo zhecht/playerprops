@@ -685,23 +685,21 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32628536",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32628476",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-pittsburgh-pirates-32627338",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-baltimore-orioles-32627351",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-32627339",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-detroit-tigers-32627352",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-toronto-blue-jays-32627344",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-new-york-mets-32627336",
-  #"https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32627345",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-milwaukee-brewers-32627340",
-  #"https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32627346",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32627349",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32627347",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-colorado-rockies-32627343",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-seattle-mariners-32627348",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-san-francisco-giants-32627350",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-los-angeles-dodgers-32627337"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-colorado-rockies-32629626",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-san-francisco-giants-32629650",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-seattle-mariners-32629640",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-pittsburgh-pirates-32629629",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-baltimore-orioles-32629651",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-32629630",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-detroit-tigers-32629652",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-toronto-blue-jays-32629643",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-new-york-mets-32629623",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32629645",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32629646",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-milwaukee-brewers-32629636",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32629647",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-los-angeles-dodgers-32629625"
 ]
 
 	lines = {}
@@ -949,12 +947,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	if not boost:
 		boost = 1
 
-	try:
-		with open(f"{prefix}static/mlbprops/dates/{date}.json") as fh:
-			dkLines = json.load(fh)
-	except:
-		dkLines = {}
-
 	if prop != "hr":
 		with open(f"{prefix}static/mlbprops/bet365_{prop}s.json") as fh:
 			bet365Lines = json.load(fh)
@@ -974,6 +966,21 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 	with open(f"{prefix}static/freebets/bovada.json") as fh:
 		bovada = json.load(fh)
+
+	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/bovada.json") as fh:
+		bvLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/pointsbet.json") as fh:
+		pbLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/caesars.json") as fh:
+		czLines = json.load(fh)
 
 	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
 		bppExpectedHomers = json.load(fh)
@@ -1030,15 +1037,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			dk = ""
 			dkLine = 0
 			dkProp = prop.replace("single", "1b").replace("double", "2b")
-			if game in dkLines and player in dkLines[game] and dkProp in dkLines[game][player]:
-				dk = dkLines[game][player][dkProp]["over"]+"/"+dkLines[game][player][dkProp]["under"]
-				if under:
-					dkLine = int(dkLines[game][player][dkProp]["under"])
-				else:
-					dkLine = int(dkLines[game][player][dkProp]["over"])
-
-				if handicap and handicap != dkLines[game][player][dkProp]["line"]:
-					dk = ""
+			if game in dkLines and prop in dkLines[game] and player in dkLines[game][prop]:
+				dk = dkLines[game][prop][player].split(" ")[-1]
 			elif useDK:
 				continue
 
@@ -1063,9 +1063,18 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				pn = bpp[team][player]["hr"]["0.5"].get("pn", "-")
 				bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
 
+			if prop == "hr" and game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
+				pn = pnLines[game]["hr"][player].split(" ")[-1]
+
+			if prop == "hr" and game in pbLines and "hr" in pbLines[game] and player in pbLines[game]["hr"]:
+				pb = pbLines[game]["hr"][player].split(" ")[-1]
+
+			if prop == "hr" and game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
+				cz = czLines[game]["hr"][player].split(" ")[-1]
+
 			bv = ""
-			if prop == "hr" and team in bovada and player in bovada[team]:
-				bv = bovada[team][player]["hr"]["1"]
+			if prop == "hr" and game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
+				bv = bvLines[game]["hr"][player].split(" ")[-1]
 
 			if team not in bet365Lines or player not in bet365Lines[team]:
 				bet365ou = ""
@@ -1098,7 +1107,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if not nobr:
 					l.append(br.split("/")[0])
 			if allArg:
-				l = [dk, bet365ou, mgm, pb, pn, bs]
+				l = [dk, bet365ou, mgm, pb, pn.split("/")[0], bs, bv]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
@@ -1115,7 +1124,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			elif bookArg == "cz":
 				evBook = "cz"
 				line = cz
-				l[6] = str(fdLine)
+				l[7] = str(fdLine)
 
 				if line == "-":
 					continue
@@ -1231,6 +1240,18 @@ def sortEV(dinger=False):
 	with open(f"{prefix}static/freebets/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
+	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/pointsbet.json") as fh:
+		pbLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/bovada.json") as fh:
+		bvLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
@@ -1291,11 +1312,19 @@ def sortEV(dinger=False):
 					bs = bppLines[team][player][prop]["0.5"].get("bs", "-")
 
 			bv = ""
-			if prop == "hr" and team in bovada and player in bovada[team]:
-				bv = bovada[team][player]["hr"]["1"]
 
-			if prop == "hr" and team and team in kambiLines and player in kambiLines[team]:
-				kambi = kambiLines[team][player]
+			if prop == "hr":
+				if game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
+					pn = pnLines[game]["hr"][player].split(" ")[-1]
+
+				if game in pbLines and "hr" in pbLines[game] and player in pbLines[game]["hr"]:
+					pb = pbLines[game]["hr"][player].split(" ")[-1]
+
+				if game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
+					bv = bvLines[game]["hr"][player].split(" ")[-1].replace("+", "")
+
+				if team and team in kambiLines and player in kambiLines[team]:
+					kambi = kambiLines[team][player]
 
 			bet365 = evData[player]['bet365']
 			if "/" in bet365 and int(bet365.split("/")[0]) > 0:
@@ -1312,7 +1341,7 @@ def sortEV(dinger=False):
 
 			l = [ev, team.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 			if prop not in ["single", "double", "tb"]:
-				l.extend([pb, br, pn, bs])
+				l.extend([pb, br, pn, bs, bv])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
@@ -1327,7 +1356,7 @@ def sortEV(dinger=False):
 		output = f"\t\t\tUPD: {dt}\n\n"
 		l = ["EV (AVG)", "Team", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop not in ["single", "double", "tb"]:
-			l.extend(["PB", "BR", "PN", "BS"])
+			l.extend(["PB", "BR", "PN", "BS", "BV"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":

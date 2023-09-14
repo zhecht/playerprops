@@ -283,8 +283,6 @@ def writeCZ():
 					res[game][prop] = ou
 				elif "spread" in prop:
 					line = str(float(market["line"]) * -1)
-					if line[0] not in ["-", "+"]:
-						line = "+"+line
 					res[game][prop][line] = ou
 				elif "total" in prop:
 					line = str(float(market["line"]))
@@ -305,8 +303,6 @@ def writeCZ():
 					selections = prices["selections"]
 					if prop == "spread":
 						line = str(float(prices["line"]) * -1)
-						if line[0] not in ["-", "+"]:
-							line = "+"+line
 						ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
 					else:
 						line = str(float(prices["line"]))
@@ -323,7 +319,7 @@ def writeCZ():
 
 def writePointsbet():
 	url = "https://api.mi.pointsbet.com/api/v2/sports/american-football/events/featured?includeLive=false"
-	outfile = f"outPB"
+	outfile = f"nfloutPB"
 	os.system(f"curl -k \"{url}\" -o {outfile}")
 
 	with open(outfile) as fh:
@@ -334,12 +330,11 @@ def writePointsbet():
 		games.append(row["key"])
 
 	res = {}
+	#games = ["275622"]
 	for gameId in games:
-		#print(gameId)
-	#for gameId in [games[0]]:
 		url = f"https://api.mi.pointsbet.com/api/mes/v3/events/{gameId}"
 		time.sleep(0.3)
-		outfile = f"outPB"
+		outfile = f"nfloutPB"
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
@@ -373,13 +368,13 @@ def writePointsbet():
 			elif "1st quarter" in prop:
 				prefix = "1q_"
 
-			if prop.startswith("point spread"):
+			if prop.startswith("point spread") or prop == "pick your own line":
 				prop = f"{prefix}spread"
 			elif prop.startswith("moneyline"):
 				if "3 way" in prop:
 					continue
 				prop = f"{prefix}ml"
-			elif prop.startswith("total"):
+			elif prop.startswith("total") or prop == "alternate totals":
 				if "touchdowns" in prop:
 					continue
 				prop = "total"
@@ -412,23 +407,22 @@ def writePointsbet():
 					res[game][prop] = {}
 
 			outcomes = market["outcomes"]
-			if market["hiddenOutcomes"] and prop == "total":
+			if market["hiddenOutcomes"] and prop in ["total"]:
 				outcomes.extend(market["hiddenOutcomes"])
 			skip = 1 if prop == "attd" else 2
 			for i in range(0, len(outcomes), skip):
 				points = str(outcomes[i]["points"])
 				if outcomes[i]["price"] == 1:
 					continue
-				over = convertAmericanOdds(outcomes[i]["price"])
+				over = str(convertAmericanOdds(outcomes[i]["price"]))
 				under = ""
 				try:
 					under = convertAmericanOdds(outcomes[i+1]["price"])
+					ou = f"{over}/{under}"
+					if "spread" in prop or "ml" in prop and outcomes[i]["side"] == "Home":
+						ou = f"{under}/{over}"
 				except:
 					pass
-				ou = f"{over}"
-
-				if under:
-					ou += f"/{under}"
 
 				if "ml" in prop:
 					res[game][prop] = ou
@@ -448,19 +442,17 @@ def writePointsbet():
 					if "spread" in prop and outcomes[i]["side"] == "Home":
 						points = str(outcomes[i+1]["points"])
 						ou = f"{under}/{over}"
-					if "spread" in prop and points[0] != "-":
-						points = "+"+points
 					res[game][prop][points] = ou
 
 	with open("static/nfl/pointsbet.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
 def parsePinnacle(res, games, gameId, retry, debug):
-	outfile = "outPN"
+	outfile = "nfloutPN"
 	game = games[gameId]
 
 	#print(game)
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o nfloutPN'
 
 	time.sleep(0.5)
 	os.system(url)
@@ -507,7 +499,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 		with open("t2", "w") as fh:
 			json.dump(related, fh, indent=4)
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o nfloutPN'
 
 	time.sleep(0.5)
 	os.system(url)
@@ -585,8 +577,6 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 			if "points" in prices[0]:
 				handicap = str(prices[switched]["points"])
-				if "spread" in prop and handicap[0] != "-":
-					handicap = "+"+handicap
 				if prop not in res[game]:
 					res[game][prop] = {}
 
@@ -602,10 +592,10 @@ def writePinnacle(date):
 
 	url = "https://www.pinnacle.com/en/football/nfl/matchups#period:0"
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/889/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o outPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/889/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o nfloutPN'
 
 	os.system(url)
-	outfile = f"outPN"
+	outfile = f"nfloutPN"
 	with open(outfile) as fh:
 		data = json.load(fh)
 
@@ -634,7 +624,7 @@ def writeBV():
 	url = "https://www.bovada.lv/sports/football/nfl"
 
 	url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/football/nfl?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
-	outfile = f"outBV"
+	outfile = f"nfloutBV"
 
 	os.system(f"curl -k \"{url}\" -o {outfile}")
 
@@ -743,8 +733,6 @@ def writeBV():
 						for i in range(0, len(market["outcomes"]), 2):
 							ou = f"{market['outcomes'][i]['price']['american']}/{market['outcomes'][i+1]['price']['american']}".replace("EVEN", "100")
 							handicap = market["outcomes"][i]["price"]["handicap"]
-							if handicap[0] != "-":
-								handicap = "+"+handicap
 							res[game][prop][handicap] = ou
 					elif prop == "attd":
 						for i in range(0, len(market["outcomes"]), 1):
@@ -780,7 +768,7 @@ def writeMGM():
 	url = "https://sports.mi.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35"
 
 	url = f"https://sports.mi.betmgm.com/en/sports/api/widget/widgetdata?layoutSize=Large&page=CompetitionLobby&sportId=11&regionId=9&competitionId=35&compoundCompetitionId=1:35&widgetId=/mobilesports-v1.0/layout/layout_us/modules/competition/defaultcontainereventsfutures-redesign&shouldIncludePayload=true"
-	outfile = f"outMGM"
+	outfile = f"nfloutMGM"
 
 	time.sleep(0.3)
 	os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
@@ -912,8 +900,6 @@ def writeMGM():
 							res[game][prop] = {}
 						try:
 							v = str(float(val))
-							if "spread" in prop and v[0] != "-":
-								v = "+"+v
 							res[game][prop][v] = ou
 						except:
 							pass
@@ -1064,8 +1050,6 @@ def writeKambi():
 					if betOffer["outcomes"][0]["label"] == "Under" or convertNFLTeam(betOffer["outcomes"][0]["label"].lower()) == home:
 						line = str(betOffer["outcomes"][1]["line"] / 1000)
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
-					if "spread" in label and line[0] not in ["+", "-"]:
-						line = "+"+line
 					data[game][label][line] = ou
 				elif label in ["attd"]:
 					data[game][label][player] = ou
@@ -1102,27 +1086,27 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/football/nfl/detroit-lions-@-kansas-city-chiefs-32343729",
-  "https://mi.sportsbook.fanduel.com/football/nfl/san-francisco-49ers-@-pittsburgh-steelers-32345213",
-  "https://mi.sportsbook.fanduel.com/football/nfl/carolina-panthers-@-atlanta-falcons-32345218",
-  "https://mi.sportsbook.fanduel.com/football/nfl/houston-texans-@-baltimore-ravens-32345221",
-  "https://mi.sportsbook.fanduel.com/football/nfl/cincinnati-bengals-@-cleveland-browns-32345225",
-  "https://mi.sportsbook.fanduel.com/football/nfl/tampa-bay-buccaneers-@-minnesota-vikings-32345228",
-  "https://mi.sportsbook.fanduel.com/football/nfl/arizona-cardinals-@-washington-commanders-32345259",
-  "https://mi.sportsbook.fanduel.com/football/nfl/tennessee-titans-@-new-orleans-saints-32345229",
-  "https://mi.sportsbook.fanduel.com/football/nfl/jacksonville-jaguars-@-indianapolis-colts-32345288",
-  "https://mi.sportsbook.fanduel.com/football/nfl/philadelphia-eagles-@-new-england-patriots-32344372",
-  "https://mi.sportsbook.fanduel.com/football/nfl/las-vegas-raiders-@-denver-broncos-32345226",
-  "https://mi.sportsbook.fanduel.com/football/nfl/los-angeles-rams-@-seattle-seahawks-32345266",
-  "https://mi.sportsbook.fanduel.com/football/nfl/green-bay-packers-@-chicago-bears-32345275",
-  "https://mi.sportsbook.fanduel.com/football/nfl/miami-dolphins-@-los-angeles-chargers-32345284",
-  "https://mi.sportsbook.fanduel.com/football/nfl/dallas-cowboys-@-new-york-giants-32344726",
-  "https://mi.sportsbook.fanduel.com/football/nfl/buffalo-bills-@-new-york-jets-32343946"
+  "https://mi.sportsbook.fanduel.com/football/nfl/minnesota-vikings-@-philadelphia-eagles-32612046",
+  "https://mi.sportsbook.fanduel.com/football/nfl/green-bay-packers-@-atlanta-falcons-32612036",
+  "https://mi.sportsbook.fanduel.com/football/nfl/chicago-bears-@-tampa-bay-buccaneers-32612037",
+  "https://mi.sportsbook.fanduel.com/football/nfl/seattle-seahawks-@-detroit-lions-32612039",
+  "https://mi.sportsbook.fanduel.com/football/nfl/las-vegas-raiders-@-buffalo-bills-32612041",
+  "https://mi.sportsbook.fanduel.com/football/nfl/los-angeles-chargers-@-tennessee-titans-32612043",
+  "https://mi.sportsbook.fanduel.com/football/nfl/indianapolis-colts-@-houston-texans-32612044",
+  "https://mi.sportsbook.fanduel.com/football/nfl/baltimore-ravens-@-cincinnati-bengals-32612045",
+  "https://mi.sportsbook.fanduel.com/football/nfl/kansas-city-chiefs-@-jacksonville-jaguars-32612050",
+  "https://mi.sportsbook.fanduel.com/football/nfl/san-francisco-49ers-@-los-angeles-rams-32612040",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-arizona-cardinals-32612047",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-jets-@-dallas-cowboys-32612051",
+  "https://mi.sportsbook.fanduel.com/football/nfl/washington-commanders-@-denver-broncos-32612052",
+  "https://mi.sportsbook.fanduel.com/football/nfl/miami-dolphins-@-new-england-patriots-32612053",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-orleans-saints-@-carolina-panthers-32612048",
+  "https://mi.sportsbook.fanduel.com/football/nfl/cleveland-browns-@-pittsburgh-steelers-32612049"
 ]
 
+	#games = ["https://mi.sportsbook.fanduel.com/football/nfl/minnesota-vikings-@-philadelphia-eagles-32612046"]
 	lines = {}
 	for game in games:
-	#for game in [games[7]]:
 		gameId = game.split("-")[-1]
 		game = game.split("/")[-1][:-9].replace("-", " ")
 		away = convertNFLTeam(game.split(" @ ")[0])
@@ -1135,7 +1119,7 @@ def writeFanduel():
 		outfile = "outnfl"
 
 		for tab in ["", "passing-props", "receiving-props", "rushing-props", "defensive-props", "1st-half", "2nd-half", "1st-quarter"]:
-		#for tab in ["", "passing-props", "receiving-props", "rushing-props"]:
+		#for tab in ["1st-half"]:
 			time.sleep(0.42)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
@@ -1149,37 +1133,48 @@ def writeFanduel():
 				continue
 			for market in data["attachments"]["markets"]:
 				marketName = data["attachments"]["markets"][market]["marketName"].lower()
+				marketType = data["attachments"]["markets"][market]["marketType"]
 				runners = data["attachments"]["markets"][market]["runners"]
 
-				if marketName in ["moneyline"] or "any time touchdown" in marketName or marketName.startswith("1st half") or marketName.startswith("1st quarter") or marketName.startswith("alternate") or marketName == "player to record a sack" or marketName.split(" - ")[-1] in ["pass completions", "passing tds", "passing attempts", "passing yds", "receiving yds", "receiving tds", "total receptions", "longest pass", "longest rush", "longest reception", "rushing yds", "rushing attempts"]:
+				prefix = ""
+				if "1st half" in marketName or "first half" in marketName:
+					prefix = "1h_"
+				elif "2nd half" in marketName or "second half" in marketName:
+					prefix = "2h_"
+				elif "1st quarter" in marketName or "1st quarter" in marketName:
+					prefix = "1q_"
+
+
+				if marketName in ["moneyline"] or "any time touchdown" in marketName or marketName.startswith("1st half") or marketName.startswith("1st quarter") or marketName.startswith("alternate") or "total points" in marketName or marketName == "player to record a sack" or marketName.split(" - ")[-1] in ["pass completions", "passing tds", "passing attempts", "passing yds", "receiving yds", "receiving tds", "total receptions", "longest pass", "longest rush", "longest reception", "rushing yds", "rushing attempts"]:
 					prop = ""
-					if marketName == "moneyline":
+					if "moneyline" in marketName:
 						prop = "ml"
-					elif marketName == "total points" or marketName.startswith("alternate total points"):
-						prop = "total"
-					elif marketName == "1st half total points":
-						prop = "1h_total"
-					elif marketName == "1st quarter total points":
-						prop = "1q_total"
-					elif marketName == "spread" or marketName.startswith("alternate spread"):
+					elif "total points" in marketName or marketName.startswith("alternate total points"):
+						if "/" in marketName:
+							continue
+						if "AWAY_TOTAL_POINTS" in marketType or "AWAY_TEAM_TOTAL_POINTS" in marketType:
+							prop = "away_total"
+						elif "HOME_TOTAL_POINTS" in marketType or "HOME_TEAM_TOTAL_POINTS" in marketType:
+							prop = "home_total"
+						else:
+							prop = "total"
+					elif "spread" in marketName or marketName.startswith("alternate spread"):
+						if "/" in marketName:
+							continue
 						prop = "spread"
-					elif marketName == "1st half moneyline":
-						prop = "1h_ml"
-					elif marketName == "1st half spread":
-						prop = "1h_spread"
-					elif marketName == "1st quarter moneyline":
-						prop = "1q_ml"
-					elif marketName == "1st quarter spread":
-						prop = "1q_spread"
 					elif marketName == "any time touchdown scorer":
 						prop = "attd"
 					elif marketName == "player to record a sack":
 						prop = "sacks"
 					elif " - " in marketName:
+						if "total touchdowns" in marketName:
+							continue
 						marketName = marketName.split(" - ")[-1]
 						prop = "_".join(marketName.split(" ")).replace("completions", "cmp").replace("tds", "td").replace("passing", "pass").replace("attempts", "att").replace("yds", "yd").replace("receiving", "rec").replace("total_receptions", "rec").replace("reception", "rec").replace("rushing", "rush")
 					else:
 						continue
+
+					prop = f"{prefix}{prop}"
 
 					handicap = runners[0]["handicap"]
 					skip = 1 if prop in ["spread", "total", "attd", "sacks"] else 2
@@ -1200,29 +1195,24 @@ def writeFanduel():
 							lines[game][prop] = {}
 
 						for i in range(0, len(runners), skip):
-							handicap = str(runners[i]["handicap"])
+							handicap = str(float(runners[i]["handicap"]))
 							try:
 								odds = str(runners[i]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"])
 							except:
 								continue
 							if prop in ["spread", "total"]:
-								handicap = runners[i]["runnerName"].split(" ")[-1][1:-1]
+								handicap = str(float(runners[i]["runnerName"].split(" ")[-1][1:-1]))
 								runnerType = runners[i]["result"]["type"]
 								if "spread" in prop and runnerType in ["HOME", "UNDER"]:
 									handicap = str(float(handicap) * -1)
-									if handicap[0] != "-":
-										handicap = "+"+handicap
 								
-								if str(handicap) not in lines[game][prop]:
-									lines[game][prop][str(handicap)] = ""
+								if handicap not in lines[game][prop]:
+									lines[game][prop][handicap] = ""
 								if runners[i]["result"]["type"] == "OVER" or runners[i]["result"]["type"] == "AWAY":
-									lines[game][prop][str(handicap)] = str(odds)+lines[game][prop][str(handicap)]
+									lines[game][prop][handicap] = str(odds)+lines[game][prop][handicap]
 								else:
-									lines[game][prop][str(handicap)] += f"/{odds}"
+									lines[game][prop][handicap] += f"/{odds}"
 							elif "spread" in prop or "total" in prop:
-								if "spread" in prop:
-									if handicap[0] != "-":
-										handicap = "+"+handicap
 								lines[game][prop][handicap] = ou
 							else:
 								if prop == "attd":
@@ -1242,7 +1232,7 @@ def writeFanduel():
 									player = parsePlayer(" ".join(runners[i]["runnerName"].split(" ")[:-1]))
 									lines[game][prop][player] = f"{handicap} {ou}"
 	
-	with open(f"{prefix}static/nfl/fanduelLines.json", "w") as fh:
+	with open(f"static/nfl/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
@@ -1335,7 +1325,7 @@ def writeDK():
 			if subCat:
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
-			outfile = "outncaaf"
+			outfile = "outnfl"
 			call(["curl", "-k", url, "-o", outfile])
 
 			with open(outfile) as fh:
@@ -1406,7 +1396,16 @@ def writeDK():
 								label = "spread"
 							elif label.endswith("team total points"):
 								team = label.split(":")[0]
-								if game.startswith(team):
+								t = team.split(" ")[0].replace("jax", "jac")
+								if "giants" in team:
+									t += "g"
+								elif "jets" in team:
+									t += "j"
+								elif "rams" in team:
+									t += "r"
+								elif "chargers" in team:
+									t += "c"
+								if game.startswith(t):
 									label = "away_total"
 								else:
 									label = "home_total"
@@ -1461,9 +1460,12 @@ def writeDK():
 							elif "total" in label or "spread" in label:
 								for i in range(0, len(outcomes), 2):
 									line = str(float(outcomes[i]["line"]))
-									if "spread" in label and line[0] != "-":
-										line = "+"+line
-									lines[game][label][line] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+									ou = f"{outcomes[i]['oddsAmerican']}"
+									try:
+										ou += f"/{outcomes[i+1]['oddsAmerican']}"
+									except:
+										pass
+									lines[game][label][line] = ou
 							elif label in ["ftd", "attd"]:
 								for outcome in outcomes:
 									player = parsePlayer(outcome["participant"].split(" (")[0])
@@ -1772,13 +1774,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			if notd and prop in ["attd", "ftd"]:
 				continue
 
-			if "ml" in prop:
-				continue
-
 			handicaps = {}
 			for book in lines:
 				lineData = lines[book]
 				if game in lineData and prop in lineData[game]:
+					if type(lineData[game][prop]) is not dict:
+						handicaps[(" ", " ")] = ""
+						break
 					for handicap in lineData[game][prop]:
 						player = playerHandicap = ""
 						try:
@@ -1799,41 +1801,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					books = []
 					odds = []
 
-					if False and game in actionnetwork and prop in actionnetwork[game] and handicap in actionnetwork[game][prop]:
-						for book in actionnetwork[game][prop][handicap]:
-							if book in ["betrivers", "mgm", "fanduel", "pointsbet", "draftkings"]:
-								continue
-							val = actionnetwork[game][prop][handicap][book]
-							
-							if player:
-								if type(val) is dict:
-									if playerHandicap not in val:
-										continue
-									val = actionnetwork[game][prop][handicap][book][playerHandicap]
-								else:
-									if prop not in ["attd", "sacks"] and playerHandicap != val.split(" ")[0]:
-										continue
-									val = val.split(" ")[-1]
-
-							try:
-								o = val.split(" ")[-1].split("/")[i]
-								ou = val.split(" ")[-1]
-							except:
-								if i == 1:
-									continue
-								o = val
-								ou = val
-
-							highestOdds.append(int(o))
-							odds.append(ou)
-							books.append(book)
-
 					for book in lines:
 						lineData = lines[book]
-						if game in lineData and prop in lineData[game] and handicap in lineData[game][prop]:
-							val = lineData[game][prop][handicap]
+						if game in lineData and prop in lineData[game]:
 
-							if player:
+							if type(lineData[game][prop]) is str:
+								val = lineData[game][prop]
+							else:
+								if handicap not in lineData[game][prop]:
+									continue
+								val = lineData[game][prop][handicap]
+
+							if player.strip():
 								if type(val) is dict:
 									if playerHandicap not in val:
 										continue
@@ -2034,9 +2013,6 @@ def sortEV():
 
 	with open("static/nfl/props.csv", "w") as fh:
 		fh.write(output)
-
-
-
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
