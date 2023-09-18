@@ -685,21 +685,21 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-colorado-rockies-32629626",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-san-francisco-giants-32629650",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-seattle-mariners-32629640",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-pittsburgh-pirates-32629629",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-baltimore-orioles-32629651",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-32629630",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-detroit-tigers-32629652",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-toronto-blue-jays-32629643",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-new-york-mets-32629623",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32629645",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32629646",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-milwaukee-brewers-32629636",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32629647",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-los-angeles-dodgers-32629625"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-baltimore-orioles-32640190",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-pittsburgh-pirates-32640199",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-toronto-blue-jays-32640191",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-new-york-mets-32640184",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-miami-marlins-32640187",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-cleveland-guardians-32640192",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-milwaukee-brewers-32640188",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-kansas-city-royals-32640193",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-chicago-white-sox-32640194",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-st.-louis-cardinals-32640185",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-colorado-rockies-32640189",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-los-angeles-angels-32640195",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-oakland-athletics-32640196",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-seattle-mariners-32640198",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-arizona-diamondbacks-32640186"
 ]
 
 	lines = {}
@@ -982,6 +982,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/mlb/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
 	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
 		bppExpectedHomers = json.load(fh)
 
@@ -1071,6 +1074,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 			if prop == "hr" and game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
 				cz = czLines[game]["hr"][player].split(" ")[-1]
+
+			if prop == "hr" and game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
+				mgm = mgmLines[game]["hr"][player].split(" ")[-1]
 
 			bv = ""
 			if prop == "hr" and game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
@@ -1252,6 +1258,9 @@ def sortEV(dinger=False):
 	with open(f"{prefix}static/mlb/draftkings.json") as fh:
 		dkLines = json.load(fh)
 
+	with open(f"{prefix}static/mlb/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
@@ -1319,6 +1328,9 @@ def sortEV(dinger=False):
 
 				if game in pbLines and "hr" in pbLines[game] and player in pbLines[game]["hr"]:
 					pb = pbLines[game]["hr"][player].split(" ")[-1]
+
+				if game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
+					mgm = mgmLines[game]["hr"][player].split(" ")[-1]
 
 				if game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
 					bv = bvLines[game]["hr"][player].split(" ")[-1].replace("+", "")
@@ -1431,7 +1443,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("max muncy", 320, "lad"), ("joey meneses", 900, "wsh"), ("tyler oneill", 430, "stl"), ("jd martinez", 390, "lad"), ("mj melendez", 450, "kc"), ("matt wallner", 480, "min"), ("mark vientos", 630, "nym"), ("pete alonso", 330, "nym"), ("nolan arenado", 400, "stl")]
+	plays = [("matt wallner", 390, "min"), ("mj melendez", 520, "kc"), ("aaron judge", 320, "nyy"), ("jordan lawlar", 900, "ari"), ("ketel marte", 680, "ari")]
 
 	if args.lineups:
 		writeLineups(plays)

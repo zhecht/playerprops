@@ -380,11 +380,7 @@ def convertProp(prop):
 	return prop
 
 def convertRankingsProp(prop):
-	if prop == "k":
-		return "so"
-	elif prop == "so":
-		return "k"
-	elif prop in ["r"]:
+	if prop in ["r"]:
 		return "er"
 	elif prop == "rbi":
 		return "opp_rbi"
@@ -1845,9 +1841,9 @@ if __name__ == "__main__":
 	elif args.cron:
 		writeLineups(date)
 		writeProps(date)
-		writeBallparks(date)
+		#writeBallparks(date)
+		#writeBPPlayerProps(date)
 		write_projections(date)
-		writeBPPlayerProps(date)
 		writeLeftRightSplits()
 		writeGameLines(date)
 		writeStaticProps(date)

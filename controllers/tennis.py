@@ -49,10 +49,11 @@ def writePinnacle(date):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/sports/33/markets/straight?primaryOnly=false&withSpecials=false" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o outPN'
+	outfile = f"tennisoutPN"
+
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/sports/33/markets/straight?primaryOnly=false&withSpecials=false" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o '+outfile
 
 	os.system(url)
-	outfile = f"outPN"
 	with open(outfile) as fh:
 		data = json.load(fh)
 
@@ -65,14 +66,14 @@ def writePinnacle(date):
 
 	res = {}
 	for bid in ids:
-		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(bid)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
+		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(bid)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o '+outfile
 
 		time.sleep(0.3)
 		os.system(url)
 		with open(outfile) as fh:
 			related = json.load(fh)
 
-		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(bid)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o outPN'
+		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(bid)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o '+outfile
 
 		time.sleep(0.3)
 		os.system(url)
@@ -159,7 +160,7 @@ def writeMGM(date=None):
 
 	for tourney in tourneys:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixtures?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&fixtureTypes=Standard&state=Latest&offerMapping=Filtered&offerCategories=Gridable&fixtureCategories=Gridable,NonGridable,Other&sportIds=5&tournamentIds={tourneys[tourney]['id']}&competitionIds=&conferenceIds=&isPriceBoost=false&statisticsModes=None"
-		outfile = f"outMGM"
+		outfile = f"tennisoutMGM"
 
 		time.sleep(0.3)
 		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
@@ -265,7 +266,7 @@ def writeBovada():
 	ids = []
 	for which in ["wta", "wta-doubles", "wta-125k", "challenger", "itf-men", "itf-women"]:
 		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/tennis/{which}?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
-		outfile = f"outBV"
+		outfile = f"tennisoutBV"
 
 		time.sleep(0.3)
 		os.system(f"curl -k \"{url}\" -o {outfile}")
@@ -427,6 +428,9 @@ def writeKambi(date=None):
 			with open(outfile) as fh:
 				j = json.load(fh)
 
+			if "closed" not in j["betOffers"][0]:
+				continue
+
 			if str(datetime.strptime(j["betOffers"][0]["closed"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5))[:10] != date:
 				continue
 
@@ -483,7 +487,8 @@ def writeFanduel():
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/tennis/") >= 0) {
 				const time = a.parentElement.querySelector("time");
 				//if (time && time.innerText.split(" ").length < 3) {
-				if (time && time.innerText.split(" ")[0] === "THU") {
+				//if (time && time.innerText.split(" ")[0] === "FRI") {
+				if (time && (time.innerText.split(" ")[0] === "MON" || time.innerText.split(" ").length < 3)) {
 					urls[a.href] = 1;	
 				}
 			}
@@ -493,80 +498,40 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/h-arakawa-v-m-horvit-32633335",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/t-gibson-v-m-barry-32633334",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/friedsam-kichenok-v-kawaguchi-kobori-32629539",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/x-wang-v-sakatsume-32631515",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/z-talic-v-j-bradshaw-32633361",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-delaney-v-y-sueoka-32633362",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/b-walkin-v-i-okamura-32633364",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/t-yamanaka-v-j-beale-32633363",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-guiyang/y-hsieh-c-yuan-v-y-lee-q-tang-32633396",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-guiyang/h-guo-x-jiang-v-c-y-tsao-m-wang-32633395",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-guiyang/n-dong-f-a-lin-v-i-cho-y-t-cho-32633394",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-brumm-v-j-delaney-32633494",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/l-pigato-v-e-meri-32633499",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/v-olianovskaia-v-t-curovic-32633498",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/s-ambrosio-v-l-salden-32633500",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/hibino-hontama-v-hozumi-ninomiya-32632081",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/kalinskaya-putintseva-v-bains-lumsden-32632244",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/g-la-vela-v-t-lanik-32633567",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/d-ducariu-v-e-ribeiro-lago-32633562",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/p-marino-v-m-zeljenka-32633564",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-guiyang/e-s-liang-f-y-xun-v-m-guo-f-liu-32633566",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/m-bouzige-v-k-isomura-32633565",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/b-ellis-v-e-cook-32633561",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-court-v-b-mott-32633563",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/benoit-v-a-bondar-32630319",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/sara-popa-v-errani-32629702",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/d-cox-v-i-marrero-curbelo-32633657",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/a-mchugh-v-p-masjuan-ginel-32633661",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/j-haerteis-v-d-merida-32633665",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/l-rottoli-v-n-catini-32633659",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/s-markovic-v-g-pennaforti-32633667",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-dijon/n-gadient-c-janssen-v-d-mpetshi-perricard-l-pa-32629989",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/a-laboutkova-v-j-avdeeva-32633669",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-varna/y-mansouri-v-o-gavrila-32633668",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/v-gynina-v-a-bulatova-32633660",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/m-guth-v-e-baglow-32633662",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kursumlijska-banja/d-kuczer-v-o-korashvili-32633666",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/l-jeanjean-v-m-ristic-32633656",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/i-primorac-v-f-ostlund-32633658",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/a-aksu-v-g-lee-32633663",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-skopje/s-cakarevic-v-j-mikulskyte-32633664",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-italy-futures/c-caniato-v-a-bacaloni-32633760",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/s-reitano-v-d-ostapenkov-32633749",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/s-hamza-reguig-v-o-weightman-32633753",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/m-wiskandt-v-c-aksu-32633752",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/d-azoides-v-l-wiedenmann-32633757",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/p-trochu-v-l-fantini-32633756",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/n-hardt-v-c-vandermeersch-32633754",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/j-bhangdia-v-r-bertrand-32633758",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-tunisia-futures/a-gautier-v-f-salle-32633763",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-romania-futures/v-horak-v-m-steiner-32633755",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/b-daly-walkin-m-hulme-v-c-gaal-t-karpinski-32633759",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-australia-futures/j-beale-t-fancutt-v-c-crowther-t-sach-32633764",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/n-katsumi-i-yamazaki-v-l-mays-a-parnaby-32631158",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-monastir/m-podlinska-v-l-cilekova-32633751",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-monastir/a-waligora-v-a-wildgruber-32633761",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-le-neubourg/l-stefanini-v-v-ryser-32633748",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-le-neubourg/j-garland-v-a-korneeva-32633762",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/bejlek-v-er-andreeva-32630538",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/t-zidansek-v-lovric-32630222",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/m-rosenkranz-v-s-corbinais-32633807",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/a-matusevich-v-y-ghazouani-durand-32633810",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/dar-semenistaja-v-iri-bara-32629903",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/abduraimova-cascino-v-hindova-kubanova-32632672",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/rek-jani-v-d-galfi-32629798",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/fomina-klotz-lohoff-v-rosca-sakellaridi-32632854",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-bucharest-ii-2023/j-cristian-v-mitu-32630488",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/k-juvan-v-mir-bulgaru-32630335",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/bayerlova-webley-smith-v-anshba-gleason-32632805",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/kato-sutjiadi-v-mihal%C3%ADkov%C3%A1-xu-32631237",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-osaka-2023/as-krueger-v-a-kalinskaya-32631914",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/kawa-v-zeyn-sonmez-32632584",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ljubljana-2023/bassols-ribera-v-lu-ciric-bagaric-32632431",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-san-diego-2023/collins-vandeweghe-v-kichenok-ostapenko-32631149"
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/m-nakashima-v-e-hayashi-32644270",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/stephens-v-a-li-32642011",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/t-naklo-v-k-yoshioka-32644241",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/h-kobayashi-v-n-yoshimoto-32644244",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/j-sheng-v-s-ou-32644263",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/r-zhao-v-k-wu-32644262",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/y-cao-v-x-hu-32644261",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/w-kai-v-q-wang-32644260",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/m-horvit-v-o-collins-32644280",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/t-mcgiffin-v-m-stallworthy-32644279",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/a-smith-v-y-ohashi-32644278",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/a-omae-v-n-kang-32644288",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/m-mushika-v-k-morisaki-32644287",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/t-sharma-v-y-gao-32644314",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/c-tsai-v-y-lu-32644312",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/j-cvijanovic-v-s-su-32644313",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/b-thompson-v-b-compuesto-32644322",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/d-nima-v-z-yu-32644385",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/b-alabdullah-v-j-pai-32644384",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/n-katsumi-v-r-makesar-32644405",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/robi-montgomery-v-azarenka-32639509",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/camila-osorio-v-frech-32639499",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/s-hunter-v-iryn-shymanovich-32639516",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/dolehide-v-pe-stearns-32639469",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/m-sherif-v-c-giorgi-32639459",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/m-trevisan-v-j-paolini-32644204",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/emm-navarro-v-mateas-32641998",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/ka-pliskova-v-h-baptiste-32644245",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/m-kostyuk-v-fung-32639494",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/emil-arango-v-a-potapova-32639474",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/sof-kenin-v-c-zhao-32641988",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/b-haddad-maia-v-d-collins-32639479",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/a-sasnovich-v-garcia-32644125",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/o-jabeur-v-aly-parks-32644168"
 ]
 
 	lines = {}
@@ -694,8 +659,11 @@ def writeFanduel():
 	with open(f"{prefix}static/tennis/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
 
+	prefix = ""
+	if sharp:
+		prefix = "pn_"
 	if player not in evData:
 		evData[player] = {}
 
@@ -749,10 +717,10 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
 
 		ev = min(evs)
 
-		evData[player]["fairVal"] = fairVal
-		evData[player]["implied"] = implied
+		evData[player][f"{prefix}fairVal"] = fairVal
+		evData[player][f"{prefix}implied"] = implied
 	
-	evData[player]["ev"] = ev
+	evData[player][f"{prefix}ev"] = ev
 
 def writeDK(date):
 	url = "https://sportsbook.draftkings.com/leagues/tennis/us-open-men"
@@ -901,7 +869,7 @@ def writeDK(date):
 
 def writePointsbet(date=None):
 	url = "https://api.mi.pointsbet.com/api/v2/sports/tennis/events/nextup"
-	outfile = f"outPB"
+	outfile = f"tennisoutPB"
 	os.system(f"curl -k \"{url}\" -o {outfile}")
 
 	with open(outfile) as fh:
@@ -919,11 +887,14 @@ def writePointsbet(date=None):
 	for gameId in games:
 		url = f"https://api.mi.pointsbet.com/api/mes/v3/events/{gameId}"
 		time.sleep(0.3)
-		outfile = f"outPB"
+		outfile = f"tennisoutPB"
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 
-		with open(outfile) as fh:
-			data = json.load(fh)
+		try:
+			with open(outfile) as fh:
+				data = json.load(fh)
+		except:
+			continue
 
 		startDt = datetime.strptime(data["startsAt"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4)
 		if startDt.day != int(date[-2:]):
@@ -1010,7 +981,7 @@ def writePointsbet(date=None):
 						s = f"{s2}-{s1}"
 					res[game][prop][s] = str(over)
 				elif prop in ["set1_spread", "set2_spread"]:
-					points = str(float(outcomes[i]["name"].split(" ")[-1]))
+					points = str(float(outcomes[i]["name"].split(" ")[-1].replace("Even", "100")))
 					if game.endswith(outcomes[i]["name"].split(" ")[-2].lower()):
 						points = str(float(points) * -1)
 
@@ -1024,7 +995,7 @@ def writePointsbet(date=None):
 					res[game][prop] = str(over)
 					res[game]["home_1_set"] = str(under)
 				else:
-					points = str(float(outcomes[i]["name"].split(" ")[-1]))
+					points = str(float(outcomes[i]["name"].split(" ")[-1].replace("Even", "100")))
 					res[game][prop][points] = ou
 
 	with open("static/tennis/pointsbet.json", "w") as fh:
@@ -1324,11 +1295,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 
 					for book in lines:
 						lineData = lines[book]
-						if game in lineData and prop in lineData[game] and handicap in lineData[game][prop]:
+						if game in lineData and prop in lineData[game]:
 
 							if type(lineData[game][prop]) is not dict:
 								val = lineData[game][prop]
 							else:
+								if handicap not in lineData[game][prop]:
+									continue
 								val = lineData[game][prop][handicap]
 
 								if player:
@@ -1475,6 +1448,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 					if True:
 						pass
 						devig(evData, key, ou, line, prop=prop)
+						if pn:
+							if i == 1:
+								pn = f"{pn.split('/')[1]}/{pn.split('/')[0]}"
+							devig(evData, key, pn, line, prop=prop, sharp=True)
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							print(key)
@@ -1482,6 +1459,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 						if float(evData[key]["ev"]) > 0:
 							print(evData[key]["ev"], game, prop, handicap, int(line), ou, evBook, "\n\t", l)
 						evData[key]["game"] = game
+						evData[key]["player"] = player
 						evData[key]["book"] = evBook
 						evData[key]["books"] = books
 						evData[key]["ou"] = ou
@@ -1491,6 +1469,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 						evData[key]["fullLine"] = maxOU
 						evData[key]["handicap"] = handicap
 						evData[key]["playerHandicap"] = playerHandicap
+						evData[key]["prop"] = prop
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
@@ -1498,43 +1477,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 	with open(f"{prefix}static/tennis/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
-
-def writeBoostTMP():
-
-	with open("passing_boost.json") as fh:
-		boost = json.load(fh)
-
-	ev = {}
-	for player in boost:
-	#for player in ["patrick mahomes"]:
-		for prop in ["pass_yd", "pass_td", "int"]:
-			if prop not in boost[player]["fanduel"]:
-				continue
-			overs = []
-			fdBoost = boost[player]["fanduel"][prop] * 1.25
-
-			for book in ["bet365", "draftkings", "mgm", "kambi", "caesars"]:
-				if book not in boost[player] or prop not in boost[player][book]:
-					continue
-				overs.append(int(boost[player][book][prop]))
-
-			ou = f"AVG({','.join([str(x) for x in overs])})"
-			playerProp = player+"_"+prop
-			devigger(ev, player=playerProp, bet365Odds=ou, finalOdds=int(fdBoost))
-			if playerProp not in ev:
-				continue
-			ev[playerProp]["prop"] = prop
-			ev[playerProp]["overs"] = overs
-			ev[playerProp]["fd"] = boost[player]["fanduel"][prop]
-
-	with open("static/tennis/passing_boost.json", "w") as fh:
-		json.dump(ev, fh, indent=4)
-
-
 def sortEV():
-
-	with open(f"{prefix}static/tennis/kambi.json") as fh:
-		kambiLines = json.load(fh)
 
 	with open(f"{prefix}static/tennis/ev.json") as fh:
 		evData = json.load(fh)
@@ -1543,10 +1486,28 @@ def sortEV():
 	for game in evData:
 		d = evData[game]
 		j = [f"{k}:{d['bookOdds'][k]}" for k in d["bookOdds"] if k != d["book"]]
-		data.append((d["ev"], game, d["line"], d["book"], j))
+		data.append((d["ev"], game, d["line"], d["book"], j, d))
 
 	for row in sorted(data):
-		print(row)
+		print(row[:-1])
+
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "Bet365"]) + "\n"
+	for row in sorted(data, reverse=True):
+		ou = ("u" if row[-1]["under"] else "o")+" "
+		if row[-1]["player"]:
+			ou += row[-1]["playerHandicap"]
+		else:
+			ou += row[-1]["handicap"]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[-1]["game"], row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "bet365"]:
+			o = str(row[-1]["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/tennis/props.csv", "w") as fh:
+		fh.write(output)
 
 
 if __name__ == '__main__':
@@ -1667,10 +1628,34 @@ if __name__ == '__main__':
 			kambiLines = json.load(fh)
 
 		with open(f"{prefix}static/tennis/pinnacle.json") as fh:
-			pnines = json.load(fh)
+			pnLines = json.load(fh)
+
+		with open(f"{prefix}static/tennis/pointsbet.json") as fh:
+			pbLines = json.load(fh)
 
 		with open(f"{prefix}static/tennis/mgm.json") as fh:
-			mgmines = json.load(fh)
+			mgmLines = json.load(fh)
+
+
+		lines = {
+			"mgm": mgmLines,
+			"pb": pbLines,
+			"pn": pnLines,
+			"kambi": kambiLines,
+			"bv": bvLines,
+			"bet365": bet365Lines,
+			"dk": dkLines
+		}
+		for game in fdLines:
+			arr = []
+			if len([p for p in fdLines[game]]) < 2:
+				continue
+			for book in lines:
+				if game not in lines[book]:
+					arr.append(book)
+			print(game, arr)
+		exit()
+
 	
 		player = args.player
 

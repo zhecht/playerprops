@@ -501,7 +501,10 @@ def writePointsbet(date=None):
 					res[game][prop] = ou
 				elif playerProps:
 					#player = parsePlayer(outcomes[i]["name"].lower().split(" over")[0].split(" to ")[0])
-					player = parsePlayer(playerIds[outcomes[i]["playerId"]])
+					try:
+						player = parsePlayer(playerIds[outcomes[i]["playerId"]])
+					except:
+						continue
 					if prop == "w":
 						res[game][prop][player] = f"{ou}"
 					else:
@@ -1081,6 +1084,9 @@ def writeKambi():
 
 			label = f"{prefix}{label}"
 
+			if "oddsAmerican" not in betOffer["outcomes"][0]:
+				continue
+
 			try:
 				ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 			except:
@@ -1138,23 +1144,22 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-colorado-rockies-32629626",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-san-francisco-giants-32629650",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-seattle-mariners-32629640",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-pittsburgh-pirates-32629629",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-baltimore-orioles-32629651",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-32629630",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-detroit-tigers-32629652",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-toronto-blue-jays-32629643",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-new-york-mets-32629623",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-houston-astros-32629645",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-32629646",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-milwaukee-brewers-32629636",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-chicago-white-sox-32629647",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-los-angeles-dodgers-32629625"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-baltimore-orioles-32640190",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-pittsburgh-pirates-32640199",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-toronto-blue-jays-32640191",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-new-york-mets-32640184",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-miami-marlins-32640187",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-cleveland-guardians-32640192",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-milwaukee-brewers-32640188",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-kansas-city-royals-32640193",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-chicago-white-sox-32640194",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-st.-louis-cardinals-32640185",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-colorado-rockies-32640189",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-los-angeles-angels-32640195",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-oakland-athletics-32640196",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-seattle-mariners-32640198",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-arizona-diamondbacks-32640186"
 ]
-
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649"]
 	lines = {}
 	for game in games:	
@@ -1291,8 +1296,11 @@ def writeFanduel():
 	with open(f"static/mlb/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
 
+	prefix = ""
+	if sharp:
+		prefix = "pn_"
 	if player not in evData:
 		evData[player] = {}
 
@@ -1346,10 +1354,10 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
 
 		ev = min(evs)
 
-		evData[player]["fairVal"] = fairVal
-		evData[player]["implied"] = implied
+		evData[player][f"{prefix}fairVal"] = fairVal
+		evData[player][f"{prefix}implied"] = implied
 	
-	evData[player]["ev"] = ev
+	evData[player][f"{prefix}ev"] = ev
 
 def writeDK(date=None):
 	url = "https://sportsbook.draftkings.com/leagues/football/nfl"
@@ -1785,7 +1793,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
+def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg=None, underArg=None):
 
 	if not boost:
 		boost = 1
@@ -1887,6 +1895,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				player = handicaps[(handicap, playerHandicap)]
 
 				for i in range(2):
+
+					if overArg and i == 1:
+						continue
+					elif underArg and i == 0:
+						continue
 					highestOdds = []
 					books = []
 					odds = []
@@ -2035,6 +2048,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						pass
 						#print(key, ou, line)
 						devig(evData, key, ou, line, prop=prop)
+						if pn:
+							if i == 1:
+								pn = f"{pn.split('/')[1]}/{pn.split('/')[0]}"
+							devig(evData, key, pn, line, prop=prop, sharp=True)
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							print(key)
@@ -2074,14 +2091,14 @@ def sortEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -2119,6 +2136,7 @@ if __name__ == '__main__':
 	parser.add_argument("--prop", help="Prop")
 	parser.add_argument("-u", "--update", action="store_true", help="Update")
 	parser.add_argument("--under", action="store_true", help="Under")
+	parser.add_argument("--over", action="store_true", help="Over")
 	parser.add_argument("--nocz", action="store_true", help="No CZ Lines")
 	parser.add_argument("--no365", action="store_true", help="No 365 Devig")
 	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
@@ -2187,7 +2205,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
+		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under)
 
 	if args.print:
 		sortEV()

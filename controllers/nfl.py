@@ -43,6 +43,8 @@ def convertNFLTeam(team):
 		return "no"
 	elif team.endswith("buccaneers"):
 		return "tb"
+	elif team.endswith("jaguars"):
+		return "jac"
 	return team[:3]
 
 def strip_accents(text):
@@ -211,6 +213,8 @@ def writeCZ():
 	for event in data["competitions"][0]["events"][:20]:
 		games.append(event["id"])
 
+
+	#games = ["9d0e039c-1764-4be4-aa38-161e41a61260"]
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
@@ -230,6 +234,7 @@ def writeCZ():
 			if "name" not in market:
 				continue
 			prop = market["name"].lower().replace("|", "").split(" (")[0]
+			name = market["templateName"].lower().replace("|", "")
 
 			prefix = player = ""
 			if "1st half" in prop:
@@ -242,9 +247,9 @@ def writeCZ():
 			if "money line" in prop:
 				prop = "ml"
 			elif "total points" in prop or "alternative points" in prop:
-				if prop.startswith(away):
+				if "away points" in name:
 					prop = "away_total"
-				elif prop.startswith(home):
+				elif "home points" in name:
 					prop = "home_total"
 				else:
 					prop = "total"
@@ -517,7 +522,10 @@ def parsePinnacle(res, games, gameId, retry, debug):
 	res[game] = {}
 
 	for row in data:
-		prop = row["type"]
+		try:
+			prop = row["type"]
+		except:
+			continue
 		keys = row["key"].split(";")
 
 		prefix = ""
@@ -633,6 +641,7 @@ def writeBV():
 
 	ids = [r["link"] for r in data[0]["events"]]
 
+	#ids = ["/football/nfl/kansas-city-chiefs-jacksonville-jaguars-202309171300"]
 	res = {}
 	#print(ids)
 	for link in ids:
@@ -653,7 +662,7 @@ def writeBV():
 		for row in data[0]["events"][0]["displayGroups"]:
 			desc = row["description"].lower()
 
-			if desc in ["game lines", "alternate lines", "touchdown scorers", "receiving props", "receiving yards", "qb yardage props", "qb passing totals", "rushing props", "rushing yards", "defensive player props", "special teams", "special bets"]:
+			if desc in ["game lines", "alternate lines", "touchdown scorers", "receiving props", "receiving yards", "qb yardage props", "qb passing totals", "rushing props", "rushing yards", "defensive player props", "special teams", "special bets", "td scorer parlays"]:
 				for market in row["markets"]:
 
 					prefix = ""
@@ -711,6 +720,8 @@ def writeBV():
 						prop = "kicking_pts"
 					elif prop == "player sacks":
 						prop = "sacks"
+					elif prop in ["touchdown scorer parlays", "anytime touchdown scorer / game winner parlay"]:
+						prop = "td_parlay"
 					else:
 						continue
 
@@ -738,6 +749,54 @@ def writeBV():
 						for i in range(0, len(market["outcomes"]), 1):
 							player = parsePlayer(market["outcomes"][i]["description"])
 							res[game][prop][player] = market["outcomes"][i]["price"]["american"].replace("EVEN", "100")
+					elif prop == "td_parlay":
+						for outcome in market["outcomes"]:
+							desc = outcome["description"]
+
+							attd = []
+							ftd = []
+							ml = ""
+
+							if "1+ anytime" in desc.lower():
+								attdPlayers = desc.lower().split(" 1+ anytime")[0]
+								for player in attdPlayers.split(", "):
+									if "&" in player:
+										for p in player.split(" & "):
+											if " " in p:
+												p = parsePlayer(p)
+											attd.append(p.replace(".", ". "))
+									else:
+										if " " in player:
+											player = parsePlayer(player)
+										attd.append(player.replace(".", ". "))
+							elif "1st touchdowns" in desc.lower():
+								players = desc.lower().split(" to score")[0]
+								for player in players.split(" & "):
+									p = player.split(" (")[0]
+									ftd.append(parsePlayer(p))
+							elif "to score anytime" in desc.lower() and desc.endswith("to win"):
+								player = desc.lower().split(" to score")[0]
+								team = convertNFLTeam(desc.lower().split("/ ")[-1][:-7])
+								attd.append(parsePlayer(player))
+								ml = team
+							elif "1st touchdown of the match" in desc.lower():
+								if " or " in desc.lower():
+									for player in desc.lower().split(", "):
+										if " or " in player:
+											for p in player.split(" or "):
+												ftd.append(p.split(" (")[0].split("(")[0])
+										else:
+											ftd.append(player.split(" (")[0].split("(")[0])
+								else:
+									ftd.append(parsePlayer(desc.lower().split(" to score the 1st")[0].split(" (")[0].split("(")[0]))
+									attd.append(parsePlayer(desc.lower().split(" to score anytime")[0].split(" and ")[-1].split(" (")[0].split("(")[0]))
+
+							res[game][prop][desc] = {
+								"attd": attd,
+								"ftd": ftd,
+								"ml": ml,
+								"odds": outcome["price"]["american"]
+							}
 					elif prop == "sacks":
 						for outcome in market["outcomes"]:
 							player = parsePlayer(outcome["description"].split(" to ")[0])
@@ -924,17 +983,8 @@ def writeKambi():
 		away, home = map(str, game.split(" @ "))
 		games = []
 		for team in [away, home]:
-			t = team.split(" ")[0]
-			if t == "la":
-				t = "lac"
-				if "rams" in team:
-					t = "lar"
-			elif t == "ny":
-				t = "nyj"
-				if "giants" in team:
-					t = "nyg"
-			elif t == "jax":
-				t = "jac"
+			t = convertNFLTeam(team)
+			fullTeam[t] = team
 			games.append(t)
 		game = " @ ".join(games)
 		if game in eventIds:
@@ -943,11 +993,11 @@ def writeKambi():
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'det @ kc': 1019645125}
+	#eventIds = {'min @ phi': 1019646714}
 	#data['det lions @ kc chiefs'] = {}
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
-		#away, home = fullTeam[away], fullTeam[home]
+		awayFull, homeFull = fullTeam[away], fullTeam[home]
 		eventId = eventIds[game]
 		teamIds = {}
 		
@@ -962,42 +1012,29 @@ def writeKambi():
 		for betOffer in j["betOffers"]:
 			playerProp = False
 			label = betOffer["criterion"]["label"].lower()
-			if label == "total points - including overtime":
+
+			prefix = ""
+			if "1st half" in label:
+				prefix = "1h_"
+			elif "2nd half" in label:
+				prefix = "2h_"
+			elif "quarter 1" in label:
+				prefix = "1q_"
+			elif "quarter 2" in label:
+				prefix = "2q_"
+
+			if label.split(" -")[0] == "total points":
 				label = "total"
-			elif "handicap - including overtime" in label:
+			elif label.split(" -")[0] == "handicap":
 				label = "spread"
-			elif "handicap - 1st half" in label:
-				label = "1h_spread"
-			elif "handicap - 2nd half" in label:
-				label = "2h_spread"
-			elif "handicap - quarter 1" in label:
-				label = "1q_spread"
-			elif "total points - 1st half" in label:
-				label = "1h_total"
-			elif "total points - 2nd half" in label:
-				label = "2h_total"
-			elif "total points - quarter 1" in label:
-				label = "1q_total"
-			elif f"total points by {away} - quarter 1" in label:
-				label = "1q_away_total"
-			elif f"total points by {home} - quarter 1" in label:
-				label = "1q_home_total"
-			elif f"total points by {away} - 1st half" in label:
-				label = "1h_away_total"
-			elif f"total points by {home} - 1st half" in label:
-				label = "1h_home_total"
-			elif f"total points by {away} - including overtime" in label:
-				label = "away_total"
-			elif f"total points by {home} - including overtime" in label:
-				label = "home_total"
-			elif label == "including overtime":
+			elif "total points by" in label:
+				team = convertNFLTeam(label.split(" by ")[-1].split(" - ")[0])
+				if team == away:
+					label = "away_total"
+				else:
+					label = "home_total"
+			elif label == "including overtime" or label.split(" -")[0] == "draw no bet":
 				label = "ml"
-			elif label == "draw no bet - 1st half":
-				label = "1h_ml"
-			elif label == "draw no bet - 2nd half":
-				label = "2h_ml"
-			elif label == "draw no bet - quarter 1":
-				label = "1q_ml"
 			elif label == "touchdown scorer - including overtime":
 				playerProp = True
 				label = "attd"
@@ -1028,6 +1065,8 @@ def writeKambi():
 				#print(label)
 				continue
 
+			label = f"{prefix}{label}"
+
 			try:
 				ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 			except:
@@ -1042,6 +1081,9 @@ def writeKambi():
 					pass
 			if "ml" in label:
 				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+				if convertNFLTeam(betOffer["outcomes"][0]["participant"].lower()) == away:
+				 	data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+
 			else:
 				if label not in data[game]:
 					data[game][label] = {}
@@ -1063,7 +1105,7 @@ def writeKambi():
 					data[game][label][player][line] = ou
 
 
-	with open(f"{prefix}static/nfl/kambi.json", "w") as fh:
+	with open(f"static/nfl/kambi.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
@@ -1235,7 +1277,11 @@ def writeFanduel():
 	with open(f"static/nfl/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
+
+	prefix = ""
+	if sharp:
+		prefix = "pn_"
 
 	if player not in evData:
 		evData[player] = {}
@@ -1290,10 +1336,10 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
 
 		ev = min(evs)
 
-		evData[player]["fairVal"] = fairVal
-		evData[player]["implied"] = implied
+		evData[player][f"{prefix}fairVal"] = fairVal
+		evData[player][f"{prefix}implied"] = implied
 	
-	evData[player]["ev"] = ev
+	evData[player][f"{prefix}ev"] = ev
 
 def writeDK():
 	url = "https://sportsbook.draftkings.com/leagues/football/nfl"
@@ -1314,8 +1360,17 @@ def writeDK():
 		1000: [9525, 9524, 9522, 9517, 9516, 9526],
 		1001: [9514, 9512, 9519, 9518, 9533, 9527],
 		1002: [11812, 9521, 9529, 9520],
-		530: [4653, 10514]
+		530: [4653, 10514],
+		526: [4631, 13582, 13584]
 	}
+
+	if False:
+		mainCats = {
+			"team": 530
+		}
+		subCats = {
+			530: [10514],
+		}
 
 	lines = {}
 	for mainCat in mainCats:
@@ -1394,7 +1449,7 @@ def writeDK():
 								label = "ml"
 							elif "spread" in label:
 								label = "spread"
-							elif label.endswith("team total points"):
+							elif "team total points" in label:
 								team = label.split(":")[0]
 								t = team.split(" ")[0].replace("jax", "jac")
 								if "giants" in team:
@@ -1700,6 +1755,152 @@ def write365():
 	"""
 	pass
 
+def bvParlay():
+	with open(f"{prefix}static/nfl/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/bovada.json") as fh:
+		bvLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/pointsbet.json") as fh:
+		pbLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"pb": pbLines,
+		"bv": bvLines,
+		"dk": dkLines,
+		"cz": czLines
+	}
+
+	ev = []
+	evData = {}
+	for game in bvLines:
+		away, home = map(str, game.split(" @ "))
+		if "td_parlay" not in bvLines[game]:
+			continue
+		abbr = {}
+		shouldBreak = False
+		for prop in ["rush_yd", "rec"]:
+			try:
+				for player in bvLines[game][prop]:
+					abbr[player.split(" ")[0][0]+". "+player.split(" ")[-1]] = player
+			except:
+				shouldBreak = True
+
+		if shouldBreak:
+			continue
+
+		for desc in bvLines[game]["td_parlay"]:
+			tdParlay = bvLines[game]["td_parlay"][desc]
+			if tdParlay["ml"] or (len(tdParlay["ftd"]) == 1 and len(tdParlay["attd"]) == 1):
+				pass
+			else:
+				if tdParlay["ftd"] or "Anytime" not in desc or "1st" in desc:
+					continue
+
+			#if desc != "A.J. Brown & D'Andre Swift 1+ Anytime Touchdown Each":
+			#	continue
+
+			fairVals = []
+			legs = []
+			players = 0
+			for prop in ["attd", "ftd"]:
+				for player in tdParlay[prop]:
+					players += 1
+					if "." in player:
+						try:
+							player = abbr[player]
+						except:
+							continue
+					maxOdds = []
+					books = []
+					for book in lines:
+						if game in lines[book] and prop in lines[book][game] and player in lines[book][game][prop]:
+								books.append(book)
+								maxOdds.append(int(lines[book][game][prop][player].split("/")[0]))
+
+					if not maxOdds:
+						continue
+					odds = max(maxOdds)
+					idx = maxOdds.index(odds)
+					book = books[idx]
+					legs.append(f"{player.title()} {odds} {book.upper()}")
+					if odds > 0:
+						implied = 100 / (odds + 100)
+					else:
+						implied = -1*odds / (-1*odds + 100)
+
+					fairVals.append(implied)
+
+			if players != len(fairVals):
+				continue
+
+			if tdParlay["ml"]:
+				maxOdds = []
+				books = []
+				for book in lines:
+					if game in lines[book] and prop in lines[book][game]:
+							i = 0
+							if tdParlay["ml"] == home:
+								i = 1
+							books.append(book)
+							maxOdds.append(int(lines[book][game]["ml"].split("/")[i]))
+
+				if not maxOdds:
+					continue
+				odds = max(maxOdds)
+				idx = maxOdds.index(odds)
+				book = books[idx]
+				legs.append(f"{tdParlay['ml'].upper()} ML {odds} {book.upper()}")
+				if odds > 0:
+					implied = 100 / (odds + 100)
+				else:
+					implied = -1*odds / (-1*odds + 100)
+				fairVals.append(implied)
+
+			odds = 1
+			for o in fairVals:
+				odds *= o
+			
+			fairValue = round((100 * (1 - odds)) / odds)
+
+			evData[desc] = {}
+			devig(evData, desc, str(fairValue), int(tdParlay["odds"]))
+			ev.append((evData[desc]["ev"], desc, fairValue, tdParlay['odds'], legs))
+
+	for row in sorted(ev):
+		print(f"{row[0]}, {row[1]}, fairval={row[2]}, bvOdds={row[3]} {row[4]}")
+		pass
+
+	output = "\t".join(["EV", "Parlay", "BV Odds", "Fair Value"])+"\n"
+	for row in sorted(ev, reverse=True):
+		arr = [row[0], row[1], row[3], row[2]]
+		arr.extend(row[-1])
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/nfl/bvParlays.csv", "w") as fh:
+		fh.write(output)
+
+
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	if not boost:
@@ -1772,6 +1973,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			if propArg and prop != propArg:
 				continue
 			if notd and prop in ["attd", "ftd"]:
+				continue
+			
+			if prop in ["sacks", "spread"]:
 				continue
 
 			handicaps = {}
@@ -1944,6 +2148,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						pass
 						#print(key, ou, line)
 						devig(evData, key, ou, line, prop=prop)
+						if pn:
+							if i == 1:
+								pn = f"{pn.split('/')[1]}/{pn.split('/')[0]}"
+							devig(evData, key, pn, line, prop=prop, sharp=True)
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							print(key)
@@ -1977,7 +2185,8 @@ def sortEV():
 	data = []
 	for player in evData:
 		d = evData[player]
-		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], d["odds"], d))
+		j = [f"{k}:{d['bookOdds'][k]}" for k in d["bookOdds"] if k != d["book"]]
+		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d))
 
 	for row in sorted(data):
 		print(row[:-1])
@@ -1994,7 +2203,7 @@ def sortEV():
 	with open("static/nfl/attd.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] in ["attd", "ftd"]:
 			continue
@@ -2003,7 +2212,7 @@ def sortEV():
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1]["book"], row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -2024,6 +2233,7 @@ if __name__ == '__main__':
 	parser.add_argument("--dk", action="store_true", help="Fanduel")
 	parser.add_argument("--writeBV", action="store_true", help="Bovada")
 	parser.add_argument("--bv", action="store_true", help="Bovada")
+	parser.add_argument("--bvParlay", action="store_true", help="Bovada TD Parlay")
 	parser.add_argument("--pb", action="store_true", help="Pointsbet")
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
@@ -2091,6 +2301,9 @@ if __name__ == '__main__':
 
 	if args.bv:
 		writeBV()
+
+	if args.bvParlay:
+		bvParlay()
 
 	if args.cz:
 		writeCZ()
