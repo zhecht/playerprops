@@ -285,7 +285,10 @@ def writeLineups(plays = []):
 	data = {}
 	for table in soup.findAll("div", class_="starting-lineups__matchup"):
 		for which in ["away", "home"]:
-			team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari")
+			try:
+				team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari")
+			except:
+				continue
 
 			if team in data:
 				continue
@@ -685,21 +688,10 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-baltimore-orioles-32640190",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-pittsburgh-pirates-32640199",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-toronto-blue-jays-32640191",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-new-york-mets-32640184",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-miami-marlins-32640187",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-cleveland-guardians-32640192",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-milwaukee-brewers-32640188",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-kansas-city-royals-32640193",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-chicago-white-sox-32640194",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-st.-louis-cardinals-32640185",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-colorado-rockies-32640189",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-los-angeles-angels-32640195",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-oakland-athletics-32640196",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-seattle-mariners-32640198",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-arizona-diamondbacks-32640186"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-baltimore-orioles-32690959",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-houston-astros-32691129",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-atlanta-braves-32691365",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-dodgers-32691341"
 ]
 
 	lines = {}
@@ -958,7 +950,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/baseballreference/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
 
-	with open(f"{prefix}static/freebets/kambi.json") as fh:
+	with open(f"{prefix}static/mlb/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
@@ -1082,6 +1074,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			if prop == "hr" and game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
 				bv = bvLines[game]["hr"][player].split(" ")[-1]
 
+			kambi = ""
+			if prop == "hr" and game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
+				kambi = kambiLines[game]["hr"][player]["1.0"].split(" ")[-1]
+
 			if team not in bet365Lines or player not in bet365Lines[team]:
 				bet365ou = ""
 			else:
@@ -1091,9 +1087,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						bet365ou = ""
 					else:
 						bet365ou = bet365ou.split(" ")[-1]
-
-			if team and team in kambiLines and player in kambiLines[team]:
-				kambi = kambiLines[team][player]
 
 			line = fdLine
 			l = [dk, bet365ou, mgm, pb]
@@ -1117,7 +1110,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if not nocz:
 					l.append(cz)
 				if not nobr:
-					l.append(br.split("/")[0])
+					l.append(kambi.split("/")[0])
 
 			evBook = "fd"
 			if bookArg == "dk":
@@ -1131,6 +1124,13 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				evBook = "cz"
 				line = cz
 				l[7] = str(fdLine)
+
+				if line == "-":
+					continue
+			elif bookArg == "mgm":
+				evBook = "mgm"
+				line = mgm.split("/")[0]
+				l[2] = str(fdLine)
 
 				if line == "-":
 					continue
@@ -1243,7 +1243,7 @@ def sortEV(dinger=False):
 	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
 		bppLines = json.load(fh)
 
-	with open(f"{prefix}static/freebets/kambi.json") as fh:
+	with open(f"{prefix}static/mlb/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
 	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
@@ -1335,8 +1335,8 @@ def sortEV(dinger=False):
 				if game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
 					bv = bvLines[game]["hr"][player].split(" ")[-1].replace("+", "")
 
-				if team and team in kambiLines and player in kambiLines[team]:
-					kambi = kambiLines[team][player]
+				if game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
+					kambi = kambiLines[game]["hr"][player]["1.0"].split(" ")[-1]
 
 			bet365 = evData[player]['bet365']
 			if "/" in bet365 and int(bet365.split("/")[0]) > 0:
@@ -1353,7 +1353,7 @@ def sortEV(dinger=False):
 
 			l = [ev, team.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 			if prop not in ["single", "double", "tb"]:
-				l.extend([pb, br, pn, bs, bv])
+				l.extend([pb, kambi, pn, bs, bv])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
@@ -1368,7 +1368,7 @@ def sortEV(dinger=False):
 		output = f"\t\t\tUPD: {dt}\n\n"
 		l = ["EV (AVG)", "Team", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop not in ["single", "double", "tb"]:
-			l.extend(["PB", "BR", "PN", "BS", "BV"])
+			l.extend(["PB", "Kambi", "PN", "BS", "BV"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":
@@ -1443,7 +1443,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("matt wallner", 390, "min"), ("mj melendez", 520, "kc"), ("aaron judge", 320, "nyy"), ("jordan lawlar", 900, "ari"), ("ketel marte", 680, "ari")]
+	plays = [("max kepler", 390, "min")]
 
 	if args.lineups:
 		writeLineups(plays)

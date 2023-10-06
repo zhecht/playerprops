@@ -103,7 +103,10 @@ def writePinnacle(date):
 		res[game] = {}
 
 		for row in data:
-			prop = row["type"]
+			try:
+				prop = row["type"]
+			except:
+				continue
 			keys = row["key"].split(";")
 
 			prefix = ""
@@ -147,6 +150,9 @@ def writeMGM(date=None):
 	res = {}
 
 	tourneys = {
+		"atp": {
+			"id": 6
+		},
 		"wta": {
 			"id": 7
 		},
@@ -264,7 +270,7 @@ def writeBovada():
 	url = "https://www.bovada.lv/sports/tennis/"
 
 	ids = []
-	for which in ["wta", "wta-doubles", "wta-125k", "challenger", "itf-men", "itf-women"]:
+	for which in ["wta", "wta-doubles", "wta-125k", "challenger", "itf-men", "itf-women", "atp", "atp-doubles"]:
 		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/tennis/{which}?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
 		outfile = f"tennisoutBV"
 
@@ -336,6 +342,9 @@ def writeBovada():
 						prop = f"set1_{prop}"
 					elif market["period"]["description"].lower() == "2nd set":
 						prop = f"set2_{prop}"
+
+					if market["period"]["main"] == False:
+						continue
 
 					if not len(market["outcomes"]):
 						continue
@@ -488,7 +497,7 @@ def writeFanduel():
 				const time = a.parentElement.querySelector("time");
 				//if (time && time.innerText.split(" ").length < 3) {
 				//if (time && time.innerText.split(" ")[0] === "FRI") {
-				if (time && (time.innerText.split(" ")[0] === "MON" || time.innerText.split(" ").length < 3)) {
+				if (time && (time.innerText.split(" ")[0] === "TUE" || time.innerText.split(" ").length < 3)) {
 					urls[a.href] = 1;	
 				}
 			}
@@ -498,40 +507,57 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/m-nakashima-v-e-hayashi-32644270",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/stephens-v-a-li-32642011",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/t-naklo-v-k-yoshioka-32644241",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/h-kobayashi-v-n-yoshimoto-32644244",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/j-sheng-v-s-ou-32644263",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/r-zhao-v-k-wu-32644262",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/y-cao-v-x-hu-32644261",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/w-kai-v-q-wang-32644260",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/m-horvit-v-o-collins-32644280",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/t-mcgiffin-v-m-stallworthy-32644279",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/a-smith-v-y-ohashi-32644278",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/a-omae-v-n-kang-32644288",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-kyoto/m-mushika-v-k-morisaki-32644287",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/t-sharma-v-y-gao-32644314",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/c-tsai-v-y-lu-32644312",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/j-cvijanovic-v-s-su-32644313",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/b-thompson-v-b-compuesto-32644322",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/d-nima-v-z-yu-32644385",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-china-futures/b-alabdullah-v-j-pai-32644384",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-perth/n-katsumi-v-r-makesar-32644405",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/robi-montgomery-v-azarenka-32639509",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/camila-osorio-v-frech-32639499",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/s-hunter-v-iryn-shymanovich-32639516",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/dolehide-v-pe-stearns-32639469",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/m-sherif-v-c-giorgi-32639459",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/m-trevisan-v-j-paolini-32644204",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/emm-navarro-v-mateas-32641998",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/ka-pliskova-v-h-baptiste-32644245",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/m-kostyuk-v-fung-32639494",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/emil-arango-v-a-potapova-32639474",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/sof-kenin-v-c-zhao-32641988",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/b-haddad-maia-v-d-collins-32639479",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/a-sasnovich-v-garcia-32644125",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-guadalajara-2023/o-jabeur-v-aly-parks-32644168"
+  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/a-nedic-v-l-gerch-32672782",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/r-dickerson-v-w-grant-32672963",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/a-andrade-v-m-braswell-32672966",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/j-hasson-v-a-azkara-32672967",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/s-gima-i-snitari-v-e-bogo-h-escurra-isnardi-32672820",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-ningbo-2023/k-siniakova-v-podoroska-32670288",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/a-asaba-n-buitrago-v-v-jovic-l-pavlovic-32672809",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/r-verma-v-s-ewing-32672746",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/k-matushkina-v-a-okutoyi-32672745",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/j-tilbuerger-v-c-tiglea-32672884",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/j-prado-angelo-v-g-villanueva-32672944",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-midon-v-f-roncadelli-32672923",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-rodriguez-v-m-barreiros-reyes-32672925",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/f-tenti-v-m-kestelboim-32672897",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/c-markus-v-l-blatter-32672748",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/l-giovannini-v-f-labrana-32672752",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/j-davis-h-stewart-v-l-martinez-a-moundir-32672846",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-sweden-futures/j-backman-a-heinonen-v-a-matusevich-h-wendelke-32672804",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-santarem/a-charaeva-l-glushko-v-d-hewitt-m-sieg-32672815",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-santarem/l-boskovic-e-guerrero-alvarez-v-n-berberovic-s-32672816",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/m-erhard-v-f-egea-32672806",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/a-nefve-v-k-smith-32673250",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-sweden-futures/s-freund-j-ingildsen-v-m-dahlin-y-steinegger-32672801",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/b-fassbender-v-t-gentzsch-32672763",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/t-baadi-v-j-angele-32672969",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/l-perez-alarcon-w-sonobe-v-t-i-andrade-sabando--32672920",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/c-gomez-k-keller-v-i-boulais-l-sleeth-32672749",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/l-kwong-l-proctor-v-t-barad-itzhaki-e-w-cheng-32672896",
+  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/sun-zhou-v-koolhof-skupski-32666438",
+  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/struff-v-ruud-32666793",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/j-jebawy-y-monroy-v-a-candiotto-r-pereira-32672743",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/j-l-estable-l-moyano-v-l-ayala-c-di-genova-32672917",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/v-rodriguez-v-s-sierra-32672757",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/o-wallin-v-f-van-sambeek-32672965",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/o-o-hoisin-v-l-draxl-32672968",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/d-martin-m-zhu-v-d-panarin-r-sakamoto-32673191",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-a-falabella-l-gagliardo-v-f-tenti-g-villanue-32672918",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-aboian-v-aboian-v-l-e-ambrogi-l-j-rodriguez-32673043",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-midon-j-c-prado-angelo-v-l-britto-j-e-schies-32672921",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/m-capurro-taborda-f-labrana-v-l-blatter-j-gonz-32672949",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/e-jacquemot-v-m-jones-32672919",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/s-chang-v-k-volynets-32672916",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/r-zarazua-v-a-tikhonova-32672914",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/c-harrison-v-i-shymanovich-32673208",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/b-kuzuhara-v-a-guillen-meza-32672946",
+  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/nys-zielinski-v-gille-vliegen-32666434",
+  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/granollers-zeballos-v-de-minaur-sinner-32666437",
+  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/khachanov-rublev-v-erler-miedler-32672597",
+  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/gonzalez-roger-vasselin-v-etcheverry-jarry-32666436",
+  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/dodig-krajicek-v-krawietz-puetz-32666435",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-tokyo-2023/i-swiatek-v-v-kudermetova-32670065"
 ]
 
 	lines = {}
@@ -743,7 +769,7 @@ def writeDK(date):
 	}
 
 	lines = {}
-	for gender in [209022, 209024, 44044, 211362, 17019, 17021, 103606, 92024, 59457, 210505, 210469, 96898, 144342, 199314, 105008]:
+	for gender in [73112, 73118, 209022, 209024, 44044, 211362, 17019, 17021, 103606, 92024, 59457, 210505, 210469, 96898, 144342, 199314, 105008, 198156, 160764, 71985, 205210]:
 		for mainCat in mainCats:
 			for subCat in subCats[mainCats[mainCat]]:
 				time.sleep(0.3)
@@ -751,7 +777,7 @@ def writeDK(date):
 				if subCat:
 					url += f"/subcategories/{subCat}"
 				url += "?format=json"
-				outfile = "outtennis"
+				outfile = "outtennis1"
 				call(["curl", "-k", url, "-o", outfile])
 
 				with open(outfile) as fh:

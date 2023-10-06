@@ -229,14 +229,19 @@ def writeCZ(date=None):
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ"))[:10] != date:
+		#print(data["name"], data["startTime"])
+
+		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 			continue
 
-		game = convertFDTeam(data["name"].lower().replace("|", "").replace("at", "@"))
+		game = convertFDTeam(data["name"].lower().replace("|", "").replace(" at ", " @ "))
 		res[game] = {}
 
 		for market in data["markets"]:
 			if "name" not in market:
+				continue
+
+			if market["active"] == False:
 				continue
 			prop = market["name"].lower().replace("|", "").split(" (")[0]
 
@@ -797,8 +802,11 @@ def writeBV():
 						res[game][prop] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
 					elif "total" in prop:
 						for i in range(0, len(market["outcomes"]), 2):
-							ou = f"{market['outcomes'][i]['price']['american']}/{market['outcomes'][i+1]['price']['american']}".replace("EVEN", "100")
-							handicap = market["outcomes"][i]["price"]["handicap"]
+							try:
+								ou = f"{market['outcomes'][i]['price']['american']}/{market['outcomes'][i+1]['price']['american']}".replace("EVEN", "100")
+								handicap = market["outcomes"][i]["price"]["handicap"]
+							except:
+								continue
 							res[game][prop][handicap] = ou
 					elif "spread" in prop:
 						for i in range(0, len(market["outcomes"]), 2):
@@ -1013,6 +1021,10 @@ def writeKambi():
 				t = "laa"
 			elif "dodgers" in team:
 				t = "lad"
+			elif "cubs" in team:
+				t = "chc"
+			elif "white sox" in team:
+				t = "chw"
 			fullTeam[t] = full
 			games.append(t)
 		game = " @ ".join(games)
@@ -1024,6 +1036,8 @@ def writeKambi():
 
 	#eventIds = {'cle @ sf': 1019277757}
 	#data['det lions @ kc chiefs'] = {}
+	#print(eventIds)
+	#exit()
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
 		awayFull, homeFull = fullTeam[away], fullTeam[home]
@@ -1047,14 +1061,16 @@ def writeKambi():
 			elif "first 5 inn" in label:
 				prefix = "f5_"
 
-			if label == "total runs":
-				label = "total"
-			elif "handicap" in label:
+			if "handicap" in label:
 				label = "spread"
 			elif f"total runs by {awayFull}" in label:
 				label = "away_total"
 			elif f"total runs by {homeFull}" in label:
 				label = "home_total"
+			elif "total runs" in label:
+				if "odd/even" in label:
+					continue
+				label = "total"
 			elif label == "match odds":
 				label = "ml"
 			elif label == "first team to score":
@@ -1105,6 +1121,7 @@ def writeKambi():
 				if label not in data[game]:
 					data[game][label] = {}
 				if not playerProp:
+					#print(betOffer["criterion"]["label"], label)
 					line = str(betOffer["outcomes"][0]["line"] / 1000)
 					if betOffer["outcomes"][0]["label"] == "Under" or convertFDTeam(betOffer["outcomes"][0]["label"].lower()) == home:
 						line = str(float(line) * -1)
@@ -1144,22 +1161,12 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-baltimore-orioles-32640190",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-pittsburgh-pirates-32640199",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-toronto-blue-jays-32640191",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-new-york-mets-32640184",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-miami-marlins-32640187",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-cleveland-guardians-32640192",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-milwaukee-brewers-32640188",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-kansas-city-royals-32640193",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-chicago-white-sox-32640194",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-st.-louis-cardinals-32640185",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-colorado-rockies-32640189",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-los-angeles-angels-32640195",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-oakland-athletics-32640196",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-seattle-mariners-32640198",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-arizona-diamondbacks-32640186"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-baltimore-orioles-32690959",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-houston-astros-32691129",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-atlanta-braves-32691365",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-dodgers-32691341"
 ]
+
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649"]
 	lines = {}
 	for game in games:	
@@ -1383,6 +1390,15 @@ def writeDK(date=None):
 	propIds = {
 		6606: "hr", 6719: "h", 6607: "tb", 8025: "rbi", 7979: "r", 12149: "h+r+rbi", 9872: "sb", 6605: "so", 11031: "single", 11032: "double", 11033: "triple", 12146: "bb", 9885: "k", 9883: "outs", 9884: "w", 9886: "h_allowed", 11035: "bb_allowed", 11064: "er", 13168: "spread", 13169: "total"
 	}
+
+	if False:
+		mainCats = {
+			"game lines": 493
+		}
+
+		subCats = {
+			493: [13168]
+		}
 
 	lines = {}
 	for mainCat in mainCats:

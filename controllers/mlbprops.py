@@ -390,6 +390,8 @@ def convertRankingsProp(prop):
 		return "opp_sb"
 	elif prop == "tb":
 		return "opp_tb"
+	elif prop == "k":
+		return "so"
 	elif prop == "bb":
 		return "bb_allowed"
 	elif prop == "bb_allowed":

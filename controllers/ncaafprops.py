@@ -30,6 +30,7 @@ def convertActionTeam(team):
 		"k state": "kansas state",
 		"texas a m": "texas a&m",
 		"ulm": "ul monroe",
+		"north carolina state": "nc state",
 		"unc": "north carolina",
 		"app state": "appalachian state",
 		"va tech": "virginia tech",
@@ -430,7 +431,10 @@ def writeBovada():
 						if row["value"] == 1:
 							res[game][prop][player] = f"{convertAmericanOdds(row['odds'])}"
 				else:
-					ou = f"{convertAmericanOdds(markets[0]['odds'])}/{convertAmericanOdds(markets[1]['odds'])}"
+					try:
+						ou = f"{convertAmericanOdds(markets[0]['odds'])}/{convertAmericanOdds(markets[1]['odds'])}"
+					except:
+						continue
 					if markets[0]["statistic"]["id"] > markets[1]["statistic"]["id"]:
 						ou = f"{convertAmericanOdds(markets[1]['odds'])}/{convertAmericanOdds(markets[0]['odds'])}"
 					res[game][prop][player] = f"{markets[0]['value']} {ou}"
@@ -787,57 +791,72 @@ def writeMGM():
 """
 
 	ids = [
-  "14707819",
-  "14707813",
-  "14707814",
-  "14707818",
-  "14707815",
-  "14707817",
-  "14707812",
-  "14707811",
-  "14707816",
-  "14707820",
-  "14707821",
-  "14707830",
-  "14707824",
-  "14707823",
-  "14707829",
-  "14707822",
-  "14707826",
-  "14707825",
-  "14707828",
-  "14707831",
-  "14707827",
-  "14707833",
-  "14707834",
-  "14707832",
-  "14420129",
-  "14707731",
-  "14707735",
-  "14707732",
-  "14707738",
-  "14707734",
-  "14707739",
-  "14707733",
-  "14707736",
-  "14707737",
-  "14707740",
-  "14707744",
-  "14707743",
-  "14707741",
-  "14707742",
-  "14707745",
-  "14707746",
-  "14707748",
-  "14707750",
-  "14707751",
-  "14707747",
-  "14707749",
-  "14707752",
-  "14707754",
-  "14707753",
-  "14707755",
-  "14420129"
+  "14766118",
+  "14766122",
+  "14766121",
+  "14766123",
+  "14766119",
+  "14766115",
+  "14766114",
+  "14766117",
+  "14766120",
+  "14766116",
+  "14766124",
+  "14766125",
+  "14766126",
+  "14766127",
+  "14766336",
+  "14766334",
+  "14766335",
+  "14766132",
+  "14766133",
+  "14766129",
+  "14766337",
+  "14766128",
+  "14766134",
+  "14766333",
+  "14766130",
+  "14766131",
+  "14781968",
+  "14772468",
+  "14766341",
+  "14766338",
+  "14766340",
+  "14766339",
+  "14766342",
+  "14766343",
+  "14766347",
+  "14766344",
+  "14766345",
+  "14766348",
+  "14766346",
+  "14781970",
+  "14781969",
+  "14766352",
+  "14766351",
+  "14766349",
+  "14766350",
+  "14766354",
+  "14766353",
+  "14766355",
+  "14766356",
+  "14766357",
+  "14766358",
+  "14766359",
+  "14781976",
+  "14781971",
+  "14781972",
+  "14781973",
+  "14781974",
+  "14781975",
+  "14781978",
+  "14781987",
+  "14781980",
+  "14781988",
+  "14781986",
+  "14781979",
+  "14781981",
+  "14781977"
 ]
 
 
@@ -1078,7 +1097,10 @@ def writeKambi(date):
 					if player not in data[game][prop]:
 						data[game][prop][player] = {}
 					line = str(betOffer["outcomes"][0]["line"] / 1000)
-					data[game][prop][player][line] = f"{betOffer['outcomes'][0]['oddsAmerican']}/{betOffer['outcomes'][1]['oddsAmerican']}"
+					ou = f"{betOffer['outcomes'][0]['oddsAmerican']}/{betOffer['outcomes'][1]['oddsAmerican']}"
+					if betOffer["outcomes"][0]["label"] == "Under":
+						ou = f"{betOffer['outcomes'][1]['oddsAmerican']}/{betOffer['outcomes'][0]['oddsAmerican']}"
+					data[game][prop][player][line] = ou
 				else:
 					if prop == "attd":
 						player = strip_accents(betOffer["outcomes"][0]["participant"])
@@ -1241,7 +1263,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/football/ncaa-football") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && (time.innerText.split(" ")[0] === "SAT" || time.innerText.split(" ").length < 3)) {
+				if (time && (time.innerText.split(" ")[0] === "FRI" || time.innerText.split(" ").length < 3)) {
 					urls[a.href] = 1;	
 				}
 			}
@@ -1251,27 +1273,55 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/louisiana-monroe-@-texas-a-m-32626235",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/washington-@-michigan-state-32624502",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/northern-colorado-@-washington-state-32640522",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/n.c.-central-@-ucla-32640524",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/tennessee-@-florida-32624509",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/miami-ohio-@-cincinnati-32626228",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/south-alabama-@-oklahoma-state-32626247",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/bowling-green-@-michigan-32638557",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/georgia-tech-@-mississippi-32626072",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/byu-@-arkansas-32624517",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/akron-@-kentucky-32626254",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/pittsburgh-@-wv-mountaineers-32624511",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/syracuse-@-purdue-32625857",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/florida-atlantic-@-clemson-32626278",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/tcu-@-houston-32624528",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/wyoming-@-texas-32625781",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/hawaii-@-oregon-32626217",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/colorado-state-@-colorado-32623902",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/fresno-state-@-arizona-state-32625772",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/kansas-@-nevada-32626289",
-  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/utep-@-arizona-32626293"
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/clemson-@-syracuse-32661746",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/texas-a-m-@-arkansas-32663443",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/usc-@-colorado-32618781",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/ul-lafayette-@-minnesota-32663448",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/penn-state-@-northwestern-32662615",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/uab-@-tulane-32663395",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/florida-@-kentucky-32661753",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/buffalo-bulls-@-akron-32663398",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/utah-state-@-connecticut-32663383",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/south-alabama-@-james-madison-32663390",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/eastern-michigan-@-central-michigan-32663415",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/virginia-@-boston-college-32663418",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/miami-(oh)-@-kent-state-32663409",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/arizona-state-@-california-32665843",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/michigan-@-nebraska-32661726",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/georgia-@-auburn-32661768",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/kansas-@-texas-32564174",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/indiana-@-maryland-32662572",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/baylor-@-central-florida-32663278",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/illinois-@-purdue-32662706",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/houston-@-texas-tech-32663362",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/south-florida-@-navy-32663360",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/arkansas-state-@-massachusetts-32663397",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/bowling-green-@-georgia-tech-32663421",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/ball-state-@-western-michigan-32663405",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/old-dominion-@-marshall-32663417",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/northern-illinois-@-toledo-32663359",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/missouri-@-vanderbilt-32662634",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/boise-state-@-memphis-32663328",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/new-mexico-@-wyoming-32663391",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/hawaii-@-unlv-32663387",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/lsu-@-mississippi-32661473",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/oregon-@-stanford-32662567",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/coastal-carolina-@-georgia-southern-32663480",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/iowa-state-@-oklahoma-32662643",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/troy-@-georgia-state-32663429",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/texas-state-@-southern-miss-32663326",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/east-carolina-@-rice-32663292",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/michigan-state-@-iowa-32662584",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/notre-dame-@-duke-32661694",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/south-carolina-@-tennessee-32662581",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/charlotte-@-smu-32663304",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/san-diego-state-@-air-force-32663477",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/pittsburgh-@-virginia-tech-32662704",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/wv-mountaineers-@-tcu-32662705",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-division-1/appalachian-state-@-louisiana-monroe-32663327",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/alabama-@-mississippi-state-32662586",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/washington-@-arizona-32662700",
+  "https://mi.sportsbook.fanduel.com/football/ncaa-football-games/nevada-@-fresno-state-32663459"
 ]
 
 	lines = {}
@@ -1358,7 +1408,7 @@ def writeFanduel():
 					runners = data["attachments"]["markets"][market]["runners"]
 					skip = 1 if prop in ["ftd", "attd"] or "spread" in prop or "total" in prop else 2
 					for i in range(0, len(runners), skip):
-						player = parsePlayer(runners[i]["runnerName"].lower().replace(" over", "").replace(" under", ""))
+						player = parsePlayer(runners[i]["runnerName"].lower().replace(" over", "").replace(" under", "")).split(" (")[0]
 						handicap = ""
 						try:
 							odds = runners[i]["winRunnerOdds"]["americanDisplayOdds"]["americanOdds"]

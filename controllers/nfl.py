@@ -710,6 +710,8 @@ def writeBV():
 						prop = "int"
 					elif prop.startswith("total rush attempts"):
 						prop = "rush_att"
+					elif prop.startswith("total rushing & rec"):
+						prop = "rush+rec"
 					elif prop.startswith("total rushing yards"):
 						prop = "rush_yd"
 					elif prop.startswith("total rush attempts"):
@@ -734,15 +736,24 @@ def writeBV():
 						res[game][prop] = {}
 
 					if "ml" in prop:
-						res[game][prop] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
+						try:
+							res[game][prop] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
+						except:
+							continue
 					elif "total" in prop:
 						for i in range(0, len(market["outcomes"]), 2):
-							ou = f"{market['outcomes'][i]['price']['american']}/{market['outcomes'][i+1]['price']['american']}".replace("EVEN", "100")
+							try:
+								ou = f"{market['outcomes'][i]['price']['american']}/{market['outcomes'][i+1]['price']['american']}".replace("EVEN", "100")
+							except:
+								continue
 							handicap = market["outcomes"][i]["price"]["handicap"]
 							res[game][prop][handicap] = ou
 					elif "spread" in prop:
 						for i in range(0, len(market["outcomes"]), 2):
-							ou = f"{market['outcomes'][i]['price']['american']}/{market['outcomes'][i+1]['price']['american']}".replace("EVEN", "100")
+							try:
+								ou = f"{market['outcomes'][i]['price']['american']}/{market['outcomes'][i+1]['price']['american']}".replace("EVEN", "100")
+							except:
+								continue
 							handicap = market["outcomes"][i]["price"]["handicap"]
 							res[game][prop][handicap] = ou
 					elif prop == "attd":
@@ -877,7 +888,7 @@ def writeMGM():
 				prop = "total"
 			elif "spread" in prop:
 				prop = "spread"
-			elif prop == "which player will score a touchdown in the game?":
+			elif prop == "anytime touchdown scorer":
 				prop = "attd"
 			elif prop.startswith("how many "):
 				if prop.startswith("how many points will be scored in the game") or "extra points" in prop:
@@ -980,7 +991,10 @@ def writeKambi():
 	eventIds = {}
 	for event in j["events"]:
 		game = event["event"]["name"].lower()
-		away, home = map(str, game.split(" @ "))
+		if " @ " in game:
+			away, home = map(str, game.split(" @ "))
+		else:
+			away, home = map(str, game.split(" vs "))
 		games = []
 		for team in [away, home]:
 			t = convertNFLTeam(team)
@@ -1128,25 +1142,23 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/football/nfl/minnesota-vikings-@-philadelphia-eagles-32612046",
-  "https://mi.sportsbook.fanduel.com/football/nfl/green-bay-packers-@-atlanta-falcons-32612036",
-  "https://mi.sportsbook.fanduel.com/football/nfl/chicago-bears-@-tampa-bay-buccaneers-32612037",
-  "https://mi.sportsbook.fanduel.com/football/nfl/seattle-seahawks-@-detroit-lions-32612039",
-  "https://mi.sportsbook.fanduel.com/football/nfl/las-vegas-raiders-@-buffalo-bills-32612041",
-  "https://mi.sportsbook.fanduel.com/football/nfl/los-angeles-chargers-@-tennessee-titans-32612043",
-  "https://mi.sportsbook.fanduel.com/football/nfl/indianapolis-colts-@-houston-texans-32612044",
-  "https://mi.sportsbook.fanduel.com/football/nfl/baltimore-ravens-@-cincinnati-bengals-32612045",
-  "https://mi.sportsbook.fanduel.com/football/nfl/kansas-city-chiefs-@-jacksonville-jaguars-32612050",
-  "https://mi.sportsbook.fanduel.com/football/nfl/san-francisco-49ers-@-los-angeles-rams-32612040",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-arizona-cardinals-32612047",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-jets-@-dallas-cowboys-32612051",
-  "https://mi.sportsbook.fanduel.com/football/nfl/washington-commanders-@-denver-broncos-32612052",
-  "https://mi.sportsbook.fanduel.com/football/nfl/miami-dolphins-@-new-england-patriots-32612053",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-orleans-saints-@-carolina-panthers-32612048",
-  "https://mi.sportsbook.fanduel.com/football/nfl/cleveland-browns-@-pittsburgh-steelers-32612049"
+  "https://mi.sportsbook.fanduel.com/football/nfl/chicago-bears-@-washington-commanders-32667330",
+  "https://mi.sportsbook.fanduel.com/football/nfl/jacksonville-jaguars-@-buffalo-bills-32341134",
+  "https://mi.sportsbook.fanduel.com/football/nfl/houston-texans-@-atlanta-falcons-32667329",
+  "https://mi.sportsbook.fanduel.com/football/nfl/carolina-panthers-@-detroit-lions-32667331",
+  "https://mi.sportsbook.fanduel.com/football/nfl/tennessee-titans-@-indianapolis-colts-32667334",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-miami-dolphins-32667336",
+  "https://mi.sportsbook.fanduel.com/football/nfl/baltimore-ravens-@-pittsburgh-steelers-32667338",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-orleans-saints-@-new-england-patriots-32667340",
+  "https://mi.sportsbook.fanduel.com/football/nfl/cincinnati-bengals-@-arizona-cardinals-32667339",
+  "https://mi.sportsbook.fanduel.com/football/nfl/philadelphia-eagles-@-los-angeles-rams-32667352",
+  "https://mi.sportsbook.fanduel.com/football/nfl/kansas-city-chiefs-@-minnesota-vikings-32667337",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-jets-@-denver-broncos-32667343",
+  "https://mi.sportsbook.fanduel.com/football/nfl/dallas-cowboys-@-san-francisco-49ers-32667355",
+  "https://mi.sportsbook.fanduel.com/football/nfl/green-bay-packers-@-las-vegas-raiders-32667345"
 ]
 
-	#games = ["https://mi.sportsbook.fanduel.com/football/nfl/minnesota-vikings-@-philadelphia-eagles-32612046"]
+	#games = ["https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-san-francisco-49ers-32629631"]
 	lines = {}
 	for game in games:
 		gameId = game.split("-")[-1]
@@ -1187,7 +1199,7 @@ def writeFanduel():
 					prefix = "1q_"
 
 
-				if marketName in ["moneyline"] or "any time touchdown" in marketName or marketName.startswith("1st half") or marketName.startswith("1st quarter") or marketName.startswith("alternate") or "total points" in marketName or marketName == "player to record a sack" or marketName.split(" - ")[-1] in ["pass completions", "passing tds", "passing attempts", "passing yds", "receiving yds", "receiving tds", "total receptions", "longest pass", "longest rush", "longest reception", "rushing yds", "rushing attempts"]:
+				if marketName in ["moneyline"] or "any time touchdown" in marketName or marketName.startswith("1st half") or marketName.startswith("1st quarter") or marketName.startswith("alternate") or "total points" in marketName or marketName == "player to record a sack" or marketName.split(" - ")[-1] in ["pass completions", "passing tds", "passing attempts", "passing yds", "receiving yds", "receiving tds", "total receptions", "longest pass", "longest rush", "longest reception", "rushing yds", "rushing attempts", "rushing + receiving yds"]:
 					prop = ""
 					if "moneyline" in marketName:
 						prop = "ml"
@@ -1213,6 +1225,8 @@ def writeFanduel():
 							continue
 						marketName = marketName.split(" - ")[-1]
 						prop = "_".join(marketName.split(" ")).replace("completions", "cmp").replace("tds", "td").replace("passing", "pass").replace("attempts", "att").replace("yds", "yd").replace("receiving", "rec").replace("total_receptions", "rec").replace("reception", "rec").replace("rushing", "rush")
+						if prop == "rush_+_rec_yd":
+							prop = "rush+rec"
 					else:
 						continue
 
@@ -1358,7 +1372,7 @@ def writeDK():
 	subCats = {
 		492: [4518, 13195, 13196, 9712],
 		1000: [9525, 9524, 9522, 9517, 9516, 9526],
-		1001: [9514, 9512, 9519, 9518, 9533, 9527],
+		1001: [9514, 9512, 9519, 9518, 9533, 9527, 9523, 12096],
 		1002: [11812, 9521, 9529, 9520],
 		530: [4653, 10514],
 		526: [4631, 13582, 13584]
@@ -2182,11 +2196,14 @@ def sortEV():
 	with open(f"{prefix}static/nfl/ev.json") as fh:
 		evData = json.load(fh)
 
+	with open(f"static/nfl/totals.json") as fh:
+		totals = json.load(fh)
+
 	data = []
 	for player in evData:
 		d = evData[player]
 		j = [f"{k}:{d['bookOdds'][k]}" for k in d["bookOdds"] if k != d["book"]]
-		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d))
+		data.append((d["ev"], d.get("pn_ev", 0), d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d))
 
 	for row in sorted(data):
 		print(row[:-1])
@@ -2195,7 +2212,7 @@ def sortEV():
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "attd":
 			continue
-		arr = [row[0], row[-1]["book"], row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		arr = [row[0], row[-1]["book"], row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			arr.append(row[-1]["bookOdds"].get(book, "-"))
 		output += "\t".join([str(x) for x in arr])+"\n"
@@ -2203,21 +2220,42 @@ def sortEV():
 	with open("static/nfl/attd.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ", "AVG", "% Over", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
+		player = row[-1]["player"]
+		prop = row[-1]["prop"]
 		if row[-1]["prop"] in ["attd", "ftd"]:
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
-		if row[-1]["player"]:
+		if player:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[2].upper(), player.title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
+		avg = over = 0
+		splits = ""
+		if "total" in prop:
+			team = ""
+			if "away" in prop:
+				team = row[2].split(" @ ")[0]
+			elif "home" in prop:
+				team = row[2].split(" @ ")[1]
+			
+		elif player and player in totals and prop in totals[player]:
+			avg = round(totals[player][prop] / totals[player]["gamesPlayed"], 1)
+			a = [x for x in totals[player][prop+"Splits"] if x > float(row[-1]["playerHandicap"])]
+			if row[-1]["under"]:
+				a = [x for x in totals[player][prop+"Splits"] if x < float(row[-1]["playerHandicap"])]
+			over = len(a) / len(totals[player][prop+"Splits"]) * 100
+			splits = ",".join([str(int(x)) for x in totals[player][prop+"Splits"]])
+			arr.extend([avg, f"{int(over)}", splits])
+		else:
+			arr.extend(["-", "-", "-"])
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nfl/props.csv", "w") as fh:
@@ -2316,8 +2354,11 @@ if __name__ == '__main__':
 		writePointsbet()
 		writeBV()
 		writeDK()
-		writeActionNetwork()
 		writeCZ()
+		writeActionNetwork()
+
+	print(convertAmericanOdds(1 + (convertDecOdds(int(-120)) - 1) * 1.5))
+	print(convertAmericanOdds(1 + (convertDecOdds(int(-105)) - 1) * 1.5))
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
@@ -2381,5 +2422,3 @@ if __name__ == '__main__':
 					pass
 
 				print(f"{prop} fd='{fd}'\ndk='{dk}'\n365='{bet365}'\nkambi='{kambi}'\nbv='{bv}'\npn={pn}\nmgm={mgm}")
-
-	
