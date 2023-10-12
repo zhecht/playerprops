@@ -1142,23 +1142,24 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/football/nfl/chicago-bears-@-washington-commanders-32667330",
-  "https://mi.sportsbook.fanduel.com/football/nfl/jacksonville-jaguars-@-buffalo-bills-32341134",
-  "https://mi.sportsbook.fanduel.com/football/nfl/houston-texans-@-atlanta-falcons-32667329",
-  "https://mi.sportsbook.fanduel.com/football/nfl/carolina-panthers-@-detroit-lions-32667331",
-  "https://mi.sportsbook.fanduel.com/football/nfl/tennessee-titans-@-indianapolis-colts-32667334",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-miami-dolphins-32667336",
-  "https://mi.sportsbook.fanduel.com/football/nfl/baltimore-ravens-@-pittsburgh-steelers-32667338",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-orleans-saints-@-new-england-patriots-32667340",
-  "https://mi.sportsbook.fanduel.com/football/nfl/cincinnati-bengals-@-arizona-cardinals-32667339",
-  "https://mi.sportsbook.fanduel.com/football/nfl/philadelphia-eagles-@-los-angeles-rams-32667352",
-  "https://mi.sportsbook.fanduel.com/football/nfl/kansas-city-chiefs-@-minnesota-vikings-32667337",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-jets-@-denver-broncos-32667343",
-  "https://mi.sportsbook.fanduel.com/football/nfl/dallas-cowboys-@-san-francisco-49ers-32667355",
-  "https://mi.sportsbook.fanduel.com/football/nfl/green-bay-packers-@-las-vegas-raiders-32667345"
+  "https://mi.sportsbook.fanduel.com/football/nfl/denver-broncos-@-kansas-city-chiefs-32686781",
+  "https://mi.sportsbook.fanduel.com/football/nfl/baltimore-ravens-@-tennessee-titans-32341155",
+  "https://mi.sportsbook.fanduel.com/football/nfl/san-francisco-49ers-@-cleveland-browns-32686780",
+  "https://mi.sportsbook.fanduel.com/football/nfl/washington-commanders-@-atlanta-falcons-32686784",
+  "https://mi.sportsbook.fanduel.com/football/nfl/carolina-panthers-@-miami-dolphins-32686787",
+  "https://mi.sportsbook.fanduel.com/football/nfl/minnesota-vikings-@-chicago-bears-32686788",
+  "https://mi.sportsbook.fanduel.com/football/nfl/indianapolis-colts-@-jacksonville-jaguars-32686789",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-orleans-saints-@-houston-texans-32686790",
+  "https://mi.sportsbook.fanduel.com/football/nfl/seattle-seahawks-@-cincinnati-bengals-32686798",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-england-patriots-@-las-vegas-raiders-32686800",
+  "https://mi.sportsbook.fanduel.com/football/nfl/detroit-lions-@-tampa-bay-buccaneers-32686792",
+  "https://mi.sportsbook.fanduel.com/football/nfl/arizona-cardinals-@-los-angeles-rams-32686796",
+  "https://mi.sportsbook.fanduel.com/football/nfl/philadelphia-eagles-@-new-york-jets-32686802",
+  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-buffalo-bills-32686791",
+  "https://mi.sportsbook.fanduel.com/football/nfl/dallas-cowboys-@-los-angeles-chargers-32686795"
 ]
 
-	#games = ["https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-san-francisco-49ers-32629631"]
+	games = ["https://mi.sportsbook.fanduel.com/football/denver-broncos-@-kansas-city-chiefs-32686781"]
 	lines = {}
 	for game in games:
 		gameId = game.split("-")[-1]
@@ -2357,7 +2358,7 @@ if __name__ == '__main__':
 		writeCZ()
 		writeActionNetwork()
 
-	print(convertAmericanOdds(1 + (convertDecOdds(int(-120)) - 1) * 1.5))
+	print(convertAmericanOdds(1 + (convertDecOdds(int(-110)) - 1) * 1.5))
 	print(convertAmericanOdds(1 + (convertDecOdds(int(-105)) - 1) * 1.5))
 
 	if args.ev:

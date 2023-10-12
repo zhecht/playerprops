@@ -147,6 +147,8 @@ def write_stats(date):
 def write_totals():
 	totals = {}
 	for team in os.listdir(f"{prefix}static/hockeyreference/"):
+		if team.endswith("json"):
+			continue
 		if team not in totals:
 			totals[team] = {}
 
@@ -217,21 +219,17 @@ def writeRankings():
 		call(["curl", "-k", baseurl+url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		ans = eval(soup.find("visual-answer").get("answer").replace("true", "True").replace("false", "False"))
+		headers = []
+		for hdr in soup.findAll("th"):
+			headers.append(hdr.text.lower())
 
-		for row in ans["visual"]["detail"][0]["grids"][0]["rows"]:
-			team = convertStatMuseTeam(row["TEAM"]["value"])
-			if team not in rankings:
-				rankings[team] = {}
-			if timePeriod not in rankings[team]:
-				rankings[team][timePeriod] = {}
-			for stat in row:
-				if stat in ["TEAM", "SEASON"]:
-					continue
-				try:
-					rankings[team][timePeriod][stat] = row[stat]["value"]
-				except:
-					pass
+		for row in soup.find("tbody").findAll("tr"):
+			team = convertStatMuseTeam(row.find("td").text.lower())
+			rankings[team] = {
+				timePeriod: {}
+			}
+			for td, hdr in zip(row.findAll("td")[2:], headers[2:]):
+				rankings[team][timePeriod][hdr] = td.text
 
 	with open(f"{prefix}static/hockeyreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
@@ -286,6 +284,26 @@ def writeTeamTTOI():
 	with open(f"{prefix}static/hockeyreference/ttoi.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
+def writePlayerIds():
+
+	playerIds = {}
+	for team in ["ana", "ari", "bos", "buf", "car", "cbj", "cgy", "chi", "col", "dal", "det", "edm", "fla", "la", "min", "mtl", "nj", "nsh", "nyi", "nyr", "ott", "phi", "pit", "sea", "sj", "stl", "tb", "tor", "van", "vgk", "wpg", "wsh"]:
+		time.sleep(0.175)
+		url = f"https://www.espn.com/nhl/team/roster/_/name/{team}"
+		outfile = "outnhl"
+		call(["curl", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		playerIds[team] = {}
+		for table in soup.findAll("table"):
+			for row in table.find("tbody").findAll("tr"):
+				pid = row.findAll("td")[1].find("a").get("href").split("/")[-1]
+				player = row.findAll("td")[1].find("a").text
+				player = f"{player[0].upper()}. {player.split(' ')[-1].title()}"
+				playerIds[team][player] = pid
+
+	with open(f"{prefix}static/hockeyreference/playerIds.json", "w") as fh:
+		json.dump(playerIds, fh, indent=4)
 
 def write_averages():
 	with open(f"{prefix}static/hockeyreference/playerIds.json") as fh:
@@ -314,7 +332,7 @@ def write_averages():
 			lastYearStats[team][player] = {}
 
 			time.sleep(0.175)
-			url = f"https://www.espn.com/nhl/player/gamelog/_/id/{pId}/type/nhl/year/2022"
+			url = f"https://www.espn.com/nhl/player/gamelog/_/id/{pId}/type/nhl/year/2023"
 			outfile = "outnhl"
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -429,6 +447,7 @@ if __name__ == "__main__":
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
 	parser.add_argument("-d", "--date", help="Date")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
+	parser.add_argument("--ids", help="IDs", action="store_true")
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
@@ -452,6 +471,8 @@ if __name__ == "__main__":
 		write_schedule(date)
 	elif args.totals:
 		write_totals()
+	elif args.ids:
+		writePlayerIds()
 	elif args.rankings:
 		writeRankings()
 	elif args.ttoi:

@@ -1203,40 +1203,12 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/soccer/romanian-liga-i/rapid-bucharest-v-csms-iasi-32668602",
-  "https://mi.sportsbook.fanduel.com/soccer/dutch-eredivisie/fc-volendam-v-fc-utrecht-32662773",
-  "https://mi.sportsbook.fanduel.com/soccer/german-bundesliga/mgladbach-v-mainz-32660228",
-  "https://mi.sportsbook.fanduel.com/soccer/polish-ekstraklasa/lech-poznan-v-puszcza-niepolomice-32665908",
-  "https://mi.sportsbook.fanduel.com/soccer/hungarian-nb-i/puskas-akademia-v-kisvarda-32673022",
-  "https://mi.sportsbook.fanduel.com/soccer/italian-serie-b/brescia-v-feralpisalo-32679601",
-  "https://mi.sportsbook.fanduel.com/soccer/italian-serie-a/lecce-v-sassuolo-32671418",
-  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/cardiff-metropolitan-v-barry-town-utd-32686847",
-  "https://mi.sportsbook.fanduel.com/soccer/northern-irish-premiership/larne-v-crusaders-32679400",
-  "https://mi.sportsbook.fanduel.com/soccer/northern-irish-premiership/linfield-v-glentoran-32679333",
-  "https://mi.sportsbook.fanduel.com/soccer/irish-premier-division/drogheda-v-derry-city-32665905",
-  "https://mi.sportsbook.fanduel.com/soccer/irish-premier-division/shelbourne-v-dundalk-32676961",
-  "https://mi.sportsbook.fanduel.com/soccer/french-ligue-1/strasbourg-v-nantes-32662106",
-  "https://mi.sportsbook.fanduel.com/soccer/spanish-la-liga/athletic-bilbao-v-almeria-32668723",
-  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/aberystwyth-v-connahs-quay-32686850",
-  "https://mi.sportsbook.fanduel.com/soccer/english-championship/birmingham-v-west-brom-32677003",
-  "https://mi.sportsbook.fanduel.com/soccer/spanish-segunda-division/albacete-v-levante-32687685",
-  "https://mi.sportsbook.fanduel.com/soccer/argentinian-primera-b-nacional/nueva-chicago-v-defensores-de-belgrano-32685510",
-  "https://mi.sportsbook.fanduel.com/soccer/venezuelan-primera-division/cd-hermanos-colmenarez-v-zamora-fc-32690702",
-  "https://mi.sportsbook.fanduel.com/soccer/venezuelan-primera-division/monagas-v-deportivo-la-guaira-32690700",
-  "https://mi.sportsbook.fanduel.com/soccer/venezuelan-primera-division/mineros-guayana-v-angostura-fc-32690701",
-  "https://mi.sportsbook.fanduel.com/soccer/chile---primera-division/union-la-calera-v-huachipato-32678625",
-  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/jaguares-de-cordoba-v-tolima-32680987",
-  "https://mi.sportsbook.fanduel.com/soccer/mexican-ascenso-mx/correcaminos-uat-v-celaya-32671823",
-  "https://mi.sportsbook.fanduel.com/soccer/canadian-premier-league/valour-v-hfx-wanderers-32692458",
-  "https://mi.sportsbook.fanduel.com/soccer/us-national-women-soccer-league/racing-louisville-fc-(w)-v-orlando-pride-sc-(w)-32692467",
-  "https://mi.sportsbook.fanduel.com/soccer/ecuador-serie-a/deportivo-cuenca-v-univ-catolica-(ecu)-32677418",
-  "https://mi.sportsbook.fanduel.com/soccer/us-national-women-soccer-league/seattle-reign-fc-(w)-v-washington-spirit-(w)-32692542",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-b/atletico-go-v-ituano-32674288",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-b/crb-v-ceara-sc-fortaleza-32676667",
-  "https://mi.sportsbook.fanduel.com/soccer/argentinian-primera-b-nacional/all-boys-v-estudiantes-rio-cuarto-32685564",
-  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/municipal-grecia-v-santos-de-guapiles-32690684",
-  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/junior-fc-barranquilla-v-deportivo-cali-32682651",
-  "https://mi.sportsbook.fanduel.com/soccer/mexican-liga-mx/mazatlan-fc-v-cf-america-32681968"
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/wales-v-gibraltar-32693467",
+  "https://mi.sportsbook.fanduel.com/soccer/spanish-copa-del-rey/cd-ceuta-6-de-junio-v-cd-bunol-32707213",
+  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/deportivo-cali-v-tolima-32702342",
+  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-b/vila-nova-v-botafogo-sp-32688342",
+  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/deportivo-pereira-v-rionegro-32703474",
+  "https://mi.sportsbook.fanduel.com/soccer/canadian-premier-league/pacific-v-york9-32703897"
 ]
 
 	lines = {}
