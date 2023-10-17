@@ -1203,12 +1203,42 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/wales-v-gibraltar-32693467",
-  "https://mi.sportsbook.fanduel.com/soccer/spanish-copa-del-rey/cd-ceuta-6-de-junio-v-cd-bunol-32707213",
-  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/deportivo-cali-v-tolima-32702342",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-b/vila-nova-v-botafogo-sp-32688342",
-  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/deportivo-pereira-v-rionegro-32703474",
-  "https://mi.sportsbook.fanduel.com/soccer/canadian-premier-league/pacific-v-york9-32703897"
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/albania-v-bulgaria-32717594",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/syria-v-kuwait-32722835",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/scotland-u21-v-malta-u21-32708568",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/france-u21-v-cyprus-u21-32708835",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/qatar-v-iran-32722191",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/guinea-v-gabon-32722149",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/andorra-u21-v-faroe-islands-u21-32708599",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/portugal-u21-v-greece-u21-32708607",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/mauritania-v-burkina-faso-32722837",
+  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/cardiff-metropolitan-v-newtown-32721886",
+  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/caernarfon-town-v-aberystwyth-32721888",
+  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/haverfordwest-county-v-penybont-fc-32722727",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/australia-v-new-zealand-32713092",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/san-marino-v-denmark-32702882",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/lithuania-v-hungary-32702862",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/northern-ireland-v-slovenia-32702877",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/malta-v-ukraine-32702851",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/serbia-v-montenegro-32702864",
+  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/england-v-italy-32695895",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/france-v-scotland-32711684",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/ivory-coast-v-south-africa-32720361",
+  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-b/guyana-v-puerto-rico-32720546",
+  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-c/cayman-islands-v-us-virgin-islands-32720535",
+  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/ad-municipal-liberia-v-santos-de-guapiles-32714521",
+  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/venezuela-v-chile-32693234",
+  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/paraguay-v-bolivia-32693232",
+  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/ecuador-v-colombia-32693307",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/mexico-v-germany-32709757",
+  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/sporting-san-jose-fc-v-municipal-grecia-32714431",
+  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/uruguay-v-brazil-32693591",
+  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/usa-v-ghana-32711871",
+  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-a/curacao-v-trinidad-tobago-32718700",
+  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-a/el-salvador-v-martinique-32718697",
+  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-a/panama-v-guatemala-32718694",
+  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/deportivo-saprissa-v-puntarenas-f.c.-32714432",
+  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/peru-v-argentina-32693229"
 ]
 
 	lines = {}

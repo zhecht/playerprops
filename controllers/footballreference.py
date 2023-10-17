@@ -168,7 +168,7 @@ def writeTotals():
 						for which in ["", "_against"]:
 							totals[team][f"1h{which}"].append(totals[team][f"1{which}"][w] + totals[team][f"2{which}"][w])
 							totals[team][f"2h{which}"].append(totals[team][f"3{which}"][w] + totals[team][f"4{which}"][w])
-							totals[team]["full"].append(totals[team][f"1h{which}"][w] + totals[team][f"2h{which}"][w])
+							totals[team][f"full{which}"].append(totals[team][f"1h{which}"][w] + totals[team][f"2h{which}"][w])
 					continue
 
 				if player not in totals:

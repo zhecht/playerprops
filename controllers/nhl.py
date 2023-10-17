@@ -244,8 +244,8 @@ def writeCZ(date=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule/?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
-	outfile = "mlboutCZ"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/icehockey/events/schedule/?competitionIds=b7b715a9-c7e8-4c47-af0a-77385b525e09"
+	outfile = "nhloutCZ"
 	os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
 
 	with open(outfile) as fh:
@@ -255,8 +255,7 @@ def writeCZ(date=None):
 	for event in data["competitions"][0]["events"][:20]:
 		games.append(event["id"])
 
-	#games = ["cb0771d1-da7d-45b3-9acf-961b2e45db07"]
-
+	#games = ["41550ae2-bbd8-4c44-8e34-6b3e4e165025"]
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
@@ -271,7 +270,9 @@ def writeCZ(date=None):
 		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 			continue
 
-		game = convertFDTeam(data["name"].lower().replace("|", "").replace(" at ", " @ "))
+		game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
+		away, home = map(str, game.split(" @ "))
+		game = f"{convertFDTeam(away)} @ {convertFDTeam(home)}"
 		res[game] = {}
 
 		for market in data["markets"]:
@@ -281,59 +282,47 @@ def writeCZ(date=None):
 			if market["active"] == False:
 				continue
 			prop = market["name"].lower().replace("|", "").split(" (")[0]
+			template = market["templateName"].lower().replace("|", "")
 
 			prefix = player = ""
-			if "1st 3 innings" in prop:
-				prefix = "f3_"
-			elif "1st 5 innings" in prop:
-				prefix = "f5_"
-			elif "1st 7 innings" in prop:
-				prefix = "f7_"
+			playerProp = False
+			if "1st period" in prop:
+				prefix = "1p_"
+			elif "2nd period" in prop:
+				prefix = "2p_"
+			elif "3rd period" in prop:
+				prefix = "3p_"
 
-			if prop in ["money line", "1st 3 innings money line", "1st 5 innings money line"]:
+			if prop in ["money line"]:
 				prop = "ml"
-			elif prop == "player to hit a home run":
-				prop = "hr"
-			elif market["templateName"].lower().split(" ")[0] in ["|batter|", "|pitcher|"]:
-				player = parsePlayer(market["name"].split("|")[1])
-				if "total runs scored" in prop:
-					prop = "r"
-				elif "total bases" in prop:
-					prop = "tb"
-				elif "total hits" in prop:
-					prop = "h"
-				elif "total singles" in prop:
-					prop = "single"
-				elif "total doubles" in prop:
-					prop = "double"
-				elif "total triples" in prop:
-					prop = "triple"
-				elif "total rbis" in prop:
-					prop = "rbi"
-				elif "strikeouts" in prop:
-					prop = "k"
-				elif "hits allowed" in prop:
-					prop = "h_allowed"
-				elif "walks allowed" in prop:
-					prop = "bb_allowed"
-				elif "outs" in prop:
-					prop = "outs"
-				elif "win" in prop:
-					prop = "w"
-				elif "earned runs" in prop:
-					prop = "er"
-				else:
+			elif prop == "60 minutes betting":
+				prop = "3-way"
+			elif prop == "player to score a goal":
+				prop = "atgs"
+			elif "total saves" in prop:
+				player = parsePlayer(prop.split(" total saves")[0])
+				prop = "saves"
+			elif "total shots" in prop:
+				player = parsePlayer(prop.split(" total shots")[0])
+				prop = "sog"
+			elif prop.startswith("player to be credited"):
+				if "power play" in prop:
 					continue
-			elif "total runs" in prop:
-				if "odd/even" in prop:
+				if "assists" in prop:
+					prop = "ast"
+				elif "point" in prop:
+					prop = "pts"
+			elif "total goals" in prop or "total goals" in template:
+				if "odd/even" in template:
 					continue
-				if prop.startswith("away"):
-					prop = "away_total"
-				elif prop.startswith("home"):
-					prop = "home_total"
+				if template == "x team goals":
+					if game.startswith(convertFDTeam(prop.split(" total")[0])):
+						prop = "away_total"
+					elif game.endswith(convertFDTeam(prop.split(" total")[0])):
+						prop = "home_total"
 				else:
 					prop = "total"
-			elif "run line" in prop:
+			elif "puck line" in prop:
 				prop = "spread"
 			else:
 				continue
@@ -344,7 +333,9 @@ def writeCZ(date=None):
 				res[game][prop] = {}
 
 			selections = market["selections"]
-			skip = 1 if prop in ["away_total", "home_total", "hr"] else 2
+			skip = 1 if prop in ["atgs", "ast", "pts"] else 2
+			if prop == "3-way":
+				skip = 3
 			mainLine = ""
 			for i in range(0, len(selections), skip):
 				try:
@@ -358,9 +349,19 @@ def writeCZ(date=None):
 
 				if "ml" in prop:
 					res[game][prop] = ou
-				elif prop == "hr":
+				elif "3-way" in prop:
+					res[game][prop] = f"{selections[0]['price']['a']}/{selections[-1]['price']['a']}"
+				elif prop == "atgs":
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
-					res[game][prop][player] = f"0.5 {ou}"
+					res[game][prop][player] = {
+						"0.5": ou
+					}
+				elif prop in ["pts", "ast"]:
+					line = str(float(market["name"].split(" ")[5][1:]) - 0.5)
+					player = parsePlayer(selections[i]["name"].replace("|", ""))
+					if player not in res[game][prop]:
+						res[game][prop][player] = {}
+					res[game][prop][player][line] = ou
 				elif "spread" in prop:
 					line = str(float(market["line"]) * -1)
 					mainLine = line
@@ -384,7 +385,9 @@ def writeCZ(date=None):
 						line = str(float(market["line"]))
 					except:
 						line = "0.5"
-					res[game][prop][player] = f"{line} {ou}"
+					res[game][prop][player] = {
+						line: ou
+					}
 
 			#print(market["name"], prop, mainLine)
 			if prop in ["spread", "total"]:
@@ -578,18 +581,14 @@ def parsePinnacle(res, games, gameId, retry, debug):
 		if "special" in row:
 			prop = row["units"].lower()
 
-			if prop == "totalbases":
-				prop = "tb"
-			elif prop == "pitchingouts":
-				prop = "outs"
-			elif prop == "strikeouts":
-				prop = "k"
-			elif prop == "hitsallowed":
-				prop = "h_allowed"
-			elif prop == "earnedruns":
-				prop = "er"
-			elif prop == "homeruns":
-				prop = "hr"
+			if prop == "goals":
+				prop = "atgs"
+			elif prop == "shotsongoal":
+				prop = "sog"
+			elif prop == "assists":
+				prop = "ast"
+			elif prop == "points":
+				prop = "pts"
 			else:
 				continue
 
@@ -631,7 +630,10 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 	for row in data:
 		prop = row["type"]
-		keys = row["key"].split(";")
+		try:
+			keys = row["key"].split(";")
+		except:
+			continue
 
 		prefix = ""
 
@@ -683,7 +685,9 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 			if "points" in prices[0] and prop not in []:
 				handicap = str(float(prices[switched]["points"]))
-				res[game][prop][player] = handicap+" "+ou
+				res[game][prop][player] = {
+					handicap: ou
+				}
 			else:
 				res[game][prop][player] = ou
 		else:
@@ -725,8 +729,8 @@ def writePinnacle(date):
 			player2 = row["participants"][1]["name"].lower()
 			games[str(row["id"])] = f"{convertFDTeam(player2)} @ {convertFDTeam(player1)}"
 
+	#games = {'1580049987': 'ari @ nj'}
 	res = {}
-	#games = {'1579826357': 'nsh @ tb'}	
 	retry = []
 	for gameId in games:
 		parsePinnacle(res, games, gameId, retry, debug)
@@ -800,6 +804,8 @@ def writeBV():
 						prop = "away_total"
 					elif prop == f"total goals o/u - {fullHome}":
 						prop = "home_total"
+					elif prop == "anytime goalscorer":
+						prop = "atgs"
 					elif prop.startswith("total saves"):
 						prop = "saves"
 					elif prop.startswith("total shots on goal"):
@@ -859,7 +865,10 @@ def writeBV():
 						for i in range(0, len(market["outcomes"]), 1):
 							player = parsePlayer(market['outcomes'][i]["description"].split(" - ")[-1].split(" (")[0])
 							player = " ".join([x for x in player.split(" ") if x])
-							handicap = str(float(market["description"].split(" ")[3]) - 0.5)
+							if prop == "atgs":
+								handicap = "0.5"
+							else:
+								handicap = str(float(market["description"].split(" ")[3].replace("+", "")) - 0.5)
 							ou = f"{market['outcomes'][i]['price']['american']}"
 							if player not in res[game][prop]:
 								res[game][prop][player] = {}
@@ -1158,7 +1167,7 @@ def writeFanduel():
 		for (a of as) {
 			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/ice-hockey/nhl") >= 0) {
 				const time = a.parentElement.querySelector("time");
-				if (time && (time.innerText.split(" ")[0] === "TUE" || time.innerText.split(" ").length < 3)) {
+				if (time && (time.innerText.split(" ")[0] === "MON" || time.innerText.split(" ").length < 3)) {
 					urls[a.href] = 1;
 				}
 			}
@@ -1168,13 +1177,15 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/detroit-red-wings-@-new-jersey-devils-32450488",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/new-york-rangers-@-buffalo-sabres-32450510",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/philadelphia-flyers-@-columbus-blue-jackets-32585023",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/florida-panthers-@-minnesota-wild-32585030",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/seattle-kraken-@-nashville-predators-32585031",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/st.-louis-blues-@-dallas-stars-32585024",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/vegas-golden-knights-@-san-jose-sharks-32585037"
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/vancouver-canucks-@-philadelphia-flyers-32723425",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/minnesota-wild-@-montreal-canadiens-32723426",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/tampa-bay-lightning-@-buffalo-sabres-32723451",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/arizona-coyotes-@-new-york-islanders-32723449",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/los-angeles-kings-@-winnipeg-jets-32723461",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/edmonton-oilers-@-nashville-predators-32723462",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/colorado-avalanche-@-seattle-kraken-32723469",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/dallas-stars-@-vegas-golden-knights-32723477",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/carolina-hurricanes-@-san-jose-sharks-32723478"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/nashville-predators-@-tampa-bay-lightning-32450515"]
@@ -1383,8 +1394,6 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 			under = int((100*u) / (-1+u))
 		else:
 			under = int((100 - 100*u) / u)
-		if player == "edm @ van andrei kuzmenko ast over":
-			print(over, impliedOver, under)
 	else:
 		under = int(ou.split("/")[1])
 
@@ -1495,6 +1504,8 @@ def writeDK(date=None):
 				games = []
 				for team in game.split(" @ "):
 					t = team.split(" ")[0]
+					if t == "was":
+						t = "wsh"
 					games.append(t)
 				game = " @ ".join(games)
 				if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
@@ -1546,6 +1557,8 @@ def writeDK(date=None):
 									prop = "spread"
 								elif prop.endswith("team total goals"):
 									team = prop.split(":")[0]
+									if team == "was":
+										team = "wsh"
 									if game.startswith(team.split(" ")[0]):
 										prop = "away_total"
 									else:
@@ -1580,13 +1593,15 @@ def writeDK(date=None):
 									line = str(float(outcomes[i]["line"]))
 									odds = str(outcomes[i]['oddsAmerican'])
 									team = outcomes[i]["label"].lower().split(" ")[0]
+									if team == "was":
+										team = "wsh"
 
 									if game.endswith(team):
 										line = str(float(line) * -1)
 									if line not in lines[game][prop]:
 										lines[game][prop][line] = odds
 									else:
-										if outcomes[i]["label"] == "Under" or game.endswith(team):
+										if team == "under" or game.endswith(team):
 
 											if len(lines[game][prop][line].split("/")) == 2:
 												if int(odds) > int(lines[game][prop][line].split("/")[-1]):
@@ -1604,9 +1619,12 @@ def writeDK(date=None):
 									if outcome["criterionName"] != "Anytime Scorer":
 										continue
 									player = parsePlayer(outcome["label"])
-									lines[game][prop][player] = {
-										"0.5": outcome['oddsAmerican']
-									}
+									try:
+										lines[game][prop][player] = {
+											"0.5": outcome['oddsAmerican']
+										}
+									except:
+										continue
 							else:
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
 								lines[game][prop][player] = {}
@@ -1885,11 +1903,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/hockeyreference/totals.json") as fh:
 		totals = json.load(fh)
 
-	#with open(f"{prefix}static/nhl/caesars.json") as fh:
-	#	czLines = json.load(fh)
+	with open(f"{prefix}static/hockeyreference/playerIds.json") as fh:
+		playerIds = json.load(fh)
 
-	#with open(f"{prefix}static/nhl/caesars.json") as fh:
-	#	czLines = json.load(fh)
+	with open(f"{prefix}static/nhl/caesars.json") as fh:
+		czLines = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -1899,7 +1917,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
-		#"cz": czLines
+		"cz": czLines
 	}
 
 	with open(f"{prefix}static/nhl/ev.json") as fh:
@@ -1960,13 +1978,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 				# last year stats
 				lastTotalOver = lastTotalGames = 0
-
+				totalOver = totalGames = 0
+				totalSplits = []
 				if player:
-					convertedProp = prop.replace("sog", "s")
+					convertedProp = prop.replace("sog", "s").replace("ast", "a").replace("saves", "sv").replace("atgs", "g")
 					away, home = map(str, game.split(" @ "))
 					team = away
 					name = f"{player[0].upper()}. {player.split(' ')[-1].title()}"
-					if home in lastYearStats and name in lastYearStats[home]:
+					if home in playerIds and name in playerIds[home]:
 						team = home
 					if team in lastYearStats and name in lastYearStats[team] and lastYearStats[team][name]:
 						for d in lastYearStats[team][name]:
@@ -1979,6 +1998,21 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					if lastTotalGames:
 						lastTotalOver = int(lastTotalOver * 100 / lastTotalGames)
 
+					for d in os.listdir(f"static/hockeyreference/{team}"):
+						with open(f"static/hockeyreference/{team}/{d}") as fh:
+							teamStats = json.load(fh)
+						if name in teamStats:
+							minutes = teamStats[name]["toi"]
+							if minutes > 0 and convertedProp in teamStats[name]:
+								totalGames += 1
+								val = teamStats[name][convertedProp]
+								totalSplits.append(str(int(val)))
+								if val > float(playerHandicap):
+									totalOver += 1
+
+					if totalGames:
+						totalOver = int(totalOver * 100 / totalGames)
+
 				for i in range(2):
 
 					if overArg and i == 1:
@@ -1988,6 +2022,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					if lastTotalOver and i == 1:
 						lastTotalOver = 100 - lastTotalOver
+					if totalOver and i == 1:
+						totalOver = 100 - totalOver
 					highestOdds = []
 					books = []
 					odds = []
@@ -2148,6 +2184,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
 						evData[key]["lastYearTotal"] = lastTotalOver
+						evData[key]["totalOver"] = totalOver
+						evData[key]["totalSplits"] = ",".join(totalSplits)
 						evData[key]["game"] = game
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
@@ -2175,7 +2213,7 @@ def sortEV(propArg):
 	for player in evData:
 		d = evData[player]
 		j = [f"{k}:{d['bookOdds'][k]}" for k in d["bookOdds"] if k != d["book"]]
-		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d["lastYearTotal"], d))
+		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d["lastYearTotal"], d["totalOver"], d))
 
 	for row in sorted(data):
 		if propArg != "atgs" and row[-1]["prop"] in ["atgs"]:
@@ -2184,7 +2222,7 @@ def sortEV(propArg):
 			continue
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi", "LYR"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi", "LYR", "SZN", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] in ["3-way", "atgs"]:
 			continue
@@ -2193,16 +2231,50 @@ def sortEV(propArg):
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi"]:
+		
+		implied = 0
+		if row[-1]["line"] > 0:
+			implied = 100 / (row[-1]["line"] + 100)
+		else:
+			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
+		implied *= 100
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "bv", "cz", "pn", "kambi"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
-		arr.append(row[-1]["lastYearTotal"])
+
+		for h in ["lastYearTotal", "totalOver"]:
+			if not row[-1][h]:
+				arr.append("-")
+			else:
+				arr.append(f"{row[-1][h]}%")
+		arr.append(row[-1]["totalSplits"])
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nhl/props.csv", "w") as fh:
+		fh.write(output)
+
+	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi", "LYR", "SZN"]) + "\n"
+	for row in sorted(data, reverse=True):
+		if row[-1]["prop"] != "atgs":
+			continue
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		for book in ["fd", "dk", "mgm", "bv", "cz", "pn", "kambi"]:
+			o = str(row[-1]["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		for h in ["lastYearTotal", "totalOver"]:
+			if not row[-1][h]:
+				arr.append("-")
+			else:
+				arr.append(f"{row[-1][h]}%")
+		arr.append(row[-1]["totalSplits"])
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/nhl/atgs.csv", "w") as fh:
 		fh.write(output)
 
 
@@ -2296,7 +2368,7 @@ if __name__ == '__main__':
 		writeMGM(args.date)
 		writeBV()
 		writeDK(args.date)
-		#writeCZ(args.date)
+		writeCZ(args.date)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under)
