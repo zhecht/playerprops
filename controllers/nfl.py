@@ -85,7 +85,7 @@ actionNetworkBookIds = {
 
 def writeActionNetwork(dateArg = None):
 
-	with open(f"{prefix}static/nfl/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nfl/draftkings.json") as fh:
 		fdLines = json.load(fh)
 
 	teamGame = {}
@@ -97,7 +97,7 @@ def writeActionNetwork(dateArg = None):
 			teamGame[home] = game
 
 	props = ["56_first_touchdown_scorer", "62_anytime_touchdown_scorer", "60_longest_completion", "59_longest_reception", "58_longest_rush", "30_passing_attempts", "10_pass_completions", "11_passing_tds", "9_passing_yards", "17_receiving_tds", "16_receiving_yards", "15_receptions", "18_rushing_attempts", "13_rushing_tds", "12_rushing_yards", "70_tackles_assists"]
-	props = ["70_tackles_assists"]
+	#props = ["70_tackles_assists"]
 
 	odds = {}
 	optionTypes = {}
@@ -125,11 +125,11 @@ def writeActionNetwork(dateArg = None):
 		elif "tackles_assist" in actionProp:
 			prop = "tackles+ast"
 		else:
-			prop = "_".join(actionProp.split("_")[1:]).replace("rushing", "rush").replace("passing", "pass").replace("receiving", "rec").replace("yards", "yd").replace("attempts", "att").replace("reception", "rec")
-			if prop == "longest_completion":
+			prop = "_".join(actionProp.split("_")[1:]).replace("rushing", "rush").replace("passing", "pass").replace("receiving", "rec").replace("yards", "yd").replace("attempts", "att").replace("completion", "cmp").replace("reception", "rec")
+			if prop == "longest_cmp":
 				prop = "longest_pass"
 
-		if prop.endswith("s"):
+		if prop not in ["longest_pass"] and prop.endswith("s"):
 			prop = prop[:-1]
 
 		with open(path) as fh:
@@ -163,9 +163,12 @@ def writeActionNetwork(dateArg = None):
 				continue
 				pass
 			for oddData in bookData["odds"]:
-				player = playerIds[oddData["player_id"]]
-				team = teamIds[oddData["team_id"]]
-				game = teamGame[team]
+				try:
+					player = playerIds[oddData["player_id"]]
+					team = teamIds[oddData["team_id"]]
+					game = teamGame[team]
+				except:
+					continue
 				overUnder = "over"
 				try:
 					overUnder = optionTypes[oddData["option_type_id"]]
@@ -1095,6 +1098,9 @@ def writeKambi():
 
 			label = f"{prefix}{label}"
 
+			if "oddsAmerican" not in betOffer["outcomes"][0]:
+				continue
+
 			try:
 				ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 			except:
@@ -1129,9 +1135,9 @@ def writeKambi():
 							player = parsePlayer(outcome["participant"])
 							last, first = map(str, player.split(", "))
 							player = f"{first} {last}"
+							data[game][label][player] = f"{outcome['oddsAmerican']}"
 						except:
 							continue
-						data[game][label][player] = f"{outcome['oddsAmerican']}"
 				else:
 					line = betOffer["outcomes"][0]["line"] / 1000
 					if betOffer["outcomes"][0]["label"] == "Under":
@@ -1151,6 +1157,263 @@ def parsePlayer(player):
 		player = "joshua palmer"
 	return player
 
+def writeFanduelManual():
+	js = """
+
+	let data = {};
+	{
+
+		function convertTeam(team) {
+			let t = team.toLowerCase().substring(0, 3);
+			if (t == "kan") {
+				t = "kc";
+			} else if (t == "los") {
+				t = "lar";
+				if (team.indexOf("chargers") >= 0) {
+					t = "lac";
+				}
+			} else if (t == "gre") {
+				t = "gb";
+			} else if (t == "san") {
+				t = "sf";
+			} else if (t == "tam") {
+				t = "tb";
+			} else if (t == "las") {
+				t = "lv";
+			} else if (t == "new") {
+				t = "ne";
+				if (team.indexOf("giants") > 0) {
+					t = "nyg";
+				} else if (team.indexOf("jets") > 0) {
+					t = "nyj";
+				} else if (team.indexOf("saints") >= 0) {
+					t = "nor";
+				}
+			}
+			return t;
+		}
+
+		function parsePlayer(player) {
+			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+		}
+
+		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
+		let awayFull = game.split(" @ ")[0];
+		let awayName = awayFull.split(" ")[awayFull.split(" ").length - 1];
+		let homeFull = game.split(" @ ")[1];
+		let homeName = homeFull.split(" ")[homeFull.split(" ").length - 1];
+		let away = convertTeam(game.split(" @ ")[0]);
+		let home = convertTeam(game.split(" @ ")[1]);
+		game = away+" @ "+home;
+		if (!data[game]) {
+			data[game] = {};
+		}
+
+		const arrows = document.querySelectorAll("div[data-test-id='ArrowAction']");
+
+		for (const arrow of arrows) {
+			let li = arrow;
+			let idx = 0;
+			while (li.nodeName != "LI") {
+				li = li.parentElement;
+				idx += 1;
+				if (idx > 10) {
+					break;
+				}
+			}
+
+			if (idx > 10) {
+				break;
+			}
+
+			let prop = "";
+			let line = "";
+			let player = "";
+			let label = arrow.innerText.toLowerCase();
+			if (label.indexOf("game lines") >= 0) {
+				prop = "lines";
+			} else if (label.indexOf("any time touchdown scorer") >= 0) {
+				prop = "attd";
+			} else if (label.indexOf("first touchdown scorer") >= 0) {
+				prop = "ftd";
+			} else if (label.indexOf("player") >= 0) {
+				player = true;
+
+				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0) {
+					continue
+				}
+
+				if (label.indexOf("passing + rushing") >= 0) {
+					prop = "pass+rush";
+				} else if (label.indexOf("rushing + receiving") >= 0) {
+					prop = "rush+rec";
+				} else if (label.indexOf("longest pass") >= 0) {
+					prop = "longest_pass";
+				} else if (label.indexOf("longest rush") >= 0) {
+					prop = "longest_rush";
+				} else if (label.indexOf("longest rec") >= 0) {
+					prop = "longest_rec";
+				} else if (label.indexOf("pass") >= 0) {
+					prop = "pass";
+				} else if (label.indexOf("rush") >= 0) {
+					prop = "rush";
+				} else if (label.indexOf("receiving") >= 0 || label.indexOf("receptions") >= 0) {
+					prop = "rec";
+				}
+
+				if (label.indexOf("yds") >= 0) {
+					prop += "_yd";
+				} else if (label.indexOf("tds") >= 0) {
+					prop += "_td";
+				} else if (label.indexOf("completions") >= 0) {
+					prop += "_cmp";
+				} else if (label.indexOf("attempts") >= 0) {
+					prop += "_att";
+				}
+			} else if (label.indexOf("alternate spread") >= 0) {
+				prop = "spread";
+			} else if (label.indexOf("alternate total points") >= 0) {
+				prop = "total";
+			} else if (label.indexOf(awayName+" total points") >= 0) {
+				prop = "away_total";
+			} else if (label.indexOf(homeName+" total points") >= 0) {
+				prop = "home_total";
+			}
+
+			if (!prop) {
+				continue;
+			}
+
+			if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
+				arrow.click();
+			}
+			let el = arrow.parentElement.parentElement.querySelector("div[aria-label='Show more']");
+			if (el) {
+				el.click();
+			}
+			el = arrow.parentElement.parentElement.querySelector("div[aria-label='Show more correct score options']");
+			if (el) {
+				el.click();
+			}
+
+			if (prop != "lines" && !data[game][prop]) {
+				data[game][prop] = {};
+			}
+
+			let skip = 1;
+			if (["away_total", "home_total", "spread"].indexOf(prop) >= 0 || player) {
+				skip = 2;
+			}
+			let btns = Array.from(li.querySelectorAll("div[role=button]"));
+			btns.shift();
+
+			if (prop == "lines") {
+				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				line = btns[0].getAttribute("aria-label").split(", ")[1];
+				data[game]["spread"] = {};
+				data[game]["spread"][line.replace("+", "")] = btns[0].getAttribute("aria-label").split(", ")[2].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+				line = btns[2].getAttribute("aria-label").split(", ")[2].split(" ")[1];
+				data[game]["total"] = {};
+				data[game]["total"][line] = btns[2].getAttribute("aria-label").split(", ")[3].split(" ")[0] + "/" + btns[5].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+			}
+
+			for (let i = 0; i < btns.length; i += skip) {
+				const btn = btns[i];
+				if (btn.getAttribute("data-test-id")) {
+					continue;
+				}
+				const ariaLabel = btn.getAttribute("aria-label");
+				if (!ariaLabel || ariaLabel.indexOf("Show more") >= 0 || ariaLabel.indexOf("Show less") >= 0 || ariaLabel.indexOf("unavailable") >= 0) {
+					continue;
+				}
+				let odds = ariaLabel.split(", ")[1];
+
+				//console.log(btn, odds);
+
+				if (odds.indexOf("unavailable") >= 0) {
+					continue;
+				}
+				if (prop == "lines") {
+
+				} else if (["spread"].indexOf(prop) >= 0) {
+					let arr = ariaLabel.split(", ")[0].split(" ");
+					line = arr[arr.length - 1];
+					arr.pop();
+					let team = convertTeam(arr.join(" "));
+
+					let isAway = true;
+					if (team == game.split(" @ ")[1]) {
+						line = (parseFloat(line) * -1).toString();
+						isAway = false;
+					}
+
+					odds = ariaLabel.split(", ")[1].split(" ")[0];
+					line = line.replace("+", "");
+
+					if (isAway) {
+						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+					} else {
+						data[game][prop][line] = btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+odds;
+					}
+				} else if (["total"].indexOf(prop) >= 0) {
+					let odds = ariaLabel.split(", ")[2].split(" ")[0];
+					let line = ariaLabel.split(", ")[1].split(" ")[0];
+
+					let isAway = true;
+					if (ariaLabel.split(", ")[1].indexOf("Under") >= 0) {
+						isAway = false;
+					}
+
+
+					line = line.replace("+", "");
+
+					if (isAway) {
+						data[game][prop][line] = odds;
+					} else if (!data[game][prop][line]) {
+						data[game][prop][line] = "-/"+odds;
+					} else {
+						data[game][prop][line] += "/"+odds;
+					}
+				} else if (skip == 2 && player) {
+					// 2 sides
+					player = parsePlayer(ariaLabel.split(", ")[0]);
+					if (!data[game][prop][player]) {
+						data[game][prop][player] = {};
+					}
+					line = ariaLabel.split(", ")[1].split(" ")[1];
+					odds = ariaLabel.split(", ")[2].split(" ")[0];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+				} else if (skip == 2) {
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop] = {};
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+				} else {
+					player = parsePlayer(ariaLabel.split(",")[0]);
+					if (!data[game][prop][player]) {
+						data[game][prop][player] = {};
+					}
+
+					if (["attd", "ftd"].indexOf(prop) >= 0) {
+						data[game][prop][player] = odds;
+					} else {
+						data[game][prop][player][line] = odds;
+					}
+				}
+			}
+		}
+
+		console.log(data);
+	}
+
+"""
+
 def writeFanduel():
 	apiKey = "FhMFpcPWXMeyZxOx"
 
@@ -1168,24 +1431,22 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/football/nfl/denver-broncos-@-kansas-city-chiefs-32686781",
-  "https://mi.sportsbook.fanduel.com/football/nfl/baltimore-ravens-@-tennessee-titans-32341155",
-  "https://mi.sportsbook.fanduel.com/football/nfl/san-francisco-49ers-@-cleveland-browns-32686780",
-  "https://mi.sportsbook.fanduel.com/football/nfl/washington-commanders-@-atlanta-falcons-32686784",
-  "https://mi.sportsbook.fanduel.com/football/nfl/carolina-panthers-@-miami-dolphins-32686787",
-  "https://mi.sportsbook.fanduel.com/football/nfl/minnesota-vikings-@-chicago-bears-32686788",
-  "https://mi.sportsbook.fanduel.com/football/nfl/indianapolis-colts-@-jacksonville-jaguars-32686789",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-orleans-saints-@-houston-texans-32686790",
-  "https://mi.sportsbook.fanduel.com/football/nfl/seattle-seahawks-@-cincinnati-bengals-32686798",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-england-patriots-@-las-vegas-raiders-32686800",
-  "https://mi.sportsbook.fanduel.com/football/nfl/detroit-lions-@-tampa-bay-buccaneers-32686792",
-  "https://mi.sportsbook.fanduel.com/football/nfl/arizona-cardinals-@-los-angeles-rams-32686796",
-  "https://mi.sportsbook.fanduel.com/football/nfl/philadelphia-eagles-@-new-york-jets-32686802",
-  "https://mi.sportsbook.fanduel.com/football/nfl/new-york-giants-@-buffalo-bills-32686791",
-  "https://mi.sportsbook.fanduel.com/football/nfl/dallas-cowboys-@-los-angeles-chargers-32686795"
+  "https://mi.sportsbook.fanduel.com/football/nfl/jacksonville-jaguars-@-new-orleans-saints-32705962",
+  "https://mi.sportsbook.fanduel.com/football/nfl/cleveland-browns-@-indianapolis-colts-32705963",
+  "https://mi.sportsbook.fanduel.com/football/nfl/washington-commanders-@-new-york-giants-32705965",
+  "https://mi.sportsbook.fanduel.com/football/nfl/atlanta-falcons-@-tampa-bay-buccaneers-32705970",
+  "https://mi.sportsbook.fanduel.com/football/nfl/buffalo-bills-@-new-england-patriots-32705972",
+  "https://mi.sportsbook.fanduel.com/football/nfl/las-vegas-raiders-@-chicago-bears-32705973",
+  "https://mi.sportsbook.fanduel.com/football/nfl/detroit-lions-@-baltimore-ravens-32705979",
+  "https://mi.sportsbook.fanduel.com/football/nfl/pittsburgh-steelers-@-los-angeles-rams-32705967",
+  "https://mi.sportsbook.fanduel.com/football/nfl/arizona-cardinals-@-seattle-seahawks-32705974",
+  "https://mi.sportsbook.fanduel.com/football/nfl/los-angeles-chargers-@-kansas-city-chiefs-32705968",
+  "https://mi.sportsbook.fanduel.com/football/nfl/green-bay-packers-@-denver-broncos-32705969",
+  "https://mi.sportsbook.fanduel.com/football/nfl/miami-dolphins-@-philadelphia-eagles-32705975",
+  "https://mi.sportsbook.fanduel.com/football/nfl/san-francisco-49ers-@-minnesota-vikings-32705977"
 ]
 
-	#games = ["https://mi.sportsbook.fanduel.com/football/denver-broncos-@-kansas-city-chiefs-32686781"]
+	games = ["https://mi.sportsbook.fanduel.com/football/nfl/jacksonville-jaguars-@-new-orleans-saints-32705962"]
 	lines = {}
 	for game in games:
 		gameId = game.split("-")[-1]
@@ -1201,11 +1462,11 @@ def writeFanduel():
 
 		for tab in ["", "passing-props", "receiving-props", "rushing-props", "defensive-props", "1st-half", "2nd-half", "1st-quarter"]:
 		#for tab in ["1st-half"]:
-			time.sleep(0.42)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
 				url += f"&tab={tab}"
 			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			time.sleep(2.1)
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -1986,6 +2247,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nfl/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	# temp fix with FD locking us out
+	if False:
+		fdLines = {}
+		for game in actionnetwork:
+			fdLines[game] = {}
+
+			for prop in actionnetwork[game]:
+				fdLines[game][prop] = {}
+				for player in actionnetwork[game][prop]:
+					if "fanduel" in actionnetwork[game][prop][player]:
+						fdLines[game][prop][player] = actionnetwork[game][prop][player]["fanduel"]
+
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
@@ -2085,7 +2358,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								o = val
 								ou = val
 
-							if not o:
+							if not o or o == "-":
 								continue
 							highestOdds.append(int(o))
 							odds.append(ou)
@@ -2395,7 +2668,7 @@ if __name__ == '__main__':
 		writeCZ()
 
 	if args.update:
-		writeFanduel()
+		#writeFanduel()
 		writePinnacle(args.date)
 		writeKambi()
 		writeMGM()

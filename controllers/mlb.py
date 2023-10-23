@@ -1161,8 +1161,8 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32717062",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-texas-rangers-32717063"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32736034",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-houston-astros-32736035"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649"]
@@ -1177,7 +1177,7 @@ def writeFanduel():
 		outfile = "outmlb"
 
 		for tab in ["", "alt-lines-runs"]:
-			time.sleep(0.42)
+			time.sleep(2.1)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
 				url += f"&tab={tab}"

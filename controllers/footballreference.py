@@ -165,10 +165,14 @@ def writeTotals():
 							totals[team][f"{i}_against"].append(a[1])
 
 						w = int(week) - 1
-						for which in ["", "_against"]:
-							totals[team][f"1h{which}"].append(totals[team][f"1{which}"][w] + totals[team][f"2{which}"][w])
-							totals[team][f"2h{which}"].append(totals[team][f"3{which}"][w] + totals[team][f"4{which}"][w])
-							totals[team][f"full{which}"].append(totals[team][f"1h{which}"][w] + totals[team][f"2h{which}"][w])
+						# failing for bye weeks
+						try:
+							for which in ["", "_against"]:
+								totals[team][f"1h{which}"].append(totals[team][f"1{which}"][w] + totals[team][f"2{which}"][w])
+								totals[team][f"2h{which}"].append(totals[team][f"3{which}"][w] + totals[team][f"4{which}"][w])
+								totals[team][f"full{which}"].append(totals[team][f"1h{which}"][w] + totals[team][f"2h{which}"][w])
+						except:
+							continue
 					continue
 
 				if player not in totals:
@@ -342,6 +346,13 @@ def writeTrends():
 		data = []
 		for team in snaps:
 			for player in snaps[team]:
+				
+				if player in ["jk dobbins", "nick chubb"]:
+					continue
+
+				if player == "cam akers" and team == "lar":
+					continue
+
 				if pos == "rb" and snaps[team][player]["pos"] != "rb":
 					continue
 				elif pos == "wr/te" and snaps[team][player]["pos"] == "rb":
@@ -382,6 +393,7 @@ def writeTrends():
 
 				if not sznSnap:
 					sznSnap = 0
+					continue
 				else:
 					sznSnap = round(sum(sznSnap) / len(sznSnap))
 				try:
@@ -558,4 +570,4 @@ if __name__ == "__main__":
 
 	if args.update:
 		writeSchedule(week)
-		write_stats(week)
+		writeStats(week)

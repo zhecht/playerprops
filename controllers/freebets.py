@@ -688,8 +688,8 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32717062",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-texas-rangers-32717063"
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32736034",
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-houston-astros-32736035"
 ]
 
 	lines = {}
@@ -703,7 +703,7 @@ def writeFanduel(team=None):
 		outfile = "out"
 
 		for tab in ["pitcher", "hitter"]:
-			time.sleep(0.42)
+			time.sleep(2.2)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}&tab={tab}-props"
 			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
 
@@ -945,8 +945,18 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			bet365Lines = json.load(fh)
 
 
-	with open(f"{prefix}static/baseballreference/fanduelLines.json") as fh:
-		fdLines = json.load(fh)
+	with open(f"{prefix}static/mlb/fanduelLines.json") as fh:
+		lines = json.load(fh)
+
+	fdLines = {}
+	for game in lines:
+		if "hr" not in lines[game]:
+			continue
+		fdLines[game] = {}
+		for player in lines[game]["hr"]:
+			fdLines[game][player] = {
+				"hr": lines[game]["hr"][player].split(" ")[-1]
+			}
 
 	with open(f"{prefix}static/mlb/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -1441,7 +1451,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("max kepler", 390, "min")]
+	plays = [("trea turner", 500, "phi"), ("jt realmuto", 560, "phi"), ("mitch garver", 400, "tex"), ("marcus semien", 500, "tex")]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1493,8 +1503,6 @@ if __name__ == '__main__':
 	if args.prop:
 		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
 		sortEV(args.dinger)
-	#write365()
-	#writeActionNetwork()
 
 	data = {}
 	#devigger(data, player="dean kremer", bet365Odds="-115/-115", finalOdds="-128")

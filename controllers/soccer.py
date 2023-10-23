@@ -31,7 +31,7 @@ def convertTeam(game):
 		if not team:
 			continue
 		t = team
-		for suffix in ["sp", "rj", "fr", "ce", "ba", "pr", "rs", "rb", "rc", "ssc", "sc", "cf", "bb", "as", "fc", "se", "te", "ba", "jk", "tc", "nk", "calcio", "fbc", "fk", "ac", "mg", "ad", "town", "athletic", "county", "rovers", "cd", "ec", "sk"]:
+		for suffix in ["sp", "rj", "fr", "ce", "ba", "pr", "rs", "rb", "rc", "ssc", "sc", "cf", "bb", "as", "fc", "se", "te", "ba", "jk", "tc", "nk", "calcio", "fbc", "fk", "ac", "mg", "ad", "town", "athletic", "county", "rovers", "cd", "ec", "sk", "u21"]:
 			if t.endswith(f" {suffix}"):
 				t = t[:-1*(len(suffix) + 1)]
 		for prefix in ["sc", "aa", "ac", "as", "jk", "sk", "us", "sd", "ec", "aep", "ns", "ssd", "ssc", "kaa", "fks", "csd", "sm", "rb", "em", "rks", "bk", "hsk", "se"]:
@@ -80,6 +80,7 @@ def convertTeam(game):
 		"brighton and hove albion": "brighton",
 		"bsc young boys bern": "young boys",
 		"bsc young boys": "young boys",
+		"caernarfon town": "caernarfon",
 		"cajamarca utc": "utc de cajamarca",
 		"utc cajamarca": "utc de cajamarca",
 		"universidad tecnica de cajamarca": "utc de cajamarca",
@@ -1203,42 +1204,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/albania-v-bulgaria-32717594",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/syria-v-kuwait-32722835",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/scotland-u21-v-malta-u21-32708568",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/france-u21-v-cyprus-u21-32708835",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/qatar-v-iran-32722191",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/guinea-v-gabon-32722149",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/andorra-u21-v-faroe-islands-u21-32708599",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa-u21-euro-qualifiers/portugal-u21-v-greece-u21-32708607",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/mauritania-v-burkina-faso-32722837",
-  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/cardiff-metropolitan-v-newtown-32721886",
-  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/caernarfon-town-v-aberystwyth-32721888",
-  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/haverfordwest-county-v-penybont-fc-32722727",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/australia-v-new-zealand-32713092",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/san-marino-v-denmark-32702882",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/lithuania-v-hungary-32702862",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/northern-ireland-v-slovenia-32702877",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/malta-v-ukraine-32702851",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/serbia-v-montenegro-32702864",
-  "https://mi.sportsbook.fanduel.com/soccer/uefa---euro-qualifiers/england-v-italy-32695895",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/france-v-scotland-32711684",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/ivory-coast-v-south-africa-32720361",
-  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-b/guyana-v-puerto-rico-32720546",
-  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-c/cayman-islands-v-us-virgin-islands-32720535",
-  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/ad-municipal-liberia-v-santos-de-guapiles-32714521",
-  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/venezuela-v-chile-32693234",
-  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/paraguay-v-bolivia-32693232",
-  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/ecuador-v-colombia-32693307",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/mexico-v-germany-32709757",
-  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/sporting-san-jose-fc-v-municipal-grecia-32714431",
-  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/uruguay-v-brazil-32693591",
-  "https://mi.sportsbook.fanduel.com/soccer/international-friendlies/usa-v-ghana-32711871",
-  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-a/curacao-v-trinidad-tobago-32718700",
-  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-a/el-salvador-v-martinique-32718697",
-  "https://mi.sportsbook.fanduel.com/soccer/concacaf-nations-league-a/panama-v-guatemala-32718694",
-  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/deportivo-saprissa-v-puntarenas-f.c.-32714432",
-  "https://mi.sportsbook.fanduel.com/soccer/fifa-world-cup-qualifiers---americas/peru-v-argentina-32693229"
+  "https://mi.sportsbook.fanduel.com/soccer/bosnia-and-herzegovina---premier-league/zrinjski-v-fk-velez-mostar-32723810",
+  "https://mi.sportsbook.fanduel.com/soccer/bosnia-and-herzegovina---premier-league/borac-banja-luka-v-sarajevo-32723930",
+  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/connahs-quay-v-bala-town-32724089",
+  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/ad-guanacasteca-v-cs-herediano-32714200",
+  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/gremio-v-athletico-pr-32688180",
+  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/coritiba-v-cuiaba-32688184",
+  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/america-mg-v-botafogo-32688185",
+  "https://mi.sportsbook.fanduel.com/soccer/us-major-league-soccer/inter-miami-cf-v-charlotte-fc-32703234",
+  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/cs-cartagines-v-ad-san-carlos-32712543",
+  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/bahia-v-internacional-32688186",
+  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/vasco-da-gama-v-fortaleza-ec-32688179",
+  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/goias-v-sao-paulo-32689650",
+  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/millonarios-v-union-magdalena-32672222",
+  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/ld-alajuelense-v-municipal-perez-zeledon-32714428"
 ]
 
 	lines = {}
@@ -1258,7 +1237,7 @@ def writeFanduel():
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
 				url += f"&tab={tab}"
-			call(["curl", "-H", "User-fasAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			call(["curl", "-H", "User-fasAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-H", 'x-px-context: _px3=02c9ab1c8d0655c3f57f55884b4aaa616a9a3995e8935408345199e8e71aef9e:Fa57xPlp9jkOygctuLr5buwfVIYS/s9bO7ouGbCabNNgpUmFDpOmHSEedRAOBuNRxPAv/bz5ZXCcbuf8AzLaYg==:1000:vo2IkE270qC7lKtbOjenvuAG6ddT1JVIo+uu+qpt6skvw99qELnBjQKNUJoJrlg3IZ6UwbIRlDbUMwcBi88eewvV3nAE9NYPdsHmAUqexdpyhIiakXRXRePc2VtDTnTF2mePGiJx30FP9Mi0V8pxH1qYSTM/Z9SJX9VlWy6f3gs1EFMZHHAD1WwUR1gA/Jq24xaKyiwvt48GHU85aLLH75mTWhCByf5k4nR7R8Kc+H0=;_pxvid=00692951-e181-11ed-a499-ebf9b9755f04;pxcts=006939ed-e181-11ed-a499-537250516c45;', "-k", url, "-o", outfile])
 
 			with open(outfile) as fh:
 				data = json.load(fh)

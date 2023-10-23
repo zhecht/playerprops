@@ -450,3 +450,6 @@ if __name__ == "__main__":
 		write_stats(date)
 		#write_averages()
 		
+
+	for d in os.listdir("static/basketballreference/"):
+		print(d)

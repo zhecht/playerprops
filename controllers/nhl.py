@@ -757,12 +757,17 @@ def writeBV():
 	res = {}
 	#ids = ["/hockey/nhl/seattle-kraken-nashville-predators-202310122000"]
 	for link in ids:
+		if "goals" in link:
+			continue
 		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description{link}?lang=en"
 		time.sleep(0.3)
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+
+		os.system(f"curl \"{url}\" --compressed -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0' -H 'Accept: application/json, text/plain, */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://www.bovada.lv/' -H 'X-CHANNEL: desktop' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' -H 'X-SPORT-CONTEXT: ' -H 'Connection: keep-alive' -H 'Cookie: Device-Type=Desktop|false; LANG=en; AB=variant; VISITED=true; affid=14995; JOINED=true; url-prefix=/; ln_grp=1; odds_format=AMERICAN; TSD4E5KQ1M=T5mCLsoZdxfxCbEQD4qVATcG0sKVJAEQ; variant=v:0|lgn:0|dt:d|os:w|cntry:US|cur:USD|jn:1|rt:o|pb:0; JSESSIONID=79EAD6CF313245D69DB5B4BAFE4325BF; TS01ed9118=014b5d5d077747c6c55fa8f9f0eed7c4ffb9827efa99f5edf3213c3de6b0106b0501b972a707dab0397a11c3f2813e791df962eca970ba71e00ace4d692d2fb3aee5d1cc0c7696d376fab4329dbde7037083ba5f81342b1138c2b7fc149c52438ad4a4c5cc' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
+
+		#print(url)
 
 		comp = data[0]['events'][0]['competitors']
 		game = data[0]['events'][0]['description'].lower()
@@ -870,6 +875,8 @@ def writeBV():
 							else:
 								handicap = str(float(market["description"].split(" ")[3].replace("+", "")) - 0.5)
 							ou = f"{market['outcomes'][i]['price']['american']}"
+							if not player:
+								continue
 							if player not in res[game][prop]:
 								res[game][prop][player] = {}
 							res[game][prop][player][handicap] = ou.replace("EVEN", "100")
@@ -1027,6 +1034,10 @@ def writeKambi():
 			t = team.split(" ")[0]
 			if t == "vgs":
 				t = "vgk"
+			elif "rangers" in team:
+				t = "nyr"
+			elif "islanders" in team:
+				t = "nyi"
 			fullTeam[t] = full
 			games.append(t)
 		game = " @ ".join(games)
@@ -1157,6 +1168,241 @@ def writeKambi():
 def parsePlayer(player):
 	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 
+def writeFanduelManual():
+	js = """
+
+	let data = {};
+	{
+
+		function convertTeam(team) {
+			let t = team.toLowerCase().substring(0, 3);
+			if (t == "was") {
+				t = "wsh";
+			} else if (t == "cal") {
+				t = "cgy";
+			} else if (t == "col" && team.indexOf("columbus") >= 0) {
+				t = "cbj";
+			} else if (t == "flo") {
+				t = "fla";
+			} else if (t == "los") {
+				t = "la";
+			} else if (t == "nas") {
+				t = "nsh";
+			} else if (t == "mon") {
+				t = "mtl";
+			} else if (t == "new") {
+				t = "nj";
+				if (team.indexOf("rangers") > 0) {
+					t = "nyr";
+				} else if (team.indexOf("island") > 0) {
+					t = "nyi";
+				}
+			} else if (t == "san") {
+				t = "sj";
+			} else if (t == "tam") {
+				t = "tb";
+			} else if (t == "sai") {
+				t = "stl";
+			} else if (t == "veg") {
+				t = "vgk";
+			} else if (t == "win") {
+				t = "wpg";
+			}
+			return t;
+		}
+
+		function parsePlayer(player) {
+			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+		}
+
+		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
+		let awayFull = game.split(" @ ")[0];
+		let homeFull = game.split(" @ ")[1];
+		let away = convertTeam(game.split(" @ ")[0]);
+		let home = convertTeam(game.split(" @ ")[1]);
+		game = away+" @ "+home;
+		if (!data[game]) {
+			data[game] = {};
+		}
+
+		const arrows = document.querySelectorAll("div[data-test-id='ArrowAction']");
+
+		for (const arrow of arrows) {
+			let li = arrow;
+			let idx = 0;
+			while (li.nodeName != "LI") {
+				li = li.parentElement;
+				idx += 1;
+				if (idx > 10) {
+					break;
+				}
+			}
+
+			if (idx > 10) {
+				break;
+			}
+
+			let prop = "";
+			let line = "";
+			let player = "";
+			let label = arrow.innerText.toLowerCase();
+			if (label.indexOf("game lines") >= 0) {
+				prop = "lines";
+			} else if (label.indexOf("any time goal scorer") >= 0) {
+				prop = "atgs";
+			} else if (label.indexOf("player to record") >= 0) {
+				line = (parseFloat(label.split(" ")[3].replace("+", "")) - 0.5).toString();
+				if (label.indexOf("shots on goal") > 0) {
+					prop = "sog";
+				} else if (label.indexOf("+ points") > 0) {
+					prop = "pts";
+				} else if (label.indexOf("+ assists") > 0) {
+					prop = "ast";
+				}
+			} else if (label.indexOf("alternate puck line") >= 0) {
+				prop = "spread";
+			} else if (label.indexOf("alternate total goals") >= 0) {
+				prop = "total";
+			} else if (label.indexOf("total saves") >= 0) {
+				player = parsePlayer(label.split(" -")[0]);
+				prop = "saves";
+			} else if (label.indexOf("shots on goal") >= 0) {
+				player = parsePlayer(label.split(" shots")[0]);
+				prop = "sog";
+			} else if (label.indexOf(awayFull+" total goals") >= 0) {
+				prop = "away_total";
+			} else if (label.indexOf(homeFull+" total goals") >= 0) {
+				prop = "home_total";
+			}
+
+			if (!prop) {
+				continue;
+			}
+
+			if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
+				arrow.click();
+			}
+			let el = arrow.parentElement.parentElement.querySelector("div[aria-label='Show more']");
+			if (el) {
+				el.click();
+			}
+
+			if (prop != "lines" && !data[game][prop]) {
+				data[game][prop] = {};
+			}
+
+			let skip = 1;
+			if (["saves", "away_total", "home_total"].indexOf(prop) >= 0) {
+				skip = 2;
+			} else if (prop == "sog" && player) {
+				skip = 2;
+			}
+			let btns = Array.from(li.querySelectorAll("div[role=button]"));
+			btns.shift();
+
+			if (prop == "lines") {
+				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				line = btns[0].getAttribute("aria-label").split(", ")[1];
+				data[game]["spread"] = {};
+				data[game]["spread"][line.replace("+", "")] = btns[0].getAttribute("aria-label").split(", ")[2].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+				line = btns[2].getAttribute("aria-label").split(", ")[2].split(" ")[1];
+				data[game]["total"] = {};
+				data[game]["total"][line] = btns[2].getAttribute("aria-label").split(", ")[3].split(" ")[0] + "/" + btns[5].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+			}
+
+			for (let i = 0; i < btns.length; i += skip) {
+				const btn = btns[i];
+				if (btn.getAttribute("data-test-id")) {
+					continue;
+				}
+				const ariaLabel = btn.getAttribute("aria-label");
+				if (ariaLabel == "Show more" || ariaLabel == "Show less") {
+					continue;
+				}
+				let odds = ariaLabel.split(", ")[1];
+				if (odds.indexOf("unavailable") >= 0) {
+					continue;
+				}
+				if (prop == "lines") {
+
+				} else if (["spread"].indexOf(prop) >= 0) {
+					let arr = ariaLabel.split(", ")[0].split(" ");
+					line = arr[arr.length - 1];
+					arr.pop();
+					let team = convertTeam(arr.join(" "));
+
+					let isAway = true;
+					if (team == game.split(" @ ")[1]) {
+						line = (parseFloat(line) * -1).toString();
+						isAway = false;
+					}
+
+					line = line.replace("+", "");
+
+					if (isAway) {
+						data[game][prop][line] = odds;
+					} else if (!data[game][prop][line]) {
+						data[game][prop][line] = "-/"+odds;
+					} else {
+						data[game][prop][line] += "/"+odds;
+					}
+				} else if (["total"].indexOf(prop) >= 0) {
+					let arr = ariaLabel.split(", ")[0].split(" ");
+					line = arr[arr.length - 1];
+
+					let isAway = true;
+					if (arr[0] == "Under") {
+						isAway = false;
+					}
+
+					line = line.replace("+", "");
+
+					if (isAway) {
+						data[game][prop][line] = odds;
+					} else if (!data[game][prop][line]) {
+						data[game][prop][line] = "-/"+odds;
+					} else {
+						data[game][prop][line] += "/"+odds;
+					}
+				} else if (skip == 2 && player) {
+					// 2 sides
+					if (!data[game][prop][player]) {
+						data[game][prop][player] = {};
+					}
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+				} else if (skip == 2) {
+					line = ariaLabel.split(", ")[2].split(" ")[1];
+					odds = ariaLabel.split(", ")[3].split(" ")[0];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop] = {};
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+				} else {
+					player = parsePlayer(ariaLabel.split(",")[0]);
+					if (!data[game][prop][player]) {
+						data[game][prop][player] = {};
+					}
+
+					if (["atgs"].indexOf(prop) >= 0) {
+						data[game][prop][player] = odds;
+					} else {
+						data[game][prop][player][line] = odds;
+					}
+				}
+			}
+		}
+
+		console.log(data);
+	}
+
+"""
+
 def writeFanduel():
 	apiKey = "FhMFpcPWXMeyZxOx"
 
@@ -1177,15 +1423,7 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/vancouver-canucks-@-philadelphia-flyers-32723425",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/minnesota-wild-@-montreal-canadiens-32723426",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/tampa-bay-lightning-@-buffalo-sabres-32723451",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/arizona-coyotes-@-new-york-islanders-32723449",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/los-angeles-kings-@-winnipeg-jets-32723461",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/edmonton-oilers-@-nashville-predators-32723462",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/colorado-avalanche-@-seattle-kraken-32723469",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/dallas-stars-@-vegas-golden-knights-32723477",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/carolina-hurricanes-@-san-jose-sharks-32723478"
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/pittsburgh-penguins-@-detroit-red-wings-32725918"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/nashville-predators-@-tampa-bay-lightning-32450515"]
@@ -1200,10 +1438,11 @@ def writeFanduel():
 		outfile = "outnhl"
 
 		for tab in ["", "points-assists", "shots"]:
-			time.sleep(0.42)
+			time.sleep(2.2)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
 				url += f"&tab={tab}"
+			#call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-H", 'x-px-context: _px3=c402b3ed30e4c127a527513499624707d7461377294b1fdb6fc0da482d6c799d:hQzUhc35G2KLlhekJJmqTKmCNZoX75mKi7X9Xihzu/cX8CE8a+xat+EddyilXY+F0zQKqR51TfkfTxKfXYZnFA==:1000:yaktVjRcUsLEEvFv6dvaUtKaq67RVL4P9s0A735J5G5bJnuV/RcyF07Z3jZt+d7vPVBnd8jN5wvsvK5ozJE04aWoJmREo9s3xpESxPMKOKm4xDi8c7yRJhpLBl5ApZHEJMLuw3q5Re/Vxjq7qDmp938eD/hF6SctkXZCj3U8FUxqKde51JMeF9ErXaWatBWxN3AZVcONO7H+197jqRFkCZGqnnVy2JVbc3ll8f3LGLQ=;_pxvid=00692951-e181-11ed-a499-ebf9b9755f04;pxcts=006939ed-e181-11ed-a499-537250516c45;', "-H", 'X-Sportsbook-Region: MI', "-k", url, "-o", outfile])
 			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
 
 			with open(outfile) as fh:
@@ -1506,6 +1745,10 @@ def writeDK(date=None):
 					t = team.split(" ")[0]
 					if t == "was":
 						t = "wsh"
+					elif "rangers" in team:
+						t = "nyr"
+					elif "islanders" in team:
+						t = "nyi"
 					games.append(t)
 				game = " @ ".join(games)
 				if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
@@ -1556,7 +1799,7 @@ def writeDK(date=None):
 								elif "puck line" in prop:
 									prop = "spread"
 								elif prop.endswith("team total goals"):
-									team = prop.split(":")[0]
+									team = prop.split(" ")[0]
 									if team == "was":
 										team = "wsh"
 									if game.startswith(team.split(" ")[0]):
@@ -1595,6 +1838,10 @@ def writeDK(date=None):
 									team = outcomes[i]["label"].lower().split(" ")[0]
 									if team == "was":
 										team = "wsh"
+									elif "rangers" in team:
+										team = "nyr"
+									elif "islanders" in team:
+										team = "nyi"
 
 									if game.endswith(team):
 										line = str(float(line) * -1)
@@ -1643,6 +1890,8 @@ def writeDK(date=None):
 									lines[game][prop][player][handicap] = f"{outcomes[0]['oddsAmerican']}"
 									if len(row["outcomes"]) > 1:
 										lines[game][prop][player][handicap] += f"/{outcomes[1]['oddsAmerican']}"
+										if "under" in outcomes[0]["label"].lower():
+											lines[game][prop][player][handicap] = f"{outcomes[1]['oddsAmerican']}/{outcomes[0]['oddsAmerican']}"
 
 	with open("static/nhl/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -1930,7 +2179,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
-	for game in fdLines:
+	games = []
+	for book in lines:
+		for game in lines[book]:
+			if game not in games:
+				games.append(game)
+
+	for game in games:
 		if teamArg:
 			if game.split(" @ ")[0] not in teamArg.split(",") and game.split(" @ ")[1] not in teamArg.split(","):
 				continue
@@ -2003,9 +2258,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							teamStats = json.load(fh)
 						if name in teamStats:
 							minutes = teamStats[name]["toi"]
-							if minutes > 0 and convertedProp in teamStats[name]:
+							if minutes > 0 and (convertedProp == "pts" or convertedProp in teamStats[name]):
 								totalGames += 1
-								val = teamStats[name][convertedProp]
+								if convertedProp == "pts":
+									val = teamStats[name]["g"] + teamStats[name]["a"]
+								else:
+									val = teamStats[name][convertedProp]
 								totalSplits.append(str(int(val)))
 								if val > float(playerHandicap):
 									totalOver += 1
@@ -2058,8 +2316,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 								o = val
 								ou = val
 
-							if not o:
+							if not o or o == "-":
 								continue
+
+							#print(prop, player, o)
 
 							highestOdds.append(int(o))
 							odds.append(ou)
@@ -2256,11 +2516,17 @@ def sortEV(propArg):
 	with open("static/nhl/props.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi", "LYR", "SZN"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi", "LYR", "SZN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "atgs":
 			continue
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		implied = 0
+		if row[-1]["line"] > 0:
+			implied = 100 / (row[-1]["line"] + 100)
+		else:
+			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
+		implied *= 100
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
 		for book in ["fd", "dk", "mgm", "bv", "cz", "pn", "kambi"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -2362,7 +2628,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.update:
-		writeFanduel()
+		#writeFanduel()
 		writePinnacle(args.date)
 		writeKambi()
 		writeMGM(args.date)
