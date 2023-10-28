@@ -305,10 +305,13 @@ def writeCZ(date=None):
 			elif "total shots" in prop:
 				player = parsePlayer(prop.split(" total shots")[0])
 				prop = "sog"
+			elif "blocked shots" in prop:
+				player = parsePlayer(prop.split(" blocked shots")[0])
+				prop = "bs"
 			elif prop.startswith("player to be credited"):
 				if "power play" in prop:
-					continue
-				if "assists" in prop:
+					prop = "pp_pts"
+				elif "assists" in prop:
 					prop = "ast"
 				elif "point" in prop:
 					prop = "pts"
@@ -333,7 +336,7 @@ def writeCZ(date=None):
 				res[game][prop] = {}
 
 			selections = market["selections"]
-			skip = 1 if prop in ["atgs", "ast", "pts"] else 2
+			skip = 1 if prop in ["atgs", "ast", "pts", "pp_pts"] else 2
 			if prop == "3-way":
 				skip = 3
 			mainLine = ""
@@ -356,7 +359,7 @@ def writeCZ(date=None):
 					res[game][prop][player] = {
 						"0.5": ou
 					}
-				elif prop in ["pts", "ast"]:
+				elif prop in ["pts", "ast", "pp_pts"]:
 					line = str(float(market["name"].split(" ")[5][1:]) - 0.5)
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
 					if player not in res[game][prop]:
@@ -817,8 +820,8 @@ def writeBV():
 						prop = "sog"
 					elif prop.startswith("player to record"):
 						if "powerplay" in prop:
-							continue
-						if "points" in prop:
+							prop = "pp_pts"
+						elif "points" in prop:
 							prop = "pts"
 						elif "assists" in prop:
 							prop = "ast"
@@ -963,9 +966,15 @@ def writeMGM(date=None):
 			elif "how many points" in prop:
 				player = prop.split(" will ")[-1].split(" (")[0]
 				prop = "pts"
+			elif "how many powerplay points" in prop:
+				player = prop.split(" will ")[-1].split(" (")[0]
+				prop = "pp_pts"
 			elif "how many assists" in prop:
 				player = prop.split(" will ")[-1].split(" (")[0]
 				prop = "ast"
+			elif "how many blocked shots" in prop:
+				player = prop.split(" will ")[-1].split(" (")[0]
+				prop = "bs"
 			else:
 				continue
 
@@ -1100,6 +1109,9 @@ def writeKambi():
 			elif "points - " in label:
 				label = "pts"
 				playerProp = True
+			elif "power play point - " in label:
+				label = "pp_pts"
+				playerProp = True
 			elif "by the player" in label:
 				playerProp = True
 				label = "_".join(label.split(" by the player")[0].split(" "))
@@ -1146,7 +1158,10 @@ def writeKambi():
 					if label in ["sog"]:
 						line = betOffer["outcomes"][0]["label"].split(" ")[-1]
 					else:
-						line = str(betOffer["outcomes"][0]["line"] / 1000)
+						try:
+							line = str(betOffer["outcomes"][0]["line"] / 1000)
+						except:
+							line = "0.5"
 					if betOffer["outcomes"][0]["label"].split(" ")[0] in ["Under", "No"]:
 						if label not in ["sog"]:
 							line = str(betOffer["outcomes"][1]["line"] / 1000)
@@ -1175,6 +1190,7 @@ def writeFanduelManual():
 	{
 
 		function convertTeam(team) {
+			team = team.toLowerCase();
 			let t = team.toLowerCase().substring(0, 3);
 			if (t == "was") {
 				t = "wsh";
@@ -1201,7 +1217,7 @@ def writeFanduelManual():
 				t = "sj";
 			} else if (t == "tam") {
 				t = "tb";
-			} else if (t == "sai") {
+			} else if (t == "st.") {
 				t = "stl";
 			} else if (t == "veg") {
 				t = "vgk";
@@ -1695,13 +1711,13 @@ def writeDK(date=None):
 		496: [4525, 4999, 13192, 13189],
 		1190: [12041],
 		1189: [12040],
-		550: [5586, 5587],
+		550: [5586, 5587, 7983, 10296],
 		1064: [10283, 10284, 12436],
 		1193: [12055]
 	}
 
 	propIds = {
-		4999: "3-way", 12041: "atgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout"
+		4999: "3-way", 12041: "atgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout", 7983: "pp_pts", 10296: "bs"
 	}
 
 	if False:
@@ -1802,6 +1818,10 @@ def writeDK(date=None):
 									team = prop.split(" ")[0]
 									if team == "was":
 										team = "wsh"
+									elif "rangers" in prop:
+										team = "nyr"
+									elif "islanders" in prop:
+										team = "nyi"
 									if game.startswith(team.split(" ")[0]):
 										prop = "away_total"
 									else:
@@ -1838,9 +1858,9 @@ def writeDK(date=None):
 									team = outcomes[i]["label"].lower().split(" ")[0]
 									if team == "was":
 										team = "wsh"
-									elif "rangers" in team:
+									elif "rangers" in outcomes[i]["label"].lower():
 										team = "nyr"
-									elif "islanders" in team:
+									elif "islanders" in outcomes[i]["label"].lower():
 										team = "nyi"
 
 									if game.endswith(team):
@@ -2114,7 +2134,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg=None, underArg=None):
+def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg=None, underArg=None, nocz=None):
 
 	if not boost:
 		boost = 1
@@ -2321,6 +2341,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 							#print(prop, player, o)
 
+							if book == "cz" and nocz and prop in ["pp_pts", "pts", "ast"]:
+								continue
 							highestOdds.append(int(o))
 							odds.append(ou)
 							books.append(book)
@@ -2637,7 +2659,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under)
+		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under, nocz=args.nocz)
 
 	if args.print:
 		sortEV(args.prop)
