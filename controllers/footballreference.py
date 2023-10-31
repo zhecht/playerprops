@@ -44,7 +44,10 @@ def strip_accents(text):
 	return str(text)
 
 def parsePlayer(player):
-	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	if player == "gabe davis":
+		player = "gabriel davis"
+	return player
 
 def writeStats(week):
 	with open(f"static/nfl/boxscores.json") as fh:
@@ -341,7 +344,7 @@ def writeTrends():
 	with open(f"static/nfl/stats.json") as fh:
 		stats = json.load(fh)
 
-	week = len(redzoneTotals["ari"]["rb"])
+	week = max(len(redzoneTotals["ari"]["rb"]), len(redzoneTotals["atl"]["rb"]))
 	for pos in ["rb", "wr/te"]:
 		data = []
 		for team in snaps:

@@ -344,7 +344,6 @@ def writePointsbet():
 	for gameId in games:
 		url = f"https://api.mi.pointsbet.com/api/mes/v3/events/{gameId}"
 		time.sleep(0.3)
-		outfile = f"nfloutPB"
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
@@ -607,7 +606,7 @@ def writePinnacle(date):
 
 	url = "https://www.pinnacle.com/en/football/nfl/matchups#period:0"
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/889/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o nfloutPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/889/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o nfloutPN'
 
 	os.system(url)
 	outfile = f"nfloutPN"
@@ -864,7 +863,7 @@ def writeMGM():
 			continue
 		ids.append(row["id"])
 
-	#ids = ["14277289"]
+	#ids = ["14873974"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
@@ -882,7 +881,10 @@ def writeMGM():
 		game = f"{convertNFLTeam(fullTeam1)} @ {convertNFLTeam(fullTeam2)}"
 
 		res[game] = {}
-		for row in data["games"]:
+		d = data["games"]
+		if not d:
+			d = data["optionMarkets"]
+		for row in d:
 			prop = row["name"]["value"].lower()
 
 			prefix = player = ""
@@ -947,8 +949,13 @@ def writeMGM():
 
 			prop = prefix+prop
 
-			results = row['results']
-			ou = f"{results[0]['americanOdds']}/{results[1]['americanOdds']}"
+			results = row.get('results', row['options'])
+			price = results[0]
+			if "price" in price:
+				price = price["price"]
+			if "americanOdds" not in price:
+				continue
+			ou = f"{price['americanOdds']}/{results[1].get('americanOdds', results[1]['price']['americanOdds'])}"
 			if "ml" in prop:
 				res[game][prop] = ou
 			elif len(results) >= 2:
@@ -962,11 +969,11 @@ def writeMGM():
 					#print(game, prop, player)
 					if prop in ["attd", "ftd"]:
 						try:
-							ou = str(results[idx]['americanOdds'])
+							ou = str(results[idx].get('americanOdds', results[idx]['price']['americanOdds']))
 						except:
 							continue
 					else:
-						ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
+						ou = f"{results[idx].get('americanOdds', results[idx]['price']['americanOdds'])}/{results[idx+1].get('americanOdds', results[idx+1]['price']['americanOdds'])}"
 
 					if prop in ["attd", "ftd"]:
 						player = results[idx]["name"]["value"].lower()
@@ -1155,6 +1162,10 @@ def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 	if player == "josh palmer":
 		player = "joshua palmer"
+	elif player == "gabe davis":
+		player = "gabriel davis"
+	elif player == "trevon moehrig woodard":
+		player = "trevon moehrig"
 	return player
 
 def writeFanduelManual():
@@ -1197,7 +1208,7 @@ def writeFanduelManual():
 			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
 		}
 
-		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
+		let game = document.querySelector("h1").innerText.toLowerCase().replace(" 1st half odds", "").replace(" 2nd half odds", "").replace(" 1st quarter odds", "").replace(" odds", "");
 		let awayFull = game.split(" @ ")[0];
 		let awayName = awayFull.split(" ")[awayFull.split(" ").length - 1];
 		let homeFull = game.split(" @ ")[1];
@@ -1230,12 +1241,25 @@ def writeFanduelManual():
 			let line = "";
 			let player = "";
 			let label = arrow.innerText.toLowerCase();
+
+			let prefix = "";
+			if (label.indexOf("1st half") >= 0 || label.indexOf("first half") >= 0) {
+				prefix = "1h_";
+			} else if (label.indexOf("2nd half") >= 0 || label.indexOf("second half") >= 0) {
+				prefix = "2h_";
+			} else if (label.indexOf("1st quarter") >= 0) {
+				prefix = "1q_";
+			}
+
 			if (label.indexOf("game lines") >= 0) {
 				prop = "lines";
 			} else if (label.indexOf("any time touchdown scorer") >= 0) {
 				prop = "attd";
 			} else if (label.indexOf("first touchdown scorer") >= 0) {
 				prop = "ftd";
+			} else if (label.indexOf("kicking points") >= 0) {
+				player = true;
+				prop = "kicking_pts";
 			} else if (label.indexOf("player") >= 0) {
 				player = true;
 
@@ -1270,9 +1294,20 @@ def writeFanduelManual():
 				} else if (label.indexOf("attempts") >= 0) {
 					prop += "_att";
 				}
-			} else if (label.indexOf("alternate spread") >= 0) {
+			} else if (label.indexOf("spread") >= 0) {
+				if (label.indexOf("/") >= 0) {
+					continue;
+				}
 				prop = "spread";
-			} else if (label.indexOf("alternate total points") >= 0) {
+			} else if (label.indexOf("winner") >= 0) {
+				if (label.indexOf("3-way") >= 0) {
+					continue;
+				}
+				prop = "ml";
+			} else if (label.indexOf("alternate total points") >= 0 || label.indexOf("first half total") >= 0 || label.indexOf("second half total") >= 0 || label.indexOf("1st quarter total") >= 0) {
+				if (label.indexOf("odd/even") >= 0 || label.indexOf("exact") >= 0) {
+					continue;
+				}
 				prop = "total";
 			} else if (label.indexOf(awayName+" total points") >= 0) {
 				prop = "away_total";
@@ -1283,6 +1318,8 @@ def writeFanduelManual():
 			if (!prop) {
 				continue;
 			}
+
+			prop = prefix+prop;
 
 			if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
 				arrow.click();
@@ -1301,7 +1338,7 @@ def writeFanduelManual():
 			}
 
 			let skip = 1;
-			if (["away_total", "home_total", "spread"].indexOf(prop) >= 0 || player) {
+			if (["away_total", "home_total", "spread"].indexOf(prop) >= 0 || prefix || player) {
 				skip = 2;
 			}
 			let btns = Array.from(li.querySelectorAll("div[role=button]"));
@@ -1335,6 +1372,22 @@ def writeFanduelManual():
 				}
 				if (prop == "lines") {
 
+				} else if (prefix) {
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					if (prop.indexOf("ml") >= 0) {
+						odds = ariaLabel.split(", ")[1];
+						data[game][prop] = odds;
+						if (btns[i+1].getAttribute("aria-label").split(", ")[1]) {
+							data[game][prop] += "/"+btns[i+1].getAttribute("aria-label").split(", ")[1];
+						}
+					} else if (prop.indexOf("spread") >= 0) {
+						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2];
+					} else if (prop.indexOf("total") >= 0) {
+						line = ariaLabel.split(", ")[2].split(" ")[1];
+						odds = ariaLabel.split(", ")[3].split(" ")[0];
+						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+					}
 				} else if (["spread"].indexOf(prop) >= 0) {
 					let arr = ariaLabel.split(", ")[0].split(" ");
 					line = arr[arr.length - 1];
@@ -1374,6 +1427,12 @@ def writeFanduelManual():
 					} else {
 						data[game][prop][line] += "/"+odds;
 					}
+				} else if (prop == "kicking_pts") {
+					player = parsePlayer(arrow.innerText.toLowerCase().split(" - ")[0]);
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					data[game][prop][player] = {};
+					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
 				} else if (skip == 2 && player) {
 					// 2 sides
 					player = parsePlayer(ariaLabel.split(", ")[0]);
@@ -2196,7 +2255,8 @@ def bvParlay():
 
 			evData[desc] = {}
 			devig(evData, desc, str(fairValue), int(tdParlay["odds"]))
-			ev.append((evData[desc]["ev"], desc, fairValue, tdParlay['odds'], legs))
+			if "ev" in evData[desc]:
+				ev.append((evData[desc]["ev"], desc, fairValue, tdParlay['odds'], legs))
 
 	for row in sorted(ev):
 		print(f"{row[0]}, {row[1]}, fairval={row[2]}, bvOdds={row[3]} {row[4]}")
@@ -2575,6 +2635,19 @@ def sortEV():
 			over = len(a) / len(totals[player][prop+"Splits"]) * 100
 			splits = ",".join([str(int(x)) for x in totals[player][prop+"Splits"]])
 			arr.extend([avg, f"{int(over)}", splits])
+		elif player and player in totals and prop == "rush+rec":
+			num = totals[player].get("rush_yd", 0) + totals[player]["rec_yd"]
+			avg = round(num / totals[player]["gamesPlayed"], 1)
+			a = []
+			rushArr = totals[player].get("rush_ydSplits", [0]*len(totals[player]["rec_ydSplits"]))
+			for rush, rec in zip(rushArr, totals[player]["rec_ydSplits"]):
+				if not row[-1]["under"] and rush + rec > float(row[-1]["playerHandicap"]):
+					a.append(rush+rec)
+				elif row[-1]["under"] and rush + rec < float(row[-1]["playerHandicap"]):
+					a.append(rush+rec)
+			over = len(a) / len(totals[player]["rec_ydSplits"]) * 100
+			splits = ",".join([str(int(x) + int(y)) for x, y in zip(rushArr, totals[player]["rec_ydSplits"])])
+			arr.extend([avg, f"{int(over)}", splits])
 		else:
 			arr.extend(["-", "-", "-"])
 		output += "\t".join([str(x) for x in arr])+"\n"
@@ -2678,8 +2751,8 @@ if __name__ == '__main__':
 		writeCZ()
 		writeActionNetwork()
 
-	print(convertAmericanOdds(1 + (convertDecOdds(int(-110)) - 1) * 1.5))
-	print(convertAmericanOdds(1 + (convertDecOdds(int(-105)) - 1) * 1.5))
+	print(convertAmericanOdds(1 + (convertDecOdds(int(140)) - 1) * 1.5))
+	print(convertAmericanOdds(1 + (convertDecOdds(int(-180)) - 1) * 1.5))
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)

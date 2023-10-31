@@ -5,6 +5,7 @@ import json
 import math
 import os
 import operator
+import unicodedata
 import re
 import time
 
@@ -79,6 +80,7 @@ def write_stats(date):
 						continue
 					nameLink = row.find("a").get("href").split("/")
 					fullName = nameLink[-1].replace("-", " ")
+					fullName = parsePlayer(fullName)
 					playerId = int(nameLink[-2])
 					playerIds[team][fullName] = playerId
 					playerList.append(fullName)
@@ -175,23 +177,24 @@ def write_averages():
 			pId = ids[team][player]
 			if player in averages[team]:
 				pass
-				continue
-
-			year = "2022"
-			if player in ["kawhi leonard", "john wall"]:
-				year = "2021"
+				#continue
 			
 			gamesPlayed = 0
 			averages[team][player] = {}
 			lastYearStats[team][player] = {}
 
 			time.sleep(0.175)
-			url = f"https://www.espn.com/nba/player/gamelog/_/id/{pId}/type/nba/year/{year}"
+			url = f"https://www.espn.com/nba/player/gamelog/_/id/{pId}/type/nba/year/2023"
 			outfile = "outnba"
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
 			for row in soup.findAll("tr"):
+				try:
+					if "Regular Season" not in row.findPrevious("div", class_="Table__Title").text:
+						continue
+				except:
+					continue
 				if row.text.startswith("Averages"):
 					for idx, td in enumerate(row.findAll("td")[1:]):
 						header = headers[idx]
@@ -383,29 +386,41 @@ def write_rankings():
 	with open(f"{prefix}static/basketballreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
 
-def write_roster():
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
 
-	with open(f"{prefix}static/basketballreference/playerIds.json") as fh:
-		playerIds = json.load(fh)
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
 
+	return str(text)
+
+def parsePlayer(player):
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	if player == "k caldwell pope":
+		player = "kentavious caldwell pope"
+	return player
+
+def writePlayerIds():
+
+	playerIds = {}
 	roster = {}
-	for team in os.listdir(f"{prefix}static/basketballreference/"):
-		if team.endswith(".json"):
-			continue
-
-		roster[team] = {}
-		time.sleep(0.2)
-		url = f"https://www.espn.com/nba/team/roster/_/name/{team}/"
+	for team in ["bos", "bkn", "ny", "phi", "tor", "gs", "lac", "lal", "phx", "sac", "chi", "cle", "det", "ind", "mil", "atl", "cha", "mia", "orl", "wsh", "den", "min", "okc", "por", "utah", "dal", "hou", "mem", "no", "sa"]:
+		time.sleep(0.175)
+		url = f"https://www.espn.com/nba/team/roster/_/name/{team}"
 		outfile = "outnba"
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for row in soup.find("table").findAll("tr")[1:]:
-			nameLink = row.findAll("td")[1].find("a").get("href").split("/")
-			fullName = nameLink[-1].replace("-", " ")
-			playerId = int(nameLink[-2])
-			playerIds[team][fullName] = playerId
-			roster[team][fullName] = row.findAll("td")[2].text.strip()
+		playerIds[team] = {}
+		roster[team] = {}
+		for table in soup.findAll("table"):
+			for row in table.find("tbody").findAll("tr"):
+				pid = row.findAll("td")[1].find("a").get("href").split("/")[-2]
+				player = parsePlayer(row.findAll("td")[1].find("a").text.lower())
+				playerIds[team][player] = pid
+				roster[team][player] = row.findAll("td")[2].text.strip()
 
 	with open(f"{prefix}static/basketballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
@@ -418,6 +433,7 @@ if __name__ == "__main__":
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
 	parser.add_argument("-d", "--date", help="Date")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
+	parser.add_argument("--ids", help="IDs", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--averages", help="averages", action="store_true")
@@ -441,8 +457,8 @@ if __name__ == "__main__":
 		write_averages()
 	elif args.rankings:
 		write_rankings()
-	elif args.roster:
-		write_roster()
+	elif args.ids:
+		writePlayerIds()
 	elif args.cron:
 		pass
 		write_schedule(date)
@@ -450,6 +466,3 @@ if __name__ == "__main__":
 		write_stats(date)
 		#write_averages()
 		
-
-	for d in os.listdir("static/basketballreference/"):
-		print(d)

@@ -688,8 +688,7 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32736034",
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-houston-astros-32736035"
+	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32738902"
 ]
 
 	lines = {}
