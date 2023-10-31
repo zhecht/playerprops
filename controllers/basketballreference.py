@@ -434,6 +434,7 @@ if __name__ == "__main__":
 	parser.add_argument("-d", "--date", help="Date")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--ids", help="IDs", action="store_true")
+	parser.add_argument("--totals", help="Tot", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--averages", help="averages", action="store_true")
@@ -459,6 +460,8 @@ if __name__ == "__main__":
 		write_rankings()
 	elif args.ids:
 		writePlayerIds()
+	elif args.totals:
+		write_totals()
 	elif args.cron:
 		pass
 		write_schedule(date)
