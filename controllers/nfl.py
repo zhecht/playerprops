@@ -1166,6 +1166,8 @@ def parsePlayer(player):
 		player = "gabriel davis"
 	elif player == "trevon moehrig woodard":
 		player = "trevon moehrig"
+	elif player == "chig okonkwo":
+		player = "chigoziem okonkwo"
 	return player
 
 def writeFanduelManual():
@@ -2429,15 +2431,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					#print(game, prop, handicap, highestOdds, books, odds)
 
-					kambi = ""
-					try:
-						bookIdx = books.index("kambi")
-						kambi = odds[bookIdx]
-						odds.remove(kambi)
-						books.remove("kambi")
-					except:
-						pass
-
 					pn = ""
 					try:
 						bookIdx = books.index("pn")
@@ -2487,9 +2480,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					#print(maxOU in l, maxOU, l)
 					l.remove(maxOU)
 					books.remove(evBook)
-					if kambi:
-						books.append("kambi")
-						l.append(kambi)
 					if pn:
 						books.append("pn")
 						l.append(pn)
@@ -2581,7 +2571,7 @@ def sortEV():
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "attd":
 			continue
-		arr = [row[0], row[-1]["book"], row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		arr = [row[0], row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			arr.append(row[-1]["bookOdds"].get(book, "-"))
 		output += "\t".join([str(x) for x in arr])+"\n"
@@ -2593,7 +2583,7 @@ def sortEV():
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "ftd":
 			continue
-		arr = [row[0], row[-1]["book"], row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		arr = [row[0], row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			arr.append(row[-1]["bookOdds"].get(book, "-"))
 		output += "\t".join([str(x) for x in arr])+"\n"
@@ -2612,7 +2602,7 @@ def sortEV():
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[2].upper(), player.title(), row[-1]["prop"], ou]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), player.title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):

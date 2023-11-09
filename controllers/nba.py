@@ -843,6 +843,8 @@ def writeMGM(date):
 					player = parsePlayer(prop.split(" (")[0].split(" will ")[-1])
 					p = prop.split(" will ")[0].split(" total ")[-1].split(" many ")[-1]
 					p = p.replace(" and ", "+").replace("points", "pts").replace("assists", "ast").replace("rebounds", "reb").replace("steals", "stl").replace("blocks", "blk").replace("three-pointers", "3ptm").replace(", ", "+")
+					if p == "pts+reb s":
+						p = "pts+reb"
 					prop = p
 			else:
 				continue
@@ -1044,6 +1046,8 @@ def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 	if player == "k caldwell pope":
 		player = "kentavious caldwell pope"
+	elif player == "cameron thomas":
+		player = "cam thomas"
 	return player
 
 def writeFanduelManual():
@@ -2278,6 +2282,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					if lastTotalOver and i == 1:
 						lastTotalOver = 100 - lastTotalOver
+						last50TotalOver = 100 - last50TotalOver
+						last20TotalOver = 100 - last20TotalOver
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
 
@@ -2321,15 +2327,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						continue
 
 					#print(game, prop, handicap, highestOdds, books, odds)
-
-					kambi = ""
-					try:
-						bookIdx = books.index("kambi")
-						kambi = odds[bookIdx]
-						odds.remove(kambi)
-						books.remove("kambi")
-					except:
-						pass
 
 					pn = ""
 					try:
@@ -2380,9 +2377,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					#print(maxOU in l, maxOU, l)
 					l.remove(maxOU)
 					books.remove(evBook)
-					if kambi:
-						books.append("kambi")
-						l.append(kambi)
 					if pn:
 						books.append("pn")
 						l.append(pn)
@@ -2417,7 +2411,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					if ou.endswith("/-"):
 						ou = ou.split("/")[0]
 						
-					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"
+					key = f"{game} {handicap} {playerHandicap} {prop} {'over' if i == 0 else 'under'}"
 					if key in evData:
 						continue
 					if True:
@@ -2479,7 +2473,7 @@ def sortEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ", "LYR %", "LYR_50 %", "LYR_20 %", "SZN %", "Splits"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi/BR", "CZ", "LYR %", "LYR_50 %", "LYR_20 %", "SZN %", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -2498,7 +2492,7 @@ def sortEV():
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), f"{round(implied)}%", row[-1]["game"].upper(), team.upper(), player.title(), row[-1]["prop"], ou]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[-1]["game"].upper(), team.upper(), player.title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):

@@ -1205,7 +1205,10 @@ def writeKambi():
 		json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
-	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	if player == "michael eyssimont":
+		return "mikey eyssimont"
+	return player
 
 def writeFanduelManual():
 	js = """
@@ -1252,7 +1255,11 @@ def writeFanduelManual():
 		}
 
 		function parsePlayer(player) {
-			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			player = player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			if (player == "michael eyssimont") {
+				return "mikey eyssimont";
+			}
+			return player;
 		}
 
 		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
@@ -1296,6 +1303,8 @@ def writeFanduelManual():
 					prop = "sog";
 				} else if (label.indexOf("+ points") > 0) {
 					prop = "pts";
+				} else if (label.indexOf("+ powerplay points") > 0) {
+					prop = "pp_pts";
 				} else if (label.indexOf("+ assists") > 0) {
 					prop = "ast";
 				}
@@ -2284,14 +2293,20 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					away, home = map(str, game.split(" @ "))
 					team = away
 					name = f"{player[0].upper()}. {player.split(' ')[-1].title()}"
+					if name == "J. Ek":
+						name = "J. Eriksson Ek"
 					if home in playerIds and name in playerIds[home]:
 						team = home
 					if team in lastYearStats and name in lastYearStats[team] and lastYearStats[team][name]:
 						for d in lastYearStats[team][name]:
 							minutes = lastYearStats[team][name][d]["toi/g"]
-							if minutes > 0 and convertedProp in lastYearStats[team][name][d]:
+							if minutes > 0 and (convertedProp == "pp_pts" or convertedProp in lastYearStats[team][name][d]):
 								lastTotalGames += 1
-								val = lastYearStats[team][name][d][convertedProp]
+								val = 0
+								if convertedProp == "pp_pts":
+									val = lastYearStats[team][name][d]["ppg"] + lastYearStats[team][name][d]["ppa"]
+								else:
+									val = lastYearStats[team][name][d][convertedProp]
 								if val > float(playerHandicap):
 									lastTotalOver += 1
 					if lastTotalGames:
@@ -2365,7 +2380,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 							#print(prop, player, o)
 
-							if book == "cz" and nocz and prop in ["pp_pts", "pts", "ast"]:
+							if book == "cz" and prop in ["pp_pts", "pts", "ast"]:
 								continue
 							highestOdds.append(int(o))
 							odds.append(ou)
@@ -2375,15 +2390,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						continue
 
 					#print(game, prop, handicap, highestOdds, books, odds)
-
-					kambi = ""
-					try:
-						bookIdx = books.index("kambi")
-						kambi = odds[bookIdx]
-						odds.remove(kambi)
-						books.remove("kambi")
-					except:
-						pass
 
 					pn = ""
 					try:
@@ -2434,9 +2440,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					#print(maxOU in l, maxOU, l)
 					l.remove(maxOU)
 					books.remove(evBook)
-					if kambi:
-						books.append("kambi")
-						l.append(kambi)
 					if pn:
 						books.append("pn")
 						l.append(pn)
@@ -2528,7 +2531,7 @@ def sortEV(propArg):
 			continue
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi", "LYR", "SZN", "Splits"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "SZN", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] in ["3-way", "atgs"]:
 			continue
@@ -2544,7 +2547,7 @@ def sortEV(propArg):
 		else:
 			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
 		implied *= 100
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "bv", "cz", "pn", "kambi"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -2556,13 +2559,13 @@ def sortEV(propArg):
 				arr.append("-")
 			else:
 				arr.append(f"{row[-1][h]}%")
-		arr.append(row[-1]["totalSplits"])
+		arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nhl/props.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi", "LYR", "SZN"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "SZN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "atgs":
 			continue
@@ -2572,7 +2575,7 @@ def sortEV(propArg):
 		else:
 			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
 		implied *= 100
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
 		for book in ["fd", "dk", "mgm", "bv", "cz", "pn", "kambi"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -2583,7 +2586,7 @@ def sortEV(propArg):
 				arr.append("-")
 			else:
 				arr.append(f"{row[-1][h]}%")
-		arr.append(row[-1]["totalSplits"])
+		arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nhl/atgs.csv", "w") as fh:

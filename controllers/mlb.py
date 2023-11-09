@@ -882,7 +882,10 @@ def writeMGM(date=None):
 		game = convertFDTeam(f"{fullTeam1} @ {fullTeam2}")
 
 		res[game] = {}
-		for row in data["games"]:
+		d = data["games"]
+		if not d:
+			d = data["optionMarkets"]
+		for row in d:
 			prop = row["name"]["value"].lower()
 
 			prefix = player = ""
@@ -955,9 +958,15 @@ def writeMGM(date=None):
 
 			prop = prefix+prop
 
-			results = row['results']
+			try:
+				results = row.get('results', row['options'])
+			except:
+				continue
+			price = results[0]
+			if "price" in price:
+				price = price["price"]
 			if "ml" in prop:
-				res[game][prop] = f"{results[0]['americanOdds']}/{results[1]['americanOdds']}"
+				res[game][prop] = f"{price['americanOdds']}/{ results[1]['price']['americanOdds']}"
 			elif len(results) >= 2:
 				skip = 1 if prop == "attd" else 2
 				for idx in range(0, len(results), skip):
@@ -968,10 +977,10 @@ def writeMGM(date=None):
 						val = val.split(" ")[-1]
 					
 					#print(game, prop, player)
-					ou = f"{results[idx]['americanOdds']}"
+					ou = f"{results[idx].get('americanOdds', results[idx]['price']['americanOdds'])}"
 
 					try:
-						ou += f"/{results[idx+1]['americanOdds']}"
+						ou += f"/{results[idx+1].get('americanOdds', results[idx+1]['price']['americanOdds'])}"
 					except:
 						pass
 
@@ -1161,7 +1170,7 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-arizona-diamondbacks-32746635"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-arizona-diamondbacks-32746638"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649"]
@@ -1959,15 +1968,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					#print(game, prop, handicap, highestOdds, books, odds)
 
-					kambi = ""
-					try:
-						bookIdx = books.index("kambi")
-						kambi = odds[bookIdx]
-						odds.remove(kambi)
-						books.remove("kambi")
-					except:
-						pass
-
 					pn = ""
 					try:
 						bookIdx = books.index("pn")
@@ -2017,9 +2017,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					#print(maxOU in l, maxOU, l)
 					l.remove(maxOU)
 					books.remove(evBook)
-					if kambi:
-						books.append("kambi")
-						l.append(kambi)
 					if pn:
 						books.append("pn")
 						l.append(pn)

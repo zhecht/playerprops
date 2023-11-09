@@ -143,6 +143,9 @@ def writeTotals():
 	with open(f"static/nfl/stats.json") as fh:
 		stats = json.load(fh)
 
+	with open(f"static/nfl/schedule.json") as fh:
+		schedule = json.load(fh)
+
 	totals = {}
 	for week in stats:
 		for game in stats[week]:
@@ -168,7 +171,18 @@ def writeTotals():
 							totals[team][f"{i}_against"].append(a[1])
 
 						w = int(week) - 1
-						# failing for bye weeks
+						bye = False
+						for wk in schedule:
+							found = False
+							for g in schedule[wk]:
+								if team in g.split(" @ "):
+									found = True
+									break
+							if not found:
+								bye = True
+						if bye:
+							w -= 1
+
 						try:
 							for which in ["", "_against"]:
 								totals[team][f"1h{which}"].append(totals[team][f"1{which}"][w] + totals[team][f"2{which}"][w])
@@ -470,7 +484,9 @@ def writeTrends():
 		for idx, row in enumerate(sorted(data)):
 			if pos == "rb" and team != row[-1][0].lower():
 				csv += "\t".join(["-"]*len(hdrs))+"\n"
-				reddit += "|".join(["-"]*len(hdrs))+"\n"
+				#reddit += "|".join(["-"]*len(hdrs))+"\n"
+				reddit += "\n"+"|".join(hdrs)+"\n"
+				reddit += "|".join([":--"]*len(hdrs))+"\n"
 				team = row[-1][0].lower()
 
 			csv += "\t".join([str(x) for x in row[-1]])+"\n"
