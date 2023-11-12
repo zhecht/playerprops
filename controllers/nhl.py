@@ -1916,6 +1916,8 @@ def writeDK(date=None):
 												lines[game][prop][line] = odds+"/"+lines[game][prop][line]
 							elif prop in ["atgs"]:
 								for outcome in outcomes:
+									if "criterionName" not in outcome:
+										continue
 									if outcome["criterionName"] != "Anytime Scorer":
 										continue
 									player = parsePlayer(outcome["label"])
@@ -2312,7 +2314,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					if lastTotalGames:
 						lastTotalOver = int(lastTotalOver * 100 / lastTotalGames)
 
-					for d in os.listdir(f"static/hockeyreference/{team}"):
+					for d in sorted(os.listdir(f"static/hockeyreference/{team}")):
 						with open(f"static/hockeyreference/{team}/{d}") as fh:
 							teamStats = json.load(fh)
 						if name in teamStats:
@@ -2448,6 +2450,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					avgUnder = []
 					for book in l:
 						if book and book != "-":
+							if book.split("/")[0] == "-":
+								continue
 							avgOver.append(convertDecOdds(int(book.split("/")[0])))
 							if "/" in book:
 								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
