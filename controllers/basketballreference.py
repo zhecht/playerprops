@@ -397,7 +397,7 @@ def strip_accents(text):
 	return str(text)
 
 def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
 	if player == "k caldwell pope":
 		player = "kentavious caldwell pope"
 	return player

@@ -283,9 +283,15 @@ def writeCZ():
 			selections = market["selections"]
 			skip = 1 if prop in ["attd", "ftd"] else 2
 			for i in range(0, len(selections), skip):
-				ou = str(selections[i]["price"]["a"])
+				try:
+					ou = str(selections[i]["price"]["a"])
+				except:
+					continue
 				if skip == 2:
-					ou += f"/{selections[i+1]['price']['a']}"
+					try:
+						ou += f"/{selections[i+1]['price']['a']}"
+					except:
+						continue
 					if selections[i]["name"].lower().replace("|", "") == "under":
 						ou = f"{selections[i+1]['price']['a']}/{selections[i]['price']['a']}"
 
@@ -301,8 +307,11 @@ def writeCZ():
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
 					res[game][prop][player] = ou
 				else:
-					line = str(float(market["line"]))
-					res[game][prop][player] = f"{line} {ou}"
+					try:
+						line = str(float(market["line"]))
+						res[game][prop][player] = f"{line} {ou}"
+					except:
+						continue
 
 			if prop in ["spread", "total"]:
 				try:

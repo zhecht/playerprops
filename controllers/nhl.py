@@ -1472,7 +1472,9 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/pittsburgh-penguins-@-detroit-red-wings-32725918"
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/toronto-maple-leafs-@-detroit-red-wings-32801099",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/buffalo-sabres-@-winnipeg-jets-32803656",
+  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/florida-panthers-@-anaheim-ducks-32803657"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/nashville-predators-@-tampa-bay-lightning-32450515"]
@@ -1487,7 +1489,7 @@ def writeFanduel():
 		outfile = "outnhl"
 
 		for tab in ["", "points-assists", "shots"]:
-			time.sleep(2.2)
+			time.sleep(0.6)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
 				url += f"&tab={tab}"
@@ -1557,16 +1559,18 @@ def writeFanduel():
 						if marketName.startswith("player to"):
 							alt = True
 							playerHandicap = str(float(marketName.split(" ")[-4][:-1]) - 0.5)
-					elif marketName == "player to record 1+ assists":
+					elif marketName.endswith("assists"):
 						prop = "ast"
-						playerHandicap = "0.5"
+						playerHandicap = str(float(marketName.split(" ")[-2][:-1]) - 0.5)
 						alt = True
 					elif marketName.endswith("points"):
 						prop = "pts"
 						alt = True
 						if "power" in marketName:
-							continue
-						playerHandicap = str(float(marketName.split(" ")[-2][:-1]) - 0.5)
+							prop = "pp_pts"
+							playerHandicap = "0.5"
+						else:
+							playerHandicap = str(float(marketName.split(" ")[-2][:-1]) - 0.5)
 					elif " - " in marketName:
 						marketName = marketName.split(" - ")[-1]
 						prop = "_".join(marketName.split(" ")).replace("strikeouts", "k")
@@ -1600,7 +1604,7 @@ def writeFanduel():
 						lines[game][prop][player] = {
 							handicap: ou
 						}
-					elif prop in ["sog", "pts"]:
+					elif prop in ["sog", "pts", "ast", "pp_pts"]:
 						for i in range(0, len(runners), skip):
 							player = parsePlayer(runners[i]["runnerName"].split(" - ")[0])
 							if player not in lines[game][prop]:
@@ -1651,7 +1655,9 @@ def writeFanduel():
 									player = parsePlayer(runners[i]["runnerName"].replace(" Over", "").replace(" Under", ""))
 								else:
 									player = parsePlayer(runners[i]["runnerName"].lower())
-								lines[game][prop][player] = f"{handicap} {ou}"
+								lines[game][prop][player] = {
+									handicap: ou
+								}
 	
 	with open(f"static/nhl/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -1742,7 +1748,7 @@ def writeDK(date=None):
 	
 	subCats = {
 		496: [4525, 4999, 13192, 13189],
-		1190: [12041],
+		1190: [13809],
 		1189: [12040],
 		550: [5586, 5587, 7983, 10296],
 		1064: [10283, 10284, 12436],
@@ -1750,7 +1756,7 @@ def writeDK(date=None):
 	}
 
 	propIds = {
-		4999: "3-way", 12041: "atgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout", 7983: "pp_pts", 10296: "bs"
+		4999: "3-way", 13809: "atgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout", 7983: "pp_pts", 10296: "bs"
 	}
 
 	if False:
@@ -1916,10 +1922,6 @@ def writeDK(date=None):
 												lines[game][prop][line] = odds+"/"+lines[game][prop][line]
 							elif prop in ["atgs"]:
 								for outcome in outcomes:
-									if "criterionName" not in outcome:
-										continue
-									if outcome["criterionName"] != "Anytime Scorer":
-										continue
 									player = parsePlayer(outcome["label"])
 									try:
 										lines[game][prop][player] = {
@@ -2295,8 +2297,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					away, home = map(str, game.split(" @ "))
 					team = away
 					name = f"{player[0].upper()}. {player.split(' ')[-1].title()}"
+					
 					if name == "J. Ek":
 						name = "J. Eriksson Ek"
+					elif name == "R. Hopkins":
+						name = "R. Nugent Hopkins"
+					elif name == "O. Larsson":
+						name = "O. Ekman Larsson"
+
 					if home in playerIds and name in playerIds[home]:
 						team = home
 					if team in lastYearStats and name in lastYearStats[team] and lastYearStats[team][name]:
@@ -2612,6 +2620,7 @@ if __name__ == '__main__':
 	parser.add_argument("--ev", action="store_true", help="EV")
 	parser.add_argument("--bpp", action="store_true", help="BPP")
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
+	parser.add_argument("--espn", action="store_true", help="ESPN")
 	parser.add_argument("--pn", action="store_true", help="Pinnacle")
 	parser.add_argument("--cz", action="store_true", help="Caesars")
 	parser.add_argument("--mgm", action="store_true", help="MGM")
