@@ -21,7 +21,7 @@ elif os.path.exists("/home/playerprops/playerprops"):
 
 def convertNBATeam(team):
 	team = strip_accents(team.lower().split(" (")[0])
-	team = team.replace("'", "").replace(".", "").replace("- ", "").replace("-", " ")
+	team = team.replace("'", "").replace(".", "").replace("- ", "").replace("-", " ").replace("a and m", "a&m")
 	if team.endswith(" u"):
 		team = team[:-2]
 	trans = {
@@ -43,21 +43,31 @@ def convertNBATeam(team):
 		"cal state fullerton": "csu fullerton",
 		"cs fullerton": "csu fullerton",
 		"boston": "boston university",
+		"fiu": "florida international",
 		"grambling": "grambling state",
 		"purdue fort wayne": "ipfw",
 		"louisiana monroe": "ul monroe",
+		"mcneese state cowboys": "mcneese",
+		"mcneese state": "mcneese",
 		"miami fl": "miami",
 		"miami florida": "miami",
+		"nc wilmington": "unc wilmington",
+		"north carolina central": "nc central",
+		"prairie view": "prairie view a&m",
 		"san jose st": "san jose",
 		"san jose state": "san jose",
 		"so illinois": "southern illinois",
 		"saint josephs": "st josephs",
+		"stephen f austin": "sfa",
+		"stephen austin": "sfa",
 		"texas a&m corpus christi": "texas a&m cc",
 		"a&m corpus christi": "texas a&m cc",
 		"t a&m corpus christi": "texas a&m cc",
-		"texas a and m corpus": "texas a&m cc",
+		"texas a&m corpus": "texas a&m cc",
 		"tennessee martin": "ut martin",
-		"ulm": "ul monroe"
+		"ulm": "ul monroe",
+		"wisconsin milwaukee": "milwaukee",
+		"wisc milwaukee": "milwaukee"
 	}
 	return trans.get(team, team)
 
@@ -491,7 +501,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 	game = games[gameId]
 
 	#print(game)
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o nbaoutPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" --connect-timeout 60 -o nbaoutPN'
 
 	time.sleep(0.5)
 	os.system(url)
@@ -526,7 +536,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 		with open("t2", "w") as fh:
 			json.dump(related, fh, indent=4)
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o nbaoutPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" --connect-timeout 60 -o nbaoutPN'
 
 	time.sleep(0.5)
 	os.system(url)
@@ -546,9 +556,9 @@ def parsePinnacle(res, games, gameId, retry, debug):
 	for row in data:
 		try:
 			prop = row["type"]
+			keys = row["key"].split(";")
 		except:
 			continue
-		keys = row["key"].split(";")
 
 		prefix = ""
 		if keys[1] == "1":
@@ -625,7 +635,7 @@ def writePinnacle(date, debug):
 
 	url = "https://www.pinnacle.com/en/basketball/ncaa/matchups/#period:0"
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/493/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o nbaoutPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/493/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Accept-Encoding: gzip, deflate, br" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -o nbaoutPN'
 
 	os.system(url)
 	outfile = f"nbaoutPN"
@@ -680,7 +690,7 @@ def writeBV(date):
 	for link in ids:
 		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description{link}?lang=en"
 		time.sleep(0.3)
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl \"{url}\" --connect-timeout 60 -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -828,7 +838,7 @@ def writeMGM(date):
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
-		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/109.0' \"{url}\" --connect-timeout 60 -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -944,19 +954,22 @@ def writeKambi(date):
 	outfile = f"outnba.json"
 	url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/basketball/ncaab"
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/basketball/ncaab/all/all/matches.json?lang=en_US&market=US"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
+	os.system(f"curl \"{url}\" --connect-timeout 60 -o {outfile}")
 	
 	with open(outfile) as fh:
 		j = json.load(fh)
 
 	fullTeam = {}
 	eventIds = {}
+	swapped = {}
 	for event in j["events"]:
 		game = event["event"]["name"].lower()
+		swap = False
 		if " @ " in game:
 			away, home = map(str, game.split(" @ "))
 		else:
-			away, home = map(str, game.split(" vs "))
+			home, away = map(str, game.split(" vs "))
+			swap = True
 		games = []
 		for team in [away, home]:
 			t = convertNBATeam(team)
@@ -967,21 +980,21 @@ def writeKambi(date):
 		if game in eventIds:
 			continue
 			#pass
+		swapped[game] = swap
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'lak @ den': 1020018038}
-	#data['lak @ den'] = {}
+	#eventIds = {'nc central @ the citadel': 1020120314}
+	#data['nc central @ the citadel'] = {}
 
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
-		awayFull, homeFull = fullTeam[away], fullTeam[home]
 		eventId = eventIds[game]
 		teamIds = {}
 		
 		time.sleep(0.3)
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json"
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl \"{url}\" --connect-timeout 60 -o {outfile}")
 
 		with open(outfile) as fh:
 			j = json.load(fh)
@@ -991,6 +1004,12 @@ def writeKambi(date):
 
 		if str(datetime.strptime(j["betOffers"][0]["closed"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5))[:10] != date:
 			continue
+
+		fullTeam = j["events"][0]["name"].lower()
+		if " @ " in fullTeam:
+			awayFull, homeFull = map(str, fullTeam.split(" @ "))
+		else:
+			homeFull, awayFull = map(str, fullTeam.split(" vs "))
 
 		i = 0
 		for betOffer in j["betOffers"]:
@@ -1017,7 +1036,7 @@ def writeKambi(date):
 				label = "spread"
 			elif "total points by" in label:
 				team = convertNBATeam(label.split(" by ")[-1].split(" - ")[0])
-				if team == away:
+				if team.startswith(awayFull):
 					label = "away_total"
 				else:
 					label = "home_total"
@@ -1043,6 +1062,8 @@ def writeKambi(date):
 
 			try:
 				ou = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+				#if swapped[game]:
+				#	ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 			except:
 				ou = betOffer["outcomes"][0]["oddsAmerican"]
 			player = ""
@@ -1055,15 +1076,14 @@ def writeKambi(date):
 					pass
 			if "ml" in label:
 				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
-				if convertNBATeam(betOffer["outcomes"][0]["participant"].lower()).startswith(away):
+				if betOffer["outcomes"][0]["participant"].lower().startswith(awayFull):
 				 	data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
-
 			else:
 				if label not in data[game]:
 					data[game][label] = {}
 				if not playerProp:
 					line = str(betOffer["outcomes"][0]["line"] / 1000)
-					if betOffer["outcomes"][0]["label"] == "Under" or convertNBATeam(betOffer["outcomes"][0]["label"].lower()).startswith(home):
+					if betOffer["outcomes"][0]["label"] == "Under" or betOffer["outcomes"][0]["label"].lower().startswith(homeFull):
 						line = str(betOffer["outcomes"][1]["line"] / 1000)
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 					data[game][label][line] = ou
@@ -1118,6 +1138,10 @@ def writeFanduelManual():
 				return "san jose";
 			} else if (team == "purdue fort wayne") {
 				return "ipfw";
+			} else if (team == "stephen f austin") {
+				return "sfa";
+			} else if (team == "citadel") {
+				return "the citadel";
 			}
 			return team
 		}
@@ -1629,7 +1653,7 @@ def writeDK(date):
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
 			outfile = "outnba"
-			call(["curl", "-k", url, "-o", outfile])
+			call(["curl", "-k", url, "--connect-timeout", "60", "-o", outfile])
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -2597,12 +2621,19 @@ if __name__ == '__main__':
 
 	if args.update:
 		#writeFanduel()
+		print("pn")
 		writePinnacle(args.date, args.debug)
+		print("kambi")
 		writeKambi(args.date)
+		print("mgm")
 		writeMGM(args.date)
+		print("pb")
 		writePointsbet(args.date)
+		print("bv")
 		writeBV(args.date)
+		print("dk")
 		writeDK(args.date)
+		print("cz")
 		writeCZ(args.date)
 
 	if args.ev:

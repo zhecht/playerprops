@@ -1,0 +1,687 @@
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=IE8" />
+		<meta name="msapplication-tap-highlight" content="no" />
+
+		<title>Retail betting client</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script>
+				var currentOffering = 'pivuslarl-lbr',
+					_kc = {
+						currency: 'USD',
+						locale: 'en_GB',
+						oddsFormat: 'decimal'
+					}, 
+					offeringConfig = {
+						'kambi': {
+							currency: 'XXX',
+							locale: 'en_GB',
+							oddsFormat: 'decimal',
+							market:"GB"
+						},
+						'kambi-trainingrl': {
+							currency: "XXX",
+							locale: "en_GB",
+							oddsFormat: "decimal",
+							market:"GB"
+						},
+						'kambidemorl': {
+							currency: 'XXX',
+							locale: 'en_GB',
+							oddsFormat: 'decimal',
+							market:"GB"
+						},
+						'naga': {
+							currency: 'USD',
+							locale: 'en_GB',
+							oddsFormat: 'decimal',
+							market:"KH"
+						},
+						'rfesplayrl': {
+							currency: 'XXX',
+							locale: 'es_ES',
+							oddsFormat: 'decimal',
+							market:"ES"
+						},
+						'ngrl': {
+							currency: 'EUR',
+							locale: 'en_GB',
+							oddsFormat: 'decimal',
+							market: "BE"
+						},
+						'pafrl': {
+							currency: 'EUR',
+							locale: 'sv_SE',
+							oddsFormat: 'decimal',
+							market:"FI"
+						},
+						'ubberl': {
+							currency: 'EUR',
+							locale: 'en_GB',
+							oddsFormat: 'decimal',
+							market:"BE"
+						},
+						'leoplayrl': {
+							currency: 'XXX',
+							locale: 'en_GB',
+							oddsFormat: 'decimal',
+							market:"SE"
+						},
+						'atgrl': {
+							currency: 'SEK',
+							locale: 'sv_SE',
+							oddsFormat: 'decimal',
+							market:"SE"
+						},
+						'dkusnjrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'dkuswvrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'dkusnyrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'dkusiarl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'dkusnhrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'dkuscorl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'dkusilrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'rsiusinrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'rsiusctrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'rsiusilrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'rsiusparl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'rsiusnjrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'rsiusnyrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'rsiusmirl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'parxusparl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'parxusnjrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'parxusmirl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'parxusmdrl': {
+                        	currency: 'USD',
+                        	locale: 'en_US',
+                        	oddsFormat: 'american',
+                        	market:"US"
+                        },
+						'ubusparl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'ubuswarl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'ubusaztrbrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'siwcrl': {
+							currency: 'ZAR',
+							locale: 'en_ZA',
+							oddsFormat: 'decimal',
+							market:"ZA"
+						},
+						'pivusiarl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'pivuswvrl': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'pivusinrl-ec': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'pivusinrl-law': {
+							currency: 'USD',
+							locale: 'en_US',
+							oddsFormat: 'american',
+							market:"US"
+						},
+						'pivusparl': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						"pivusmsrl-vic": {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusmsrl-bil' : {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						"pivusmsrl-gc": {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusmsrl-1jptun': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusmsrl-hwtun': {
+							 currency: "USD",
+							 locale: "en_US",
+							 oddsFormat: "american",
+							 market: "US"
+						},
+						pivusilrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusilrl-Aurora': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusilrl-Joliet': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivuscorl': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusmirl': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusplayrl': {
+							currency: "XXX",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusparl-york': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivusmdrl' : {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivuslarl-bbc' : {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivuslarl-bno' : {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivuslarl-ldlr' : {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivuslarl-mrc': {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						'pivuslarl-lbr' : {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						pivusksrl: {
+                        	currency: "USD",
+                        	locale: "en_US",
+                        	oddsFormat: "american",
+                        	market: "US"
+                        },
+						pivusmarl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						pivusohrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						betjackusmirl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						}, 
+						betjackusohrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						sgcusnyrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						fourwindsusmirl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winuslarl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						fourwindsusinrl: {
+                            currency: "USD",
+                        	locale: "en_US",
+                        	oddsFormat: "american",
+							market: "US"
+                        },
+						winusazrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winusmirl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winusmsrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winusarrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winusparl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winusinrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winuscorl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winusmdrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						winusnyrl: {
+                            currency: "USD",
+                            locale: "en_US",
+                            oddsFormat: "american",
+                            market: "US"
+                        },
+                        winusmerl: {
+                            currency: "USD",
+                        	locale: "en_US",
+                        	oddsFormat: "american",
+                        	market:"US"
+                        },
+                        winuskyrl:{
+                            currency: "USD",
+                            locale: "en_US",
+                            oddsFormat: "american",
+                            market: "US"
+                        },
+						rwwawarl: {
+ 							currency: "AUD",
+							locale: "en_AU",
+							oddsFormat: "decimal",
+							market:"AU"
+						},
+						rwwarl: {
+ 							currency: "AUD",
+							locale: "en_AU",
+							oddsFormat: "decimal",
+							market:"AU"
+						},
+						gnusmsrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market:"US"
+						},
+						drfusiarl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market:"US"
+						},
+						ddusaztrbrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market:"US"
+						},
+						ondargrl: {
+							currency: "ARS",
+							locale: "es_AR",
+							oddsFormat: "decimal",
+							market: "AR"
+						},
+						ondargcclubrl: {
+                             currency: "ARS",
+                             locale: "es_AR",
+                             oddsFormat: "decimal",
+                             market: "AR"
+   						},
+						fanusmdrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market:"US"
+						},
+                        seusmirl: {
+                         	currency: "USD",
+                         	locale: "en_US",
+                         	oddsFormat: "american",
+							 market:"US"
+                        },
+                        rsiusmdrl: {
+                            currency: "USD",
+                            locale: "en_US",
+                            oddsFormat: "american",
+							market:"US"
+                        },
+                        rsiusohrl: {
+                             currency: "USD",
+                             locale: "en_US",
+                             oddsFormat: "american",
+                        	 market:"US"
+                        },
+						rsiusvarl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+                        ilaniuswarl: {
+                         	currency: "USD",
+                         	locale: "en_US",
+                         	oddsFormat: "american",
+                         	market: "US"
+                        },
+                        mgenecaonrl: {
+                            currency: "CAD",
+                            locale: "en_CA",
+                            oddsFormat: "american",
+                            market: "CA"
+                        },
+						pbusksrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						integration4rl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						potawuswirl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						apuestaprrl: {
+							currency: "USD",
+							locale: "es_PR",
+							oddsFormat: "american",
+							market: "PR"
+						},
+						mvgausohrl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						gccaonrl: {
+							currency: "CAD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "CA"
+						},
+						tecacargrl: {
+                        	currency: "ARS",
+                        	locale: "es_AR",
+                        	oddsFormat: "decimal",
+                        	market: "AR"
+                        },
+                        warhusnerl: {
+                            currency: "USD",
+                            locale: "en_US",
+                            oddsFormat: "american",
+                            market: "US"
+                        },
+                        bcsuslarl: {
+                            currency: "USD",
+                            locale: "en_US",
+                            oddsFormat: "american",
+                            market: "US"
+                        },
+                        bcsusmsrl: {
+                            currency: "USD",
+                            locale: "en_US",
+                            oddsFormat: "american",
+                            market: "US"
+                        },
+                        bcsusilrl:{
+                        	currency: "USD",
+                        	locale: "en_US",
+                        	oddsFormat: "american",
+                        	market: "US"
+                         },
+                        bcsusnjrl:{
+                             currency: "USD",
+                             locale: "en_US",
+                             oddsFormat: "american",
+                             market: "US"
+                        },
+                        bcsusinrl:{
+                             currency: "USD",
+                             locale: "en_US",
+                             oddsFormat: "american",
+                             market: "US"
+                        },
+						bcsuscorl:{
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						bcsusohrl:{
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						oceanusnjrl:{
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+						svenskaspelrl:{
+						currency: "SEK",
+                        locale: "sv_SE",
+                        oddsFormat: "decimal",
+                        market: "SE"
+						},
+						winusiarl: {
+							currency: "USD",
+							locale: "en_US",
+							oddsFormat: "american",
+							market: "US"
+						},
+					};
+					
+				if (currentOffering) {
+					// currentOffering = currentOffering.toLowerCase();
+					// Use default config if we dont have a specific config for the offering
+					if (offeringConfig[currentOffering]){
+						_kc = offeringConfig[currentOffering];
+					}
+				}
+				
+				_kc.channelId = 7; // BYOD uses the retail channel id
+				_kc.betslipBarcodeMode = true;
+
+				window.customerSettings = {
+					routeRoot: ''
+				};
+		</script>
+
+		<script src="kambi-bootstrap.js"></script>
+	</body>
+</html>

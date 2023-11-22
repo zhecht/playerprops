@@ -626,8 +626,10 @@ def writePinnacle(date, debug):
 	#games = {'1580434847': 'phx @ gs'}
 	retry = []
 	for gameId in games:
+		#print(gameId, games[gameId])
 		parsePinnacle(res, games, gameId, retry, debug)
 
+	#print(retry)
 	for gameId in retry:
 		parsePinnacle(res, games, gameId, retry, debug)
 
@@ -1073,6 +1075,7 @@ def writeFanduelManual():
 	{
 
 		function convertTeam(team) {
+			team = team.toLowerCase();
 			let t = team.toLowerCase().substring(0, 3);
 			if (t == "gol") {
 				t = "gs";
@@ -2427,9 +2430,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					avgUnder = []
 					for book in l:
 						if book and book != "-":
-							avgOver.append(convertDecOdds(int(book.split("/")[0])))
-							if "/" in book:
-								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
+							try:
+								avgOver.append(convertDecOdds(int(book.split("/")[0])))
+								if "/" in book:
+									avgUnder.append(convertDecOdds(int(book.split("/")[1])))
+							except:
+								continue
 
 					if avgOver:
 						avgOver = float(sum(avgOver) / len(avgOver))
@@ -2775,11 +2781,17 @@ if __name__ == '__main__':
 	if args.update:
 		#writeFanduel()
 		writeMatchups()
+		print("pn")
 		writePinnacle(args.date, args.debug)
+		print("br")
 		writeKambi(args.date)
+		print("mgm")
 		writeMGM(args.date)
+		print("pb")
 		writePointsbet(args.date)
+		print("bv")
 		writeBV(args.date)
+		print("dk")
 		writeDK(args.date)
 		writeCZ(args.date)
 
