@@ -820,7 +820,7 @@ def writeMGM(date):
 
 		if " at " not in data["name"]["value"]:
 			continue
-		game = strip_accents(data["name"]["value"].lower()).replace(" at ", " @ ")
+		game = strip_accents(data["name"]["value"].lower().split(" (")[0]).replace(" at ", " @ ")
 		fullTeam1, fullTeam2 = game.split(" @ ")
 		game = f"{convertNBATeam(fullTeam1)} @ {convertNBATeam(fullTeam2)}"
 
@@ -829,9 +829,9 @@ def writeMGM(date):
 			prop = row["name"]["value"].lower()
 
 			prefix = player = ""
-			if "1st half" in prop:
+			if "1st half" in prop or "first half" in prop:
 				prefix = "1h_"
-			elif "1st quarter" in prop:
+			elif "1st quarter" in prop or "first quarter" in prop:
 				prefix = "1q_"
 
 			if prop.endswith("money line"):
@@ -1142,6 +1142,7 @@ def writeFanduelManual():
 			let prop = "";
 			let line = "";
 			let player = "";
+			let prefix = "";
 			let label = arrow.innerText.toLowerCase();
 			if (label.indexOf("game lines") >= 0) {
 				prop = "lines";
@@ -1187,6 +1188,23 @@ def writeFanduelManual():
 				prop = "triple_double";
 			}
 
+			if (label.indexOf("1st half") >= 0) {
+				prefix = "1h";
+			} else if (label.indexOf("2nd half") >= 0) {
+				prefix = "2h";
+			}
+
+			if (prefix) {
+				if (label.indexOf("winner") >= 0) {
+					prop = "ml";
+				}
+				if (!prop) {
+					continue;
+				}
+				prop = prefix+"_"+prop;
+				continue;
+			}
+
 			if (!prop) {
 				continue;
 			}
@@ -1209,6 +1227,8 @@ def writeFanduelManual():
 
 			let skip = 1;
 			if (["away_total", "home_total"].indexOf(prop) >= 0 || player) {
+				skip = 2;
+			} else if (prefix) {
 				skip = 2;
 			}
 			let btns = Array.from(li.querySelectorAll("div[role=button]"));
@@ -1283,6 +1303,9 @@ def writeFanduelManual():
 					} else {
 						data[game][prop][line] += "/"+odds;
 					}
+				} else if (prefix) {
+					console.log(prop);
+					data[game][prop] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1];
 				} else if (skip == 2 && player) {
 					// 2 sides
 					player = parsePlayer(ariaLabel.split(", ")[0]);
@@ -1625,7 +1648,7 @@ def writeDK(date):
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
 			outfile = "outnba"
-			call(["curl", "-k", url, "-o", outfile])
+			call(["curl", "-k", url, "--connect-timeout", "30", "-o", outfile])
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -2271,6 +2294,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				lastTotalOver = lastTotalGames = 0
 				last10TotalOver = last20TotalOver = last50TotalOver = 0
 				totalGames = totalOver = 0
+				total10Over = 0
 				totalSplits = []
 				if player:
 					convertedProp = prop
@@ -2316,6 +2340,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					if totalGames:
 						totalOver = int(totalOver * 100 / totalGames)
+						tot = len(totalSplits) if len(totalSplits) < 10 else 10
+
+						for x in totalSplits[::-1][:10]:
+							if float(x) > float(playerHandicap):
+								total10Over += 1
+						total10Over = int(total10Over * 100 / tot)
 
 				for i in range(2):
 					highestOdds = []
@@ -2328,6 +2358,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						last20TotalOver = 100 - last20TotalOver
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
+						total10Over = 100 - total10Over
 
 					for book in lines:
 						lineData = lines[book]
@@ -2478,6 +2509,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
 						evData[key]["totalOver"] = totalOver
+						evData[key]["total10Over"] = total10Over
 						evData[key]["totalSplits"] = ",".join(totalSplits)
 						evData[key]["lastYearTotal"] = lastTotalOver
 						evData[key]["last10YearTotal"] = last10TotalOver
@@ -2640,7 +2672,7 @@ def sortEV():
 	with open("static/nba/lines.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi/BR", "CZ", "LYR %", "LYR_20 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi/BR", "CZ", "LYR %", "L10 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -2679,7 +2711,7 @@ def sortEV():
 			arr.append(str(o))
 		arr.append(f"{row[-1]['lastYearTotal']}%")
 		#arr.append(f"{row[-1]['last50YearTotal']}%")
-		arr.append(f"{row[-1]['last20YearTotal']}%")
+		arr.append(f"{row[-1]['total10Over']}%")
 		arr.append(f"{row[-1]['totalOver']}%")
 		arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
 		arr.extend([rank, posRank])

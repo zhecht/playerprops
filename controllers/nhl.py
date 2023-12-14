@@ -1205,7 +1205,7 @@ def writeKambi():
 		json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 	if player == "michael eyssimont":
 		return "mikey eyssimont"
 	return player
@@ -1255,7 +1255,7 @@ def writeFanduelManual():
 		}
 
 		function parsePlayer(player) {
-			player = player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
 			if (player == "michael eyssimont") {
 				return "mikey eyssimont";
 			}
@@ -2290,7 +2290,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 				# last year stats
 				lastTotalOver = lastTotalGames = 0
-				totalOver = totalGames = 0
+				totalOver = total10Over = totalGames = 0
 				totalSplits = []
 				if player:
 					convertedProp = prop.replace("sog", "s").replace("ast", "a").replace("saves", "sv").replace("atgs", "g")
@@ -2339,6 +2339,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					if totalGames:
 						totalOver = int(totalOver * 100 / totalGames)
+						tot = len(totalSplits) if len(totalSplits) < 10 else 10
+						for x in totalSplits[::-1][:10]:
+							if float(x) > float(playerHandicap):
+								total10Over += 1
+						total10Over = int(total10Over * 100 / tot)
 
 				for i in range(2):
 
@@ -2351,6 +2356,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						lastTotalOver = 100 - lastTotalOver
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
+						total10Over = 100 - total10Over
 					highestOdds = []
 					books = []
 					odds = []
@@ -2506,6 +2512,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							pass
 						evData[key]["lastYearTotal"] = lastTotalOver
 						evData[key]["totalOver"] = totalOver
+						evData[key]["total10Over"] = total10Over
 						evData[key]["totalSplits"] = ",".join(totalSplits)
 						evData[key]["game"] = game
 						evData[key]["prop"] = prop
@@ -2543,7 +2550,7 @@ def sortEV(propArg):
 			continue
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "SZN", "Splits"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "L10", "SZN", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] in ["3-way", "atgs"]:
 			continue
@@ -2566,7 +2573,7 @@ def sortEV(propArg):
 				o = "'"+o
 			arr.append(str(o))
 
-		for h in ["lastYearTotal", "totalOver"]:
+		for h in ["lastYearTotal", "total10Over", "totalOver"]:
 			if not row[-1][h]:
 				arr.append("-")
 			else:
@@ -2577,7 +2584,7 @@ def sortEV(propArg):
 	with open("static/nhl/props.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "SZN"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "L10", "SZN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "atgs":
 			continue
@@ -2593,7 +2600,7 @@ def sortEV(propArg):
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
-		for h in ["lastYearTotal", "totalOver"]:
+		for h in ["lastYearTotal", "total10Over", "totalOver"]:
 			if not row[-1][h]:
 				arr.append("-")
 			else:

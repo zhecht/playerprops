@@ -897,9 +897,9 @@ def writeMGM():
 			prop = row["name"]["value"].lower()
 
 			prefix = player = ""
-			if "1st half" in prop:
+			if "1st half" in prop or "first half" in prop:
 				prefix = "1h_"
-			elif "1st quarter" in prop:
+			elif "1st quarter" in prop or "first quarter" in prop:
 				prefix = "1q_"
 
 			if prop.endswith("money line"):
@@ -1274,7 +1274,7 @@ def writeFanduelManual():
 			} else if (label.indexOf("player") >= 0) {
 				player = true;
 
-				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0) {
+				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0 || label.indexOf("1st") >= 0) {
 					continue
 				}
 
@@ -2369,7 +2369,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			if notd and prop in ["attd", "ftd"]:
 				continue
 			
-			if prop in ["sacks", "spread"]:
+			if prop in ["sacks", "spread", "1h_ml"]:
 				continue
 
 			handicaps = {}
@@ -2496,7 +2496,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					avgOver = []
 					avgUnder = []
 					for book in l:
-						if book and book != "-":
+						if book and book != "-" and book.split("/")[0] != "-":
 							avgOver.append(convertDecOdds(int(book.split("/")[0])))
 							if "/" in book:
 								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
@@ -2741,12 +2741,19 @@ if __name__ == '__main__':
 
 	if args.update:
 		#writeFanduel()
+		print("pn")
 		writePinnacle(args.date)
+		print("kambi")
 		writeKambi()
+		print("mgm")
 		writeMGM()
+		print("pb")
 		writePointsbet()
+		print("bv")
 		writeBV()
+		print("dk")
 		writeDK()
+		print("cz")
 		writeCZ()
 		writeActionNetwork()
 

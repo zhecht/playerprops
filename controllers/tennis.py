@@ -483,6 +483,204 @@ def writeKambi(date=None):
 		with open(f"{prefix}static/tennis/kambi.json", "w") as fh:
 			json.dump(data, fh, indent=4)
 
+def writeFanduelManual():
+	js = """
+
+	let data = {};
+	{
+
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			return player;
+		}
+
+		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
+		let awayFull = game.split(" v ")[0];
+		let homeFull = game.split(" v ")[1];
+		game = away+" @ "+home;
+		if (!data[game]) {
+			data[game] = {};
+		}
+
+		const arrows = document.querySelectorAll("div[data-test-id='ArrowAction']");
+
+		for (const arrow of arrows) {
+			let li = arrow;
+			let idx = 0;
+			while (li.nodeName != "LI") {
+				li = li.parentElement;
+				idx += 1;
+				if (idx > 10) {
+					break;
+				}
+			}
+
+			if (idx > 10) {
+				break;
+			}
+
+			let prop = "";
+			let line = "";
+			let player = "";
+			let label = arrow.innerText.toLowerCase();
+			if (label.indexOf("game lines") >= 0) {
+				prop = "lines";
+			} else if (label.indexOf("any time goal scorer") >= 0) {
+				prop = "atgs";
+			} else if (label.indexOf("player to record") >= 0) {
+				line = (parseFloat(label.split(" ")[3].replace("+", "")) - 0.5).toString();
+				if (label.indexOf("shots on goal") > 0) {
+					prop = "sog";
+				} else if (label.indexOf("+ points") > 0) {
+					prop = "pts";
+				} else if (label.indexOf("+ powerplay points") > 0) {
+					prop = "pp_pts";
+				} else if (label.indexOf("+ assists") > 0) {
+					prop = "ast";
+				}
+			} else if (label.indexOf("alternate puck line") >= 0) {
+				prop = "spread";
+			} else if (label.indexOf("alternate total goals") >= 0) {
+				prop = "total";
+			} else if (label.indexOf("total saves") >= 0) {
+				player = parsePlayer(label.split(" -")[0]);
+				prop = "saves";
+			} else if (label.indexOf("shots on goal") >= 0) {
+				player = parsePlayer(label.split(" shots")[0]);
+				prop = "sog";
+			} else if (label.indexOf(awayFull+" total goals") >= 0) {
+				prop = "away_total";
+			} else if (label.indexOf(homeFull+" total goals") >= 0) {
+				prop = "home_total";
+			}
+
+			if (!prop) {
+				continue;
+			}
+
+			if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
+				arrow.click();
+			}
+			let el = arrow.parentElement.parentElement.querySelector("div[aria-label='Show more']");
+			if (el) {
+				el.click();
+			}
+
+			if (prop != "lines" && !data[game][prop]) {
+				data[game][prop] = {};
+			}
+
+			let skip = 1;
+			if (["saves", "away_total", "home_total"].indexOf(prop) >= 0) {
+				skip = 2;
+			} else if (prop == "sog" && player) {
+				skip = 2;
+			}
+			let btns = Array.from(li.querySelectorAll("div[role=button]"));
+			btns.shift();
+
+			if (prop == "lines") {
+				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				line = btns[0].getAttribute("aria-label").split(", ")[1];
+				data[game]["spread"] = {};
+				data[game]["spread"][line.replace("+", "")] = btns[0].getAttribute("aria-label").split(", ")[2].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+				line = btns[2].getAttribute("aria-label").split(", ")[2].split(" ")[1];
+				data[game]["total"] = {};
+				data[game]["total"][line] = btns[2].getAttribute("aria-label").split(", ")[3].split(" ")[0] + "/" + btns[5].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+			}
+
+			for (let i = 0; i < btns.length; i += skip) {
+				const btn = btns[i];
+				if (btn.getAttribute("data-test-id")) {
+					continue;
+				}
+				const ariaLabel = btn.getAttribute("aria-label");
+				if (ariaLabel == "Show more" || ariaLabel == "Show less") {
+					continue;
+				}
+				let odds = ariaLabel.split(", ")[1];
+				if (odds.indexOf("unavailable") >= 0) {
+					continue;
+				}
+				if (prop == "lines") {
+
+				} else if (["spread"].indexOf(prop) >= 0) {
+					let arr = ariaLabel.split(", ")[0].split(" ");
+					line = arr[arr.length - 1];
+					arr.pop();
+					let team = convertTeam(arr.join(" "));
+
+					let isAway = true;
+					if (team == game.split(" @ ")[1]) {
+						line = (parseFloat(line) * -1).toString();
+						isAway = false;
+					}
+
+					line = line.replace("+", "");
+
+					if (isAway) {
+						data[game][prop][line] = odds;
+					} else if (!data[game][prop][line]) {
+						data[game][prop][line] = "-/"+odds;
+					} else {
+						data[game][prop][line] += "/"+odds;
+					}
+				} else if (["total"].indexOf(prop) >= 0) {
+					let arr = ariaLabel.split(", ")[0].split(" ");
+					line = arr[arr.length - 1];
+
+					let isAway = true;
+					if (arr[0] == "Under") {
+						isAway = false;
+					}
+
+					line = line.replace("+", "");
+
+					if (isAway) {
+						data[game][prop][line] = odds;
+					} else if (!data[game][prop][line]) {
+						data[game][prop][line] = "-/"+odds;
+					} else {
+						data[game][prop][line] += "/"+odds;
+					}
+				} else if (skip == 2 && player) {
+					// 2 sides
+					if (!data[game][prop][player]) {
+						data[game][prop][player] = {};
+					}
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+				} else if (skip == 2) {
+					line = ariaLabel.split(", ")[2].split(" ")[1];
+					odds = ariaLabel.split(", ")[3].split(" ")[0];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop] = {};
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+				} else {
+					player = parsePlayer(ariaLabel.split(",")[0]);
+					if (!data[game][prop][player]) {
+						data[game][prop][player] = {};
+					}
+
+					if (["atgs"].indexOf(prop) >= 0) {
+						data[game][prop][player] = odds;
+					} else {
+						data[game][prop][player][line] = odds;
+					}
+				}
+			}
+		}
+
+		console.log(data);
+	}
+"""
+
 def writeFanduel():
 	url = "https://mi.sportsbook.fanduel.com/navigation/us-open?tab=men%27s-matches"
 
@@ -507,57 +705,15 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/a-nedic-v-l-gerch-32672782",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/r-dickerson-v-w-grant-32672963",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/a-andrade-v-m-braswell-32672966",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/j-hasson-v-a-azkara-32672967",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/s-gima-i-snitari-v-e-bogo-h-escurra-isnardi-32672820",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-ningbo-2023/k-siniakova-v-podoroska-32670288",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-serbia-futures/a-asaba-n-buitrago-v-v-jovic-l-pavlovic-32672809",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/r-verma-v-s-ewing-32672746",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/k-matushkina-v-a-okutoyi-32672745",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/j-tilbuerger-v-c-tiglea-32672884",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/j-prado-angelo-v-g-villanueva-32672944",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-midon-v-f-roncadelli-32672923",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-rodriguez-v-m-barreiros-reyes-32672925",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/f-tenti-v-m-kestelboim-32672897",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/c-markus-v-l-blatter-32672748",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/l-giovannini-v-f-labrana-32672752",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/j-davis-h-stewart-v-l-martinez-a-moundir-32672846",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-sweden-futures/j-backman-a-heinonen-v-a-matusevich-h-wendelke-32672804",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-santarem/a-charaeva-l-glushko-v-d-hewitt-m-sieg-32672815",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-santarem/l-boskovic-e-guerrero-alvarez-v-n-berberovic-s-32672816",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-spain-futures/m-erhard-v-f-egea-32672806",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/a-nefve-v-k-smith-32673250",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-sweden-futures/s-freund-j-ingildsen-v-m-dahlin-y-steinegger-32672801",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-france-futures/b-fassbender-v-t-gentzsch-32672763",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/t-baadi-v-j-angele-32672969",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/l-perez-alarcon-w-sonobe-v-t-i-andrade-sabando--32672920",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/c-gomez-k-keller-v-i-boulais-l-sleeth-32672749",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-hilton-head/l-kwong-l-proctor-v-t-barad-itzhaki-e-w-cheng-32672896",
-  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/sun-zhou-v-koolhof-skupski-32666438",
-  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/struff-v-ruud-32666793",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/j-jebawy-y-monroy-v-a-candiotto-r-pereira-32672743",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/j-l-estable-l-moyano-v-l-ayala-c-di-genova-32672917",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/v-rodriguez-v-s-sierra-32672757",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/o-wallin-v-f-van-sambeek-32672965",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/o-o-hoisin-v-l-draxl-32672968",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-usa-futures/d-martin-m-zhu-v-d-panarin-r-sakamoto-32673191",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-a-falabella-l-gagliardo-v-f-tenti-g-villanue-32672918",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-aboian-v-aboian-v-l-e-ambrogi-l-j-rodriguez-32673043",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/l-midon-j-c-prado-angelo-v-l-britto-j-e-schies-32672921",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-lujan/m-capurro-taborda-f-labrana-v-l-blatter-j-gonz-32672949",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/e-jacquemot-v-m-jones-32672919",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/s-chang-v-k-volynets-32672916",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/r-zarazua-v-a-tikhonova-32672914",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-templeton/c-harrison-v-i-shymanovich-32673208",
-  "https://mi.sportsbook.fanduel.com/tennis/itf-argentina-futures/b-kuzuhara-v-a-guillen-meza-32672946",
-  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/nys-zielinski-v-gille-vliegen-32666434",
-  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/granollers-zeballos-v-de-minaur-sinner-32666437",
-  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/khachanov-rublev-v-erler-miedler-32672597",
-  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/gonzalez-roger-vasselin-v-etcheverry-jarry-32666436",
-  "https://mi.sportsbook.fanduel.com/tennis/atp-beijing-2023/dodig-krajicek-v-krawietz-puetz-32666435",
-  "https://mi.sportsbook.fanduel.com/tennis/wta-tokyo-2023/i-swiatek-v-v-kudermetova-32670065"
+  "https://mi.sportsbook.fanduel.com/tennis/wta-angers-2023/er-andreeva-v-burel-32860949",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-montevideo-2023/mar-carle-v-j-riera-32861638",
+  "https://mi.sportsbook.fanduel.com/tennis/itf-chile-futures/j-v-couto-loureiro-l-midon-v-d-fernandez-flores-32861980",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-angers-2023/el-cocciaretto-v-paquet-32861781",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-montevideo-2023/christie-lizarazo-v-lechemia-lee-32862184",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-montevideo-2023/d-parry-v-so-sierra-32861929",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-montevideo-2023/carle-riera-v-lohoff-perrin-32861857",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-montevideo-2023/robi-montgomery-v-in-albon-32859637",
+  "https://mi.sportsbook.fanduel.com/tennis/wta-angers-2023/bucsa-niculescu-v-dzalamidze-moratelli-32863111"
 ]
 
 	lines = {}

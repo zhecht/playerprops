@@ -27,7 +27,12 @@ def convertNBATeam(team):
 	trans = {
 		"american university": "american",
 		"alcorn": "alcorn state",
+		"alabama am": "alabama a&m",
+		"appalachian st": "appalachian state",
+		"arkansas little rock": "little rock",
 		"army west point": "army",
+		"cal baptist": "california baptist",
+		"california san diego": "uc san diego",
 		"coll charleston": "charleston",
 		"college of charleston": "charleston",
 		"st johns": "saint johns",
@@ -42,30 +47,60 @@ def convertNBATeam(team):
 		"central florida": "cfu",
 		"cal state fullerton": "csu fullerton",
 		"cs fullerton": "csu fullerton",
+		"cs northridge": "csu northridge",
+		"cal state northridge": "csu northridge",
 		"boston": "boston university",
+		"fau": "florida atlantic",
 		"fiu": "florida international",
 		"grambling": "grambling state",
+		"illinois chicago": "uic",
+		"kansas city": "umkc",
 		"purdue fort wayne": "ipfw",
+		"louisiana lafayette": "louisiana",
+		"ul lafayette": "louisiana",
 		"louisiana monroe": "ul monroe",
+		"middle tennessee state": "middle tennessee",
+		"middle tenn state": "middle tennessee",
+		"mississippi valley": "mississippi valley state",
+		"mississippi valley st": "mississippi valley state",
 		"mcneese state cowboys": "mcneese",
 		"mcneese state": "mcneese",
 		"miami fl": "miami",
 		"miami florida": "miami",
 		"nc wilmington": "unc wilmington",
 		"north carolina central": "nc central",
+		"north carolina asheville": "unc asheville",
+		"nc asheville": "unc asheville",
+		"northwestern st": "northwestern state",
+		"penn": "pennsylvania",
+		"upenn": "pennsylvania",
 		"prairie view": "prairie view a&m",
+		"queens nc": "queens university",
+		"queens charlotte": "queens university",
+		"queens": "queens university",
+		"sam houston": "sam houston state",
+		"sam houston st": "sam houston state",
 		"san jose st": "san jose",
 		"san jose state": "san jose",
+		"saint marys ca": "saint marys",
 		"so illinois": "southern illinois",
+		"southern mississippi": "southern miss",
 		"saint josephs": "st josephs",
+		"st peters": "saint peters",
 		"stephen f austin": "sfa",
 		"stephen austin": "sfa",
+		"texas san antonio": "utsa",
 		"texas a&m corpus christi": "texas a&m cc",
 		"a&m corpus christi": "texas a&m cc",
 		"t a&m corpus christi": "texas a&m cc",
 		"texas a&m corpus": "texas a&m cc",
 		"tennessee martin": "ut martin",
+		"uiw": "incarnate word",
 		"ulm": "ul monroe",
+		"md baltimore county": "umbc",
+		"md baltimore": "umbc",
+		"wisc green bay": "green bay",
+		"wisconsin green bay": "green bay",
 		"wisconsin milwaukee": "milwaukee",
 		"wisc milwaukee": "milwaukee"
 	}
@@ -858,9 +893,9 @@ def writeMGM(date):
 			prop = row["name"]["value"].lower()
 
 			prefix = player = ""
-			if "1st half" in prop:
+			if "1st half" in prop or "first half" in prop:
 				prefix = "1h_"
-			elif "1st quarter" in prop:
+			elif "1st quarter" in prop or "first quarter" in prop:
 				prefix = "1q_"
 
 			if prop.endswith("money line"):
@@ -1142,6 +1177,14 @@ def writeFanduelManual():
 				return "sfa";
 			} else if (team == "citadel") {
 				return "the citadel";
+			} else if (team == "wv mountaineers") {
+				return "west virginia";
+			} else if (team == "gw colonials") {
+				return "george washington";
+			} else if (team == "long island university") {
+				return "liu";
+			} else if (team == "north carolina central") {
+				return "nc central";
 			}
 			return team
 		}
@@ -1228,6 +1271,12 @@ def writeFanduelManual():
 				prop = "spread";
 			} else if (label.indexOf("alternate total points") >= 0) {
 				prop = "total";
+			} else if (label.indexOf("1st half moneyline") >= 0) {
+				prop = "1h_ml";
+			} else if (label.indexOf("1st half spread") >= 0) {
+				prop = "1h_spread";
+			} else if (label.indexOf("1st half total") >= 0) {
+				prop = "1h_total";
 			} else if (label.indexOf(awayName+" total points") >= 0) {
 				prop = "away_total";
 			} else if (label.indexOf(homeName+" total points") >= 0) {
@@ -1259,14 +1308,16 @@ def writeFanduelManual():
 			}
 
 			let skip = 1;
-			if (["away_total", "home_total", "spread"].indexOf(prop) >= 0 || player) {
+			if (["away_total", "home_total", "spread"].indexOf(prop) >= 0 || player || prop.indexOf("1h_") >= 0) {
 				skip = 2;
 			}
 			let btns = Array.from(li.querySelectorAll("div[role=button]"));
 			btns.shift();
 
 			if (prop == "lines") {
-				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				if (btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0].indexOf(".") < 0 && btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0].indexOf(".") < 0) {
+					data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				}
 				line = btns[0].getAttribute("aria-label").split(", ")[1];
 				data[game]["spread"] = {};
 				data[game]["spread"][line.replace("+", "")] = btns[0].getAttribute("aria-label").split(", ")[2].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[2].split(" ")[0];
@@ -1348,6 +1399,12 @@ def writeFanduelManual():
 					} catch {
 						data[game][prop][player][line] = odds;
 					}
+				} else if (prop == "1h_ml") {
+					data[game][prop] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1];
+				} else if (prop == "1h_spread") {
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
 				} else if (skip == 2) {
 					line = ariaLabel.split(", ")[2].split(" ")[1];
 					odds = ariaLabel.split(", ")[3].split(" ")[0];
@@ -1748,6 +1805,8 @@ def writeDK(date):
 							ou = ""
 							try:
 								ou = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
+								if outcomes[0]["label"] == "Under":
+									ou = f"{outcomes[1]['oddsAmerican']}/{outcomes[0]['oddsAmerican']}"
 							except:
 								continue
 
@@ -1759,6 +1818,8 @@ def writeDK(date):
 									ou = f"{outcomes[i]['oddsAmerican']}"
 									try:
 										ou += f"/{outcomes[i+1]['oddsAmerican']}"
+										if outcomes[i]["label"] == "Under":
+											ou = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
 									except:
 										pass
 									lines[game][prop][line] = ou
@@ -1768,6 +1829,8 @@ def writeDK(date):
 									if player not in lines[game][prop]:
 										lines[game][prop][player] = {}
 									lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+									if outcomes[i]["label"] == "Under":
+										lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
 							else:
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
 								if player not in lines[game][prop]:
