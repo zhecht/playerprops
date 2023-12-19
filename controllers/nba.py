@@ -1149,7 +1149,7 @@ def writeFanduelManual():
 			} else if (label.indexOf("player") >= 0) {
 				player = true;
 
-				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0) {
+				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0 || label.indexOf("blocks, and steals") >= 0) {
 					continue
 				}
 
@@ -1178,9 +1178,9 @@ def writeFanduelManual():
 				prop = "spread";
 			} else if (label.indexOf("alternate total points") >= 0) {
 				prop = "total";
-			} else if (label.indexOf(awayName+" total points") >= 0) {
+			} else if (label.indexOf(awayName+" total points") >= 0 || label == "away team total points") {
 				prop = "away_total";
-			} else if (label.indexOf(homeName+" total points") >= 0) {
+			} else if (label.indexOf(homeName+" total points") >= 0 || label == "home team total points") {
 				prop = "home_total";
 			} else if (label.indexOf("double double") >= 0) {
 				prop = "double_double";
@@ -1195,14 +1195,22 @@ def writeFanduelManual():
 			}
 
 			if (prefix) {
+				if (label.indexOf("alternate") >= 0) {
+					continue;
+				}
+
 				if (label.indexOf("winner") >= 0) {
 					prop = "ml";
+				} else if (label.indexOf("spread") >= 0) {
+					prop = "spread";
+				} else if (label.indexOf("total points") >= 0) {
+					prop = "total";
 				}
 				if (!prop) {
 					continue;
 				}
 				prop = prefix+"_"+prop;
-				continue;
+				//continue;
 			}
 
 			if (!prop) {
@@ -1277,8 +1285,16 @@ def writeFanduelManual():
 					odds = ariaLabel.split(", ")[1].split(" ")[0];
 					line = line.replace("+", "");
 
+					if (line == "1.5") {
+						//console.log(odds, line, isAway);
+					}
+
 					if (isAway) {
-						data[game][prop][line] = odds;
+						if (data[game][prop][line] == undefined) {
+							data[game][prop][line] = odds;
+						} else {
+							data[game][prop][line] = odds + "/" + data[game][prop][line].replace("-/", "");
+						}
 					} else if (!data[game][prop][line]) {
 						data[game][prop][line] = "-/"+odds;
 					} else {
@@ -1303,9 +1319,22 @@ def writeFanduelManual():
 					} else {
 						data[game][prop][line] += "/"+odds;
 					}
-				} else if (prefix) {
-					console.log(prop);
+				} else if (prop == "1h_ml" || prop == "2h_ml") {
 					data[game][prop] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1];
+				} else if (prefix) {
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					if (prop == "1h_total") {
+						line = ariaLabel.split(", ")[2].split(" ")[1];
+						odds = ariaLabel.split(", ")[3].split(" ")[0];
+						data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+					} else {
+						data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+					}
+				} else if (prop == "away_total" || prop == "home_total") {
+					line = ariaLabel.split(", ")[2].split(" ")[1];
+					odds = ariaLabel.split(", ")[3].split(" ")[0];
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
 				} else if (skip == 2 && player) {
 					// 2 sides
 					player = parsePlayer(ariaLabel.split(", ")[0]);

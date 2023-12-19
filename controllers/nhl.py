@@ -1208,6 +1208,8 @@ def parsePlayer(player):
 	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 	if player == "michael eyssimont":
 		return "mikey eyssimont"
+	elif player == "john jason peterka":
+		return "jj peterka"
 	return player
 
 def writeFanduelManual():
@@ -2584,7 +2586,7 @@ def sortEV(propArg):
 	with open("static/nhl/props.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "L10", "SZN"]) + "\n"
+	output = "\t".join(["EV", "PN_EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "L10", "SZN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "atgs":
 			continue
@@ -2594,7 +2596,7 @@ def sortEV(propArg):
 		else:
 			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
 		implied *= 100
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
 		for book in ["fd", "dk", "mgm", "bv", "cz", "pn", "kambi"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):

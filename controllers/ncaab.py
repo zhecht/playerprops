@@ -47,15 +47,20 @@ def convertNBATeam(team):
 		"central florida": "cfu",
 		"cal state fullerton": "csu fullerton",
 		"cs fullerton": "csu fullerton",
+		"cal state bakersfield": "csu bakersfield",
+		"bakersfield": "csu bakersfield",
+		"cs bakersfield": "csu bakersfield",
 		"cs northridge": "csu northridge",
 		"cal state northridge": "csu northridge",
 		"boston": "boston university",
+		"eastern carolina": "east carolina",
 		"fau": "florida atlantic",
 		"fiu": "florida international",
 		"grambling": "grambling state",
 		"illinois chicago": "uic",
 		"kansas city": "umkc",
 		"purdue fort wayne": "ipfw",
+		"lamar cardinals": "lamar",
 		"louisiana lafayette": "louisiana",
 		"ul lafayette": "louisiana",
 		"louisiana monroe": "ul monroe",
@@ -67,6 +72,8 @@ def convertNBATeam(team):
 		"mcneese state": "mcneese",
 		"miami fl": "miami",
 		"miami florida": "miami",
+		"mt st marys": "mount st marys",
+		"mount saint marys": "mount st marys",
 		"nc wilmington": "unc wilmington",
 		"north carolina central": "nc central",
 		"north carolina asheville": "unc asheville",
@@ -85,8 +92,13 @@ def convertNBATeam(team):
 		"saint marys ca": "saint marys",
 		"so illinois": "southern illinois",
 		"southern mississippi": "southern miss",
+		"st francis": "st francis pa",
+		"saint francis pa": "st francis pa",
 		"saint josephs": "st josephs",
 		"st peters": "saint peters",
+		"st thomas mn": "st thomas",
+		"saint thomas mn": "st thomas",
+		"st thomas minnesota": "st thomas",
 		"stephen f austin": "sfa",
 		"stephen austin": "sfa",
 		"texas san antonio": "utsa",
@@ -99,6 +111,7 @@ def convertNBATeam(team):
 		"ulm": "ul monroe",
 		"md baltimore county": "umbc",
 		"md baltimore": "umbc",
+		"utrgv": "ut rio grande valley",
 		"wisc green bay": "green bay",
 		"wisconsin green bay": "green bay",
 		"wisconsin milwaukee": "milwaukee",
@@ -1185,12 +1198,16 @@ def writeFanduelManual():
 				return "liu";
 			} else if (team == "north carolina central") {
 				return "nc central";
+			} else if (team == "grambling") {
+				return "grambling state";
+			} else if (team == "mt st marys") {
+				return "mount st marys";
 			}
 			return team
 		}
 
 		function parsePlayer(player) {
-			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			return player.toLowerCase().replaceAll(".", "").replaceAll("(", "").replaceAll(")", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
 		}
 
 		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "").split(" player")[0];
@@ -1345,10 +1362,8 @@ def writeFanduelManual():
 				if (prop == "lines") {
 
 				} else if (["spread"].indexOf(prop) >= 0) {
-					let arr = ariaLabel.split(", ")[0].split(" ");
-					line = arr[arr.length - 1];
-					arr.pop();
-					let team = convertTeam(arr.join(" "));
+					line = ariaLabel.split(", ")[1];
+					let team = convertTeam(ariaLabel.split(", ")[0]);
 
 					let isAway = true;
 					if (team == game.split(" @ ")[1]) {
@@ -1356,13 +1371,11 @@ def writeFanduelManual():
 						isAway = false;
 					}
 
-					odds = ariaLabel.split(", ")[1].split(" ")[0];
-					line = line.replace("+", "");
-
+					odds = ariaLabel.split(", ")[2];
 					if (isAway) {
-						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2];
 					} else {
-						data[game][prop][line] = btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+odds;
+						data[game][prop][line] = btns[i+1].getAttribute("aria-label").split(", ")[2]+"/"+odds;
 					}
 				} else if (["total"].indexOf(prop) >= 0) {
 					let odds = ariaLabel.split(", ")[2].split(" ")[0];

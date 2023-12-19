@@ -1264,10 +1264,8 @@ def writeFanduelManual():
 
 			if (label.indexOf("game lines") >= 0) {
 				prop = "lines";
-			} else if (label.indexOf("any time touchdown scorer") >= 0) {
+			} else if (label == "touchdown scorers") {
 				prop = "attd";
-			} else if (label.indexOf("first touchdown scorer") >= 0) {
-				prop = "ftd";
 			} else if (label.indexOf("kicking points") >= 0) {
 				player = true;
 				prop = "kicking_pts";
@@ -1349,11 +1347,15 @@ def writeFanduelManual():
 			}
 
 			let skip = 1;
-			if (["away_total", "home_total", "spread"].indexOf(prop) >= 0 || prefix || player) {
+			if (["attd", "away_total", "home_total", "spread"].indexOf(prop) >= 0 || prefix || player) {
 				skip = 2;
 			}
 			let btns = Array.from(li.querySelectorAll("div[role=button]"));
 			btns.shift();
+
+			if (prop == "attd") {
+				btns.shift();
+			}
 
 			if (prop == "lines") {
 				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
@@ -1414,6 +1416,10 @@ def writeFanduelManual():
 					odds = ariaLabel.split(", ")[1].split(" ")[0];
 					line = line.replace("+", "");
 
+					if (btns[i+1].getAttribute("aria-label").split(", ")[1] === undefined) {
+						continue;
+					}
+
 					if (isAway) {
 						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0];
 					} else {
@@ -1444,7 +1450,7 @@ def writeFanduelManual():
 					odds = ariaLabel.split(", ")[2];
 					data[game][prop][player] = {};
 					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
-				} else if (skip == 2 && player) {
+				} else if (skip == 2 && player && prop != "attd") {
 					// 2 sides
 					player = parsePlayer(ariaLabel.split(", ")[0]);
 					if (!data[game][prop][player]) {
@@ -1456,7 +1462,7 @@ def writeFanduelManual():
 						continue;
 					}
 					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
-				} else if (skip == 2) {
+				} else if (skip == 2 && prop != "attd") {
 					line = ariaLabel.split(", ")[1];
 					odds = ariaLabel.split(", ")[2];
 					if (odds.indexOf("unavailable") >= 0) {
@@ -1470,7 +1476,7 @@ def writeFanduelManual():
 						data[game][prop][player] = {};
 					}
 
-					if (["attd", "ftd"].indexOf(prop) >= 0) {
+					if (["attd"].indexOf(prop) >= 0) {
 						data[game][prop][player] = odds;
 					} else {
 						data[game][prop][player][line] = odds;
