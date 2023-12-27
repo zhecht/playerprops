@@ -1723,7 +1723,7 @@ def writeDK(date):
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
 			outfile = "outnba"
-			call(["curl", "-k", url, "--connect-timeout", "60", "-o", outfile])
+			call(["curl", url, "--connect-timeout", "60", "-o", outfile])
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -1774,12 +1774,12 @@ def writeDK(date):
 							if "label" not in row:
 								continue
 
+							prefix = ""
 							if subCat in propIds:
 								prop = propIds[subCat]
 							else:
 								prop = row["label"].lower().split(" [")[0]
 								
-								prefix = ""
 								if "1st half" in prop:
 									prefix = "1h_"
 								elif "2nd half" in prop:
