@@ -65,7 +65,7 @@ def writeStats(week):
 
 		outfile = "outnfl"
 		time.sleep(0.2)
-		call(["curl", "-k", url, "-o", outfile])
+		call(["curl", url, "-o", outfile])
 
 		with open(outfile) as fh:
 			data = json.load(fh)
