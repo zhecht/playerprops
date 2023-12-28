@@ -2613,8 +2613,6 @@ def sortEV(propArg):
 	with open("static/nhl/atgs.csv", "w") as fh:
 		fh.write(output)
 
-
-
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-d", "--date", help="date")
