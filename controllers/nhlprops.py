@@ -33,6 +33,8 @@ def convertProp(prop):
 		return "g"
 	elif prop == "ast":
 		return "a"
+	elif prop == "saves":
+		return "sv"
 	return prop
 
 def getSplits(rankings, schedule, ttoi, dateArg):
@@ -83,10 +85,10 @@ def getSplits(rankings, schedule, ttoi, dateArg):
 			
 			saves = 0
 			for player in stats:
-				saves += stats[player].get("sv", 0)
+				saves += stats[player].get("saves", 0)
 			oppSavesAgainst = 0
 			for player in oppStats:
-				oppSavesAgainst += oppStats[player].get("sv", 0)
+				oppSavesAgainst += oppStats[player].get("saves", 0)
 			
 			if saves == 0:
 				print(team,date,saves)
@@ -162,7 +164,7 @@ def getProps_route():
 			players = request.args.get("players").lower().split(",")
 		props = getPropData(date=request.args.get("date"), playersArg=players, teams=teams)
 	elif request.args.get("prop"):
-		with open(f"{prefix}static/betting/nhl_{request.args.get('prop')}.json") as fh:
+		with open(f"{prefix}static/nhl/{request.args.get('prop')}.json") as fh:
 			props = json.load(fh)
 	else:
 		with open(f"{prefix}static/betting/nhl.json") as fh:
@@ -562,7 +564,7 @@ def getPropData(date = None, playersArg = "", teams = ""):
 								winLossVal = val
 								if False:
 									winLossVal = valPerMin
-									if prop == "sv":
+									if prop == "saves":
 										winLossVal *= 60
 									else:
 										winLossVal *= avgMin
@@ -634,7 +636,7 @@ def getPropData(date = None, playersArg = "", teams = ""):
 							oppOverTot += 1
 							totSaves = 0
 							for p in gameStats:
-								totSaves += gameStats[p].get("sv", 0)
+								totSaves += gameStats[p].get("saves", 0)
 							if totSaves > float(line):
 								oppOver += 1
 					oppOver = round(oppOver * 100 / oppOverTot)
@@ -893,7 +895,7 @@ def getSlateData(date = None, teams=""):
 		date = datetime.now()
 		date = str(date)[:10]
 
-	with open(f"{prefix}static/hockeyreference/rankings.json") as fh:
+	with open(f"static/nhl/rankings.json") as fh:
 		rankings = json.load(fh)
 	with open(f"{prefix}static/hockeyreference/scores.json") as fh:
 		scores = json.load(fh)
@@ -1017,7 +1019,7 @@ def getSlateData(date = None, teams=""):
 						with open(file) as fh:
 							gameStats = json.load(fh)
 						for p in gameStats:
-							if "sv" in gameStats[p]:
+							if "saves" in gameStats[p]:
 								currGoalie.append(p)
 						if score2 > score1:
 							score = f"{score2}-{score1}"

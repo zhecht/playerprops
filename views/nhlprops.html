@@ -342,7 +342,7 @@
 				TABLE = new Tabulator("#propsTable", {
 					tooltipsHeader: true,
 					ajaxURL: "/getNHLProps",
-					ajaxParams:{alt: "{{alt}}", date: "{{date}}", teams: "{{teams}}", players: "{{players}}"},
+					ajaxParams:{alt: "{{alt}}", date: "{{date}}", teams: "{{teams}}", players: "{{players}}", prop: "{{prop}}"},
 					responsiveLayout:"collapse",
 					//responsiveLayoutCollapseStartOpen: "{{prop}}" == "sv" ? true : false,
 					responsiveLayoutCollapseStartOpen: false,
@@ -455,7 +455,7 @@
 				TABLE.setFilter([{field:"propType", type:"=", value:"{{prop}}"}]);
 			</script>
 		{% endif %}
-		{% if prop == "sv" %}
+		{% if prop == "saves" %}
 			<script>
 				TABLE.getColumn("savesProj").show();
 				TABLE.getColumn("savesProjLast5").show();
