@@ -31,6 +31,7 @@ def convertNBATeam(team):
 		"appalachian st": "appalachian state",
 		"arkansas little rock": "little rock",
 		"army west point": "army",
+		"cal": "california",
 		"cal baptist": "california baptist",
 		"california san diego": "uc san diego",
 		"coll charleston": "charleston",
@@ -44,6 +45,7 @@ def convertNBATeam(team):
 		"long island": "liu",
 		"long island university": "liu",
 		"siu edwardsville": "siue",
+		"boston": "boston university",
 		"central florida": "cfu",
 		"cal state fullerton": "csu fullerton",
 		"cs fullerton": "csu fullerton",
@@ -52,13 +54,15 @@ def convertNBATeam(team):
 		"cs bakersfield": "csu bakersfield",
 		"cs northridge": "csu northridge",
 		"cal state northridge": "csu northridge",
-		"boston": "boston university",
+		"detroit mercy": "detroit",
+		"detroitu": "detroit",
 		"eastern carolina": "east carolina",
 		"fau": "florida atlantic",
 		"fiu": "florida international",
 		"grambling": "grambling state",
 		"illinois chicago": "uic",
 		"kansas city": "umkc",
+		"kennesaw st": "kennesaw state",
 		"purdue fort wayne": "ipfw",
 		"lamar cardinals": "lamar",
 		"louisiana lafayette": "louisiana",
@@ -1202,6 +1206,10 @@ def writeFanduelManual():
 				return "grambling state";
 			} else if (team == "mt st marys") {
 				return "mount st marys";
+			} else if (team == "detroit mercy") {
+				return "detroit";
+			} else if (team == "unc greensboro") {
+				return "nc greensboro";
 			}
 			return team
 		}
