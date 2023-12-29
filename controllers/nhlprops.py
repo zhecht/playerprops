@@ -1269,25 +1269,30 @@ def writeCsvs(props):
 		if prop in splitProps:
 			rows = sorted(splitProps[prop], key=lambda k: (k["totalOver"], k["totalOverLast5"]), reverse=True)
 			for row in rows[:4]:
-				overOdds = row["overOdds"]
-				underOdds = row["underOdds"]
 				gameLine = int(row["gameLine"])
 				avg = row["avg"]
 				if avg >= row["line"]:
 					avg = f"**{avg}**"
+				fd = row["fd"]
+				dk = row["dk"]
+				if fd.startswith("+"):
+					fd = "'"+fd
+				if dk.startswith("+"):
+					dk = "'"+dk
 				winLossSplits = row["winLossSplits"].split(" - ")
 				if gameLine < 0:
-					winLossSplits[0] = f"'{winLossSplits[0]}'"
+					winLossSplits[0] = f"'**{winLossSplits[0]}**'"
 				else:
-					winLossSplits[1] = f"'{winLossSplits[1]}'"
+					winLossSplits[1] = f"'**{winLossSplits[1]}**'"
 				winLossSplits = " - ".join(winLossSplits)
 				awayHomeSplits = row["awayHomeSplits"].split(" - ")
 				if row["awayHome"] == "A":
-					awayHomeSplits[0] = f"'{awayHomeSplits[0]}'"
+					awayHomeSplits[0] = f"'**{awayHomeSplits[0]}**'"
 				else:
-					awayHomeSplits[1] = f"'{awayHomeSplits[1]}'"
+					awayHomeSplits[1] = f"'**{awayHomeSplits[1]}**'"
 				awayHomeSplits = " - ".join(awayHomeSplits)
-				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["team"], row["gameLine"], row["awayHome"], row["propType"], row["line"], avg, winLossSplits, awayHomeSplits, f"{row['totalOver']}%", f"{row['totalOverLast15']}%", f"{row['totalOverLast5']}%", row["last5"], f"{row['lastTotalOver']}%",overOdds, underOdds]])
+				arr = row["last5"][::-1]
+				reddit += "\n" + "|".join([str(x) for x in [row["player"], row["team"], row["gameLine"], row["awayHome"], row["propType"], row["line"], avg, winLossSplits, awayHomeSplits, f"{row['totalOver']}%", f"{row['totalOverLast15']}%", f"{row['totalOverLast5']}%", arr, f"{row['lastTotalOver']}%",fd, dk]])
 		reddit += "\n-|-|-|-|-|-|-|-|-|-|-|-|-|-|-"
 
 	with open(f"{prefix}static/nhl/reddit.csv", "w") as fh:
