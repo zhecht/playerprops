@@ -282,6 +282,8 @@ def getPropData(date = None, playersArg = "", teams = ""):
 		dkData = json.load(fh)
 	with open(f"static/nhl/fanduelLines.json") as fh:
 		fdData = json.load(fh)
+	with open(f"static/nhl/kambi.json") as fh:
+		kambiData = json.load(fh)
 
 	propData = {}
 	for game in dkData:
@@ -303,9 +305,18 @@ def getPropData(date = None, playersArg = "", teams = ""):
 					fd = fdData[game][prop][player][line]
 				except:
 					fd = "0"
+				try:
+					kambi = kambiData[game][prop][player][line]
+				except:
+					kambi = "0"
 				lowestLine = int(over)
-				if fd != "0" and int(fd.split("/")[0]) < lowestLine:
+				lowestBook = "DK"
+				if fd != "0" and int(fd.split("/")[0]) > lowestLine:
 					lowestLine = int(fd.split("/")[0])
+					lowestBook = "FD"
+				if kambi != "0" and int(kambi.split("/")[0]) > lowestLine:
+					lowestLine = int(kambi.split("/")[0])
+					lowestBook = "BR"
 				implied = 0
 				if lowestLine > 0:
 					implied = 100 / (lowestLine + 100)
@@ -318,6 +329,9 @@ def getPropData(date = None, playersArg = "", teams = ""):
 					"under": under,
 					"dk": dkData[game][prop][player][line],
 					"fd": fd,
+					"kambi": kambi,
+					"lowest": lowestLine,
+					"lowestBook": lowestBook,
 					"implied": implied
 				}
 
@@ -802,6 +816,8 @@ def getPropData(date = None, playersArg = "", teams = ""):
 					"last5": ",".join(last5),
 					"fd": propData[game][player][prop]["fd"],
 					"dk": propData[game][player][prop]["dk"],
+					"kambi": propData[game][player][prop]["kambi"],
+					"lowest": f"{propData[game][player][prop]['lowest']} {propData[game][player][prop]['lowestBook']}",
 					"implied": propData[game][player][prop]["implied"],
 					"overOdds": overOdds,
 					"underOdds": underOdds,
