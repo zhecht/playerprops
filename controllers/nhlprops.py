@@ -1205,7 +1205,7 @@ def teamTotals():
 def writeCsvs(props):
 	csvs = {}
 	splitProps = {"full": []}
-	headers = "\t".join(["NAME","TEAM","ML","A/H","LINE","SZN AVG","W-L Splits","A-H Splits","% OVER","L15 OVER","L5 OVER","LAST 10 GAMES","LYR OVER","FD","DK","Implied"])
+	headers = "\t".join(["NAME","TEAM","ML","A/H","LINE","SZN AVG","W-L Splits","A-H Splits","% OVER","L15 OVER","L5 OVER","LAST 10 GAMES","LYR OVER","FD","DK","Best","Implied"])
 	reddit = "|".join(headers.split("\t"))
 	reddit += "\n:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--"
 
@@ -1250,7 +1250,7 @@ def writeCsvs(props):
 			#if avg >= row["line"]:
 			#	avg = f"**{avg}**"
 			arr = row["last5"][::-1]
-			csvs[prop] += "\n" + "\t".join([str(x) for x in [row["player"], row["team"], gameLine, row["awayHome"], row["line"], avg, winLossSplits, awayHomeSplits, f"{row['totalOver']}%", f"{row['totalOverLast15']}%", f"{row['totalOverLast5']}%", arr, f"{row['lastTotalOver']}%",fd, dk, f"{row['implied']}%"]])
+			csvs[prop] += "\n" + "\t".join([str(x) for x in [row["player"], row["team"], gameLine, row["awayHome"], row["line"], avg, winLossSplits, awayHomeSplits, f"{row['totalOver']}%", f"{row['totalOverLast15']}%", f"{row['totalOverLast5']}%", arr, f"{row['lastTotalOver']}%",fd, dk, f"{row['lowest']}", f"{row['implied']}%"]])
 
 	# add full rows
 	csvs["full"] = headers
