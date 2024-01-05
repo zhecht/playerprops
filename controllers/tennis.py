@@ -27,7 +27,7 @@ def strip_accents(text):
 
 	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
 
-	return str(text)
+	return str(text).replace("-", " ")
 
 def convertDecOdds(odds):
 	if odds == 0:
@@ -189,11 +189,11 @@ def writeMGM(date=None):
 				data = json.load(fh)
 
 			data = data["fixture"]
-			game = strip_accents(data["name"]["value"].lower())
+			game = data["name"]["value"].lower()
 
 			p1, p2 = map(str, game.split(" - "))
-			p1 = p1.split(" (")[0]
-			p2 = p2.split(" (")[0]
+			p1 = strip_accents(p1).split(" (")[0]
+			p2 = strip_accents(p2).split(" (")[0]
 
 			if "/" in game:
 				p1 = p1.split("/")[0].split(" ")[-1]+" / "+p1.split("/")[-1].split(" ")[-1]
@@ -393,7 +393,7 @@ def writeKambi(date=None):
 
 	for gender in [None]:
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/tennis/all/all/all/matches.json?lang=en_US&market=US"
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl \"{url}\" --connect-timeout 30 -o {outfile}")
 		
 		with open(outfile) as fh:
 			j = json.load(fh)
@@ -424,6 +424,14 @@ def writeKambi(date=None):
 			eventIds[game] = event["event"]["id"]
 			data[game] = {}
 
+		if False:
+			eventIds = {
+				"ostapenko @ azarenka": 1020376866
+			}
+			data = {
+				"ostapenko @ azarenka": {}
+			}
+
 		for game in eventIds:
 			eventId = eventIds[game]
 			teamIds = {}
@@ -432,7 +440,7 @@ def writeKambi(date=None):
 			
 			time.sleep(0.3)
 			url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json"
-			os.system(f"curl -k \"{url}\" -o {outfile}")
+			os.system(f"curl \"{url}\" --connect-timeout 30 -o {outfile}")
 
 			with open(outfile) as fh:
 				j = json.load(fh)
@@ -487,6 +495,7 @@ def writeFanduelManual():
 	js = """
 
 	let data = {};
+	let game = "";
 	{
 
 		function parsePlayer(player) {
@@ -494,15 +503,9 @@ def writeFanduelManual():
 			return player;
 		}
 
-		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
-		let awayFull = game.split(" v ")[0];
-		let homeFull = game.split(" v ")[1];
-		game = away+" @ "+home;
-		if (!data[game]) {
-			data[game] = {};
-		}
-
 		const arrows = document.querySelectorAll("div[data-test-id='ArrowAction']");
+		let away = "";
+		let home = "";
 
 		for (const arrow of arrows) {
 			let li = arrow;
@@ -522,41 +525,46 @@ def writeFanduelManual():
 			let prop = "";
 			let line = "";
 			let player = "";
+			let prefix = "";
 			let label = arrow.innerText.toLowerCase();
-			if (label.indexOf("game lines") >= 0) {
-				prop = "lines";
-			} else if (label.indexOf("any time goal scorer") >= 0) {
-				prop = "atgs";
-			} else if (label.indexOf("player to record") >= 0) {
-				line = (parseFloat(label.split(" ")[3].replace("+", "")) - 0.5).toString();
-				if (label.indexOf("shots on goal") > 0) {
-					prop = "sog";
-				} else if (label.indexOf("+ points") > 0) {
-					prop = "pts";
-				} else if (label.indexOf("+ powerplay points") > 0) {
-					prop = "pp_pts";
-				} else if (label.indexOf("+ assists") > 0) {
-					prop = "ast";
-				}
-			} else if (label.indexOf("alternate puck line") >= 0) {
+			if (label.indexOf("moneyline") >= 0) {
+				prop = "ml";
+			} else if (label.indexOf("set betting") >= 0) {
+				prop = "set";
+			} else if (label == "game spread" || label == "alternative game spread") {
 				prop = "spread";
-			} else if (label.indexOf("alternate total goals") >= 0) {
-				prop = "total";
-			} else if (label.indexOf("total saves") >= 0) {
-				player = parsePlayer(label.split(" -")[0]);
-				prop = "saves";
-			} else if (label.indexOf("shots on goal") >= 0) {
-				player = parsePlayer(label.split(" shots")[0]);
-				prop = "sog";
-			} else if (label.indexOf(awayFull+" total goals") >= 0) {
-				prop = "away_total";
-			} else if (label.indexOf(homeFull+" total goals") >= 0) {
-				prop = "home_total";
+			} else if (label.indexOf("alternative total games") >= 0 || label.indexOf("total match games") >= 0 || label.indexOf("total sets") >= 0 || label.indexOf("total games over/under") >= 0 || label.indexOf("player a total games") >= 0 || label.indexOf("player b total games") >= 0) {
+				if (label.indexOf("3-way") >= 0 || label.indexOf("3 way") >= 0) {
+					continue;
+				}
+				if (label.indexOf("sets") >= 0) {
+					prop = "total_sets";
+				} else {
+					prop = "total";
+				}
+				if (label.indexOf("set 1") == 0) {
+					prop = "set1_total";
+				} else if (label.indexOf("set 2") == 0) {
+					prop = "set2_total";
+				} else if (label.indexOf("player a") == 0) {
+					prop = "away_total";
+				} else if (label.indexOf("player b") == 0) {
+					prop = "home_total";
+				}
+				line = label.split(" ").pop();
+			} else if (label == "to win 1st set") {
+				prop = "set1_ml";
+			} else if (label == "set 2 winner") {
+				prop = "set2_ml";
+			} else if (label == "set 1 game handicap") {
+				prop = "set1_spread";
 			}
 
 			if (!prop) {
 				continue;
 			}
+
+			prop = prefix+prop;
 
 			if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
 				arrow.click();
@@ -566,28 +574,16 @@ def writeFanduelManual():
 				el.click();
 			}
 
-			if (prop != "lines" && !data[game][prop]) {
+			if (prop != "ml" && !data[game][prop]) {
 				data[game][prop] = {};
 			}
 
-			let skip = 1;
-			if (["saves", "away_total", "home_total"].indexOf(prop) >= 0) {
-				skip = 2;
-			} else if (prop == "sog" && player) {
-				skip = 2;
+			let skip = 2;
+			if (["set"].indexOf(prop) >= 0) {
+				skip = 1;
 			}
 			let btns = Array.from(li.querySelectorAll("div[role=button]"));
 			btns.shift();
-
-			if (prop == "lines") {
-				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
-				line = btns[0].getAttribute("aria-label").split(", ")[1];
-				data[game]["spread"] = {};
-				data[game]["spread"][line.replace("+", "")] = btns[0].getAttribute("aria-label").split(", ")[2].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[2].split(" ")[0];
-				line = btns[2].getAttribute("aria-label").split(", ")[2].split(" ")[1];
-				data[game]["total"] = {};
-				data[game]["total"][line] = btns[2].getAttribute("aria-label").split(", ")[3].split(" ")[0] + "/" + btns[5].getAttribute("aria-label").split(", ")[3].split(" ")[0];
-			}
 
 			for (let i = 0; i < btns.length; i += skip) {
 				const btn = btns[i];
@@ -602,77 +598,55 @@ def writeFanduelManual():
 				if (odds.indexOf("unavailable") >= 0) {
 					continue;
 				}
-				if (prop == "lines") {
-
-				} else if (["spread"].indexOf(prop) >= 0) {
+				if (["spread", "set1_spread"].indexOf(prop) >= 0) {
 					let arr = ariaLabel.split(", ")[0].split(" ");
-					line = arr[arr.length - 1];
-					arr.pop();
-					let team = convertTeam(arr.join(" "));
+					line = arr.pop().replace("(", "").replace(")", "").replace("+", "");
 
-					let isAway = true;
-					if (team == game.split(" @ ")[1]) {
-						line = (parseFloat(line) * -1).toString();
-						isAway = false;
-					}
-
-					line = line.replace("+", "");
-
-					if (isAway) {
-						data[game][prop][line] = odds;
-					} else if (!data[game][prop][line]) {
-						data[game][prop][line] = "-/"+odds;
-					} else {
-						data[game][prop][line] += "/"+odds;
-					}
-				} else if (["total"].indexOf(prop) >= 0) {
-					let arr = ariaLabel.split(", ")[0].split(" ");
-					line = arr[arr.length - 1];
-
-					let isAway = true;
-					if (arr[0] == "Under") {
-						isAway = false;
-					}
-
-					line = line.replace("+", "");
-
-					if (isAway) {
-						data[game][prop][line] = odds;
-					} else if (!data[game][prop][line]) {
-						data[game][prop][line] = "-/"+odds;
-					} else {
-						data[game][prop][line] += "/"+odds;
-					}
-				} else if (skip == 2 && player) {
-					// 2 sides
-					if (!data[game][prop][player]) {
-						data[game][prop][player] = {};
-					}
-					line = ariaLabel.split(", ")[1];
-					odds = ariaLabel.split(", ")[2];
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1];
+				} else if (["total", "total_sets", "set1_total", "set2_total", "away_total", "home_total"].indexOf(prop) >= 0) {
+					odds = ariaLabel.split(", ")[2].split(" ")[0];
 					if (odds.indexOf("unavailable") >= 0) {
 						continue;
 					}
-					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
-				} else if (skip == 2) {
-					line = ariaLabel.split(", ")[2].split(" ")[1];
-					odds = ariaLabel.split(", ")[3].split(" ")[0];
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+				} else if (prop == "ml") {
+					away = parsePlayer(ariaLabel.split(", ")[0].split(" to ")[0]);
+					home = parsePlayer(btns[i+1].getAttribute("aria-label").split(", ")[0].split(" to ")[0]);
+					if (away.indexOf(" / ") >= 0) {
+						let a1 = away.split(" / ")[0].split(" ");
+						let a2 = away.split(" / ")[1].split(" ");
+						let b1 = home.split(" / ")[0].split(" ");
+						let b2 = home.split(" / ")[1].split(" ");
+						away = a1.pop() + " / " + a2.pop();
+						home = b1.pop() + " / " + b2.pop();
+					} else {
+						away = away.split(" ").pop();
+						home = home.split(" ").pop();
+					}
+					game = away + " @ " + home;
+					data[game] = {};
+
+					odds = ariaLabel.split(", ")[1].split(" ")[0];
 					if (odds.indexOf("unavailable") >= 0) {
 						continue;
 					}
-					data[game][prop] = {};
-					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
-				} else {
+					data[game][prop] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				} else if (prop.indexOf("ml") >= 0) {
+					odds = ariaLabel.split(", ")[1].split(" ")[0];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				} else if (prop == "set") {
 					player = parsePlayer(ariaLabel.split(",")[0]);
-					if (!data[game][prop][player]) {
-						data[game][prop][player] = {};
+					line = ariaLabel.split(", ")[0].split(" ");
+					line = line.pop();
+					if (player.indexOf(home) >= 0) {
+						let a = line.split("-")[1];
+						let b = line.split("-")[0];
+						line = a+"-"+b;
 					}
-
-					if (["atgs"].indexOf(prop) >= 0) {
-						data[game][prop][player] = odds;
-					} else {
-						data[game][prop][player][line] = odds;
-					}
+					data[game][prop][line] = odds;
 				}
 			}
 		}
@@ -925,7 +899,7 @@ def writeDK(date):
 	}
 
 	lines = {}
-	for gender in [73112, 73118, 209022, 209024, 44044, 211362, 17019, 17021, 103606, 92024, 59457, 210505, 210469, 96898, 144342, 199314, 105008, 198156, 160764, 71985, 205210]:
+	for gender in [73112, 73118, 209022, 209024, 44044, 211362, 17019, 17021, 103606, 92024, 59457, 210505, 210469, 96898, 144342, 199314, 105008, 198156, 160764, 71985, 205210, 86517, 212139, 86522, 212141, 212148, 105026, 86889, 212145, 209457, 209458, 86516, 86514, 212142, 86525, 86523, 212144]:
 		for mainCat in mainCats:
 			for subCat in subCats[mainCats[mainCat]]:
 				time.sleep(0.3)
@@ -934,7 +908,7 @@ def writeDK(date):
 					url += f"/subcategories/{subCat}"
 				url += "?format=json"
 				outfile = "outtennis1"
-				call(["curl", "-k", url, "-o", outfile])
+				call(["curl", url, "--connect-timeout", "30", "-o", outfile])
 
 				with open(outfile) as fh:
 					data = json.load(fh)
@@ -1755,12 +1729,19 @@ if __name__ == '__main__':
 		writePointsbet(args.date)
 
 	if args.update:
-		writeFanduel()
+		print("fd")
+		#writeFanduel()
+		print("dk")
 		writeDK(args.date)
+		print("bv")
 		writeBovada()
+		print("kambi")
 		writeKambi(args.date)
+		print("mgm")
 		writeMGM(args.date)
+		print("pb")
 		writePointsbet(args.date)
+		print("pn")
 		writePinnacle(args.date)
 
 	if args.ev:
