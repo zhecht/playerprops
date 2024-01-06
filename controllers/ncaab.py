@@ -308,9 +308,11 @@ def writeCZ(date):
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+		d = datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4)
+		if str(d)[:10] != date:
 			continue
-
+		if date == str(datetime.now())[:10] and d < datetime.now():
+			continue
 		#game = data["name"].lower().replace("|at|", "@").replace("|", "")
 		game = ""
 		for market in data["markets"]:
@@ -885,7 +887,10 @@ def writeMGM(date):
 			continue
 		if "2023/2024" in row["name"]["value"] or "2023/24" in row["name"]["value"]:
 			continue
-		if str(datetime.strptime(row["startDate"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+		d = datetime.strptime(row["startDate"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4)
+		if str(d)[:10] != date:
+			continue
+		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
 		ids.append(row["id"])
 
@@ -1057,7 +1062,10 @@ def writeKambi(date):
 		if not j["betOffers"] or "closed" not in j["betOffers"][0]:
 			continue
 
-		if str(datetime.strptime(j["betOffers"][0]["closed"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5))[:10] != date:
+		d = datetime.strptime(j["betOffers"][0]["closed"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5)
+		if str(d)[:10] != date:
+			continue
+		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
 
 		fullTeam = j["events"][0]["name"].lower()
@@ -1749,6 +1757,8 @@ def writeDK(date):
 				if startDt.day != int(date[-2:]):
 					continue
 					pass
+				elif startDt < datetime.now():
+					continue
 				game = event["name"].lower()
 				games = []
 				for team in game.split(" @ "):
