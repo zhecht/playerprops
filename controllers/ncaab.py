@@ -696,7 +696,10 @@ def writePinnacle(date, debug):
 
 	games = {}
 	for row in data:
-		if str(datetime.strptime(row["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+		d = datetime.strptime(row["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5)
+		if str(d)[:10] != date:
+			continue
+		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
 		if row["type"] == "matchup" and not row["parent"]:
 			player1 = convertNBATeam(row["participants"][0]["name"].lower())
