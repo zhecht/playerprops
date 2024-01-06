@@ -531,7 +531,7 @@ def writeSchedule(week):
 			except:
 				continue
 
-			boxscore = tds[2].find("a").get("href").split("=")[-1]
+			boxscore = tds[2].find("a").get("href").split("=")[1].split("&")[0]
 			score = tds[2].find("a").text.strip()
 
 			if ", " in score:
