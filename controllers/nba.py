@@ -1649,16 +1649,16 @@ def writeDK(date):
 	
 	subCats = {
 		487: [4511, 13202, 13201],
-		1215: [12488, 13769],
-		1216: [12492, 13770],
-		1217: [12495, 13771],
+		1215: [12488, 13785],
+		1216: [12492, 12536],
+		1217: [12495, 12537],
 		1218: [12497],
 		1219: [12499, 12500, 12502],
 		1220: [12504],
 		523: [4609]
 	}
 
-	propIds = {13202: "spread", 13201: "total", 12488: "pts", 13769: "pts", 12492: "reb", 13770: "reb", 12495: "ast", 13771: "ast", 12497: "3ptm", 5001: "pts+reb+ast", 9976: "pts+reb", 9973: "pts+ast", 9974: "reb+ast", 12499: "blk", 12500: "stl", 12502: "stl+blk", 12504: "to"}
+	propIds = {13202: "spread", 13201: "total", 12488: "pts", 13785: "pts", 12492: "reb", 12536: "reb", 12495: "ast", 12537: "ast", 12497: "3ptm", 5001: "pts+reb+ast", 9976: "pts+reb", 9973: "pts+ast", 9974: "reb+ast", 12499: "blk", 12500: "stl", 12502: "stl+blk", 12504: "to"}
 
 	if False:
 		mainCats = {
@@ -1672,11 +1672,12 @@ def writeDK(date):
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
 			time.sleep(0.3)
-			url = f"https://sportsbook-us-mi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42648/categories/{mainCats[mainCat]}"
+			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42648/categories/{mainCats[mainCat]}"
 			if subCat:
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
 			outfile = "outnba"
+			#print(url)
 			call(["curl", "-k", url, "--connect-timeout", "30", "-o", outfile])
 
 			with open(outfile) as fh:
