@@ -1352,7 +1352,9 @@ def writeFanduelManual():
 			btns.shift();
 
 			if (prop == "lines") {
-				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				if (btns[1].getAttribute("aria-label").split(", ")[1]) {
+					data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
+				}
 				line = btns[0].getAttribute("aria-label").split(", ")[1];
 				data[game]["spread"] = {};
 				data[game]["spread"][line.replace("+", "")] = btns[0].getAttribute("aria-label").split(", ")[2].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[2].split(" ")[0];
@@ -1371,7 +1373,7 @@ def writeFanduelManual():
 					continue;
 				}
 				let odds = ariaLabel.split(", ")[1];
-				if (odds.indexOf("unavailable") >= 0) {
+				if (!odds || odds.indexOf("unavailable") >= 0) {
 					continue;
 				}
 				if (prop == "lines") {
@@ -1774,7 +1776,7 @@ def writeDK(date=None):
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
 			time.sleep(0.3)
-			url = f"https://sportsbook-us-mi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42133/categories/{mainCats[mainCat]}"
+			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42133/categories/{mainCats[mainCat]}"
 			if subCat:
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
