@@ -807,7 +807,7 @@ def writeMGM(date):
 			continue
 		ids.append(row["id"])
 
-	#ids = ["14627784"]
+	#ids = ["15188981"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
@@ -843,7 +843,7 @@ def writeMGM(date):
 			elif "double-double in the game" in prop:
 				player = parsePlayer(prop.split(" (")[0][5:])
 				prop = "double-double"
-			elif prop.startswith("how many "):
+			elif prop.startswith("how many ") or prop.split("): ")[-1] in ["points", "three-pointers made", "blocks", "steals", "rebounds", "assists"] or ("):" in prop and prop.split("): ")[-1].split(" ")[0] == "total"):
 				if prop.startswith("how many points will be scored in the game") or "extra points" in prop:
 					continue
 				if fullTeam1 in prop or fullTeam2 in prop:
@@ -857,9 +857,13 @@ def writeMGM(date):
 						continue
 					player = parsePlayer(prop.split(" (")[0].split(" will ")[-1])
 					p = prop.split(" will ")[0].split(" total ")[-1].split(" many ")[-1]
+					if "):" in prop:
+						p = prop.split(": ")[-1].split("total ")[-1]
 					p = p.replace(" and ", "+").replace("points", "pts").replace("assists", "ast").replace("rebounds", "reb").replace("steals", "stl").replace("blocks", "blk").replace("three-pointers", "3ptm").replace(", ", "+")
 					if p == "pts+reb s":
 						p = "pts+reb"
+					elif p == "ast+reb":
+						p = "reb+ast"
 					prop = p
 			else:
 				continue
@@ -2052,7 +2056,7 @@ def bvParlay():
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
+		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines
@@ -2262,7 +2266,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
+		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines
@@ -2678,7 +2682,7 @@ def sortEV():
 		print(row[:-1])
 
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi/BR", "CZ"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -2692,7 +2696,7 @@ def sortEV():
 		implied *= 100
 		ou = ("u" if row[-1]["under"] else "o")+" "+row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[-1]["game"].upper(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
+		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -2702,7 +2706,7 @@ def sortEV():
 	with open("static/nba/lines.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi/BR", "CZ", "LYR %", "L10 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ", "LYR %", "L10 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -2734,7 +2738,7 @@ def sortEV():
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[-1]["game"].upper(), team.upper(), player.title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
+		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -2849,8 +2853,8 @@ if __name__ == '__main__':
 		writeKambi(args.date)
 		print("mgm")
 		writeMGM(args.date)
-		print("pb")
-		writePointsbet(args.date)
+		#print("pb")
+		#writePointsbet(args.date)
 		print("bv")
 		writeBV(args.date)
 		print("dk")
