@@ -864,6 +864,8 @@ def writeMGM(date):
 						p = "pts+reb"
 					elif p == "ast+reb":
 						p = "reb+ast"
+					elif p == "pts reb+ast":
+						p = "pts+reb+ast"
 					prop = p
 			else:
 				continue
