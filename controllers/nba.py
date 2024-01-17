@@ -859,7 +859,7 @@ def writeMGM(date):
 					p = prop.split(" will ")[0].split(" total ")[-1].split(" many ")[-1]
 					if "):" in prop:
 						p = prop.split(": ")[-1].split("total ")[-1]
-					p = p.replace(" and ", "+").replace("points", "pts").replace("assists", "ast").replace("rebounds", "reb").replace("steals", "stl").replace("blocks", "blk").replace("three-pointers", "3ptm").replace(", ", "+")
+					p = p.replace(" and ", "+").replace("points", "pts").replace("assists", "ast").replace("rebounds", "reb").replace("steals", "stl").replace("blocks", "blk").replace("three-pointers", "3ptm").replace(", ", "+").replace("asssists", "ast")
 					if p == "pts+reb s":
 						p = "pts+reb"
 					elif p == "ast+reb":

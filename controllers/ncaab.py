@@ -68,6 +68,7 @@ def convertNBATeam(team):
 		"louisiana lafayette": "louisiana",
 		"ul lafayette": "louisiana",
 		"louisiana monroe": "ul monroe",
+		"miami ohio": "miami oh",
 		"middle tennessee state": "middle tennessee",
 		"middle tenn state": "middle tennessee",
 		"mississippi valley": "mississippi valley state",
@@ -79,6 +80,7 @@ def convertNBATeam(team):
 		"mt st marys": "mount st marys",
 		"mount saint marys": "mount st marys",
 		"nc wilmington": "unc wilmington",
+		"north carolina state": "nc state",
 		"north carolina central": "nc central",
 		"north carolina asheville": "unc asheville",
 		"nc asheville": "unc asheville",
@@ -100,6 +102,7 @@ def convertNBATeam(team):
 		"saint francis pa": "st francis pa",
 		"saint josephs": "st josephs",
 		"st peters": "saint peters",
+		"southern methodist": "smu",
 		"st thomas mn": "st thomas",
 		"saint thomas mn": "st thomas",
 		"st thomas minnesota": "st thomas",
@@ -1221,6 +1224,8 @@ def writeFanduelManual():
 				return "detroit";
 			} else if (team == "unc greensboro") {
 				return "nc greensboro";
+			} else if (team == "miami (oh)") {
+				return "miami oh";
 			}
 			return team
 		}
