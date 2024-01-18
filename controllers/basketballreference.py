@@ -53,8 +53,8 @@ def write_stats(date):
 		if home not in allStats:
 			allStats[home] = {}
 
-		link = boxscores[date][game].replace("game?gameId=", "boxscore/_/gameId/")
-		url = f"https://www.espn.com{link}"
+		gameId = boxscores[date][game].split("/")[-2]
+		url = f"https://www.espn.com/nba/boxscore/_/gameId/{gameId}"
 		outfile = "outnba"
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])

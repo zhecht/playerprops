@@ -59,8 +59,8 @@ def write_stats(date):
 				allStats[home] = {}
 
 			time.sleep(0.4)
-			link = boxscores[date][game].replace("game?gameId=", "boxscore/_/gameId/")
-			url = f"https://www.espn.com{link}"
+			gameId = boxscores[date][game].split("/")[-2]
+			url = f"https://www.espn.com/nhl/boxscore/_/gameId/{gameId}"
 			outfile = "outnhl"
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
