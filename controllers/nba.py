@@ -1072,6 +1072,8 @@ def parsePlayer(player):
 		player = "kentavious caldwell pope"
 	elif player == "cameron thomas":
 		player = "cam thomas"
+	elif player == "jadeney":
+		player = "jaden ivey"
 	return player
 
 def writeFanduelManual():
@@ -1155,7 +1157,7 @@ def writeFanduelManual():
 			} else if (label.indexOf("player") >= 0) {
 				player = true;
 
-				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0 || label.indexOf("blocks, and steals") >= 0) {
+				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0 || label.indexOf("blocks, and steals") >= 0 || label.indexOf("matchbet") >= 0) {
 					continue
 				}
 
