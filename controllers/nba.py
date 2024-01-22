@@ -862,7 +862,7 @@ def writeMGM(date):
 					p = p.replace(" and ", "+").replace("points", "pts").replace("assists", "ast").replace("rebounds", "reb").replace("steals", "stl").replace("blocks", "blk").replace("three-pointers", "3ptm").replace(", ", "+").replace("asssists", "ast")
 					if p == "pts+reb s":
 						p = "pts+reb"
-					elif p == "ast+reb":
+					elif p in ["ast+reb", "assist+reb"]:
 						p = "reb+ast"
 					elif p == "pts reb+ast":
 						p = "pts+reb+ast"
@@ -1801,6 +1801,8 @@ def writeDK(date):
 									if player not in lines[game][prop]:
 										lines[game][prop][player] = {}
 									lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+									if "under" in outcomes[i]["label"].lower():
+										lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
 							else:
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
 								if player not in lines[game][prop]:
@@ -1808,6 +1810,8 @@ def writeDK(date):
 								lines[game][prop][player][outcomes[0]['line']] = f"{outcomes[0]['oddsAmerican']}"
 								if len(row["outcomes"]) > 1:
 									lines[game][prop][player][outcomes[0]['line']] += f"/{outcomes[1]['oddsAmerican']}"
+									if "under" in outcomes[0]["label"].lower():
+										lines[game][prop][player][outcomes[0]['line']] = f"{outcomes[1]['oddsAmerican']}/{outcomes[0]['oddsAmerican']}"
 
 	with open("static/nba/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
