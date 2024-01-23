@@ -756,7 +756,8 @@ def writePinnacle(date):
 			player2 = row["participants"][1]["name"].lower()
 			games[str(row["id"])] = f"{convertFDTeam(player2)} @ {convertFDTeam(player1)}"
 
-	#games = {'1580049987': 'ari @ nj'}
+	#games = {'1584388030': 'dal @ det'}
+
 	res = {}
 	retry = []
 	for gameId in games:
@@ -781,8 +782,9 @@ def writeBV():
 
 	ids = [r["link"] for r in data[0]["events"]]
 
+	#ids = ["/hockey/nhl/dallas-stars-detroit-red-wings-202401231900"]
+
 	res = {}
-	#ids = ["/hockey/nhl/seattle-kraken-nashville-predators-202310122000"]
 	for link in ids:
 		if "goals" in link:
 			continue
@@ -808,7 +810,7 @@ def writeBV():
 		for row in data[0]["events"][0]["displayGroups"]:
 			desc = row["description"].lower()
 
-			if desc in ["game lines", "alternate lines", "player props", "goalscorers", "shots on goal"]:
+			if desc in ["game lines", "alternate lines", "player props", "goalscorers", "shots on goal", "period props"]:
 				for market in row["markets"]:
 
 					prefix = ""
@@ -849,10 +851,17 @@ def writeBV():
 							prop = "pts"
 						elif "assists" in prop:
 							prop = "ast"
+					elif "9m 59s" in prop:
+						prop = "gift"
+					elif "4m 59s" in prop:
+						prop = "giff"
 					else:
 						continue
 
 					prop = f"{prefix}{prop}"
+
+					if prop.startswith("1p_gif"):
+						prop = prop[3:]
 
 					if not len(market["outcomes"]):
 						continue
@@ -860,7 +869,7 @@ def writeBV():
 					if "ml" not in prop and prop not in res[game]:
 						res[game][prop] = {}
 
-					if "ml" in prop or "3-way" in prop:
+					if "ml" in prop or "3-way" in prop or "giff" in prop or "gift" in prop:
 						res[game][prop] = f"{market['outcomes'][0]['price']['american']}/{market['outcomes'][1]['price']['american']}".replace("EVEN", "100")
 					elif "total" in prop:
 						for i in range(0, len(market["outcomes"]), 2):
@@ -1080,10 +1089,11 @@ def writeKambi():
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'stl @ dal': 1019965185}
-	#data['stl @ dal'] = {}
+	#eventIds = {'dal @ det': 1019881215}
+	#data['dal @ det'] = {}
 	#print(eventIds)
 	#exit()
+
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
 		awayFull, homeFull = fullTeam[away], fullTeam[home]
@@ -1118,9 +1128,14 @@ def writeKambi():
 			elif f"total goals by {homeFull}" in label:
 				label = "home_total"
 			elif "total goals" in label:
-				if "odd/even" in label or "regular time" in label or ":" in label:
+				if "odd/even" in label or "regular time" in label:
 					continue
-				label = "total"
+				if "4:59" in label:
+					label = "giff"
+				elif "9:59" in label:
+					label = "gift"
+				else:
+					label = "total"
 			elif label == "match":
 				label = "ml"
 			elif label == "match odds":
@@ -1167,6 +1182,8 @@ def writeKambi():
 				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 			elif label == "3-way":
 				data[game][label] = betOffer["outcomes"][-1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+			elif label in ["gift", "giff"]:
+				data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][-1]["oddsAmerican"]
 			else:
 				if label not in data[game]:
 					data[game][label] = {}
@@ -1324,6 +1341,12 @@ def writeFanduelManual():
 				prop = "away_total";
 			} else if (label.indexOf(homeFull+" total goals") >= 0) {
 				prop = "home_total";
+			} else if (label == "1st period goal in first five minutes") {
+				prop = "giff";
+			} else if (label == "1st period goal in first ten minutes") {
+				prop = "gift";
+			} else if (label == "1st period total goals") {
+				prop = "1p_total";
 			}
 
 			if (!prop) {
@@ -1343,7 +1366,7 @@ def writeFanduelManual():
 			}
 
 			let skip = 1;
-			if (["saves", "away_total", "home_total"].indexOf(prop) >= 0) {
+			if (["saves", "away_total", "home_total", "gift", "giff", "1p_total"].indexOf(prop) >= 0) {
 				skip = 2;
 			} else if (prop == "sog" && player) {
 				skip = 2;
@@ -1428,6 +1451,8 @@ def writeFanduelManual():
 						continue;
 					}
 					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+				} else if (["giff", "gift"].indexOf(prop) >= 0) {
+					data[game][prop] = btns[i].getAttribute("aria-label").split(", ")[1] + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1];
 				} else if (skip == 2) {
 					line = ariaLabel.split(", ")[2].split(" ")[1];
 					odds = ariaLabel.split(", ")[3].split(" ")[0];
@@ -1747,7 +1772,8 @@ def writeDK(date=None):
 		"sog": 1189,
 		"player": 550,
 		"goalie": 1064,
-		"team totals": 1193
+		"team totals": 1193,
+		"quick hits": 1259
 	}
 	
 	subCats = {
@@ -1756,11 +1782,12 @@ def writeDK(date=None):
 		1189: [12040],
 		550: [5586, 5587, 7983, 10296],
 		1064: [10283, 10284, 12436],
-		1193: [12055]
+		1193: [12055],
+		1259: [13750]
 	}
 
 	propIds = {
-		4999: "3-way", 13809: "atgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout", 7983: "pp_pts", 10296: "bs"
+		4999: "3-way", 13809: "atgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout", 7983: "pp_pts", 10296: "bs", 13750: "gift"
 	}
 
 	if False:
@@ -1894,6 +1921,8 @@ def writeDK(date=None):
 								lines[game][prop] = ou
 							elif prop == "3-way":
 								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[-1]['oddsAmerican']}"
+							elif prop == "gift":
+								lines[game][prop] = ou
 							elif "total" in prop or "spread" in prop:
 								for i in range(0, len(outcomes), 1):
 									line = str(float(outcomes[i]["line"]))

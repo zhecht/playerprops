@@ -866,6 +866,8 @@ def writeMGM(date):
 						p = "reb+ast"
 					elif p == "pts reb+ast":
 						p = "pts+reb+ast"
+					elif p == "steams+blk":
+						p = "stl+blk"
 					prop = p
 			else:
 				continue
@@ -2336,7 +2338,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				lastTotalOver = lastTotalGames = 0
 				last10TotalOver = last20TotalOver = last50TotalOver = 0
 				totalGames = totalOver = 0
-				total10Over = 0
+				total15Over = 0
 				totalSplits = []
 				if player:
 					convertedProp = prop
@@ -2382,12 +2384,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					if totalGames:
 						totalOver = int(totalOver * 100 / totalGames)
-						tot = len(totalSplits) if len(totalSplits) < 10 else 10
+						tot = len(totalSplits) if len(totalSplits) < 15 else 15
 
-						for x in totalSplits[::-1][:10]:
+						for x in totalSplits[::-1][:15]:
 							if float(x) > float(playerHandicap):
-								total10Over += 1
-						total10Over = int(total10Over * 100 / tot)
+								total15Over += 1
+						total15Over = int(total15Over * 100 / tot)
 
 				for i in range(2):
 					highestOdds = []
@@ -2400,7 +2402,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						last20TotalOver = 100 - last20TotalOver
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
-						total10Over = 100 - total10Over
+						total15Over = 100 - total15Over
 
 					for book in lines:
 						lineData = lines[book]
@@ -2551,7 +2553,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
 						evData[key]["totalOver"] = totalOver
-						evData[key]["total10Over"] = total10Over
+						evData[key]["total15Over"] = total15Over
 						evData[key]["totalSplits"] = ",".join(totalSplits)
 						evData[key]["lastYearTotal"] = lastTotalOver
 						evData[key]["last10YearTotal"] = last10TotalOver
@@ -2714,7 +2716,7 @@ def sortEV():
 	with open("static/nba/lines.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ", "LYR %", "L10 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ", "LYR %", "L15 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -2753,7 +2755,7 @@ def sortEV():
 			arr.append(str(o))
 		arr.append(f"{row[-1]['lastYearTotal']}%")
 		#arr.append(f"{row[-1]['last50YearTotal']}%")
-		arr.append(f"{row[-1]['total10Over']}%")
+		arr.append(f"{row[-1]['total15Over']}%")
 		arr.append(f"{row[-1]['totalOver']}%")
 		arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
 		arr.extend([rank, posRank])
