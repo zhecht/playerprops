@@ -59,6 +59,9 @@ def write_stats(date):
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		if "postponed" in soup.find("div", class_="Gamestrip__Overview").text.lower():
+			continue
 		
 		# tables are split with players then stats, players -> stats
 		headers = []

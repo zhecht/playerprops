@@ -10,6 +10,7 @@ import argparse
 import unicodedata
 import time
 from twilio.rest import Client
+from glob import glob
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -2271,6 +2272,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/basketballreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
+	with open(f"{prefix}static/basketballreference/trades.json") as fh:
+		trades = json.load(fh)
+
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
@@ -2343,9 +2347,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				if player:
 					convertedProp = prop
 					away, home = map(str, game.split(" @ "))
-					team = away
+					t = away
 					if home in playerIds and player in playerIds[home]:
-						team = home
+						t = home
+
+					team = t
 					if team in lastYearStats and player in lastYearStats[team] and lastYearStats[team][player]:
 						for idx, d in enumerate(lastYearStats[team][player]):
 							minutes = lastYearStats[team][player][d]["min"]
@@ -2368,8 +2374,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						last20TotalOver = int(last20TotalOver * 100 / (20 if lastTotalGames >= 20 else lastTotalGames))
 						last50TotalOver = int(last50TotalOver * 100 / (50 if lastTotalGames >= 50 else lastTotalGames))
 
-					for d in sorted(os.listdir(f"static/basketballreference/{team}")):
-						with open(f"static/basketballreference/{team}/{d}") as fh:
+					l = glob(f"static/basketballreference/{team}/*")
+					if player in trades:
+						l.extend(glob(f"static/basketballreference/{trades[player]}/*"))
+					for d in sorted(l, key=lambda k: datetime.strptime(k.split("/")[-1][:-5], "%Y-%m-%d")):
+						with open(d) as fh:
 							teamStats = json.load(fh)
 						if player in teamStats:
 							minutes = teamStats[player]["min"]
