@@ -59,9 +59,6 @@ def write_stats(date):
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
-
-		if "postponed" in soup.find("div", class_="Gamestrip__Overview").text.lower():
-			continue
 		
 		# tables are split with players then stats, players -> stats
 		headers = []
@@ -81,10 +78,13 @@ def write_stats(date):
 					# PLAYERS
 					if row.text.strip().lower() in ["starters", "bench", "team"]:
 						continue
-					nameLink = row.find("a").get("href").split("/")
-					fullName = nameLink[-1].replace("-", " ")
-					fullName = parsePlayer(fullName)
-					playerId = int(nameLink[-2])
+					try:
+						nameLink = row.find("a").get("href").split("/")
+						fullName = nameLink[-1].replace("-", " ")
+						fullName = parsePlayer(fullName)
+						playerId = int(nameLink[-2])
+					except:
+						continue
 					playerIds[team][fullName] = playerId
 					playerList.append(fullName)
 				else:
