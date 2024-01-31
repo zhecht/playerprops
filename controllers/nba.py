@@ -1803,9 +1803,12 @@ def writeDK(date):
 									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
 									if player not in lines[game][prop]:
 										lines[game][prop][player] = {}
-									lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
-									if "under" in outcomes[i]["label"].lower():
-										lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
+									try:
+										lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+										if "under" in outcomes[i]["label"].lower():
+											lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
+									except:
+										continue
 							else:
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
 								if player not in lines[game][prop]:
