@@ -1269,6 +1269,9 @@ def writeFanduelManual():
 			let label = arrow.innerText.toLowerCase();
 			if (label.indexOf("game lines") >= 0) {
 				prop = "lines";
+			} else if (label.indexOf(" made threes") >= 0) {
+				line = (parseFloat(label.split("+ ")[0]) - 0.5).toString();
+				prop = "3ptm";
 			} else if (label.indexOf(" total rebounds") >= 0) {
 				player = true;
 				prop = "reb";
@@ -2129,7 +2132,7 @@ def bvParlay():
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
+		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines
@@ -2274,7 +2277,7 @@ def writePlayer(player, propArg):
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
+		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines
@@ -2339,7 +2342,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
+		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines
@@ -2601,7 +2604,7 @@ def sortEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi/BR", "CZ"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -2621,7 +2624,7 @@ def sortEV():
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[-1]["game"], player.title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
+		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -2729,8 +2732,8 @@ if __name__ == '__main__':
 		writeKambi(args.date)
 		print("mgm")
 		writeMGM(args.date)
-		print("pb")
-		writePointsbet(args.date)
+		#print("pb")
+		#writePointsbet(args.date)
 		print("bv")
 		writeBV(args.date)
 		print("dk")
