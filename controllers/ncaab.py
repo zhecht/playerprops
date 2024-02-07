@@ -962,6 +962,9 @@ def writeMGM(date):
 			else:
 				continue
 
+			if prop == "three-pointers":
+				prop = "3ptm"
+
 			prop = prefix+prop
 
 			results = row['results']
@@ -1313,6 +1316,11 @@ def writeFanduelManual():
 				continue;
 			} else if (label.indexOf("alternate spread") >= 0) {
 				prop = "spread";
+				if (label.indexOf("1st half") >= 0) {
+					prop = "1h_spread";
+				} else if (label.indexOf("2nd half") >= 0) {
+					prop = "2h_spread";
+				}
 			} else if (label.indexOf("alternate total points") >= 0) {
 				prop = "total";
 			} else if (label.indexOf("1st half moneyline") >= 0) {
@@ -1327,7 +1335,7 @@ def writeFanduelManual():
 				prop = "home_total";
 			}
 
-			if (label.indexOf("odd even") >= 0) {
+			if (label.indexOf("odd even") >= 0 || label.indexOf("tie") >= 0) {
 				continue;
 			}
 
@@ -1444,6 +1452,14 @@ def writeFanduelManual():
 				} else if (prop == "1h_spread") {
 					line = ariaLabel.split(", ")[1];
 					odds = ariaLabel.split(", ")[2];
+					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+				} else if (["home_total", "away_total"].indexOf(prop) >= 0) {
+					line = ariaLabel.split(", ")[1];
+					odds = ariaLabel.split(", ")[2];
+					if (odds.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					data[game][prop] = {};
 					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
 				} else if (skip == 2) {
 					line = ariaLabel.split(", ")[2].split(" ")[1];
@@ -2295,6 +2311,97 @@ def writePlayer(player, propArg):
 
 					print(book, lines[book][game][prop][p])
 
+def writePlayers():
+
+	with open(f"{prefix}static/ncaab/playerIds.json") as fh:
+		playerIds = json.load(fh)
+
+	url = "https://www.espn.com/mens-college-basketball/scoreboard/_/seasontype/2/group/50"
+	outfile = "outncaab2"
+	os.system(f"curl -k \"{url}\" -o {outfile}")
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	teamIds = {}
+	for div in soup.findAll("section", class_="TeamLinks"):
+		team = div.find("a").text.lower()
+		id = div.find("a").get("href").split("/")[-2]
+		teamIds[team] = id
+
+
+	for team in teamIds:
+		if team in playerIds:
+			continue
+
+		playerIds[team] = {}
+		url = f"https://www.espn.com/mens-college-basketball/team/roster/_/id/{teamIds[team]}"
+		time.sleep(0.3)
+		os.system(f"curl -k \"{url}\" -o {outfile}")
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		if not soup.find("table", class_="Table"):
+			continue
+
+		for row in soup.find("table", class_="Table").findAll("tr")[1:]:
+			playerId = row.find("a").get("href").split("/")[-2]
+			player = parsePlayer(row.findAll("td")[1].find("a").text)
+			playerIds[team][player] = playerId
+
+
+	with open(f"{prefix}static/ncaab/playerIds.json", "w") as fh:
+		json.dump(playerIds, fh, indent=4)
+
+	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	players = {}
+	for game in fdLines:
+		away, home = map(str, game.split(" @ "))
+		for team in [away, home]:
+			players[team] = {}
+			for prop in ["pts", "ast", "reb", "3ptm"]:
+				if prop in fdLines[game]:
+					for player in fdLines[game][prop]:
+						try:
+							players[team][player] = playerIds[team][player]
+						except:
+							pass
+
+	stats = {}
+	for team in players:
+		stats[team] = {}
+		for player in players[team]:
+			stats[team][player] = {}
+			url = f"https://www.espn.com/mens-college-basketball/player/gamelog/_/id/{players[team][player]}"
+			time.sleep(0.3)
+			os.system(f"curl -k \"{url}\" -o {outfile}")
+			soup = BS(open(outfile, 'rb').read(), "lxml")
+
+			hdrs = []
+			for td in soup.find("thead").findAll("th")[1:]:
+				hdrs.append(td.text.lower())
+
+			playerStats = {}
+			for row in soup.find("tbody").findAll("tr"):
+				if "note-row" in row.get("class"):
+					continue
+				for td, hdr in zip(row.findAll("td")[1:], hdrs):
+					val = td.text
+					if hdr == "opp":
+						val = "A" if "@" in val else "H"
+					elif hdr == "result":
+						val = td.find("div", class_="ResultCell").text
+
+					if hdr not in playerStats:
+						playerStats[hdr] = []	
+					playerStats[hdr].append(val)
+
+			for hdr in playerStats:
+				stats[team][player][hdr] = ",".join(playerStats[hdr])
+	
+	with open(f"{prefix}static/ncaab/stats.json", "w") as fh:
+		json.dump(stats, fh)
+
+
 
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
@@ -2331,11 +2438,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/ncaab/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	with open(f"{prefix}static/basketballreference/lastYearStats.json") as fh:
-		lastYearStats = json.load(fh)
-
-	with open(f"{prefix}static/basketballreference/playerIds.json") as fh:
-		playerIds = json.load(fh)
+	with open(f"{prefix}static/ncaab/stats.json") as fh:
+		stats = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -2359,6 +2463,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		teamGame[away] = teamGame[home] = game
 
 	for game in fdLines:
+		away, home = map(str, game.split(" @ "))
 		if teamArg:
 			if game.split(" @ ")[0] not in teamArg.split(",") and game.split(" @ ")[1] not in teamArg.split(","):
 				continue
@@ -2400,23 +2505,39 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
 
-				# last year stats
-				lastTotalOver = lastTotalGames = 0
-				last10TotalOver = last20TotalOver = last50TotalOver = 0
-				totalGames = totalOver = 0
-				totalSplits = []
+				totalGames = totalOver = total5Over = total10Over = 0
+				totalSplits = ""
+				team = ""
+				if player:
+					if player in stats[away]:
+						team = away
+					elif player in stats[home]:
+						team = home
+
+					if team and "+" not in prop:
+						arr = ""
+						if prop == "3ptm":
+							arr = ",".join([x.split("-")[0] for x in stats[team][player]["3pt"].split(",")])
+						else:
+							arr = stats[team][player][prop]
+						totalGames = len(stats[team][player]["min"])
+						totalOver = [x for x in arr.split(",") if int(x) > float(playerHandicap)]
+						totalOver = round(len(totalOver) * 100 / totalGames)
+						total5Over = [x for x in arr.split(",")[:5] if int(x) > float(playerHandicap)]
+						total5Over = round(len(total5Over) * 100 / min(totalGames, 5))
+						total10Over = [x for x in arr.split(",")[:10] if int(x) > float(playerHandicap)]
+						total10Over = round(len(total10Over) * 100 / min(totalGames, 10))
+						totalSplits = ",".join(arr.split(",")[:10][::-1])
 
 				for i in range(2):
 					highestOdds = []
 					books = []
 					odds = []
 
-					if lastTotalOver and i == 1:
-						lastTotalOver = 100 - lastTotalOver
-						last50TotalOver = 100 - last50TotalOver
-						last20TotalOver = 100 - last20TotalOver
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
+						total5Over = 100 - total5Over
+						total10Over = 100 - total10Over
 
 					for book in lines:
 						lineData = lines[book]
@@ -2564,12 +2685,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
 						evData[key]["totalOver"] = totalOver
-						evData[key]["totalSplits"] = ",".join(totalSplits)
-						evData[key]["lastYearTotal"] = lastTotalOver
-						evData[key]["last10YearTotal"] = last10TotalOver
-						evData[key]["last20YearTotal"] = last20TotalOver
-						evData[key]["last50YearTotal"] = last50TotalOver
-						evData[key]["game"] = game
+						evData[key]["total5Over"] = total5Over
+						evData[key]["total10Over"] = total10Over
+						evData[key]["totalSplits"] = totalSplits
+						evData[key]["game"] = team if team else game
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
 						evData[key]["books"] = books
@@ -2599,18 +2718,15 @@ def sortEV():
 	for player in evData:
 		d = evData[player]
 		j = [f"{k}:{d['bookOdds'][k]}" for k in d["bookOdds"] if k != d["book"]]
-		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d["lastYearTotal"], d))
+		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d))
 
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ", "L10%", "L5%", "SZN", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
-		away, home = map(str, row[-1]["game"].split(" @ "))
-		team = away
-		opp = home
 		pos = rank = posRank = ""
 		implied = 0
 		if row[-1]["line"] > 0:
@@ -2629,6 +2745,12 @@ def sortEV():
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
+		for x in ["total10Over", "total5Over", "totalOver"]:
+			if not row[-1][x]:
+				arr.append("-")
+			else:
+				arr.append(f"{row[-1][x]}%")
+		arr.append(row[-1]["totalSplits"])
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/ncaab/props.csv", "w") as fh:
@@ -2665,6 +2787,7 @@ if __name__ == '__main__':
 	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
+	parser.add_argument("--players", action="store_true", help="Players")
 	parser.add_argument("--summary", action="store_true", help="Summary")
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--matchups", action="store_true", help="Matchups")
@@ -2723,6 +2846,9 @@ if __name__ == '__main__':
 
 	if args.matchups:
 		writeMatchups()
+
+	if args.players:
+		writePlayers()
 
 	if args.update:
 		#writeFanduel()

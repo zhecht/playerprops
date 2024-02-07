@@ -799,11 +799,11 @@ def getProps_route():
 	elif request.args.get("alt"):
 		with open(f"{prefix}static/betting/nba_{request.args.get('alt')}.json") as fh:
 			props = json.load(fh)
-	elif request.args.get("prop"):
-		with open(f"{prefix}static/betting/nba_{request.args.get('prop')}.json") as fh:
-			props = json.load(fh)
+	#elif request.args.get("prop"):
+	#	with open(f"{prefix}static/betting/nba_{request.args.get('prop')}.json") as fh:
+	#		props = json.load(fh)
 	else:
-		with open(f"{prefix}static/betting/nba.json") as fh:
+		with open(f"{prefix}static/nba/html.json") as fh:
 			props = json.load(fh)
 	return jsonify(props)
 
@@ -1201,12 +1201,13 @@ def writeGameLines(date):
 
 def writeH2H():
 	ids = {
-		"pts": [1206, 12526],
-		"reb": [1206, 12527],
-		"ast": [1206, 12530],
-		"3ptm": [1206, 12531],
-		"fgm": [1206, 12528],
-		"blk": [1206, 12532],
+		#"pts": [1206, 12526],
+		#"reb": [1206, 12527],
+		#"ast": [1206, 12530],
+		"3ptm": [1206, 13794],
+		
+		#"fgm": [1206, 12528],
+		#"blk": [1206, 12532],
 		#"to": [1206, 12529]
 	}
 
@@ -1214,7 +1215,7 @@ def writeH2H():
 
 	for prop in ids:
 		time.sleep(0.3)
-		url = f"https://sportsbook-us-mi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/42648/categories/{ids[prop][0]}/subcategories/{ids[prop][1]}?format=json"
+		url = f"https://sportsbook-nash-usmi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/42648/categories/{ids[prop][0]}/subcategories/{ids[prop][1]}?format=json"
 		outfile = "outnba"
 		call(["curl", "-k", url, "-o", outfile])
 
@@ -1246,7 +1247,7 @@ def writeH2H():
 							except:
 								continue
 
-							matchup = row["label"].lower().split("_")[0].split(" - ")[0].replace("&", "v").replace(".", "").replace("'", "").replace("-", " ")
+							matchup = row["label"].lower().split("_")[0].split(" - ")[0].replace("&", "v").replace(".", "").replace("'", "").replace("-", " ").strip()
 							player1 = row["outcomes"][0]["label"].lower().replace(".", "").replace("'", "").replace("-", " ")
 							odds1 = row["outcomes"][0]["oddsAmerican"]
 							line = ""
@@ -1305,8 +1306,6 @@ def getH2HProps_route():
 	date = datetime.now()
 	date = str(date)[:10]
 
-	with open(f"{prefix}static/nbaprops/dates/{date}.json") as fh:
-		propData = json.load(fh)
 	with open(f"{prefix}static/basketballreference/totals.json") as fh:
 		stats = json.load(fh)
 	with open(f"{prefix}static/basketballreference/rankings.json") as fh:
@@ -1317,6 +1316,45 @@ def getH2HProps_route():
 		roster = json.load(fh)
 	with open(f"{prefix}static/nbaprops/h2h.json") as fh:
 		h2h = json.load(fh)
+	with open(f"{prefix}static/basketballreference/trades.json") as fh:
+		trades = json.load(fh)
+	with open(f"{prefix}static/nba/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/bovada.json") as fh:
+		bvLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/pointsbet.json") as fh:
+		pbLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+		propData = json.load(fh)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		#"pb": pbLines,
+		"bv": bvLines,
+		"dk": dkLines,
+		"cz": czLines
+	}
 
 	res = []
 	playerStats = {}
@@ -1325,7 +1363,11 @@ def getH2HProps_route():
 		for team in teams:
 			if team not in playerStats:
 				playerStats[team] = {}
-			for file in glob.glob(f"{prefix}static/basketballreference/{team}/*.json"):
+
+			l = glob.glob(f"{prefix}static/basketballreference/{team}/*.json")
+			#if player in trades:
+			#	l.extend(glob(f"static/basketballreference/{trades[player]}/*"))
+			for file in l:
 				dt = file.split("/")[-1][:-5]
 				if dt not in playerStats[team]:
 					with open(file) as fh:
@@ -1350,12 +1392,13 @@ def getH2HProps_route():
 						team = gameSp[0] if pIdx == 1 else gameSp[1]
 						currOpp = gameSp[1] if pIdx == 1 else gameSp[0]
 					playerTeams[pIdx] = team
-					if game in propData and player in propData[game]:
+					if game in propData and prop in propData[game] and player in propData[game][prop]:
 						try:
-							lines[pIdx] = propData[game][player][prop]["line"]
+							lines[pIdx] = propData[game][prop][player]["line"]
 						except:
 							pass
-					for dt in sorted(playerStats[team], key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
+
+					for dt in sorted(playerStats[team], key=lambda k: datetime.strptime(k, "%Y-%m-%d")):
 						if player in playerStats[team][dt] and playerStats[team][dt][player].get("min", 0) > 0:
 							arrs[pIdx].append(playerStats[team][dt][player][prop])
 							g = [x for x in schedule[dt] if team in x.split(" @ ") and currOpp in x.split(" @ ")]
