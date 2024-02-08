@@ -4,8 +4,8 @@
 		<title>NBA Props</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
 		<link rel="stylesheet" href="/static/css/nbateams.css" type="text/css">
-		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
-		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
 	</head>
 	<style>
 		body {
@@ -353,7 +353,8 @@
 					tooltipsHeader: true,
 					ajaxURL: "/getNBAProps",
 					ajaxParams:{alt: "{{alt}}", date: "{{date}}", teams: "{{teams}}", players: "{{players}}"},
-					//responsiveLayout:"collapse",
+					responsiveLayout:"collapse",
+					responsiveLayoutCollapseStartOpen: false,
 					//layout: "fitDataFill",
 					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
 					
@@ -363,13 +364,11 @@
 						//{column: "totalOver", dir: alt == "under" ? "asc" : "desc"},
 					],
 					columns: [
-					/*
 						{formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
-						*/
 						{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
 							cell.getRow().toggleSelect();
 						}},
-						{title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center"},
+						//{title: "Hit", field: "hit", formatter:"tickCross", width: 60, hozAlign: "center"},
 						{title: "EV", field: "ev", hozAlign: "center", width: 50, sorter: "number"},
 						{title: "Book", field: "book", hozAlign: "center", width: 70},
 						{title: "Imp", field: "imp", hozAlign: "center", width: 50, sorter: "number", formatter: percentFormatter},
@@ -394,6 +393,7 @@
 						{title: "L15 Over Per Min", field: "total15OverPerMin", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
 						{title: "Total Over Per Min", field: "totalOverPerMin", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
 						{title: "Last Per Min", field: "totalSplitsPerMin", width: 200},
+						{title: "Book: Odds", field: "bookOdds"},
 						/*
 						
 						{title: "L5 Total Over", field: "totalOverLast5", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
@@ -404,6 +404,10 @@
 						*/
 					]
 				})
+
+				TABLE.on("rowClick", function(e, row) {
+					row.getElement().getElementsByClassName("tabulator-responsive-collapse-toggle")[0].click()
+				});
 			}
 
 			renderTable();

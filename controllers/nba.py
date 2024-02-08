@@ -2674,18 +2674,26 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						if len(winLossSplits[0]):
 							arr = [x for x in winLossSplits[0] if x > float(playerHandicap)]
 							winSplitAvg = round(len(arr) * 100 / len(winLossSplits[0]))
+							if i == 1:
+								winSplitAvg = 100 - winSplitAvg
 						if len(winLossSplits[1]):
 							arr = [x for x in winLossSplits[1] if x > float(playerHandicap)]
 							lossSplitAvg = round(len(arr) * 100 / len(winLossSplits[1]))
+							if i == 1:
+								lossSplitAvg = 100 - lossSplitAvg
 						winLoss = f"{winSplitAvg}% - {lossSplitAvg}%"
 
 						awaySplitAvg = homeSplitAvg = 0
 						if len(awayHomeSplits[0]):
 							arr = [x for x in awayHomeSplits[0] if x > float(playerHandicap)]
 							awaySplitAvg = round(len(arr) * 100 / len(awayHomeSplits[0]))
+							if i == 1:
+								awaySplitAvg = 100 - awaySplitAvg
 						if len(awayHomeSplits[1]):
 							arr = [x for x in awayHomeSplits[1] if x > float(playerHandicap)]
 							homeSplitAvg = round(len(arr) * 100 / len(awayHomeSplits[1]))
+							if i == 1:
+								homeSplitAvg = 100 - homeSplitAvg
 						awayHome = f"{awaySplitAvg}% - {homeSplitAvg}%"
 
 						evData[key]["imp"] = round(implied)
@@ -2735,10 +2743,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"evBook": evBook,
 								"odds": line,
 								"totalSplits": ",".join(totalSplits[-10:]),
-								"totalSplitsPerMin": ",".join(totalSplitsPerMin[-5:]),
+								"totalSplitsPerMin": ",".join(totalSplitsPerMin[-10:]),
 								"avgMin": 0 if not avgMin else round(avgMin),
 								"isAway": isAway,
-								"gameLine": gameLine
+								"gameLine": gameLine,
+								"bookOdds": ", ".join([f"{b}: {o}" for o, b in zip(l, books)])
 							}
 							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits"]:
 								j[x] = evData[key][x]

@@ -47,13 +47,17 @@ def convertNBATeam(team):
 		"siu edwardsville": "siue",
 		"boston": "boston university",
 		"central florida": "cfu",
+		"cal irvine": "uc irvine",
+		"cal poly slo": "cal poly", 
 		"cal state fullerton": "csu fullerton",
 		"cs fullerton": "csu fullerton",
 		"cal state bakersfield": "csu bakersfield",
 		"bakersfield": "csu bakersfield",
 		"cs bakersfield": "csu bakersfield",
 		"cs northridge": "csu northridge",
+		"csun": "csu northridge",
 		"cal state northridge": "csu northridge",
+		"cal riverside": "uc riverside",
 		"detroit mercy": "detroit",
 		"detroitu": "detroit",
 		"eastern carolina": "east carolina",
@@ -79,6 +83,7 @@ def convertNBATeam(team):
 		"miami florida": "miami",
 		"mt st marys": "mount st marys",
 		"mount saint marys": "mount st marys",
+		"n carolina a and t": "north carolina a&t",
 		"nc wilmington": "unc wilmington",
 		"north carolina state": "nc state",
 		"north carolina central": "nc central",
@@ -116,6 +121,8 @@ def convertNBATeam(team):
 		"tennessee martin": "ut martin",
 		"uiw": "incarnate word",
 		"ulm": "ul monroe",
+		"uncw": "unc wilmington",
+		"uncg": "nc greensboro",
 		"md baltimore county": "umbc",
 		"md baltimore": "umbc",
 		"utrgv": "ut rio grande valley",
@@ -295,8 +302,13 @@ def writeCZ(date):
 		data = json.load(fh)
 
 	games = []
-	for event in data["competitions"][0]["events"][:50]:
+	for event in data["competitions"][0]["events"]:
 		if not event["active"]:
+			continue
+		d = datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5)
+		if str(d)[:10] != date:
+			continue
+		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
 		games.append(event["id"])
 
@@ -311,11 +323,6 @@ def writeCZ(date):
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		d = datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4)
-		if str(d)[:10] != date:
-			continue
-		if date == str(datetime.now())[:10] and d < datetime.now():
-			continue
 		#game = data["name"].lower().replace("|at|", "@").replace("|", "")
 		game = ""
 		for market in data["markets"]:
@@ -1050,8 +1057,8 @@ def writeKambi(date):
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'nc central @ the citadel': 1020120314}
-	#data['nc central @ the citadel'] = {}
+	eventIds = {'arizona @ utah': 1020207806}
+	data['arizona @ utah'] = {}
 
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
@@ -1179,10 +1186,8 @@ def writeKambi(date):
 
 def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
-	if player == "k caldwell pope":
-		player = "kentavious caldwell pope"
-	elif player == "cameron thomas":
-		player = "cam thomas"
+	if player == "nicholas boyd":
+		player = "nick boyd"
 	return player
 
 def writeFanduelManual():
@@ -1229,6 +1234,8 @@ def writeFanduelManual():
 				return "nc greensboro";
 			} else if (team == "miami (oh)") {
 				return "miami oh";
+			} else if (team == "youngstown st") {
+				return "youngstown state";
 			}
 			return team
 		}
@@ -1433,7 +1440,11 @@ def writeFanduelManual():
 					}
 				} else if (skip == 2 && player) {
 					// 2 sides
-					player = parsePlayer(ariaLabel.split(", ")[0].replace(" Over", ""));
+					if (prop == "pts+reb+ast") {
+						player = parsePlayer(label.split(" total")[0]);
+					} else {
+						player = parsePlayer(ariaLabel.split(", ")[0].replace(" Over", ""));
+					}
 					if (!data[game][prop][player]) {
 						data[game][prop][player] = {};
 					}
@@ -1735,7 +1746,8 @@ def writeDK(date):
 		"rebounds": 1216,
 		"assists": 1217,
 		"threes": 1218,
-		"team": 523
+		"team": 523,
+		"combos": 583
 	}
 	
 	subCats = {
@@ -1744,10 +1756,11 @@ def writeDK(date):
 		1216: [12492, 13770],
 		1217: [12495, 13771],
 		1218: [12497],
-		523: [4609]
+		523: [4609],
+		583: [5001, 9976, 9973, 9974]
 	}
 
-	propIds = {13202: "spread", 13201: "total", 12488: "pts", 13769: "pts", 12492: "reb", 13770: "reb", 12495: "ast", 13771: "ast", 12497: "3ptm", 5001: "pts+reb+ast"}
+	propIds = {13202: "spread", 13201: "total", 12488: "pts", 13769: "pts", 12492: "reb", 13770: "reb", 12495: "ast", 13771: "ast", 12497: "3ptm", 5001: "pts+reb+ast", 9976: "pts+reb", 9973: "pts+ast", 9974: "reb+ast"}
 
 	if False:
 		mainCats = {
@@ -2311,7 +2324,7 @@ def writePlayer(player, propArg):
 
 					print(book, lines[book][game][prop][p])
 
-def writePlayers():
+def writePlayers(keep=None):
 
 	with open(f"{prefix}static/ncaab/playerIds.json") as fh:
 		playerIds = json.load(fh)
@@ -2353,24 +2366,39 @@ def writePlayers():
 	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
 
+	with open(f"{prefix}static/ncaab/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
 	players = {}
-	for game in fdLines:
-		away, home = map(str, game.split(" @ "))
-		for team in [away, home]:
-			players[team] = {}
-			for prop in ["pts", "ast", "reb", "3ptm"]:
-				if prop in fdLines[game]:
-					for player in fdLines[game][prop]:
-						try:
-							players[team][player] = playerIds[team][player]
-						except:
-							pass
+	for lines in [fdLines, dkLines, czLines]:
+		for game in lines:
+			away, home = map(str, game.split(" @ "))
+			for team in [away, home]:
+				players[team] = {}
+				for prop in ["pts", "ast", "reb", "3ptm", "pts+reb+ast", "pts+ast", "pts+reb", "reb+ast"]:
+					if prop in lines[game]:
+						for player in lines[game][prop]:
+							try:
+								players[team][player] = playerIds[team][player]
+							except:
+								pass
 
 	stats = {}
+	if keep:
+		with open(f"{prefix}static/ncaab/stats.json") as fh:
+			stats = json.load(fh)
+
 	for team in players:
-		stats[team] = {}
+		if team not in stats:
+			stats[team] = {}
 		for player in players[team]:
-			stats[team][player] = {}
+			if player not in stats[team]:
+				stats[team][player] = {}
+			elif keep:
+				continue
 			url = f"https://www.espn.com/mens-college-basketball/player/gamelog/_/id/{players[team][player]}"
 			time.sleep(0.3)
 			os.system(f"curl -k \"{url}\" -o {outfile}")
@@ -2400,7 +2428,6 @@ def writePlayers():
 	
 	with open(f"{prefix}static/ncaab/stats.json", "w") as fh:
 		json.dump(stats, fh)
-
 
 
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
@@ -2520,7 +2547,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							arr = ",".join([x.split("-")[0] for x in stats[team][player]["3pt"].split(",")])
 						else:
 							arr = stats[team][player][prop]
-						totalGames = len(stats[team][player]["min"])
+						totalGames = len(stats[team][player]["min"].split(","))
 						totalOver = [x for x in arr.split(",") if int(x) > float(playerHandicap)]
 						totalOver = round(len(totalOver) * 100 / totalGames)
 						total5Over = [x for x in arr.split(",")[:5] if int(x) > float(playerHandicap)]
@@ -2576,6 +2603,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							books.append(book)
 
 					if len(books) < 2:
+						if player:
+							print(game, player, prop, playerHandicap)
 						continue
 
 					if prop in ["spread", "total"] and len(books) < 3:
@@ -2788,6 +2817,7 @@ if __name__ == '__main__':
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
 	parser.add_argument("--players", action="store_true", help="Players")
+	parser.add_argument("--keep", action="store_true", help="Keep")
 	parser.add_argument("--summary", action="store_true", help="Summary")
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--matchups", action="store_true", help="Matchups")
@@ -2848,7 +2878,7 @@ if __name__ == '__main__':
 		writeMatchups()
 
 	if args.players:
-		writePlayers()
+		writePlayers(args.keep)
 
 	if args.update:
 		#writeFanduel()
