@@ -1057,8 +1057,8 @@ def writeKambi(date):
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	eventIds = {'arizona @ utah': 1020207806}
-	data['arizona @ utah'] = {}
+	#eventIds = {'arizona @ utah': 1020207806}
+	#data['arizona @ utah'] = {}
 
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
