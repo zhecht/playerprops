@@ -37,7 +37,7 @@ def convertNFLTeam(team):
 		return "lar"
 	elif team.endswith("raiders"):
 		return "lv"
-	elif team.endswith("chiefs"):
+	elif "chiefs" in team:
 		return "kc"
 	elif team.endswith("saints"):
 		return "no"
@@ -301,6 +301,8 @@ def writeCZ():
 					line = str(float(market["line"]) * -1)
 					res[game][prop][line] = ou
 				elif "total" in prop:
+					if "line" not in market:
+						continue
 					line = str(float(market["line"]))
 					res[game][prop][line] = ou
 				elif prop in ["attd", "ftd"]:
@@ -654,9 +656,14 @@ def writeBV():
 	with open(outfile) as fh:
 		data = json.load(fh)
 
-	ids = [r["link"] for r in data[0]["events"]]
-
-	#ids = ["/football/nfl/kansas-city-chiefs-jacksonville-jaguars-202309171300"]
+	if False:
+		ids = ["/football/super-bowl/san-francisco-49ers-kansas-city-chiefs-202402111830"]
+		#ids = ["/football/nfl/san-francisco-49ers-kansas-city-chiefs-202402111830"]
+	else:
+		if not data:
+			return
+		ids = [r["link"] for r in data[0]["events"]]
+	
 	res = {}
 	#print(ids)
 	for link in ids:
@@ -683,6 +690,8 @@ def writeBV():
 					prefix = ""
 					if market["period"]["description"].lower() == "first half":
 						prefix = "1h_"
+					elif market["period"]["description"].lower() == "second half":
+						prefix = "2h_"
 					elif market["period"]["description"].lower() == "1st quarter":
 						prefix = "1q_"
 					elif market["period"]["description"].lower() == "2nd quarter":
@@ -899,8 +908,16 @@ def writeMGM():
 			prefix = player = ""
 			if "1st half" in prop or "first half" in prop:
 				prefix = "1h_"
+			elif "2nd half" in prop or "second half" in prop:
+				prefix = "2h_"
 			elif "1st quarter" in prop or "first quarter" in prop:
 				prefix = "1q_"
+			elif "2nd quarter" in prop or "second quarter" in prop:
+				prefix = "2q_"
+			elif "3rd quarter" in prop or "third quarter" in prop:
+				prefix = "3q_"
+			elif "4th quarter" in prop or "fourth quarter" in prop:
+				prefix = "4q_"
 
 			if prop.endswith("money line"):
 				prop = "ml"
@@ -912,8 +929,20 @@ def writeMGM():
 				prop = "attd"
 			elif prop == "first touchdown scorer":
 				prop = "ftd"
+			elif "): " in prop:
+				if "odd" in prop or "o/u" in prop:
+					continue
+				player = prop.split(" (")[0]
+				prop = prop.split("): ")[-1]
+				prop = prop.replace("receiving", "rec").replace("rushing", "rush").replace("passing", "pass").replace("yards", "yd").replace("receptions made", "rec").replace("reception", "rec").replace("field goals made", "fgm").replace("points", "pts").replace("longest pass completion", "longest_pass").replace("completions", "cmp").replace("completion", "cmp").replace("attempts", "att").replace("touchdowns", "td").replace("assists", "ast").replace("defensive interceptions", "int").replace("interceptions thrown", "int").replace(" ", "_")
+				if prop == "total_pass_and_rush_yd":
+					prop = "pass+rush"
+				elif prop == "total_rush_and_rec_yd":
+					prop = "pass+rush"
+				elif "and_ast" in prop:
+					prop = "tackles+ast"
 			elif prop.startswith("how many "):
-				if prop.startswith("how many points will be scored in the game") or "extra points" in prop:
+				if prop.startswith("how many points will be scored in the game") or "extra points" in prop or "combine" in prop:
 					continue
 				if fullTeam1 in prop or fullTeam2 in prop:
 					p = "away_total"
@@ -956,6 +985,9 @@ def writeMGM():
 			else:
 				continue
 
+			if prop in ["touchdowns"]:
+				continue
+
 			prop = prefix+prop
 
 			results = row.get('results', row['options'])
@@ -964,7 +996,11 @@ def writeMGM():
 				price = price["price"]
 			if "americanOdds" not in price:
 				continue
-			ou = f"{price['americanOdds']}/{results[1].get('americanOdds', results[1]['price']['americanOdds'])}"
+			#print(prop, price, row["name"]["value"].lower())
+			if len(results) < 2:
+				ou = f"{price['americanOdds']}"
+			else:
+				ou = f"{price['americanOdds']}/{results[1].get('americanOdds', results[1]['price']['americanOdds'])}"
 			if "ml" in prop:
 				res[game][prop] = ou
 			elif len(results) >= 2:
@@ -1138,6 +1174,8 @@ def writeKambi():
 				if label not in data[game]:
 					data[game][label] = {}
 				if not playerProp:
+					if "line" not in betOffer["outcomes"][0]:
+						continue
 					line = str(betOffer["outcomes"][0]["line"] / 1000)
 					if betOffer["outcomes"][0]["label"] == "Under" or convertNFLTeam(betOffer["outcomes"][0]["label"].lower()) == home:
 						line = str(betOffer["outcomes"][1]["line"] / 1000)
@@ -1155,6 +1193,8 @@ def writeKambi():
 						except:
 							continue
 				else:
+					if "line" not in betOffer["outcomes"][0]:
+						continue
 					line = betOffer["outcomes"][0]["line"] / 1000
 					if betOffer["outcomes"][0]["label"] == "Under":
 						line = betOffer["outcomes"][1]["line"] / 1000
@@ -1168,7 +1208,7 @@ def writeKambi():
 		json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iii", "").replace(" ii", "")
 	if player == "josh palmer":
 		player = "joshua palmer"
 	elif player == "gabe davis":
@@ -1276,6 +1316,10 @@ def writeFanduelManual():
 					continue
 				}
 
+				if (label.indexOf("player to record a ") >= 0) {
+					continue;
+				}
+
 				if (label.indexOf("passing + rushing") >= 0) {
 					prop = "pass+rush";
 				} else if (label.indexOf("rushing + receiving") >= 0) {
@@ -1349,6 +1393,9 @@ def writeFanduelManual():
 			let skip = 1;
 			if (["attd", "away_total", "home_total", "spread"].indexOf(prop) >= 0 || prefix || player) {
 				skip = 2;
+			}
+			if (prop == "attd") {
+				skip = 3;
 			}
 			let btns = Array.from(li.querySelectorAll("div[role=button]"));
 			btns.shift();
