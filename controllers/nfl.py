@@ -474,7 +474,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 	game = games[gameId]
 
 	#print(game)
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o nfloutPN'
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o nfloutPN'
 
 	time.sleep(0.5)
 	os.system(url)
@@ -488,7 +488,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 	relatedData = {}
 	for row in related:
 		if "special" in row:
-			prop = row["units"].lower().replace("yards", "_yd").replace("receiving", "rec").replace("passing", "pass").replace("rushing", "rush").replace("interceptions", "int")
+			prop = row["units"].lower().replace("yards", "_yd").replace("receiving", "rec").replace("passing", "pass").replace("rushing", "rush").replace("interceptions", "int").replace("attempts", "att")
 			if prop == "touchdownpasses":
 				prop = "pass_td"
 			elif prop == "1st touchdown":
@@ -501,6 +501,12 @@ def parsePinnacle(res, games, gameId, retry, debug):
 				prop = "longest_pass"
 			elif prop == "passreceptions":
 				prop = "rec"
+			elif prop == "kickingpoints":
+				prop = "kicking_pts"
+			elif prop == "completions":
+				prop = "pass_cmp"
+			elif prop == "tackles + assists":
+				prop = "tackles+ast"
 
 			over = row["participants"][0]["id"]
 			under = row["participants"][1]["id"]
@@ -610,7 +616,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 				res[game][prop] = ou
 
 def writePinnacle(date):
-	debug = False
+	debug = True
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -634,7 +640,7 @@ def writePinnacle(date):
 			games[str(row["id"])] = f"{player2} @ {player1}"
 
 	res = {}
-	#games = {'1573148913': 'det @ kc'}
+	games = {'1584933027': 'sf @ kc'}
 	retry = []
 	for gameId in games:
 		parsePinnacle(res, games, gameId, retry, debug)

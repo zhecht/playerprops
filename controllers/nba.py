@@ -22,9 +22,9 @@ elif os.path.exists("/home/playerprops/playerprops"):
 
 def convertNBATeam(team):
 	team = team.lower()
-	if team.endswith("warriors"):
+	if team.endswith("warriors") or team == "gsw":
 		return "gs"
-	elif team.endswith("knicks"):
+	elif team.endswith("knicks") or team == "nyk":
 		return "ny"
 	elif "brooklyn" in team:
 		return "bkn"
@@ -32,17 +32,17 @@ def convertNBATeam(team):
 		return "lal"
 	elif team.endswith("clippers"):
 		return "lac"
-	elif team.endswith("pelicans"):
+	elif team.endswith("pelicans") or team == "nop":
 		return "no"
 	elif team.endswith("thunder"):
 		return "okc"
-	elif team.endswith("spurs"):
+	elif team.endswith("spurs") or team == "sas":
 		return "sa"
 	elif team.endswith("suns"):
 		return "phx"
-	elif team.endswith("wizards"):
+	elif team.endswith("wizards") or team == "was":
 		return "wsh"
-	elif team.endswith("jazz"):
+	elif team.endswith("jazz") or team == "uta":
 		return "utah"
 	return team[:3]
 
@@ -2233,6 +2233,36 @@ def writePlayer(player, propArg):
 
 					print(book, lines[book][game][prop][p])
 
+def writeLineups():
+	url = "https://www.rotowire.com/basketball/nba-lineups.php"
+	outfile = "outnba2"
+	call(["curl", "-k", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	lineups = {}
+	for game in soup.findAll("div", class_="lineup"):
+		if "is-tools" in game.get("class"):
+			continue
+		teams = game.findAll("a", class_="lineup__team")
+		lineupList = game.findAll("ul", class_="lineup__list")
+		statusList = game.findAll("li", class_="lineup__status")
+		for idx, teamLink in enumerate(teams):
+			team = convertNBATeam(teamLink.get("href").split("-")[-1])
+			lineups[team] = {
+				"confirmed": False if "is-expected" in statusList[idx].get("class") else True,
+				"starters": []
+			}
+			for playerIdx, li in enumerate(lineupList[idx].findAll("li", class_="lineup__player")):
+				player = " ".join(li.find("a").get("href").split("/")[-1].split("-")[:-1])
+				player = parsePlayer(player)
+				pos = li.find("div").text
+
+				if playerIdx < 5:
+					lineups[team]["starters"].append(player)
+
+	with open(f"{prefix}static/nba/lineups.json", "w") as fh:
+		json.dump(lineups, fh, indent=4)
+
 
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
@@ -2289,6 +2319,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	with open(f"{prefix}static/nba/matchups.json") as fh:
 		matchups = json.load(fh)
+
+	with open(f"{prefix}static/nba/lineups.json") as fh:
+		lineups = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -2696,6 +2729,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								homeSplitAvg = 100 - homeSplitAvg
 						awayHome = f"{awaySplitAvg}% - {homeSplitAvg}%"
 
+						confirmed = False
+						if team in lineups:
+							confirmed = lineups[team]["confirmed"]
+
 						evData[key]["imp"] = round(implied)
 						evData[key]["rank"] = rank
 						evData[key]["winLossSplits"] = winLoss
@@ -2726,6 +2763,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["playerHandicap"] = playerHandicap
 						evData[key]["odds"] = l
 						evData[key]["player"] = player
+						evData[key]["confirmed"] = confirmed
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
@@ -2891,7 +2929,7 @@ def sortEV():
 	with open("static/nba/lines.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ", "LYR %", "L15 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ", "LYR %", "L15 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank", "IN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -2915,6 +2953,10 @@ def sortEV():
 		arr.append(f"{row[-1]['totalOver']}%")
 		arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
 		arr.extend([row[-1]["rank"], row[-1]["posRank"]])
+		if row[-1]["confirmed"]:
+			arr.append("🟢")
+		else:
+			arr.append("🟡")
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nba/props.csv", "w") as fh:
@@ -2965,12 +3007,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if args.lineups:
-		writeLineups(plays)
-
-	if args.lineupsLoop:
-		while True:
-			writeLineups(plays)
-			time.sleep(30)
+		writeLineups()
 
 	dinger = False
 	if args.dinger:

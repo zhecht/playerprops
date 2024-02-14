@@ -1151,6 +1151,18 @@
         "over": 1584980728,
         "under": 1584980729
     },
+    "1584980788": {
+        "player": "if 49ers win opening coin toss, choice will be",
+        "prop": "regular",
+        "over": 1584980789,
+        "under": 1584980790
+    },
+    "1584980791": {
+        "player": "if chiefs win opening coin toss, choice will be",
+        "prop": "regular",
+        "over": 1584980792,
+        "under": 1584980793
+    },
     "1584980814": {
         "player": "will first kickoff result in a touchback?",
         "prop": "regular",
@@ -2051,6 +2063,12 @@
         "over": 1585019332,
         "under": 1585019333
     },
+    "1585049670": {
+        "player": "same game parlays",
+        "prop": "regular",
+        "over": 1585049671,
+        "under": 1585049672
+    },
     "1585074763": {
         "player": "49ers win 1st half + 49ers win game?",
         "prop": "regular",
@@ -2104,6 +2122,30 @@
         "prop": "longest_rec",
         "over": 1585101248,
         "under": 1585101249
+    },
+    "1585101402": {
+        "player": "clyde edwards helaire",
+        "prop": "rush_yd",
+        "over": 1585101403,
+        "under": 1585101404
+    },
+    "1585101405": {
+        "player": "clyde edwards helaire",
+        "prop": "rec",
+        "over": 1585101406,
+        "under": 1585101407
+    },
+    "1585101408": {
+        "player": "clyde edwards helaire",
+        "prop": "rec_yd",
+        "over": 1585101409,
+        "under": 1585101410
+    },
+    "1585101411": {
+        "player": "clyde edwards helaire",
+        "prop": "longest_rec",
+        "over": 1585101412,
+        "under": 1585101413
     },
     "1585127469": {
         "player": "brock purdy first rushing attempt will be",
@@ -2735,12 +2777,6 @@
         "over": 1585324173,
         "under": 1585324174
     },
-    "1585387572": {
-        "player": "taylor swift primary color of top when first shown on broadcast at game kickoff to final whistle",
-        "prop": "regular",
-        "over": 1585387573,
-        "under": 1585387574
-    },
     "1585387575": {
         "player": "taylor swift shown holding a drink during broadcast kickoff to final whistle",
         "prop": "regular",
@@ -2752,12 +2788,6 @@
         "prop": "regular",
         "over": 1585387579,
         "under": 1585387580
-    },
-    "1585387581": {
-        "player": "taylor swift wears juszczyks wife outfit during game kickoff to final whistle",
-        "prop": "regular",
-        "over": 1585387582,
-        "under": 1585387583
     },
     "1585387584": {
         "player": "who will say exactly \"taylor swift\" first? kickoff to final whistle",
@@ -2836,5 +2866,59 @@
         "prop": "rec_yd",
         "over": 1585500746,
         "under": 1585500747
+    },
+    "1585599343": {
+        "player": "exact number of combined sacks by both teams",
+        "prop": "regular",
+        "over": 1585599344,
+        "under": 1585599345
+    },
+    "1585599394": {
+        "player": "total combined points in game",
+        "prop": "regular",
+        "over": 1585599395,
+        "under": 1585599396
+    },
+    "1585599433": {
+        "player": "margin of victory",
+        "prop": "regular",
+        "over": 1585599434,
+        "under": 1585599435
+    },
+    "1585600488": {
+        "player": "first reception by a 49er [must be active for action]",
+        "prop": "regular",
+        "over": 1585600489,
+        "under": 1585600490
+    },
+    "1585601631": {
+        "player": "first reception by a chief [must be active for action]",
+        "prop": "regular",
+        "over": 1585601632,
+        "under": 1585601633
+    },
+    "1585603687": {
+        "player": "jerick mckinnon",
+        "prop": "attd",
+        "over": 1585603688,
+        "under": 1585603689
+    },
+    "1585603690": {
+        "player": "jerick mckinnon",
+        "prop": "longest_rec",
+        "over": 1585603691,
+        "under": 1585603692
+    },
+    "1585604400": {
+        "player": "jerick mckinnon",
+        "prop": "rec_yd",
+        "over": 1585604401,
+        "under": 1585604402
+    },
+    "1585604407": {
+        "player": "skyy moore",
+        "prop": "longest_rec",
+        "over": 1585604408,
+        "under": 1585604409
     }
 }

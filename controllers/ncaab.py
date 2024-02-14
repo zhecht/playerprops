@@ -119,6 +119,7 @@ def convertNBATeam(team):
 		"t a&m corpus christi": "texas a&m cc",
 		"texas a&m corpus": "texas a&m cc",
 		"tennessee martin": "ut martin",
+		"uconn": "connecticut",
 		"uiw": "incarnate word",
 		"ulm": "ul monroe",
 		"uncw": "unc wilmington",
@@ -969,7 +970,7 @@ def writeMGM(date):
 			else:
 				continue
 
-			if prop == "three-pointers":
+			if prop == "three-pointers" or prop == "three-pts made":
 				prop = "3ptm"
 
 			prop = prefix+prop
@@ -1188,6 +1189,8 @@ def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
 	if player == "nicholas boyd":
 		player = "nick boyd"
+	elif player == "alvaro cardenas torre":
+		player = "alvaro cardenas"
 	return player
 
 def writeFanduelManual():
@@ -2336,7 +2339,7 @@ def writePlayers(keep=None):
 
 	teamIds = {}
 	for div in soup.findAll("section", class_="TeamLinks"):
-		team = div.find("a").text.lower()
+		team = convertNBATeam(strip_accents(div.find("a").text.lower()))
 		id = div.find("a").get("href").split("/")[-2]
 		teamIds[team] = id
 
@@ -2345,6 +2348,7 @@ def writePlayers(keep=None):
 		if team in playerIds:
 			continue
 
+		print(team)
 		playerIds[team] = {}
 		url = f"https://www.espn.com/mens-college-basketball/team/roster/_/id/{teamIds[team]}"
 		time.sleep(0.3)
@@ -2377,7 +2381,8 @@ def writePlayers(keep=None):
 		for game in lines:
 			away, home = map(str, game.split(" @ "))
 			for team in [away, home]:
-				players[team] = {}
+				if team not in players:
+					players[team] = {}
 				for prop in ["pts", "ast", "reb", "3ptm", "pts+reb+ast", "pts+ast", "pts+reb", "reb+ast"]:
 					if prop in lines[game]:
 						for player in lines[game][prop]:
