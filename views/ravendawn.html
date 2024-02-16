@@ -59,10 +59,10 @@
 		select {
 			padding: 5px;
 		}
-		.sell, .cost {
+		.sell, .cost, .profit {
 			margin-left: 0.5rem;
 		}
-		.sell {
+		.sell, .cost {
 			margin-right: 1rem;
 		}
 		.demand {
@@ -103,6 +103,8 @@
 							<div class="sell"></div>
 							Cost: 
 							<div class="cost"></div>
+							Profit: 
+							<div class="profit"></div>
 						</div>
 					</div>
 				{% endfor %}
@@ -143,7 +145,7 @@
 					// sell for
 					let distance = parseInt(document.querySelector("select").options[document.querySelector("select").selectedIndex].value);
 					let demand = parseInt(div.querySelector(".demand").value) / 100;
-					cost = (12000 * demand) + (distance * 8 * demand);
+					let sell = (12000 * demand) + (distance * 8 * demand);
 					let buff = 0;
 					if (document.querySelector("#fiveperc").checked) {
 						buff += 0.05;
@@ -151,20 +153,36 @@
 					if (document.querySelector("#warmode").checked) {
 						buff += 0.2;
 					}
-					cost *= (1 + buff);
-					cost *= 0.8;
+					sell *= (1 + buff);
+					sell *= 0.8;
+					sell = parseInt(sell);
 
-					div.querySelector(".sell").innerText = parseInt(cost);
+					div.querySelector(".sell").innerText = sell;
+
+					let profit = sell - cost;
+					div.querySelector(".profit").innerText = profit;
+					if (profit > 0) {
+						div.querySelector(".profit").style.color = "green";
+					} else {
+						div.querySelector(".profit").style.color = "red";
+					}
 				}
+				updateJSON();
+			}
+
+			function updateJSON() {
+				const xhttp = new XMLHttpRequest();
+				xhttp.open("POST", "/updateJSON");
+				xhttp.send(JSON.stringify(data));
 			}
 
 			function itemChange(el, item) {
-				data.prices[item] = el.value;
+				data.prices[item] = parseInt(el.value);
 				updated();
 			}
 
 			function demandChange(el, pack) {
-				data.demand[pack] = el.value;
+				data.demand[pack] = parseInt(el.value);
 				updated();
 			}
 
