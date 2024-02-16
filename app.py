@@ -15,6 +15,7 @@ app.register_blueprint(controllers.ncaabprops_blueprint)
 app.register_blueprint(controllers.nhlprops_blueprint)
 app.register_blueprint(controllers.betting_blueprint)
 app.register_blueprint(controllers.bets_blueprint)
+app.register_blueprint(controllers.ravendawn_blueprint)
 #app.register_blueprint(controllers.trades_print)
 
 app.secret_key = os.urandom(24)

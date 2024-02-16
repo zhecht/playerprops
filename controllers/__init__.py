@@ -9,4 +9,5 @@ from controllers.ncaafprops import *
 from controllers.nhlprops import *
 from controllers.mlbprops import *
 from controllers.props import *
+from controllers.ravendawn import *
 from controllers.profootballreference import *

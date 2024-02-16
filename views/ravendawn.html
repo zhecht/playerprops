@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Ravendawn</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+		}
+		.price {
+			display: flex;
+			margin-top:0.5rem;
+		}
+		.price input {
+			margin-left: 0.5rem;
+			width: 30px;
+		}
+		.price label {
+			width: 100px;
+			text-align: center;
+		}
+		#priceDiv {
+			display: flex;
+			flex-direction: column;
+			width: 25%;
+			flex-wrap: wrap;
+			height: 80%;
+		}
+		#leftDiv {
+			width: 75%;
+			height: 80%;
+		}
+		#packDiv {
+			padding-top: 1rem;
+			display: flex;
+			flex-wrap: wrap;
+			height: 100%;
+			overflow: scroll;
+		}
+		.pack {
+			width: 30%;
+			margin-top: 1rem;
+			margin-left: 1.5%;
+		}
+		.pack label {
+			text-decoration: underline;
+		}
+		.packItems {
+			display: flex;
+		}
+		.packItems div {
+			margin-right: 1rem;
+		}
+		select {
+			padding: 5px;
+		}
+		.sell, .cost {
+			margin-left: 0.5rem;
+		}
+		.sell {
+			margin-right: 1rem;
+		}
+		.demand {
+			width:30px;
+			margin-left: 1rem;
+		}
+	</style>
+	<body>
+		<div id="leftDiv">
+			<div style="text-align: center">
+				<select onchange="updated()">
+					{% for distance in data.distances %}
+						<option value="{{data.distances[distance]}}">{{distance}}</option>
+					{% endfor %}
+				</select>
+				<label style="margin-left: 1rem;" for="fiveperc">5% Buff</label>
+				<input id="fiveperc" type="checkbox" onchange="inputChanged(this)"/>
+
+				<label style="margin-left: 1rem;" for="warmode">Warmode</label>
+				<input id="warmode" type="checkbox" onchange="inputChanged(this)"/>
+			</div>
+			<div id="packDiv">
+				{% for pack in data.tradepacks %}
+					<div class="pack">
+						<div>
+							<label>{{pack}}</label>
+							<input class="demand" value="{{data.demand[pack]}}" onfocus="this.select();" onchange="demandChange(this, '{{pack}}')";/>
+						</div>
+						<div class="packItems">
+						{% for item in data.tradepacks[pack] %}
+							<div>
+								{{data.tradepacks[pack][item]}}x {{item}}
+							</div>
+						{% endfor %}
+						</div>
+						<div style="display: flex">
+							Sell: 
+							<div class="sell"></div>
+							Cost: 
+							<div class="cost"></div>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div id="priceDiv">
+			{% for item in data.prices %}
+				<div class="price">
+					<label>{{item}}</label>
+					<input class="price" value="{{data.prices[item]}}" onfocus="this.select();" onchange="itemChange(this, '{{item}}');"/>
+				</div>
+			{% endfor %}
+		</div>
+
+		<script>
+			const data = JSON.parse('{{data|tojson|safe}}');
+
+			if (data.fiveperc) {
+				document.querySelector("#fiveperc").checked = true;
+			}
+
+			if (data.warmode) {
+				document.querySelector("#warmode").checked = true;
+			}
+
+			updated();
+
+			function updated() {
+				for (let div of document.querySelectorAll(".pack")) {
+					const pack = div.querySelector("label").innerText;
+					let cost = 0;
+					for (let item in data.tradepacks[pack]) {
+						cost += data.tradepacks[pack][item] * data.prices[item];
+					}
+
+					div.querySelector(".cost").innerText = cost;
+
+					// sell for
+					let distance = parseInt(document.querySelector("select").options[document.querySelector("select").selectedIndex].value);
+					let demand = parseInt(div.querySelector(".demand").value) / 100;
+					cost = (12000 * demand) + (distance * 8 * demand);
+					let buff = 0;
+					if (document.querySelector("#fiveperc").checked) {
+						buff += 0.05;
+					}
+					if (document.querySelector("#warmode").checked) {
+						buff += 0.2;
+					}
+					cost *= (1 + buff);
+					cost *= 0.8;
+
+					div.querySelector(".sell").innerText = parseInt(cost);
+				}
+			}
+
+			function itemChange(el, item) {
+				data.prices[item] = el.value;
+				updated();
+			}
+
+			function demandChange(el, pack) {
+				data.demand[pack] = el.value;
+				updated();
+			}
+
+			function inputChanged(el) {
+				data[el.id] = el.checked;
+				updated();
+			}
+		</script>
+	</body>
+</html>
