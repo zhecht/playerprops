@@ -323,6 +323,8 @@ def writeCZ(date=None):
 				prop = "3-way"
 			elif prop == "player to score a goal":
 				prop = "atgs"
+			elif prop == "first goalscorer":
+				prop = "fgs"
 			elif "total saves" in prop:
 				player = parsePlayer(prop.split(" total saves")[0])
 				prop = "saves"
@@ -360,7 +362,7 @@ def writeCZ(date=None):
 				res[game][prop] = {}
 
 			selections = market["selections"]
-			skip = 1 if prop in ["atgs", "ast", "pts", "pp_pts"] else 2
+			skip = 1 if prop in ["fgs", "atgs", "ast", "pts", "pp_pts"] else 2
 			if prop == "3-way":
 				skip = 3
 			mainLine = ""
@@ -378,11 +380,9 @@ def writeCZ(date=None):
 					res[game][prop] = ou
 				elif "3-way" in prop:
 					res[game][prop] = f"{selections[0]['price']['a']}/{selections[-1]['price']['a']}"
-				elif prop == "atgs":
+				elif prop in ["atgs", "fgs"]:
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
-					res[game][prop][player] = {
-						"0.5": ou
-					}
+					res[game][prop][player] = ou
 				elif prop in ["pts", "ast", "pp_pts"]:
 					line = str(float(market["name"].split(" ")[5][1:]) - 0.5)
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
@@ -840,6 +840,8 @@ def writeBV():
 						prop = "home_total"
 					elif prop == "anytime goalscorer":
 						prop = "atgs"
+					elif prop == "player to score 1st goal":
+						prop = "fgs"
 					elif prop.startswith("total saves"):
 						prop = "saves"
 					elif prop.startswith("total shots on goal"):
@@ -906,16 +908,17 @@ def writeBV():
 						for i in range(0, len(market["outcomes"]), 1):
 							player = parsePlayer(market['outcomes'][i]["description"].split(" - ")[-1].split(" (")[0])
 							player = " ".join([x for x in player.split(" ") if x])
-							if prop == "atgs":
-								handicap = "0.5"
-							else:
-								handicap = str(float(market["description"].split(" ")[3].replace("+", "")) - 0.5)
-							ou = f"{market['outcomes'][i]['price']['american']}"
 							if not player:
 								continue
-							if player not in res[game][prop]:
-								res[game][prop][player] = {}
-							res[game][prop][player][handicap] = ou.replace("EVEN", "100")
+
+							ou = f"{market['outcomes'][i]['price']['american']}".replace("EVEN", "100")
+							if prop in ["atgs", "fgs"]:
+								res[game][prop][player] = ou
+							else:
+								handicap = str(float(market["description"].split(" ")[3].replace("+", "")) - 0.5)
+								if player not in res[game][prop]:
+									res[game][prop][player] = {}
+								res[game][prop][player][handicap] = ou
 
 
 	with open("static/nhl/bovada.json", "w") as fh:
@@ -990,6 +993,8 @@ def writeMGM(date=None):
 				prop = "3-way"
 			elif prop == "goalscorer (including overtime)":
 				prop = "atgs"
+			elif prop == "first goalscorer in match (including overtime)":
+				prop = "fgs"
 			elif "how many saves" in prop:
 				player = prop.split(" will ")[-1].split(" (")[0]
 				prop = "saves"
@@ -1021,12 +1026,12 @@ def writeMGM(date=None):
 			elif len(results) >= 2:
 				if prop not in res[game]:
 					res[game][prop] = {}
-				skip = 1 if prop == "atgs" else 2
+				skip = 1 if prop in ["atgs", "fgs"] else 2
 				for idx in range(0, len(results), skip):
 					val = results[idx]["name"]["value"].lower()
-					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["atgs"]:
+					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["atgs", "fgs"]:
 						continue
-					elif prop not in ["atgs"]:
+					elif prop not in ["atgs", "fgs"]:
 						val = val.split(" ")[-1]
 					
 					#print(game, prop, player)
@@ -1043,7 +1048,7 @@ def writeMGM(date=None):
 						res[game][prop][player] = {
 							val: ou
 						}
-					elif prop == "atgs":
+					elif prop in ["atgs", "fgs"]:
 						res[game][prop][parsePlayer(val)] = ou
 					else:
 						try:
@@ -1089,7 +1094,7 @@ def writeKambi():
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'dal @ det': 1019881215}
+	#eventIds = {'dal @ det': 1019881390}
 	#data['dal @ det'] = {}
 	#print(eventIds)
 	#exit()
@@ -1145,6 +1150,9 @@ def writeKambi():
 			elif label == "to score - including overtime":
 				label = "atgs"
 				playerProp = True
+			elif label == "first goal scorer - including overtime":
+				label = "fgs"
+				playerProp = True
 			elif "points - " in label:
 				label = "pts"
 				playerProp = True
@@ -1195,6 +1203,15 @@ def writeKambi():
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 
 					data[game][label][line] = ou
+				elif label == "fgs":
+					for outcome in betOffer["outcomes"]:
+						player = parsePlayer(outcome["participant"])
+						try:
+							last, first = map(str, player.split(", "))
+							player = f"{first} {last}"
+							data[game][label][player] = outcome["oddsAmerican"]
+						except:
+							continue
 				else:
 					if label in ["sog"]:
 						line = betOffer["outcomes"][0]["label"].split(" ")[-1]
@@ -1211,7 +1228,7 @@ def writeKambi():
 					if player not in data[game][label]:
 						data[game][label][player] = {}
 
-					if label == "atgs":
+					if label in ["atgs"]:
 						line = "0.5"
 					elif label in ["pts"]:
 						line = str(float(line) - 0.5)
@@ -1316,6 +1333,8 @@ def writeFanduelManual():
 				prop = "lines";
 			} else if (label.indexOf("any time goal scorer") >= 0) {
 				prop = "atgs";
+			} else if (label.indexOf("first goal scorer") >= 0) {
+				prop = "fgs";
 			} else if (label.indexOf("player to record") >= 0) {
 				line = (parseFloat(label.split(" ")[3].replace("+", "")) - 0.5).toString();
 				if (label.indexOf("shots on goal") > 0) {
@@ -1467,7 +1486,7 @@ def writeFanduelManual():
 						data[game][prop][player] = {};
 					}
 
-					if (["atgs"].indexOf(prop) >= 0) {
+					if (["atgs", "fgs"].indexOf(prop) >= 0) {
 						data[game][prop][player] = odds;
 					} else {
 						data[game][prop][player][line] = odds;
@@ -1709,9 +1728,22 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	if finalOdds < 0:
 		profit = 100 * bet / (finalOdds * -1)
 
+	if prop == "fgs":
+		mult = impliedOver
+		ev = mult * profit + (1-mult) * -1 * bet
+		ev = round(ev, 1)
+		if player not in evData:
+			evData[player] = {}
+		evData[player][f"{prefix}fairVal"] = 0
+		evData[player][f"{prefix}implied"] = 0
+		
+		evData[player][f"{prefix}ev"] = ev
+		return
+
 	if "/" not in ou:
 		u = 1.10 - impliedOver
 		if u >= 1:
+			print(player, ou, finalOdds, impliedOver)
 			return
 		if over > 0:
 			under = int((100*u) / (-1+u))
@@ -1778,7 +1810,7 @@ def writeDK(date=None):
 	
 	subCats = {
 		496: [4525, 4999, 13192, 13189],
-		1190: [13809],
+		1190: [13809, 14496],
 		1189: [12040],
 		550: [5586, 5587, 7983, 10296],
 		1064: [10283, 10284, 12436],
@@ -1787,7 +1819,7 @@ def writeDK(date=None):
 	}
 
 	propIds = {
-		4999: "3-way", 13809: "atgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout", 7983: "pp_pts", 10296: "bs", 13750: "gift"
+		4999: "3-way", 13809: "atgs", 14496: "fgs", 12040: "sog", 5586: "pts", 5587: "ast", 13189: "spread", 13192: "total", 10283: "saves", 10284: "goals_against", 12436: "shutout", 7983: "pp_pts", 10296: "bs", 13750: "gift"
 	}
 
 	if False:
@@ -1953,13 +1985,11 @@ def writeDK(date=None):
 													lines[game][prop][line] = f"{odds}/{lines[game][prop][line].split('/')[-1]}"
 											else:
 												lines[game][prop][line] = odds+"/"+lines[game][prop][line]
-							elif prop in ["atgs"]:
+							elif prop in ["atgs", "fgs"]:
 								for outcome in outcomes:
 									player = parsePlayer(outcome["label"])
 									try:
-										lines[game][prop][player] = {
-											"0.5": outcome['oddsAmerican']
-										}
+										lines[game][prop][player] = outcome['oddsAmerican']
 									except:
 										continue
 							else:
@@ -2317,6 +2347,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							elif type(lineData[game][prop][player]) is dict:
 								for h in lineData[game][prop][player]:
 									handicaps[(handicap, h)] = player
+							else:
+								handicaps[(handicap, "0.5")] = player
 
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
@@ -2429,7 +2461,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 							#print(prop, player, o)
 
-							if book == "cz" and prop in ["pp_pts", "pts", "ast"]:
+							if book == "cz" and prop in ["pp_pts", "pts", "ast", "fgs"]:
 								continue
 							highestOdds.append(int(o))
 							odds.append(ou)
