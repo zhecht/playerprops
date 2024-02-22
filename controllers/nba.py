@@ -811,7 +811,7 @@ def writeMGM(date):
 			continue
 		ids.append(row["id"])
 
-	ids = ["15373852"]
+	#ids = ["15373852"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
