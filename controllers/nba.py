@@ -232,6 +232,9 @@ def writeCZ(date):
 		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 			continue
 
+		if "Daily" in data["name"]:
+			continue
+
 		game = data["name"].lower().replace("|", "").replace("at", "@")
 		away = convertNBATeam(game.split(' @ ')[0])
 		home = convertNBATeam(game.split(' @ ')[1])
