@@ -909,7 +909,7 @@ def writeMGM(date):
 					
 					ou = f"{results[idx].get('americanOdds', results[idx]['price']['americanOdds'])}"
 					try:
-						ou += f"/{results[idx+1].get('americanOdds', restults[idx+1]['price']['americanOdds'])}"
+						ou += f"/{results[idx+1].get('americanOdds', results[idx+1]['price']['americanOdds'])}"
 					except:
 						pass
 
