@@ -288,7 +288,7 @@ def getPropData(date = None, playersArg = "", teams = ""):
 	propData = {}
 	for game in dkData:
 		propData[game] = {}
-		for prop in ["saves", "ast", "pts", "sog", "atgs"]:
+		for prop in ["saves", "ast", "pts", "sog"]:
 			if prop not in dkData[game]:
 				continue
 			for player in dkData[game][prop]:

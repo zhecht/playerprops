@@ -2428,6 +2428,16 @@ def writePlayers(keep=None):
 						playerStats[hdr] = []	
 					playerStats[hdr].append(val)
 
+			playerStats["pts+reb+ast"] = []
+			playerStats["pts+reb"] = []
+			playerStats["pts+ast"] = []
+			playerStats["reb+ast"] = []
+			for pts,reb,ast in zip(playerStats["pts"], playerStats["reb"], playerStats["ast"]):
+				playerStats["pts+reb+ast"].append(str(int(pts)+int(reb)+int(ast)))
+				playerStats["pts+reb"].append(str(int(pts)+int(reb)))
+				playerStats["pts+ast"].append(str(int(pts)+int(ast)))
+				playerStats["reb+ast"].append(str(int(reb)+int(ast)))
+
 			for hdr in playerStats:
 				stats[team][player][hdr] = ",".join(playerStats[hdr])
 	
@@ -2546,7 +2556,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					elif player in stats[home]:
 						team = home
 
-					if team and "+" not in prop:
+					if team:
 						arr = ""
 						if prop == "3ptm":
 							arr = ",".join([x.split("-")[0] for x in stats[team][player]["3pt"].split(",")])

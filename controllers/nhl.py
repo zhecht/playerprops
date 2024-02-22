@@ -1349,7 +1349,7 @@ def writeFanduelManual():
 			} else if (label.indexOf("alternate puck line") >= 0) {
 				prop = "spread";
 			} else if (label.indexOf("alternate total goals") >= 0) {
-				prop = "total";
+				//prop = "total";
 			} else if (label.indexOf("total saves") >= 0) {
 				player = parsePlayer(label.split(" -")[0]);
 				prop = "saves";
@@ -1743,7 +1743,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	if "/" not in ou:
 		u = 1.10 - impliedOver
 		if u >= 1:
-			print(player, ou, finalOdds, impliedOver)
+			#print(player, ou, finalOdds, impliedOver)
 			return
 		if over > 0:
 			under = int((100*u) / (-1+u))
@@ -2611,13 +2611,15 @@ def sortEV(propArg):
 	for row in sorted(data):
 		if propArg != "atgs" and row[-1]["prop"] in ["atgs"]:
 			continue
+		if propArg != "fgs" and row[-1]["prop"] in ["fgs"]:
+			continue
 		if propArg != "3-way" and row[-1]["prop"] in ["3-way"]:
 			continue
 		print(row[:-1])
 
 	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "L10", "SZN", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
-		if row[-1]["prop"] in ["3-way", "atgs"]:
+		if row[-1]["prop"] in ["3-way", "atgs", "fgs"]:
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
@@ -2674,6 +2676,27 @@ def sortEV(propArg):
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nhl/atgs.csv", "w") as fh:
+		fh.write(output)
+
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "Kambi/BR"]) + "\n"
+	for row in sorted(data, reverse=True):
+		if row[-1]["prop"] != "fgs":
+			continue
+		implied = 0
+		if row[-1]["line"] > 0:
+			implied = 100 / (row[-1]["line"] + 100)
+		else:
+			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
+		implied *= 100
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		for book in ["fd", "dk", "mgm", "bv", "kambi"]:
+			o = str(row[-1]["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/nhl/fgs.csv", "w") as fh:
 		fh.write(output)
 
 if __name__ == '__main__':

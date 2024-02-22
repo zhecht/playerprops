@@ -811,7 +811,7 @@ def writeMGM(date):
 			continue
 		ids.append(row["id"])
 
-	#ids = ["15188981"]
+	ids = ["15373852"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
@@ -829,7 +829,10 @@ def writeMGM(date):
 		game = f"{convertNBATeam(fullTeam1)} @ {convertNBATeam(fullTeam2)}"
 
 		res[game] = {}
-		for row in data["games"]:
+		d = data["games"]
+		if not d:
+			d = data["optionMarkets"]
+		for row in d:
 			prop = row["name"]["value"].lower()
 
 			prefix = player = ""
@@ -881,12 +884,18 @@ def writeMGM(date):
 
 			prop = prefix+prop
 
-			results = row['results']
-			ou = f"{results[0]['americanOdds']}"
+			results = row.get('results', row['options'])
+			price = results[0]
+			if "price" in price:
+				price = price["price"]
+			if "americanOdds" not in price:
+				continue
+
+			ou = f"{price['americanOdds']}"
 			if len(results) < 2:
 				continue
 			if "americanOdds" in results[1]:
-				ou += f"/{results[1]['americanOdds']}"
+				ou += f"/{results[1].get('americanOdds', results[1]['price']['americanOdds'])}"
 			if "ml" in prop:
 				res[game][prop] = ou
 			elif len(results) >= 2:
@@ -898,9 +907,11 @@ def writeMGM(date):
 					else:
 						val = val.split(" ")[-1]
 					
-					ou = f"{results[idx]['americanOdds']}"
-					if "americanOdds" in results[idx+1]:
-						ou += f"/{results[idx+1]['americanOdds']}"
+					ou = f"{results[idx].get('americanOdds', results[idx]['price']['americanOdds'])}"
+					try:
+						ou += f"/{results[idx+1].get('americanOdds', restults[idx+1]['price']['americanOdds'])}"
+					except:
+						pass
 
 					if prop in ["double-double"]:
 						if prop not in res[game]:
