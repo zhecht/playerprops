@@ -887,7 +887,10 @@ def writeMGM(date):
 
 			prop = prefix+prop
 
-			results = row.get('results', row['options'])
+			try:
+				results = row.get('results', row['options'])
+			except:
+				continue
 			price = results[0]
 			if "price" in price:
 				price = price["price"]
