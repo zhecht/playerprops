@@ -2381,6 +2381,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			if propArg and prop != propArg:
 				continue
 
+			if "live" in prop:
+				continue
+
 			handicaps = {}
 			for book in lines:
 				lineData = lines[book]
@@ -2710,7 +2713,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							except:
 								pass
 
-							if "ml" in lines["fd"][game]:
+							if game in lines["fd"] and "ml" in lines["fd"][game]:
 								if isAway == "A":
 									gameLine = lines["fd"][game]["ml"].split('/')[0]
 								else:
