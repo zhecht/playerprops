@@ -289,7 +289,10 @@ def writeCZ(date):
 			selections = market["selections"]
 			skip = 2
 			for i in range(0, len(selections), skip):
-				ou = str(selections[i]["price"]["a"])
+				try:
+					ou = str(selections[i]["price"]["a"])
+				except:
+					continue
 				if skip == 2:
 					ou += f"/{selections[i+1]['price']['a']}"
 					if selections[i]["name"].lower().replace("|", "") == "under":
