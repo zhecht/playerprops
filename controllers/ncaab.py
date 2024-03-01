@@ -1188,7 +1188,7 @@ def writeKambi(date):
 		json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "").replace("\t", "")
 	if player == "nicholas boyd":
 		player = "nick boyd"
 	elif player == "alvaro cardenas torre":
@@ -1795,7 +1795,7 @@ def writeDK(date):
 
 			for event in data["eventGroup"]["events"]:
 				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
-				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
+				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=5)
 				if startDt.day != int(date[-2:]):
 					continue
 					pass
@@ -1904,7 +1904,10 @@ def writeDK(date):
 									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
 									if player not in lines[game][prop]:
 										lines[game][prop][player] = {}
-									lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+									try:
+										lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
+									except:
+										continue
 									if outcomes[i]["label"] == "Under":
 										lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
 							else:
