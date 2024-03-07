@@ -1678,7 +1678,8 @@ def writeDK(date):
 		"blocks/steals": 1219,
 		"turnovers": 1220,
 		"combos": 583,
-		"team": 523
+		"team": 523,
+		"quick hits": 1157
 	}
 	
 	subCats = {
@@ -1689,10 +1690,11 @@ def writeDK(date):
 		1218: [12497],
 		1219: [12499, 12500, 12502],
 		1220: [12504],
-		523: [4609]
+		523: [4609],
+		1157: [14793]
 	}
 
-	propIds = {13202: "spread", 13201: "total", 12488: "pts", 13785: "pts", 12492: "reb", 12536: "reb", 12495: "ast", 12537: "ast", 12497: "3ptm", 5001: "pts+reb+ast", 9976: "pts+reb", 9973: "pts+ast", 9974: "reb+ast", 12499: "blk", 12500: "stl", 12502: "stl+blk", 12504: "to"}
+	propIds = {13202: "spread", 13201: "total", 12488: "pts", 13785: "pts", 12492: "reb", 12536: "reb", 12495: "ast", 12537: "ast", 12497: "3ptm", 5001: "pts+reb+ast", 9976: "pts+reb", 9973: "pts+ast", 9974: "reb+ast", 12499: "blk", 12500: "stl", 12502: "stl+blk", 12504: "to", 14793: "first_3ptm"}
 
 	if False:
 		mainCats = {
@@ -1821,6 +1823,10 @@ def writeDK(date):
 									except:
 										pass
 									lines[game][prop][line] = ou
+							elif prop == "first_3ptm":
+								for outcome in row["outcomes"]:
+									player = parsePlayer(outcome["participant"].split(" (")[0])
+									lines[game][prop][player] = f"{outcome['oddsAmerican']}"
 							elif len(outcomes) > 2:
 								for i in range(0, len(outcomes), 2):
 									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
@@ -2063,6 +2069,114 @@ def write365():
 	"""
 	pass
 
+def convertTeamRankingsTeam(team):
+	if team == "new orleans":
+		return "no"
+	elif team == "washington":
+		return "wsh"
+	elif team == "okla city":
+		return "okc"
+	elif team == "phoenix":
+		return "phx"
+	elif team == "san antonio":
+		return "sa"
+	elif team == "utah":
+		return "utah"
+	elif team == "brooklyn":
+		return "bkn"
+	elif team == "new york":
+		return "ny"
+	elif team == "golden state":
+		return "gs"
+	return team.replace(" ", "")[:3]
+
+def writeRankings():
+	baseUrl = "https://www.teamrankings.com/nba/stat/"
+	pages = ["three-pointers-made-per-game", "opponent-three-pointers-made-per-game"]
+	ids = ["3ptm", "opp_3ptm"]
+
+	rankings = {}
+	for idx, page in enumerate(pages):
+		url = baseUrl+page
+		outfile = "outnba3"
+		time.sleep(0.2)
+		call(["curl", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+		ranking = ids[idx]
+
+		for row in soup.find("table").findAll("tr")[1:]:
+			tds = row.findAll("td")
+			team = convertTeamRankingsTeam(row.findAll("a")[0].text.lower())
+
+			if team not in rankings:
+				rankings[team] = {
+					"3ptm": 0,
+					"opp_3ptm": 0
+				}
+
+			rankings[team][ranking] = float(tds[2].text)
+
+	with open(f"{prefix}static/nba/rankings.json", "w") as fh:
+		json.dump(rankings, fh, indent=4)
+
+def writeThreesday():
+	
+	with open(f"{prefix}static/nba/rankings.json", "w") as fh:
+		rankings = json.load(fh)
+
+	with open(f"{prefix}static/nba/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	output = "Game|away 3ptm|away opp 3ptm|home 3ptm|home opp 3ptm|avg\n"
+	output += ":--|:--|:--|:--|:--|:--\n"
+	data = []
+	for game in kambiLines:
+		away, home = map(str, game.split(" @ "))
+		avg = (rankings[away]["3ptm"] + rankings[away]["opp_3ptm"] + rankings[home]["3ptm"] + rankings[home]["opp_3ptm"]) / 4
+
+		data.append({
+			"game": game,
+			"away_3ptm": rankings[away]["3ptm"],
+			"away_opp_3ptm": rankings[away]["opp_3ptm"],
+			"home_3ptm": rankings[home]["3ptm"],
+			"home_opp_3ptm": rankings[home]["opp_3ptm"],
+			"avg": avg
+		})
+
+	for row in sorted(data, key=lambda k: k["avg"], reverse=True):
+		output += f"{row['game'].upper()}|{row['away_3ptm']}|{row['away_opp_3ptm']}|{row['home_3ptm']}|{row['home_opp_3ptm']}|{row['avg']}\n"
+
+	print(output)
+
+def writeInjuries():
+	with open(f"{prefix}static/nba/lineups.json") as fh:
+		lineups = json.load(fh)
+
+	with open(f"{prefix}static/nba/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/basketballreference/totals.json") as fh:
+		totals = json.load(fh)
+
+	output = "Injury Watch -- (3ptm-3pta)\n\n"
+	for game in kambiLines:
+		output += f"{game.upper()}  \n"
+		for status in ["out", "50/50", "likely"]:
+			for team in game.split(" @ "):
+				for player in lineups[team][status]:
+					if player not in totals[team]:
+						continue
+					ptm = round(totals[team][player]["3ptm"] / totals[team][player]["gamesPlayed"], 1)
+					pta = round(totals[team][player]["3pta"] / totals[team][player]["gamesPlayed"], 1)
+					output += f"{status.upper()}: {player.title()} ({ptm}-{pta})  \n"
+		output += "\n\n---\n\n"
+
+	with open("static/nba/injuries.txt", "w") as fh:
+		fh.write(output)
+
+def writeLeaders():
+	pass
+
 def bvParlay():
 	with open(f"{prefix}static/nba/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -2273,7 +2387,10 @@ def writeLineups():
 			team = convertNBATeam(teamLink.get("href").split("-")[-1])
 			lineups[team] = {
 				"confirmed": False if "is-expected" in statusList[idx].get("class") else True,
-				"starters": []
+				"starters": [],
+				"50/50": [],
+				"likely": [],
+				"out": []
 			}
 			for playerIdx, li in enumerate(lineupList[idx].findAll("li", class_="lineup__player")):
 				player = " ".join(li.find("a").get("href").split("/")[-1].split("-")[:-1])
@@ -2282,6 +2399,14 @@ def writeLineups():
 
 				if playerIdx < 5:
 					lineups[team]["starters"].append(player)
+				elif "hide" in li.get("class"):
+					continue
+				elif "is-pct-play-0" in li.get("class"):
+					lineups[team]["out"].append(player)
+				elif "is-pct-play-50" in li.get("class"):
+					lineups[team]["50/50"].append(player)
+				elif "is-pct-play-75" in li.get("class"):
+					lineups[team]["likely"].append(player)
 
 	with open(f"{prefix}static/nba/lineups.json", "w") as fh:
 		json.dump(lineups, fh, indent=4)
@@ -2424,6 +2549,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				avgMin = []
 				winLossSplits = [[],[]]
 				awayHomeSplits = [[],[]]
+				winLossSplitsPerMin = [[],[]]
+				awayHomeSplitsPerMin = [[],[]]
 				team = opp = gameLine = ""
 				if player:
 					convertedProp = prop
@@ -2476,7 +2603,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								for p in convertedProp.split("+"):
 									val += teamStats[player][p]
 								totalSplits.append(str(int(val)))
-								totalSplitsPerMin.append(str(round(avgMin * int(val) / minutes, 2)))
+								valPerMin = round(avgMin * int(val) / minutes, 2)
+								totalSplitsPerMin.append(str(valPerMin))
 								if val > float(playerHandicap):
 									totalOver += 1
 								if val * avgMin / minutes > float(playerHandicap):
@@ -2487,13 +2615,17 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 								if teamScore > oppScore:
 									winLossSplits[0].append(val)
+									winLossSplitsPerMin[0].append(valPerMin)
 								elif teamScore < oppScore:
 									winLossSplits[1].append(val)
+									winLossSplitsPerMin[1].append(valPerMin)
 
 								if teamIsAway:
 									awayHomeSplits[0].append(val)
+									awayHomeSplitsPerMin[0].append(valPerMin)
 								else:
 									awayHomeSplits[1].append(val)
+									awayHomeSplitsPerMin[1].append(valPerMin)
 
 					if totalGames:
 						totalOver = int(totalOver * 100 / totalGames)
@@ -2742,6 +2874,19 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								lossSplitAvg = 100 - lossSplitAvg
 						winLoss = f"{winSplitAvg}% - {lossSplitAvg}%"
 
+						winSplitAvg = lossSplitAvg = 0
+						if len(winLossSplitsPerMin[0]):
+							arr = [x for x in winLossSplitsPerMin[0] if x > float(playerHandicap)]
+							winSplitAvg = round(len(arr) * 100 / len(winLossSplitsPerMin[0]))
+							if i == 1:
+								winSplitAvg = 100 - winSplitAvg
+						if len(winLossSplitsPerMin[1]):
+							arr = [x for x in winLossSplitsPerMin[1] if x > float(playerHandicap)]
+							lossSplitAvg = round(len(arr) * 100 / len(winLossSplitsPerMin[1]))
+							if i == 1:
+								lossSplitAvg = 100 - lossSplitAvg
+						winLossPerMin = f"{winSplitAvg}% - {lossSplitAvg}%"
+
 						awaySplitAvg = homeSplitAvg = 0
 						if len(awayHomeSplits[0]):
 							arr = [x for x in awayHomeSplits[0] if x > float(playerHandicap)]
@@ -2755,6 +2900,19 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								homeSplitAvg = 100 - homeSplitAvg
 						awayHome = f"{awaySplitAvg}% - {homeSplitAvg}%"
 
+						awaySplitAvg = homeSplitAvg = 0
+						if len(awayHomeSplitsPerMin[0]):
+							arr = [x for x in awayHomeSplitsPerMin[0] if x > float(playerHandicap)]
+							awaySplitAvg = round(len(arr) * 100 / len(awayHomeSplitsPerMin[0]))
+							if i == 1:
+								awaySplitAvg = 100 - awaySplitAvg
+						if len(awayHomeSplitsPerMin[1]):
+							arr = [x for x in awayHomeSplitsPerMin[1] if x > float(playerHandicap)]
+							homeSplitAvg = round(len(arr) * 100 / len(awayHomeSplitsPerMin[1]))
+							if i == 1:
+								homeSplitAvg = 100 - homeSplitAvg
+						awayHomePerMin = f"{awaySplitAvg}% - {homeSplitAvg}%"
+
 						confirmed = False
 						if team in lineups:
 							confirmed = lineups[team]["confirmed"]
@@ -2763,6 +2921,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["rank"] = rank
 						evData[key]["winLossSplits"] = winLoss
 						evData[key]["awayHomeSplits"] = awayHome
+						evData[key]["winLossSplitsPerMin"] = winLossPerMin
+						evData[key]["awayHomeSplitsPerMin"] = awayHomePerMin
 						evData[key]["posRank"] = posRank
 						evData[key]["totalOver"] = totalOver
 						evData[key]["totalOverPerMin"] = totalOverPerMin
@@ -2813,7 +2973,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"gameLine": gameLine,
 								"bookOdds": ", ".join([f"{b}: {o}" for o, b in zip(l, books)])
 							}
-							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits"]:
+							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits", "awayHomeSplitsPerMin", "winLossSplitsPerMin"]:
 								j[x] = evData[key][x]
 							htmlData.append(j)
 
@@ -3026,6 +3186,9 @@ if __name__ == '__main__':
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--debug", action="store_true", help="Debug")
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
+	parser.add_argument("--threesday", action="store_true", help="3sday")
+	parser.add_argument("--injuries", action="store_true", help="injuries")
+	parser.add_argument("--leaders", action="store_true", help="leaders")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Player")
@@ -3039,6 +3202,19 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
+
+	if args.injuries:
+		writeInjuries()
+
+	if args.leaders:
+		writeLeaders()
+
+	if args.threesday:
+		writeRankings()
+		writeLineups()
+		writeThreesday()
+		writeInjuries()
+		writeLeaders()
 
 	if args.action:
 		writeActionNetwork(args.date)

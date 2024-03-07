@@ -332,15 +332,15 @@
 				const data = cell.getRow().getData();
 				const vals = cell.getValue().split(" - ");
 				let val1 = vals[0];
-				if (cell.getField() == "awayHomeSplits" && data.isAway == "A") {
+				if (cell.getField().indexOf("awayHomeSplits") >= 0 && data.isAway == "A") {
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
-				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) < 0) {
+				} else if (cell.getField().indexOf("winLossSplits") >= 0 && parseInt(data.gameLine) < 0) {
 					val1 = "<div style='text-decoration:underline;'>"+val1+"</div>";
 				}
 				let val2 = vals[1];
-				if (cell.getField() == "awayHomeSplits" && data.isAway == "H") {
+				if (cell.getField().indexOf("awayHomeSplits") >= 0 && data.isAway == "H") {
 					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
-				} else if (cell.getField() == "winLossSplits" && parseInt(data.gameLine) > 0) {
+				} else if (cell.getField().indexOf("winLossSplits") >= 0 && parseInt(data.gameLine) > 0) {
 					val2 = "<div style='text-decoration:underline;'>"+val2+"</div>";
 				}
 				return "<div style='display:flex;justify-content:center;'>"+val1+"<div style='padding: 0 5px;'> - </div>"+val2+"</div>";
@@ -383,9 +383,13 @@
 						//{title: "Opp % Over", field: "oppOver", hozAlign: "center", formatter: percentFormatter, width: 70},
 						{title: "Prop", field: "prop", hozAlign: "center"},
 						{title: "Line", field: "line", hozAlign: "center"},
-						//{title: "SZN AVG", field: "avg", hozAlign: "center", width: 80, formatter: colorFormatter},
-						{title: "W-L Splits", field: "winLossSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
-						{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
+
+						//{title: "W-L Splits", field: "winLossSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
+						//{title: "A-H Splits", field: "awayHomeSplits", hozAlign: "center", visible: true, formatter:splitsFormatter},
+
+						{title: "W-L Splits", field: "winLossSplitsPerMin", hozAlign: "center", visible: true, formatter:splitsFormatter},
+						{title: "A-H Splits", field: "awayHomeSplitsPerMin", hozAlign: "center", visible: true, formatter:splitsFormatter},
+
 						{title: "LYR Total Over", field: "lastYearTotal", width: 80, hozAlign: "center", formatter: percentFormatter},
 						{title: "L15 Total Over", field: "total15Over", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
 						{title: "Total Over", field: "totalOver", width: 80, hozAlign: "center", formatter: percentFormatter, sorter: "number"},
@@ -442,7 +446,7 @@
 		{% endif %}
 		{% if date == "" %}
 			<script>
-				TABLE.getColumn("hit").hide();
+				
 			</script>
 		{% endif %}
 	</body>

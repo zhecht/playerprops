@@ -2383,7 +2383,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 								lastTotalGames += 1
 								val = 0
 								if convertedProp == "pp_pts":
-									val = lastYearStats[team][name][d]["ppg"] + lastYearStats[team][name][d]["ppa"]
+									val = lastYearStats[team][name][d].get("ppg", 0) + lastYearStats[team][name][d].get("ppa", 0)
 								else:
 									val = lastYearStats[team][name][d][convertedProp]
 								if val > float(playerHandicap):
