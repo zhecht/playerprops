@@ -54,66 +54,40 @@ def write_stats(date):
 			allStats[home] = {}
 
 		gameId = boxscores[date][game].split("/")[-2]
-		url = f"https://www.espn.com/nba/boxscore/_/gameId/{gameId}"
+		url = f"https://site.web.api.espn.com/apis/site/v2/sports/basketball/nba/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
 		outfile = "outnba"
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])
-		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		if "players" not in data["boxscore"]:
+			continue
 		
-		# tables are split with players then stats, players -> stats
-		headers = []
-		playerList = []
-		team = away
-		for idx, table in enumerate(soup.findAll("table")[1:5]):
-			if idx == 2:
-				playerList = []
-				team = home
-
+		teamIds = {}
+		for teamIdx, teamRow in enumerate(data["boxscore"]["players"]):
+			team = away if teamIdx == 0 else home
+			teamIds[teamRow["team"]["id"]] = team
 			if team not in playerIds:
-				playerIds[team] = {}
+				playerIds[team] = {}	
+			for statRow in teamRow["statistics"]:
+				headers = []
+				for hdr in statRow["labels"]:
+					headers.append(hdr.lower())
 
-			playerIdx = 0
-			for row in table.findAll("tr")[:-2]:
-				if idx == 0 or idx == 2:
-					# PLAYERS
-					if row.text.strip().lower() in ["starters", "bench", "team"]:
-						continue
-					try:
-						nameLink = row.find("a").get("href").split("/")
-						fullName = nameLink[-1].replace("-", " ")
-						fullName = parsePlayer(fullName)
-						playerId = int(nameLink[-2])
-					except:
-						continue
-					playerIds[team][fullName] = playerId
-					playerList.append(fullName)
-				else:
-					# idx==1 or 3. STATS
-					if row.find("td").text.strip().lower() == "min":
-						headers = []
-						for td in row.findAll("td"):
-							headers.append(td.text.strip().lower())
-						continue
-
-					player = playerList[playerIdx]
-					playerIdx += 1
-					playerStats = {}
-					for tdIdx, td in enumerate(row.findAll("td")):
-						if td.text.lower().startswith("dnp-"):
-							playerStats["min"] = 0
-							break
-						header = headers[tdIdx]
-						if td.text.strip().replace("-", "") == "":
-							playerStats[header] = 0
-						elif header in ["fg", "3pt", "ft"]:
-							made, att = map(int, td.text.strip().split("-"))
-							playerStats[header+"a"] = att
-							playerStats[header+"m"] = made
+				for playerRow in statRow["athletes"]:
+					player = parsePlayer(playerRow["athlete"]["displayName"])
+					playerIds[team][player] = playerRow["athlete"]["id"]
+					if player not in allStats[team]:
+						allStats[team][player] = {}
+					for stat, hdr in zip(playerRow["stats"], headers):
+						if hdr in ["fg", "3pt", "ft"]:
+							s1,s2 = map(int, stat.split("-"))
+							allStats[team][player][f"{hdr}m"] = s1
+							allStats[team][player][f"{hdr}a"] = s2
 						else:
-							val = int(td.text.strip())
-							playerStats[header] = val
-
-					allStats[team][player] = playerStats
+							allStats[team][player][hdr] = int(stat)
 
 	for team in allStats:
 		if not os.path.isdir(f"{prefix}static/basketballreference/{team}"):
@@ -146,7 +120,7 @@ def write_totals():
 
 				if "gamesPlayed" not in totals[team][player]:
 					totals[team][player]["gamesPlayed"] = 0
-				if stats[player]["min"] > 0:
+				if stats[player].get("min", 0) > 0:
 					totals[team][player]["gamesPlayed"] += 1
 
 	with open(f"{prefix}static/basketballreference/totals.json", "w") as fh:

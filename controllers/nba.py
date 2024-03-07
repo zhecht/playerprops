@@ -220,7 +220,7 @@ def writeCZ(date):
 		games.append(event["id"])
 
 
-	#games = ["9835ed03-b6bc-49c3-b274-5e6a32b56612"]
+	#games = ["654790b8-c1cd-4088-bcb1-bcbcd6a03b60"]
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
@@ -276,6 +276,8 @@ def writeCZ(date):
 					prop = "total"
 			elif "spread" in prop:
 				prop = "spread"
+			elif prop == "first 3pt field goal scorer":
+				prop = "first_3ptm"
 			elif "player total" in name:
 				p = prop.split(" total")[0]
 				player = parsePlayer(p)
@@ -289,7 +291,7 @@ def writeCZ(date):
 				res[game][prop] = {}
 
 			selections = market["selections"]
-			skip = 2
+			skip = 1 if prop == "first_3ptm" else 2
 			for i in range(0, len(selections), skip):
 				try:
 					ou = str(selections[i]["price"]["a"])
@@ -311,6 +313,9 @@ def writeCZ(date):
 						res[game][prop][line] = ou
 					except:
 						continue
+				elif skip == 1:
+					player = parsePlayer(selections[i]["name"].replace("|", ""))
+					res[game][prop][player] = ou
 				else:
 					line = str(float(market["line"]))
 					res[game][prop][player] = {
@@ -1102,6 +1107,42 @@ def parsePlayer(player):
 		player = "jaden ivey"
 	return player
 
+def writeESPN():
+	js = """
+
+	{
+		function parsePlayer(player) {
+			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+		}
+
+
+		async function main() {
+			let away = document.querySelector("div[data-testid='away-team-card'] span").innerText.split(" ")[0].toLowerCase();
+			let home = document.querySelector("div[data-testid='home-team-card'] span").innerText.split(" ")[0].toLowerCase();
+			let game = away+" @ "+home;
+			data[game] = {
+				"first_3ptm": {}
+			};
+			let table = document.querySelector("div[data-testid='drawer-1st 3PT Field Goal Scorer']");
+			if (table.querySelectorAll("button").length == 0) {
+				table.querySelector("div").click();
+				await new Promise(resolve => setTimeout(resolve, 1000));
+			}
+			const btns = table.querySelectorAll("button");
+			for (let btn of btns) {
+				let player = parsePlayer(btn.querySelector("span").innerText);
+				let odds = btn.querySelector("span:nth-child(2)").innerText;
+				data[game]["first_3ptm"][player] = odds;
+			}
+
+			console.log(data);
+		}
+
+		main();
+	}
+
+	"""
+
 def writeFanduelManual():
 	js = """
 
@@ -1610,6 +1651,18 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	profit = finalOdds / 100 * bet
 	if finalOdds < 0:
 		profit = 100 * bet / (finalOdds * -1)
+
+	if prop == "first_3ptm":
+		mult = impliedOver
+		ev = mult * profit + (1-mult) * -1 * bet
+		ev = round(ev, 1)
+		if player not in evData:
+			evData[player] = {}
+		evData[player][f"{prefix}fairVal"] = 0
+		evData[player][f"{prefix}implied"] = 0
+		
+		evData[player][f"{prefix}ev"] = ev
+		return
 
 	if "/" not in ou:
 		u = 1.07 - impliedOver
@@ -2447,6 +2500,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nba/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/nba/espn.json") as fh:
+		espnLines = json.load(fh)
+
 	with open(f"{prefix}static/basketballreference/lastYearStats.json") as fh:
 		lastYearStats = json.load(fh)
 
@@ -2479,7 +2535,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
-		"cz": czLines
+		"cz": czLines,
+		"espn": espnLines
 	}
 
 	with open(f"{prefix}static/nba/ev.json") as fh:
@@ -2534,6 +2591,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							elif type(lineData[game][prop][player]) is dict:
 								for h in lineData[game][prop][player]:
 									handicaps[(handicap, h)] = player
+							else:
+								for h in lineData[game][prop][player]:
+									handicaps[(handicap, " ")] = player
 
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
@@ -2700,7 +2760,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 										continue
 									val = lineData[game][prop][handicap][playerHandicap]
 								else:
-									if playerHandicap != val.split(" ")[0]:
+									if prop != "first_3ptm" and playerHandicap != val.split(" ")[0]:
 										continue
 									val = lineData[game][prop][handicap].split(" ")[-1]
 
@@ -3092,10 +3152,27 @@ def sortEV():
 		data.append((d["ev"], d["game"], player, d["playerHandicap"], d["line"], d["book"], j, d["lastYearTotal"], d))
 
 	for row in sorted(data):
-		if "total" in row[-1]["prop"] or "spread" in row[-1]["prop"] or "ml" in row[-1]["prop"]:
+		if "total" in row[-1]["prop"] or "spread" in row[-1]["prop"] or "ml" in row[-1]["prop"] or row[-1]["prop"] == "first_3ptm":
 			continue
 		print(row[:-1])
 
+
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "DK", "CZ", "ESPN"]) + "\n"
+	for row in sorted(data, reverse=True):
+		player = row[-1]["player"]
+		prop = row[-1]["prop"]
+		if prop != "first_3ptm":
+			continue
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), f"{round(row[-1]['imp'])}%", row[-1]["game"].upper(), player.title()]
+		for book in ["dk", "cz", "espn"]:
+			o = str(row[-1]["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/nba/threesday.csv", "w") as fh:
+		fh.write(output)
 
 	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):

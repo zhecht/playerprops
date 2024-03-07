@@ -1248,6 +1248,8 @@ def parsePlayer(player):
 		return "mikey eyssimont"
 	elif player == "john jason peterka":
 		return "jj peterka"
+	elif player == "alexander nylander":
+		return "alex nylander"
 	return player
 
 def writeFanduelManual():
