@@ -100,6 +100,8 @@ def write_stats(date):
 		"""
 		gameFirsts = {}
 		for play in data["plays"]:
+			if "team" not in play:
+				continue
 			team = teamIds[play["team"]["id"]]
 			if play["scoringPlay"]:
 				isThree = play["scoreValue"] == 3
