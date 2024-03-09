@@ -243,6 +243,9 @@ def convertTeam(game):
 def parsePlayer(player):
 	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 
+def parseTeam(player):
+	return strip_accents(player).lower().replace(".", "").replace("'", "").replace(" ", "-")
+
 def strip_accents(text):
 	try:
 		text = unicode(text, 'utf-8')
@@ -268,85 +271,6 @@ def convertAmericanOdds(avg):
 	else:
 		avg = -100 / (avg - 1)
 	return round(avg)
-
-def writeTotals(teamArg=""):
-	outfile = f"soccerout"
-
-	with open("static/soccer/fanduelLines.json") as fh:
-		fdLines = json.load(fh)
-
-	with open("static/soccer/corners.json") as fh:
-		corners = json.load(fh)
-
-	with open("static/soccer/totals.json") as fh:
-		totals = json.load(fh)
-
-	for game in fdLines:
-		for team in game.split(" @ "):
-			if teamArg and team != teamArg:
-				continue
-			if team in corners:
-				time.sleep(0.3)
-				os.system(f"curl 'https://www.windrawwin.com/results/{corners[team]['link']}/' --compressed -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Referer: https://www.windrawwin.com/results/houston/' -H 'Alt-Used: www.windrawwin.com' -H 'Connection: keep-alive' -H 'Cookie: ASPSESSIONIDCUCSSQDA=HHEJKDNAFOCPOKLJBGFHEMPC; ASPSESSIONIDSGASSQDC=BPCMDAKAMJEFEDHEJCKPCFGO; ASPSESSIONIDQGAQTSBD=LEJCKKBBBABAADPNEPCLABOK; ASPSESSIONIDSGCRRTDD=NCHDOFOAPEEKDHKLNBOGBFAJ; ASPSESSIONIDAWCRQRBA=AMCJLPHAGNKDNMLIOCOMPNIP; ASPSESSIONIDSECRRQBC=NFHDHIKAAEAEOMKOGHFGMLFM; ASPSESSIONIDCWBTSRCA=IKKMLILABMLJPHJFKCBOEKDN; ASPSESSIONIDCWDRQQAB=JBPBCDDBENAMAKALOGMDGIHM; ASPSESSIONIDCUBRSRBA=DHLOOPIAGACHNJLMCHHJDFKH; ASPSESSIONIDCUASQQAB=ECDMPFNACBJAMOMGBGKMONOE; ASPSESSIONIDCUBSRRAA=MFKEMAMAKIEALAJCOBIODOFK; ASPSESSIONIDCWATSQBD=CGEDIALACLIBEALNDCHMEFPK; ASPSESSIONIDSGDSQTCC=AKHHIHHAMJMPGKJMHLIHLHFN; ASPSESSIONIDAWCTTQAD=EIFOMCCBKOAIKPAGLDCEEGHJ; ASPSESSIONIDSGATRSDC=NDOAGCBBDDJOFCDIJDOMNLOA; ASPSESSIONIDCWBSRQAA=BPMABIJANMELHBNLLBFDAHEK; ASPSESSIONIDQGBQRSDC=FPDIBMGBJPIFODLKHJNINGOI; ASPSESSIONIDAUAQTQAB=HNBMIJOAHFJPALBNFPNBPNHO; ASPSESSIONIDQGCQTRAD=LJEJFDEBPBEHIDCGDBBEBHOG; ASPSESSIONIDAUDTSSAA=HJJIDBNAJNAHGEOGGJHPFCEO; ASPSESSIONIDSEBSQRDD=JEPIMLFBBLIAHDHPCGCEMNDM; ASPSESSIONIDAUARQSCA=KPFHEMGBGECIIFMCLEJBMICL; ASPSESSIONIDCWBSQRBB=DDLJILEBGHOMMHOOKAMOEBKL; ASPSESSIONIDSECSQRAC=AKPDOKCBPIIMIOHENMMPHMKP; ASPSESSIONIDAUCTTRAC=MDCGEKABKMGEIEFLHJLIHPJK; ASPSESSIONIDAWAQRQBD=OAFHGMHBNEJGNOGLDIBFCLBC; ASPSESSIONIDCWDSSQAA=LMALIPJBLDEOIEGLABGNPMGA; ASPSESSIONIDAUCSTRAC=CGKIBNJBMFOPLEDNFFLNEMAJ; ASPSESSIONIDAUCRRTCA=AODPGFLBLHPNCPJGHAGMNMHD; ASPSESSIONIDAUAQRQCA=EBNKINABAILCPGBHILFMEEBJ; ASPSESSIONIDCUBRRRDB=PKBPBCABKELBKGDIHCPBBPGI; ASPSESSIONIDQEDSRQBD=JKEJKMIBBEPDOKHJKCJEKKHG' -o {outfile}")
-
-				soup = BS(open(outfile, 'rb').read(), "lxml")
-
-				totals[team] = {}
-				for row in soup.findAll("tr")[2:]:
-					if row.get("class") and ("hidden" in row.get("class") or "unhidden" in row.get("class") or "vtop" in row.get("class")):
-						continue
-					if len(row.findAll("td")) < 7:
-						continue
-					if " v " not in row.findAll("td")[1].text:
-						continue
-					matchup = row.findAll("td")[1].text.split(" v ")[1].lower()
-					isAway = convertTeam(matchup) == team
-					opp = row.findAll("td")[1].text.split(" v ")[1].lower()
-					if isAway:
-						opp = row.findAll("td")[1].text.split(" v ")[0].lower()
-					opp = convertTeam(opp)
-					#print(matchup, isAway)
-					teamScore, oppScore = map(int, row.findAll("td")[2].text.split("-"))
-					teamScoreHalf, oppScoreHalf = map(int, row.findAll("td")[3].text.split("-"))
-					if isAway:
-						teamScore, oppScore = oppScore, teamScore
-						teamScoreHalf, oppScoreHalf = oppScoreHalf, teamScoreHalf
-
-					idx = 0
-					which = "opp" if isAway else ""
-					hdrs = ["pos", "corners", "fouls", "shots_on_target", "shots_off_target"]
-					j = {}
-					for td in row.findAll("td")[4:-1]:
-						if idx == 5:
-							which = "" if isAway else "opp"
-						hdr = hdrs[idx % 5]
-						if which:
-							hdr = which+"_"+hdr
-						if "%" in td.text or not strip_accents(td.text):
-							j[hdr] = strip_accents(td.text)
-						else:
-							j[hdr] = int(td.text)
-						idx += 1
-
-					j["opp"] = opp
-					j["total"] = teamScore
-					j["opp_total"] = oppScore
-					j["game_total"] = teamScore + oppScore
-					j["1h_total"] = teamScoreHalf
-					j["1h_opp_total"] = oppScoreHalf
-					j["1h_game_total"] = teamScoreHalf + oppScoreHalf
-					j["total_shots"] = j["shots_on_target"] + j["shots_off_target"]
-					j["opp_total_shots"] = j["opp_shots_on_target"] + j["opp_shots_off_target"]
-					j["game_total_shots"] = j["total_shots"] + j["opp_total_shots"]
-
-					for hdr in j:
-						if hdr not in totals[team]:
-							totals[team][hdr] = []
-						totals[team][hdr].append(j[hdr])
-
-
-	with open("static/soccer/totals.json", "w") as fh:
-		json.dump(totals, fh, indent=4)
 
 def writeCorners():
 	outfile = f"soccerout"
@@ -1204,20 +1128,7 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/soccer/bosnia-and-herzegovina---premier-league/zrinjski-v-fk-velez-mostar-32723810",
-  "https://mi.sportsbook.fanduel.com/soccer/bosnia-and-herzegovina---premier-league/borac-banja-luka-v-sarajevo-32723930",
-  "https://mi.sportsbook.fanduel.com/soccer/wales---premiership/connahs-quay-v-bala-town-32724089",
-  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/ad-guanacasteca-v-cs-herediano-32714200",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/gremio-v-athletico-pr-32688180",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/coritiba-v-cuiaba-32688184",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/america-mg-v-botafogo-32688185",
-  "https://mi.sportsbook.fanduel.com/soccer/us-major-league-soccer/inter-miami-cf-v-charlotte-fc-32703234",
-  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/cs-cartagines-v-ad-san-carlos-32712543",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/bahia-v-internacional-32688186",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/vasco-da-gama-v-fortaleza-ec-32688179",
-  "https://mi.sportsbook.fanduel.com/soccer/brazilian-serie-a/goias-v-sao-paulo-32689650",
-  "https://mi.sportsbook.fanduel.com/soccer/colombian-primera-a/millonarios-v-union-magdalena-32672222",
-  "https://mi.sportsbook.fanduel.com/soccer/costa-rican-primera-division/ld-alajuelense-v-municipal-perez-zeledon-32714428"
+	"https://mi.sportsbook.fanduel.com/soccer/italian-serie-a/napoli-v-torino-33056930"
 ]
 
 	lines = {}
@@ -1432,7 +1343,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	
 	evData[player][f"{prefix}ev"] = ev
 
-def writeDK(date):
+def writeDK(date, leagueArg=""):
 	url = "https://sportsbook.draftkings.com/leagues/soccer/champions-league"
 
 	if not date:
@@ -1469,10 +1380,12 @@ def writeDK(date):
 		leagues = json.load(fh)["dk"]
 
 	for league in leagues:
+		if leagueArg and leagues[league].lower() != leagueArg.lower():
+			continue
 		for mainCat in mainCats:
 			for subCat in subCats.get(mainCats[mainCat], [0]):
 				time.sleep(0.3)
-				url = f"https://sportsbook-us-mi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/{league}/categories/{mainCats[mainCat]}"
+				url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/{league}/categories/{mainCats[mainCat]}"
 				if subCat:
 					url += f"/subcategories/{subCat}"
 				url += "?format=json"
@@ -1779,6 +1692,459 @@ def writePointsbet(date=None):
 
 	with open("static/soccer/pointsbet.json", "w") as fh:
 		json.dump(res, fh, indent=4)
+
+def writeSGP():
+
+	url = "https://sportsbook.draftkings.com/event/cadiz-vs-atletico-madrid/30189293?sgpmode=true"
+	outfile = "outsoccer"
+	os.system(f"curl {url} -o {outfile}")
+
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	data = "{}"
+	for script in soup.findAll("script"):
+		if not script.string:
+			continue
+		if "__INITIAL_STATE" in script.string:
+			m = re.search(r"__INITIAL_STATE__ = {(.*?)};", script.string)
+			if m:
+				data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+				data = f"{{{data}}}"
+				break
+
+	data = eval(data)
+
+	for offer in data["offers"]:
+		for offerId in data["offers"][offer]:
+			offerRow = data["offers"][offer][offerId]
+			prop = offerRow["label"].lower()
+
+			if prop == "team total number of goals":
+				prop = "team_total"
+
+			else:
+				continue
+
+def convertStat(stat):
+	stat = stat.lower()
+	if stat in ["shot attempts", "totalshots"]:
+		stat = "shots"
+	elif stat in ["shots on goal", "shotsontarget"]:
+		stat = "sot"
+	elif stat == "totalgoals":
+		stat = "g"
+	elif stat == "corner kicks":
+		stat = "corners"
+	elif stat in ["yellow cards", "yellowcards"]:
+		stat = "yellows"
+	return stat
+
+def printMatchup(matchup):
+	with open("static/soccer/teamLeagues.json") as fh:
+		teamLeagues = json.load(fh)
+
+	home, away = map(str, matchup.split(" v "))
+	home = home.replace(" ", "-")
+	away = away.replace(" ", "-")
+	homeLeague, awayLeague = teamLeagues[home], teamLeagues[away]
+	with open(f"static/soccerreference/{homeLeague}/{home}.json") as fh:
+		homeData = json.load(fh)
+	with open(f"static/soccerreference/{awayLeague}/{away}.json") as fh:
+		awayData = json.load(fh)
+	data = {}
+
+	# total goals
+	output = ""
+
+	output += f"\nTotal Goals\n"
+	totGoals = homeData["teamStats"]["tot"]["total_goals"].split(",")
+	awayTotGoals = awayData["teamStats"]["tot"]["total_goals"].split(",")
+	output += f"{', '.join(totGoals[-20:])}\n"
+	output += f"{', '.join(awayTotGoals[-20:])}\n\n"
+	output += f"{home}\t\t{away}\n\n"
+	for ou in [0.5, 1.5, 2.5, 3.5]:
+		overArr = [x for x in totGoals if int(x) > ou]
+		over = int(len(overArr) * 100 / len(totGoals))
+
+		overArrL10 = [x for x in totGoals[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+
+		awayOverArr = [x for x in awayTotGoals if int(x) > ou]
+		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
+
+		awayOverArrL10 = [x for x in awayTotGoals[-10:] if int(x) > ou]
+		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+
+	output += f"\nTotal Corners\n"
+	totGoals = homeData["teamStats"]["tot"]["corners"].split(",")
+	totGoalsAgainst = homeData["teamStats"]["tot"]["corners_against"].split(",")
+	awayTotGoals = awayData["teamStats"]["tot"]["corners"].split(",")
+	awayTotGoalsAgainst = awayData["teamStats"]["tot"]["corners_against"].split(",")
+	output += f"{', '.join([str(int(x)+int(y)) for x,y in zip(totGoals[-20:], totGoalsAgainst[-20:])])}\n"
+	output += f"{', '.join([str(int(x)+int(y)) for x,y in zip(awayTotGoals[-20:], awayTotGoalsAgainst[-20:])])}\n\n"
+	output += f"{home}\t\t{away}\n\n"
+	for ou in [6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5]:
+		overArr = [x for x, y in zip(totGoals, totGoalsAgainst) if int(x) + int(y) > ou]
+		over = int(len(overArr) * 100 / len(totGoals))
+
+		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+
+		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
+		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
+
+		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
+		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+
+	output += f"\n{home} Corners\n"
+	tot = homeData["teamStats"]["tot"]["corners"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		output += f"{over}%/{overL10}%\t\to{ou}\n"
+
+	output += f"\n{away} Corners\n"
+	tot = awayData["teamStats"]["tot"]["corners"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		output += f"{over}%/{overL10}%\t\to{ou}\n"
+
+	output += f"\n{home} SOT\n"
+	tot = homeData["teamStats"]["tot"]["sot"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		output += f"{over}%/{overL10}%\t\to{ou}\n"
+
+	output += f"\n{home} Shots\n"
+	tot = homeData["teamStats"]["tot"]["shots"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		output += f"{over}%/{overL10}%\t\to{ou}\n"
+
+
+	output += f"\n{away} SOT\n"
+	tot = awayData["teamStats"]["tot"]["sot"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		output += f"{over}%/{overL10}%\t\to{ou}\n"
+
+	output += f"\n{away} Shots\n"
+	tot = awayData["teamStats"]["tot"]["shots"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		output += f"{over}%/{overL10}%\t\to{ou}\n"
+
+
+	output += f"\nBTTS\n"
+	homeTot = homeData["teamStats"]["tot"]["btts"].split(",")
+	awayTot = awayData["teamStats"]["tot"]["btts"].split(",")
+
+	output += f"{', '.join(homeTot[-20:])}\n"
+	output += f"{', '.join(awayTot[-20:])}\n\n"
+
+	overArr = [x for x in homeTot if x == "y"]
+	over = int(len(overArr) * 100 / len(homeTot))
+	overArrL10 = [x for x in homeTot[-10:] if x == "y"]
+	overL10 = int(len(overArrL10) * 100 / len(homeTot[-10:]))
+
+	awayOverArr = [x for x in awayTot if x == "y"]
+	awayOver = int(len(awayOverArr) * 100 / len(awayTot))
+	awayOverArrL10 = [x for x in awayTot[-10:] if x == "y"]
+	awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTot[-10:]))
+
+	output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\n\n"
+
+	for teamData in [homeData, awayData]:
+		for player in teamData["playerStats"]:
+			if not teamData["playerStats"][player]["tot"]:
+				continue
+			output += f"\n{player.title()}\n"
+			for stat in ["sot", "shots"]:
+				tot = teamData["playerStats"][player]["tot"][stat].split(",")
+				output += f"{stat} {', '.join(tot[-20:])}\n"
+				for ou in [0.5, 1.5, 2.5]:
+					overArr = [x for x in tot if int(x) > ou]
+					over = int(len(overArr) * 100 / len(tot))
+					overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+					overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+					output += f"\t{ou} {over}%/{overL10}%\n"
+
+
+	with open("static/soccer/matchup.txt", "w") as fh:
+		fh.write(output)
+	print(output)
+
+
+def writeESPN(teamArg):
+	if not teamArg:
+		return
+
+	with open("static/soccer/espnIds.json") as fh:
+		espnIds = json.load(fh)
+
+	with open("static/soccer/playerIds.json") as fh:
+		playerIds = json.load(fh)
+
+	with open("static/soccer/teamLeagues.json") as fh:
+		teamLeagues = json.load(fh)
+
+	with open("static/soccer/boxscores.json") as fh:
+		boxscores = json.load(fh)
+
+	team = teamArg.replace(" ", "-")
+	if team not in espnIds:
+		print("not found in espn ids")
+		return
+
+	league = teamLeagues[team]
+
+	if team not in boxscores:
+		boxscores[team] = []
+
+	path = f"static/soccerreference/{league}/{team}.json"
+	if not os.path.exists(path):
+		with open(path, "w") as fh:
+			json.dump({}, fh, indent=4)
+
+	with open(path) as fh:
+		teamData = json.load(fh)
+
+	if not teamData:
+		j = {
+			"playerStats": {},
+			"teamStats": {}
+		}
+		teamData = j.copy()
+
+	url = f"https://www.espn.com/soccer/team/results/_/id/{espnIds[team]}"
+	outfile = "outsoccer"
+	os.system(f"curl {url} -o {outfile}")
+
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	for table in soup.findAll("table"):
+		year = table.findPrevious("div", class_="Table__Title").text[-4:]
+		for row in table.find("tbody").findAll("tr"):
+			date = row.find("td").text.strip().split(", ")[-1]
+			dt = datetime.strptime(date+" "+year, "%b %d %Y")
+			date = str(dt)[:10]
+			gameId = row.find("span", class_="score").findAll("a")[1].get("href").split("/")[-2]
+
+			#print(gameId)
+			if gameId in boxscores[team]:
+				#pass
+				continue
+			boxscores[team].append(gameId)
+
+			time.sleep(0.2)
+			url = f"https://www.espn.com/soccer/match/_/gameId/{gameId}"
+			os.system(f"curl {url} -o {outfile}")
+			soup = BS(open(outfile, 'rb').read(), "lxml")
+
+			data = "{}"
+			for script in soup.findAll("script"):
+				if not script.string:
+					continue
+				if "__espnfitt__" in script.string:
+					m = re.search(r"__espnfitt__'\]={(.*?)};", script.string)
+					if m:
+						data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+						data = f"{{{data}}}"
+						break
+
+			data = eval(data)
+
+			if "tmStatsGrph" not in data["page"]["content"]["gamepackage"] or "lineUps" not in data["page"]["content"]["gamepackage"] or "tmlne" not in data["page"]["content"]["gamepackage"]:
+				continue
+
+			#with open("out", "w") as fh:
+			#	json.dump(data, fh, indent=4)
+
+			# Write Team Stats
+			teamData["teamStats"][date] = {}
+			idx = 0 if data["page"]["content"]["gamepackage"]["tmStatsGrph"]["teams"][0]["link"].split("/")[-1] == team else 1
+			isHome = False
+			if idx == 0:
+				isHome = True
+
+			for teamStatsRow in data["page"]["content"]["gamepackage"]["tmStatsGrph"]["stats"][0]["data"]:
+				stat = convertStat(teamStatsRow["name"].lower())
+				teamData["teamStats"][date][stat] = teamStatsRow["values"][idx]
+				otherIdx = 1 if idx == 0 else 0
+				if stat in ["sot", "shots", "corners"]:
+					teamData["teamStats"][date][stat+"_against"] = teamStatsRow["values"][otherIdx]
+
+			# Write Player Stats
+			for lineupRow in data["page"]["content"]["gamepackage"]["lineUps"]:
+				currTeam = parseTeam(lineupRow["team"]["displayName"])
+				if currTeam != team:
+					continue
+				if currTeam not in playerIds:
+					playerIds[currTeam] = {}
+
+				for playerId in lineupRow["playersMap"]:
+					playerRow = lineupRow["playersMap"][playerId]
+					player = parsePlayer(playerRow["name"])
+					playerIds[currTeam][player] = playerId
+
+					if "stats" not in playerRow:
+						continue
+
+					if player not in teamData["playerStats"]:
+						teamData["playerStats"][player] = {
+							"tot": {}
+						}
+
+					if "appearances" in playerRow["stats"]:
+						teamData["playerStats"][player][date] = {}
+
+					for stat in playerRow["stats"]:
+						teamData["playerStats"][player][date][convertStat(stat)] = playerRow["stats"][stat]
+
+			# Write Timeline Info
+			firstHalfScore = [0,0]
+			secondHalfScore = [0,0]
+			halftime = False
+			for eventRow in data["page"]["content"]["gamepackage"]["tmlne"]["keyEvents"]:
+				eventType = eventRow["type"]
+				if eventType == "halftime":
+					halftime = True
+					continue
+
+				if "goal" in eventType:
+					eventTeamIdx = 0 if eventRow["homeAway"] == "home" else 1
+					if not halftime:
+						firstHalfScore[eventTeamIdx] += 1
+					else:
+						secondHalfScore[eventTeamIdx] += 1
+
+			finalScore = [firstHalfScore[0]+secondHalfScore[0], firstHalfScore[1]+secondHalfScore[1]]
+			teamData["teamStats"][date]["btts"] = "y" if 0 not in finalScore else "n"
+			teamData["teamStats"][date]["total_goals"] = finalScore[0] + finalScore[1]
+			teamData["teamStats"][date]["goals"] = finalScore[idx]
+			teamData["teamStats"][date]["1h_goals"] = firstHalfScore[idx]
+			teamData["teamStats"][date]["2h_goals"] = secondHalfScore[idx]
+
+			otherIdx = 1 if idx == 0 else 0
+			teamData["teamStats"][date]["goals_against"] = finalScore[otherIdx]
+			teamData["teamStats"][date]["1h_goals_against"] = firstHalfScore[otherIdx]
+			teamData["teamStats"][date]["2h_goals_against"] = secondHalfScore[otherIdx]
+
+	writeTotals(teamData)
+	with open(path, "w") as fh:
+		json.dump(teamData, fh, indent=4)
+
+	with open("static/soccer/boxscores", "w") as fh:
+		json.dump(boxscores, fh, indent=4)
+
+def writeTotals(teamData):
+	dates = [x for x in teamData["teamStats"] if x != "tot"]
+	tot = {}
+	for date in sorted(dates):
+		for stat in teamData["teamStats"][date]:
+			val = teamData["teamStats"][date][stat]
+			if stat not in tot:
+				tot[stat] = []
+			tot[stat].append(val)
+
+	stats = tot.keys()
+	for stat in stats:
+		tot[stat] = ",".join([str(x) for x in tot[stat]])
+
+	teamData["teamStats"]["tot"] = tot.copy()
+
+	for player in teamData["playerStats"]:
+		dates = [x for x in teamData["playerStats"][player] if x != "tot"]
+		tot = {}
+		for date in sorted(dates):
+			for stat in teamData["playerStats"][player][date]:
+				val = teamData["playerStats"][player][date][stat]
+				if stat not in tot:
+					tot[stat] = []
+				tot[stat].append(val)
+
+		stats = tot.keys()
+		for stat in stats:
+			tot[stat] = ",".join(tot[stat])
+
+		teamData["playerStats"][player]["tot"] = tot.copy()
+
+
+def writeESPNIds(date=""):
+
+	if not date:
+		date = str(datetime.now())[:10]
+
+	url = f"https://www.espn.com/soccer/schedule/_/date/{date.replace('-', '')}"
+	outfile = "outsoccer"
+	os.system(f"curl {url} -o {outfile}")
+
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	with open("static/soccer/espnIds.json") as fh:
+		espnIds = json.load(fh)
+
+	with open("static/soccer/teamLeagues.json") as fh:
+		teamLeagues = json.load(fh)
+
+	for table in soup.findAll("div", class_="ScheduleTables"):
+		league = table.find("div", class_="Table__Title").text.lower()
+		league = convertTeam(league).replace(" ", "-")
+		if "women" in league:
+			continue
+		if not os.path.isdir(f"static/soccerreference/{league}"):
+			os.mkdir(f"static/soccerreference/{league}")
+
+		for row in table.find("tbody").findAll("tr"):
+			awayId = row.find("td").find("span").find("a").get("href")
+			homeId = row.findAll("td")[1].find("span").find("a").get("href")
+			awayTeam = awayId.split("/")[-1]
+			homeTeam = homeId.split("/")[-1]
+			espnIds[awayTeam] = awayId.split("/")[-2]
+			espnIds[homeTeam] = homeId.split("/")[-2]
+			teamLeagues[awayTeam] = league
+			teamLeagues[homeTeam] = league
+
+
+	with open("static/soccer/espnIds.json", "w") as fh:
+		json.dump(espnIds, fh, indent=4)
+
+	with open("static/soccer/teamLeagues.json", "w") as fh:
+		json.dump(teamLeagues, fh, indent=4)
 
 def write365():
 
@@ -2372,6 +2738,7 @@ if __name__ == '__main__':
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
 	parser.add_argument("-g", "--game", help="Game")
 	parser.add_argument("-t", "--team", help="Team")
+	parser.add_argument("-l", "--league", help="League")
 	parser.add_argument("-k", "--k", action="store_true", help="Ks")
 	parser.add_argument("--ml", action="store_true", help="Moneyline and Totals")
 	parser.add_argument("--prop", help="Prop")
@@ -2391,11 +2758,20 @@ if __name__ == '__main__':
 	parser.add_argument("--totals", action="store_true", help="Totals")
 	parser.add_argument("--corners", action="store_true", help="Corners")
 	parser.add_argument("--leagues", action="store_true", help="Leagues")
+	parser.add_argument("--sgp", action="store_true", help="SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
+	parser.add_argument("-m", "--matchup", help="Matchup")
 	parser.add_argument("--player", help="Player")
 
 	args = parser.parse_args()
+
+	#writeESPNIds(date="2024-03-09")
+	
+	if args.matchup:
+		writeESPN(args.matchup.split(" v ")[0])
+		writeESPN(args.matchup.split(" v ")[1])
+		printMatchup(args.matchup)
 
 	if args.leagues:
 		writeLeagues(args.book)
@@ -2409,8 +2785,11 @@ if __name__ == '__main__':
 	if args.fd:
 		writeFanduel()
 
+	if args.sgp:
+		writeSGP()
+
 	if args.dk:
-		writeDK(args.date)
+		writeDK(args.date, args.league)
 
 	if args.kambi:
 		writeKambi(args.date)

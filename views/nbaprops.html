@@ -416,7 +416,7 @@
 
 			renderTable();
 
-			TABLE.setFilter([{field:"evBook", type:"in", value:["fd", "dk", "cz"]}]);
+			TABLE.setFilter([{field:"evBook", type:"in", value:["fd", "dk", "cz"]}, {field:"prop", type:"!=", value:"first_3ptm"}]);
 
 			for (const a of document.getElementById("header").getElementsByTagName("a")) {
 				if (a.classList.contains("active")) {

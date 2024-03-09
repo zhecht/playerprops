@@ -89,6 +89,22 @@ def write_stats(date):
 						else:
 							allStats[team][player][hdr] = int(stat)
 
+		"""
+		{"atl": {
+			"teamThree": "curry,thompson",
+			"three": "1,0,1",
+			"point": "0,1,1",
+			"teamPoint": "curry,kuminga",
+			"teamPointFT"
+		}}
+		"""
+		gameFirsts = {}
+		for play in data["plays"]:
+			team = teamIds[play["team"]["id"]]
+			if play["scoringPlay"]:
+				isThree = play["scoreValue"] == 3
+				#gameFirsts[team]
+
 	for team in allStats:
 		if not os.path.isdir(f"{prefix}static/basketballreference/{team}"):
 			os.mkdir(f"{prefix}static/basketballreference/{team}")

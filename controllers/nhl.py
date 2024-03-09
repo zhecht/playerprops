@@ -1250,6 +1250,8 @@ def parsePlayer(player):
 		return "jj peterka"
 	elif player == "alexander nylander":
 		return "alex nylander"
+	elif player == "matthew boldy":
+		return "matt boldy"
 	return player
 
 def writeFanduelManual():
@@ -2298,6 +2300,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/nhl/ev.json") as fh:
 		evData = json.load(fh)
 
+	with open(f"{prefix}static/hockeyreference/trades.json") as fh:
+		trades = json.load(fh)
+
 	evData = {}
 
 	teamGame = {}
@@ -2392,6 +2397,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 									lastTotalOver += 1
 					if lastTotalGames:
 						lastTotalOver = int(lastTotalOver * 100 / lastTotalGames)
+
+					#l = glob(f"static/hockeyreference/{team}/*")
+					#if player in trades:
+					#	l.extend(glob(f"static/hockeyreference/{trades[player]}/*"))
 
 					for d in sorted(os.listdir(f"static/hockeyreference/{team}")):
 						with open(f"static/hockeyreference/{team}/{d}") as fh:

@@ -2174,7 +2174,7 @@ def writeRankings():
 
 def writeThreesday():
 	
-	with open(f"{prefix}static/nba/rankings.json", "w") as fh:
+	with open(f"{prefix}static/nba/rankings.json") as fh:
 		rankings = json.load(fh)
 
 	with open(f"{prefix}static/nba/kambi.json") as fh:
@@ -2228,7 +2228,35 @@ def writeInjuries():
 		fh.write(output)
 
 def writeLeaders():
-	pass
+	with open(f"{prefix}static/nba/lineups.json") as fh:
+		lineups = json.load(fh)
+
+	with open(f"{prefix}static/nba/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/basketballreference/totals.json") as fh:
+		totals = json.load(fh)
+
+	output = ""
+	for game in dkLines:
+		output += f"{game.upper()}  \n"
+		for status in ["starters"]:
+			for team in game.split(" @ "):
+				for player in lineups[team][status]:
+					if player not in totals[team]:
+						continue
+					odds = ""
+					try:
+						odds = dkLines[game]["first_3ptm"][player]
+					except:
+						pass
+					ptm = round(totals[team][player]["3ptm"] / totals[team][player]["gamesPlayed"], 1)
+					pta = round(totals[team][player]["3pta"] / totals[team][player]["gamesPlayed"], 1)
+					output += f"{player.title()} ({ptm}-{pta}) {odds} \n"
+		output += "\n\n---\n\n"
+
+	print(output)
+
 
 def bvParlay():
 	with open(f"{prefix}static/nba/kambi.json") as fh:
@@ -2629,7 +2657,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						with open(d) as fh:
 							teamStats = json.load(fh)
 						if player in teamStats:
-							minutes = teamStats[player]["min"]
+							minutes = teamStats[player].get("min", 0)
 							if minutes:
 								avgMin.append(minutes)
 								if len(avgMin) >= 3:
@@ -2656,7 +2684,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								break
 
 						if player in teamStats:
-							minutes = teamStats[player]["min"]
+							minutes = teamStats[player].get("min", 0)
 							if minutes > 0 and ("+" in convertedProp or convertedProp in teamStats[player]):
 								totalGames += 1
 								val = 0
