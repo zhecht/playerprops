@@ -2785,7 +2785,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	#writeESPNIds(date="2024-03-09")
+	#writeESPNIds(date="2024-03-10")
 	
 	if args.matchup:
 		writeESPN(args.matchup.split(" v ")[0])
