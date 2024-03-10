@@ -1802,7 +1802,9 @@ def printMatchup(matchup):
 
 	output += f"\n{home} Corners\n"
 	tot = homeData["teamStats"]["tot"]["corners"].split(",")
+	totAgainst = awayData["teamStats"]["tot"]["corners_against"].split(",")
 	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
 	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
 		overArr = [x for x in tot if int(x) > ou]
 		over = int(len(overArr) * 100 / len(tot))
@@ -1813,7 +1815,9 @@ def printMatchup(matchup):
 
 	output += f"\n{away} Corners\n"
 	tot = awayData["teamStats"]["tot"]["corners"].split(",")
+	totAgainst = homeData["teamStats"]["tot"]["corners_against"].split(",")
 	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
 	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
 		overArr = [x for x in tot if int(x) > ou]
 		over = int(len(overArr) * 100 / len(tot))
@@ -1824,7 +1828,9 @@ def printMatchup(matchup):
 
 	output += f"\n{home} SOT\n"
 	tot = homeData["teamStats"]["tot"]["sot"].split(",")
+	totAgainst = awayData["teamStats"]["tot"]["sot_against"].split(",")
 	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
 	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
 		overArr = [x for x in tot if int(x) > ou]
 		over = int(len(overArr) * 100 / len(tot))
@@ -1835,7 +1841,9 @@ def printMatchup(matchup):
 
 	output += f"\n{home} Shots\n"
 	tot = homeData["teamStats"]["tot"]["shots"].split(",")
+	totAgainst = awayData["teamStats"]["tot"]["shots_against"].split(",")
 	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
 	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
 		overArr = [x for x in tot if int(x) > ou]
 		over = int(len(overArr) * 100 / len(tot))
@@ -1847,7 +1855,9 @@ def printMatchup(matchup):
 
 	output += f"\n{away} SOT\n"
 	tot = awayData["teamStats"]["tot"]["sot"].split(",")
+	totAgainst = homeData["teamStats"]["tot"]["sot_against"].split(",")
 	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
 	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
 		overArr = [x for x in tot if int(x) > ou]
 		over = int(len(overArr) * 100 / len(tot))
@@ -1858,7 +1868,9 @@ def printMatchup(matchup):
 
 	output += f"\n{away} Shots\n"
 	tot = awayData["teamStats"]["tot"]["shots"].split(",")
+	totAgainst = homeData["teamStats"]["tot"]["shots_against"].split(",")
 	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
 	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
 		overArr = [x for x in tot if int(x) > ou]
 		over = int(len(overArr) * 100 / len(tot))
@@ -1906,7 +1918,7 @@ def printMatchup(matchup):
 
 	with open("static/soccer/matchup.txt", "w") as fh:
 		fh.write(output)
-	print(output)
+	#print(output)
 
 
 def writeESPN(teamArg):
@@ -1950,119 +1962,126 @@ def writeESPN(teamArg):
 		}
 		teamData = j.copy()
 
-	url = f"https://www.espn.com/soccer/team/results/_/id/{espnIds[team]}"
-	outfile = "outsoccer"
-	os.system(f"curl {url} -o {outfile}")
+	years = [""]
+	if league == "mls":
+		years.append("2023")
 
-	soup = BS(open(outfile, 'rb').read(), "lxml")
+	for year in years:
+		url = f"https://www.espn.com/soccer/team/results/_/id/{espnIds[team]}"
+		if year:
+			url += "/season/"+year
+		outfile = "outsoccer"
+		os.system(f"curl {url} -o {outfile}")
 
-	for table in soup.findAll("table"):
-		year = table.findPrevious("div", class_="Table__Title").text[-4:]
-		for row in table.find("tbody").findAll("tr"):
-			date = row.find("td").text.strip().split(", ")[-1]
-			dt = datetime.strptime(date+" "+year, "%b %d %Y")
-			date = str(dt)[:10]
-			gameId = row.find("span", class_="score").findAll("a")[1].get("href").split("/")[-2]
+		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-			#print(gameId)
-			if gameId in boxscores[team]:
-				#pass
-				continue
-			boxscores[team].append(gameId)
+		for table in soup.findAll("table"):
+			year = table.findPrevious("div", class_="Table__Title").text[-4:]
+			for row in table.find("tbody").findAll("tr"):
+				date = row.find("td").text.strip().split(", ")[-1]
+				dt = datetime.strptime(date+" "+year, "%b %d %Y")
+				date = str(dt)[:10]
+				gameId = row.find("span", class_="score").findAll("a")[1].get("href").split("/")[-2]
 
-			time.sleep(0.2)
-			url = f"https://www.espn.com/soccer/match/_/gameId/{gameId}"
-			os.system(f"curl {url} -o {outfile}")
-			soup = BS(open(outfile, 'rb').read(), "lxml")
-
-			data = "{}"
-			for script in soup.findAll("script"):
-				if not script.string:
+				#print(gameId)
+				if gameId in boxscores[team]:
+					#pass
 					continue
-				if "__espnfitt__" in script.string:
-					m = re.search(r"__espnfitt__'\]={(.*?)};", script.string)
-					if m:
-						data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
-						data = f"{{{data}}}"
-						break
+				boxscores[team].append(gameId)
 
-			data = eval(data)
+				time.sleep(0.2)
+				url = f"https://www.espn.com/soccer/match/_/gameId/{gameId}"
+				os.system(f"curl {url} -o {outfile}")
+				soup = BS(open(outfile, 'rb').read(), "lxml")
 
-			if "tmStatsGrph" not in data["page"]["content"]["gamepackage"] or "lineUps" not in data["page"]["content"]["gamepackage"] or "tmlne" not in data["page"]["content"]["gamepackage"]:
-				continue
+				data = "{}"
+				for script in soup.findAll("script"):
+					if not script.string:
+						continue
+					if "__espnfitt__" in script.string:
+						m = re.search(r"__espnfitt__'\]={(.*?)};", script.string)
+						if m:
+							data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+							data = f"{{{data}}}"
+							break
 
-			#with open("out", "w") as fh:
-			#	json.dump(data, fh, indent=4)
+				data = eval(data)
 
-			# Write Team Stats
-			teamData["teamStats"][date] = {}
-			idx = 0 if data["page"]["content"]["gamepackage"]["tmStatsGrph"]["teams"][0]["link"].split("/")[-1] == team else 1
-			isHome = False
-			if idx == 0:
-				isHome = True
-
-			for teamStatsRow in data["page"]["content"]["gamepackage"]["tmStatsGrph"]["stats"][0]["data"]:
-				stat = convertStat(teamStatsRow["name"].lower())
-				teamData["teamStats"][date][stat] = teamStatsRow["values"][idx]
-				otherIdx = 1 if idx == 0 else 0
-				if stat in ["sot", "shots", "corners"]:
-					teamData["teamStats"][date][stat+"_against"] = teamStatsRow["values"][otherIdx]
-
-			# Write Player Stats
-			for lineupRow in data["page"]["content"]["gamepackage"]["lineUps"]:
-				currTeam = parseTeam(lineupRow["team"]["displayName"])
-				if currTeam != team:
+				if "tmStatsGrph" not in data["page"]["content"]["gamepackage"] or "lineUps" not in data["page"]["content"]["gamepackage"] or "tmlne" not in data["page"]["content"]["gamepackage"]:
 					continue
-				if currTeam not in playerIds:
-					playerIds[currTeam] = {}
 
-				for playerId in lineupRow["playersMap"]:
-					playerRow = lineupRow["playersMap"][playerId]
-					player = parsePlayer(playerRow["name"])
-					playerIds[currTeam][player] = playerId
+				#with open("out", "w") as fh:
+				#	json.dump(data, fh, indent=4)
 
-					if "stats" not in playerRow:
+				# Write Team Stats
+				teamData["teamStats"][date] = {}
+				idx = 0 if data["page"]["content"]["gamepackage"]["tmStatsGrph"]["teams"][0]["link"].split("/")[-1] == team else 1
+				isHome = False
+				if idx == 0:
+					isHome = True
+
+				for teamStatsRow in data["page"]["content"]["gamepackage"]["tmStatsGrph"]["stats"][0]["data"]:
+					stat = convertStat(teamStatsRow["name"].lower())
+					teamData["teamStats"][date][stat] = teamStatsRow["values"][idx]
+					otherIdx = 1 if idx == 0 else 0
+					if stat in ["sot", "shots", "corners"]:
+						teamData["teamStats"][date][stat+"_against"] = teamStatsRow["values"][otherIdx]
+
+				# Write Player Stats
+				for lineupRow in data["page"]["content"]["gamepackage"]["lineUps"]:
+					currTeam = parseTeam(lineupRow["team"]["displayName"])
+					if currTeam != team:
+						continue
+					if currTeam not in playerIds:
+						playerIds[currTeam] = {}
+
+					for playerId in lineupRow["playersMap"]:
+						playerRow = lineupRow["playersMap"][playerId]
+						player = parsePlayer(playerRow["name"])
+						playerIds[currTeam][player] = playerId
+
+						if "stats" not in playerRow:
+							continue
+
+						if player not in teamData["playerStats"]:
+							teamData["playerStats"][player] = {
+								"tot": {}
+							}
+
+						if "appearances" in playerRow["stats"]:
+							teamData["playerStats"][player][date] = {}
+
+						for stat in playerRow["stats"]:
+							teamData["playerStats"][player][date][convertStat(stat)] = playerRow["stats"][stat]
+
+				# Write Timeline Info
+				firstHalfScore = [0,0]
+				secondHalfScore = [0,0]
+				halftime = False
+				for eventRow in data["page"]["content"]["gamepackage"]["tmlne"]["keyEvents"]:
+					eventType = eventRow["type"]
+					if eventType == "halftime":
+						halftime = True
 						continue
 
-					if player not in teamData["playerStats"]:
-						teamData["playerStats"][player] = {
-							"tot": {}
-						}
+					if "goal" in eventType:
+						eventTeamIdx = 0 if eventRow["homeAway"] == "home" else 1
+						if not halftime:
+							firstHalfScore[eventTeamIdx] += 1
+						else:
+							secondHalfScore[eventTeamIdx] += 1
 
-					if "appearances" in playerRow["stats"]:
-						teamData["playerStats"][player][date] = {}
+				finalScore = [firstHalfScore[0]+secondHalfScore[0], firstHalfScore[1]+secondHalfScore[1]]
+				teamData["teamStats"][date]["btts"] = "y" if 0 not in finalScore else "n"
+				teamData["teamStats"][date]["total_goals"] = finalScore[0] + finalScore[1]
+				teamData["teamStats"][date]["goals"] = finalScore[idx]
+				teamData["teamStats"][date]["1h_goals"] = firstHalfScore[idx]
+				teamData["teamStats"][date]["2h_goals"] = secondHalfScore[idx]
 
-					for stat in playerRow["stats"]:
-						teamData["playerStats"][player][date][convertStat(stat)] = playerRow["stats"][stat]
-
-			# Write Timeline Info
-			firstHalfScore = [0,0]
-			secondHalfScore = [0,0]
-			halftime = False
-			for eventRow in data["page"]["content"]["gamepackage"]["tmlne"]["keyEvents"]:
-				eventType = eventRow["type"]
-				if eventType == "halftime":
-					halftime = True
-					continue
-
-				if "goal" in eventType:
-					eventTeamIdx = 0 if eventRow["homeAway"] == "home" else 1
-					if not halftime:
-						firstHalfScore[eventTeamIdx] += 1
-					else:
-						secondHalfScore[eventTeamIdx] += 1
-
-			finalScore = [firstHalfScore[0]+secondHalfScore[0], firstHalfScore[1]+secondHalfScore[1]]
-			teamData["teamStats"][date]["btts"] = "y" if 0 not in finalScore else "n"
-			teamData["teamStats"][date]["total_goals"] = finalScore[0] + finalScore[1]
-			teamData["teamStats"][date]["goals"] = finalScore[idx]
-			teamData["teamStats"][date]["1h_goals"] = firstHalfScore[idx]
-			teamData["teamStats"][date]["2h_goals"] = secondHalfScore[idx]
-
-			otherIdx = 1 if idx == 0 else 0
-			teamData["teamStats"][date]["goals_against"] = finalScore[otherIdx]
-			teamData["teamStats"][date]["1h_goals_against"] = firstHalfScore[otherIdx]
-			teamData["teamStats"][date]["2h_goals_against"] = secondHalfScore[otherIdx]
+				otherIdx = 1 if idx == 0 else 0
+				teamData["teamStats"][date]["goals_against"] = finalScore[otherIdx]
+				teamData["teamStats"][date]["1h_goals_against"] = firstHalfScore[otherIdx]
+				teamData["teamStats"][date]["2h_goals_against"] = secondHalfScore[otherIdx]
 
 	writeTotals(teamData)
 	with open(path, "w") as fh:
