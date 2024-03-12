@@ -114,6 +114,7 @@ def write_stats(date):
 			json.dump(allStats[team], fh, indent=4)
 
 	write_totals()
+	writeSplits()
 
 	with open(f"{prefix}static/basketballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
@@ -143,6 +144,32 @@ def write_totals():
 
 	with open(f"{prefix}static/basketballreference/totals.json", "w") as fh:
 		json.dump(totals, fh, indent=4)
+
+def writeSplits():
+	splits = {}
+	for team in os.listdir(f"{prefix}static/basketballreference/"):
+		if team not in splits:
+			splits[team] = {}
+
+		for file in sorted(glob(f"{prefix}static/basketballreference/{team}/*.json")):
+			with open(file) as fh:
+				stats = json.load(fh)
+			for player in stats:
+				if stats[player].get("min", 0) == 0:
+					continue
+				if player not in splits[team]:
+					splits[team][player] = {}
+				for header in stats[player]:
+					if header not in splits[team][player]:
+						splits[team][player][header] = []
+					splits[team][player][header].append(str(stats[player][header]))
+
+		for player in splits[team]:
+			for hdr in splits[team][player]:
+				splits[team][player][hdr] = ",".join(splits[team][player][hdr])
+
+	with open(f"{prefix}static/basketballreference/splits.json", "w") as fh:
+		json.dump(splits, fh, indent=4)
 
 def write_averages():
 	with open(f"{prefix}static/basketballreference/playerIds.json") as fh:
@@ -434,6 +461,7 @@ if __name__ == "__main__":
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--averages", help="averages", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
+	parser.add_argument("--splits", help="Splits", action="store_true")
 	parser.add_argument("-e", "--end", help="End Week", type=int)
 	parser.add_argument("-w", "--week", help="Week", type=int)
 
@@ -457,6 +485,8 @@ if __name__ == "__main__":
 		writePlayerIds()
 	elif args.totals:
 		write_totals()
+	elif args.splits:
+		writeSplits()
 	elif args.cron:
 		pass
 		write_schedule(date)

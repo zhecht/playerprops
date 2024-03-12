@@ -1777,6 +1777,161 @@ def printMatchup(matchup):
 
 		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
 
+	output += f"\n{home} Goals\n"
+	tot = homeData["teamStats"]["tot"]["goals"].split(",")
+	totAgainst = awayData["teamStats"]["tot"]["goals_against"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
+	for ou in [0.5, 1.5, 2.5, 3.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+
+	output += f"\n{away} Goals\n"
+	tot = awayData["teamStats"]["tot"]["goals"].split(",")
+	totAgainst = homeData["teamStats"]["tot"]["goals_against"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
+	for ou in [0.5, 1.5, 2.5, 3.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+
+	output += f"\n1H Goals\n"
+	totGoals = homeData["teamStats"]["tot"]["1h_goals"].split(",")
+	totGoalsAgainst = homeData["teamStats"]["tot"]["1h_goals_against"].split(",")
+	awayTotGoals = awayData["teamStats"]["tot"]["1h_goals"].split(",")
+	awayTotGoalsAgainst = awayData["teamStats"]["tot"]["1h_goals_against"].split(",")
+	output += f"{', '.join([str(int(x)+int(y)) for x,y in zip(totGoals[-20:], totGoalsAgainst[-20:])])}\n"
+	output += f"{', '.join([str(int(x)+int(y)) for x,y in zip(awayTotGoals[-20:], awayTotGoalsAgainst[-20:])])}\n\n"
+	output += f"{home}\t\t{away}\n\n"
+	for ou in [0.5,1.5,2.5,3.5]:
+		overArr = [x for x, y in zip(totGoals, totGoalsAgainst) if int(x) + int(y) > ou]
+		over = int(len(overArr) * 100 / len(totGoals))
+
+		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+
+		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
+		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
+
+		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
+		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+
+	output += f"\n2H Goals\n"
+	totGoals = homeData["teamStats"]["tot"]["2h_goals"].split(",")
+	totGoalsAgainst = homeData["teamStats"]["tot"]["2h_goals_against"].split(",")
+	awayTotGoals = awayData["teamStats"]["tot"]["2h_goals"].split(",")
+	awayTotGoalsAgainst = awayData["teamStats"]["tot"]["2h_goals_against"].split(",")
+	output += f"{', '.join([str(int(x)+int(y)) for x,y in zip(totGoals[-20:], totGoalsAgainst[-20:])])}\n"
+	output += f"{', '.join([str(int(x)+int(y)) for x,y in zip(awayTotGoals[-20:], awayTotGoalsAgainst[-20:])])}\n\n"
+	output += f"{home}\t\t{away}\n\n"
+	for ou in [0.5,1.5,2.5,3.5]:
+		overArr = [x for x, y in zip(totGoals, totGoalsAgainst) if int(x) + int(y) > ou]
+		over = int(len(overArr) * 100 / len(totGoals))
+
+		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+
+		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
+		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
+
+		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
+		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+
+	output += f"\n{home} SOT\n"
+	tot = homeData["teamStats"]["tot"]["sot"].split(",")
+	totAgainst = awayData["teamStats"]["tot"]["sot_against"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
+	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+
+	output += f"\n{home} Shots\n"
+	tot = homeData["teamStats"]["tot"]["shots"].split(",")
+	totAgainst = awayData["teamStats"]["tot"]["shots_against"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
+	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+
+
+	output += f"\n{away} SOT\n"
+	tot = awayData["teamStats"]["tot"]["sot"].split(",")
+	totAgainst = homeData["teamStats"]["tot"]["sot_against"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
+	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+
+	output += f"\n{away} Shots\n"
+	tot = awayData["teamStats"]["tot"]["shots"].split(",")
+	totAgainst = homeData["teamStats"]["tot"]["shots_against"].split(",")
+	output += f"{', '.join(tot[-20:])}\n"
+	output += f"{', '.join(totAgainst[-20:])}\n"
+	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
+		overArr = [x for x in tot if int(x) > ou]
+		over = int(len(overArr) * 100 / len(tot))
+		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
+		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+
 	output += f"\nTotal Corners\n"
 	totGoals = homeData["teamStats"]["tot"]["corners"].split(",")
 	totGoalsAgainst = homeData["teamStats"]["tot"]["corners_against"].split(",")
@@ -1811,7 +1966,12 @@ def printMatchup(matchup):
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
 
-		output += f"{over}%/{overL10}%\t\to{ou}\n"
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
 
 	output += f"\n{away} Corners\n"
 	tot = awayData["teamStats"]["tot"]["corners"].split(",")
@@ -1824,61 +1984,12 @@ def printMatchup(matchup):
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
 
-		output += f"{over}%/{overL10}%\t\to{ou}\n"
+		underArr = [x for x in totAgainst if int(x) > ou]
+		under = int(len(underArr) * 100 / len(totAgainst))
+		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
+		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
 
-	output += f"\n{home} SOT\n"
-	tot = homeData["teamStats"]["tot"]["sot"].split(",")
-	totAgainst = awayData["teamStats"]["tot"]["sot_against"].split(",")
-	output += f"{', '.join(tot[-20:])}\n"
-	output += f"{', '.join(totAgainst[-20:])}\n"
-	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
-		overArr = [x for x in tot if int(x) > ou]
-		over = int(len(overArr) * 100 / len(tot))
-		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
-		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
-
-		output += f"{over}%/{overL10}%\t\to{ou}\n"
-
-	output += f"\n{home} Shots\n"
-	tot = homeData["teamStats"]["tot"]["shots"].split(",")
-	totAgainst = awayData["teamStats"]["tot"]["shots_against"].split(",")
-	output += f"{', '.join(tot[-20:])}\n"
-	output += f"{', '.join(totAgainst[-20:])}\n"
-	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
-		overArr = [x for x in tot if int(x) > ou]
-		over = int(len(overArr) * 100 / len(tot))
-		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
-		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
-
-		output += f"{over}%/{overL10}%\t\to{ou}\n"
-
-
-	output += f"\n{away} SOT\n"
-	tot = awayData["teamStats"]["tot"]["sot"].split(",")
-	totAgainst = homeData["teamStats"]["tot"]["sot_against"].split(",")
-	output += f"{', '.join(tot[-20:])}\n"
-	output += f"{', '.join(totAgainst[-20:])}\n"
-	for ou in [1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]:
-		overArr = [x for x in tot if int(x) > ou]
-		over = int(len(overArr) * 100 / len(tot))
-		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
-		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
-
-		output += f"{over}%/{overL10}%\t\to{ou}\n"
-
-	output += f"\n{away} Shots\n"
-	tot = awayData["teamStats"]["tot"]["shots"].split(",")
-	totAgainst = homeData["teamStats"]["tot"]["shots_against"].split(",")
-	output += f"{', '.join(tot[-20:])}\n"
-	output += f"{', '.join(totAgainst[-20:])}\n"
-	for ou in [7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
-		overArr = [x for x in tot if int(x) > ou]
-		over = int(len(overArr) * 100 / len(tot))
-		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
-		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
-
-		output += f"{over}%/{overL10}%\t\to{ou}\n"
-
+		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
 
 	output += f"\nBTTS\n"
 	homeTot = homeData["teamStats"]["tot"]["btts"].split(",")
@@ -1963,7 +2074,7 @@ def writeESPN(teamArg):
 		teamData = j.copy()
 
 	years = [""]
-	if league == "mls":
+	if league == "mls" or team == "jeonbuk-motors":
 		years.append("2023")
 
 	for year in years:
@@ -1971,6 +2082,7 @@ def writeESPN(teamArg):
 		if year:
 			url += "/season/"+year
 		outfile = "outsoccer"
+		time.sleep(0.2)
 		os.system(f"curl {url} -o {outfile}")
 
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -2007,7 +2119,7 @@ def writeESPN(teamArg):
 
 				data = eval(data)
 
-				if "tmStatsGrph" not in data["page"]["content"]["gamepackage"] or "lineUps" not in data["page"]["content"]["gamepackage"] or "tmlne" not in data["page"]["content"]["gamepackage"]:
+				if "page" not in data or "tmStatsGrph" not in data["page"]["content"]["gamepackage"] or "lineUps" not in data["page"]["content"]["gamepackage"] or "tmlne" not in data["page"]["content"]["gamepackage"]:
 					continue
 
 				#with open("out", "w") as fh:
@@ -2087,7 +2199,7 @@ def writeESPN(teamArg):
 	with open(path, "w") as fh:
 		json.dump(teamData, fh, indent=4)
 
-	with open("static/soccer/boxscores", "w") as fh:
+	with open("static/soccer/boxscores.json", "w") as fh:
 		json.dump(boxscores, fh, indent=4)
 
 def writeTotals(teamData):
@@ -2140,10 +2252,13 @@ def writeESPNIds(date=""):
 	with open("static/soccer/teamLeagues.json") as fh:
 		teamLeagues = json.load(fh)
 
+	teams = []
 	for table in soup.findAll("div", class_="ScheduleTables"):
 		league = table.find("div", class_="Table__Title").text.lower()
-		league = convertTeam(league).replace(" ", "-")
-		if "women" in league:
+		league = parseTeam(league).replace(" ", "-")
+		if "women" in league or league.endswith(" f"):
+			continue
+		if league not in ["uefa-champions-league", "english-league-championship", "afc-champions-league", "australian-a-league-men", "english-league-one", "english-league-two"]:
 			continue
 		if not os.path.isdir(f"static/soccerreference/{league}"):
 			os.mkdir(f"static/soccerreference/{league}")
@@ -2153,6 +2268,10 @@ def writeESPNIds(date=""):
 			homeId = row.findAll("td")[1].find("span").find("a").get("href")
 			awayTeam = awayId.split("/")[-1]
 			homeTeam = homeId.split("/")[-1]
+
+			teams.append(awayTeam)
+			teams.append(homeTeam)
+
 			espnIds[awayTeam] = awayId.split("/")[-2]
 			espnIds[homeTeam] = homeId.split("/")[-2]
 			teamLeagues[awayTeam] = league
@@ -2164,6 +2283,10 @@ def writeESPNIds(date=""):
 
 	with open("static/soccer/teamLeagues.json", "w") as fh:
 		json.dump(teamLeagues, fh, indent=4)
+
+	for team in teams:
+		pass
+		writeESPN(team)
 
 def write365():
 
@@ -2780,16 +2903,18 @@ if __name__ == '__main__':
 	parser.add_argument("--sgp", action="store_true", help="SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
+	parser.add_argument("--espn", action="store_true", help="ESPN Ids")
 	parser.add_argument("-m", "--matchup", help="Matchup")
 	parser.add_argument("--player", help="Player")
 
 	args = parser.parse_args()
 
-	#writeESPNIds(date="2024-03-10")
-	
+	if args.espn:
+		writeESPNIds(date=args.date)
+
 	if args.matchup:
-		writeESPN(args.matchup.split(" v ")[0])
-		writeESPN(args.matchup.split(" v ")[1])
+		#writeESPN(args.matchup.split(" v ")[0])
+		#writeESPN(args.matchup.split(" v ")[1])
 		printMatchup(args.matchup)
 
 	if args.leagues:

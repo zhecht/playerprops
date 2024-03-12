@@ -2172,6 +2172,218 @@ def writeRankings():
 	with open(f"{prefix}static/nba/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
 
+def writeSGP():
+	outfile = "outnbaSGP"
+	url = "https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42648?format=json"
+	os.system(f"curl {url} -o {outfile}")
+	date = str(datetime.now())[:10]
+
+	with open(outfile) as fh:
+		lines = json.load(fh)
+
+	with open("static/nba/sgp.json") as fh:
+		res = json.load(fh)
+
+	res = {}
+	for row in lines["eventGroup"]["events"]:
+		game = "-".join(row["name"].lower().split(" ")) + "/" + row["eventId"]
+		if "eventStatus" in row and "state" in row["eventStatus"] and row["eventStatus"]["state"] == "STARTED":
+			continue
+
+		start = f"{row['startDate'].split('T')[0]}T{':'.join(row['startDate'].split('T')[1].split(':')[:2])}Z"
+		startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
+		if startDt.day != int(date[-2:]):
+			continue
+			pass
+
+		awayFull, homeFull = map(str, game.split("/")[0].replace("-", " ").split(" @ "))
+		away, home = convertNBATeam(awayFull), convertNBATeam(homeFull)
+		url = f"https://sportsbook.draftkings.com/event/{game}?sgpmode=true"
+		os.system(f"curl {url} -o {outfile}")
+
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		data = "{}"
+		for script in soup.findAll("script"):
+			if not script.string:
+				continue
+			if "__INITIAL_STATE" in script.string:
+				m = re.search(r"__INITIAL_STATE__ = {(.*?)};", script.string)
+				if m:
+					data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+					data = f"{{{data}}}"
+					break
+
+		data = eval(data)
+
+		game = away+" @ "+home
+		res[game] = {}
+
+		for gameId in data["offers"]:
+			for eventId in data["offers"][gameId]:
+				offerRow = data["offers"][gameId][eventId]
+				if type(offerRow) is list:
+					offerRow = offerRow[0]
+
+				prop = offerRow["label"].lower()
+				player = ""
+				alt = False
+				if "alternate total points" in prop:
+					if prop.startswith(awayFull):
+						prop = "away_total"
+					elif prop.startswith(homeFull):
+						prop = "home_total"
+					else:
+						continue
+				elif prop == "spread alternate":
+					prop = "spread"
+				elif prop == "total alternate":
+					prop = "total"
+				elif "playerNameIdentifier" in offerRow:
+					if " - " in prop:
+						continue
+					participant = offerRow["outcomes"][0]["participant"].lower()
+					player = parsePlayer(participant)
+					if " alt " in prop:
+						alt = True
+						prop = prop.replace("alt ", "")
+					prop = prop.replace(participant+" ", "").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("turnovers", "to").replace("steals", "stl").replace("blocks", "blk").replace("three pointers made", "3ptm").replace(" o/u", "")
+					prop = prop.replace(" ", "").replace("pts+ast+reb", "pts+reb+ast")
+				else:
+					continue
+
+				if prop not in res[game]:
+					res[game][prop] = {}
+				if player and player not in res[game][prop]:
+					res[game][prop][player] = {}
+
+				for outcome in offerRow["outcomes"]:
+					line = outcome.get("line", "")
+					odds = outcome["oddsAmerican"].replace("\u2212", "-")
+
+					if prop in ["away_total", "home_total", "total", "spread"]:
+						over = outcome["label"].lower() == "over"
+						if line in res[game][prop]:
+							if over:
+								res[game][prop][line] = f"{odds}/{res[game][prop][line]}"
+							else:
+								res[game][prop][line] += "/"+odds
+						else:
+							res[game][prop][line] = odds
+					elif alt and not line:
+						line = str(int(outcome["label"].replace("+", "")) - 0.5)
+						if line not in res[game][prop][player]:
+							res[game][prop][player][line] = odds
+					elif player:
+						line = str(line)
+						over = outcome["label"].lower() == "over"
+						if not line:
+							res[game][prop][player] = odds
+						elif line in res[game][prop][player]:
+							if over:
+								res[game][prop][player][line] = f"{odds}/{res[game][prop][player][line]}"
+							else:
+								res[game][prop][player][line] += "/"+odds
+						else:
+							res[game][prop][player][line] = odds
+
+	with open("static/nba/sgp.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+	#readSGP()
+
+def readSGP():
+
+	#game = "phx @ cle"
+
+	with open("static/nba/sgp.json") as fh:
+		res = json.load(fh)
+
+	with open(f"static/basketballreference/playerIds.json") as fh:
+		playerIds = json.load(fh)
+
+	with open(f"static/basketballreference/trades.json") as fh:
+		trades = json.load(fh)
+
+	with open(f"static/basketballreference/splits.json") as fh:
+		splits = json.load(fh)
+
+	with open(f"static/nba/minutes.json") as fh:
+		minutes = json.load(fh)
+
+	out = ""
+	for game in res:
+		output = []
+		away, home = map(str, game.split(" @ "))
+		for prop in res[game]:
+			keys = res[game][prop].keys()
+			for key in keys:
+				lines = []
+				# player has multiple lines
+				if type(res[game][prop][key]) is dict:
+					lines = res[game][prop][key].keys()
+				else:
+					lines = [key]
+				for line in lines:
+					#print(prop, key, line)
+					player = ""
+					if type(res[game][prop][key]) is dict:
+						player = key
+						oddsStr = res[game][prop][key][line].split("/")
+					else:
+						oddsStr = res[game][prop][line].split("/")
+					for ouIdx, odds in enumerate(oddsStr):
+						isOver = ouIdx == 0
+						if int(odds) <= -360 or int(odds) >= -185:
+							continue
+
+						over = overL15 = overPerMin = 0
+						lastArr = []
+						if player:
+							team = away
+							if home in playerIds and player in playerIds[home]:
+								team = home
+
+							playerSplits = {}
+							if player in trades:
+								for hdr in splits[trades[player]][player]:
+									playerSplits[hdr] = splits[trades[player]][player][hdr]
+								for hdr in splits[team][player]:
+									playerSplits[hdr] += ","+splits[team][player][hdr]
+							else:
+								playerSplits = splits[team][player]
+
+							if prop not in playerSplits:
+								continue
+
+							minArr = playerSplits["min"].split(",")
+							avgMin = minutes[team][player]
+
+							arr = playerSplits[prop].split(",")
+							lastArr = arr[-20:]
+							overArr = [x for x in arr if int(x) > float(line)]
+							overArrL15 = [x for x in arr[-15:] if int(x) > float(line)]
+							overArrPerMin = [x for i, x in enumerate(arr) if int(x) * avgMin / int(minArr[i]) > float(line)]
+
+							over = int(len(overArr) * 100 / len(arr))
+							overL15 = int(len(overArrL15) * 100 / len(arr[-15:]))
+							overPerMin = int(len(overArrPerMin) * 100 / len(arr))
+
+							txt = f"\n{player} o{line} {prop} {odds}\n"
+							txt += f"{over}%, {overL15}% L15, {overPerMin}% per min\n"
+							txt += f"{','.join(lastArr)}\n"
+
+							output.append([overL15, txt])
+
+
+		out += f"\ngame: {game}\n"
+		for L15, txt in sorted(output, reverse=True):
+			out += txt
+
+	with open("sgp.txt", "w") as fh:
+		fh.write(out)
+
+
 def writeThreesday():
 	
 	with open(f"{prefix}static/nba/rankings.json") as fh:
@@ -2458,6 +2670,7 @@ def writeLineups():
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	lineups = {}
+	rotoTeams = []
 	for game in soup.findAll("div", class_="lineup"):
 		if "is-tools" in game.get("class"):
 			continue
@@ -2465,7 +2678,9 @@ def writeLineups():
 		lineupList = game.findAll("ul", class_="lineup__list")
 		statusList = game.findAll("li", class_="lineup__status")
 		for idx, teamLink in enumerate(teams):
-			team = convertNBATeam(teamLink.get("href").split("-")[-1])
+			team = teamLink.get("href").split("-")[-1]
+			rotoTeams.append(team)
+			team = convertNBATeam(team)
 			lineups[team] = {
 				"confirmed": False if "is-expected" in statusList[idx].get("class") else True,
 				"starters": [],
@@ -2492,6 +2707,31 @@ def writeLineups():
 	with open(f"{prefix}static/nba/lineups.json", "w") as fh:
 		json.dump(lineups, fh, indent=4)
 
+	with open(f"{prefix}static/nba/rotoTeams.json", "w") as fh:
+		json.dump(rotoTeams, fh, indent=4)
+
+def writeMinutes():
+	with open(f"{prefix}static/nba/rotoTeams.json") as fh:
+		rotoTeams = json.load(fh)
+
+	outfile = "outnba2"
+	minutes = {}
+	for team in rotoTeams:
+		url = f"https://www.rotowire.com/basketball/ajax/get-projected-minutes.php?team={team.upper()}"
+		time.sleep(0.3)
+		os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' -H 'Cookie: PHPSESSID=82cdcdf861a1a39c5ae433e2ea917197; g_uuid=f873170b-ed5f-4688-9146-956442a88346; cohort_id=3; rwlanding=%252F; g_sid=1703792287331.w936baxr' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		team = convertNBATeam(team)
+		minutes[team] = {}
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		for row in data:
+			player = parsePlayer(row["name"])
+			minutes[team][player] = row["proj"]
+
+	with open("static/nba/minutes.json", "w") as fh:
+		json.dump(minutes, fh, indent=4)
 
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
@@ -2554,6 +2794,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	with open(f"{prefix}static/nba/lineups.json") as fh:
 		lineups = json.load(fh)
+
+	with open(f"{prefix}static/nba/minutes.json") as fh:
+		minutes = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -2653,17 +2896,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						l.extend(glob(f"static/basketballreference/{trades[player]}/*"))
 
 					arr = sorted(l, key=lambda k: datetime.strptime(k.split("/")[-1][:-5], "%Y-%m-%d"))
-					for d in arr[::-1]:
-						with open(d) as fh:
-							teamStats = json.load(fh)
-						if player in teamStats:
-							minutes = teamStats[player].get("min", 0)
-							if minutes:
-								avgMin.append(minutes)
-								if len(avgMin) >= 3:
-									break
-					if len(avgMin):
-						avgMin = sum(avgMin) / len(avgMin)
+
+					projMin = minutes[team].get(player, 0)
 
 					for d in arr:
 						chkDate = d.split("/")[-1].replace(".json","")
@@ -2684,18 +2918,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								break
 
 						if player in teamStats:
-							minutes = teamStats[player].get("min", 0)
-							if minutes > 0 and ("+" in convertedProp or convertedProp in teamStats[player]):
+							m = teamStats[player].get("min", 0)
+							if m > 0 and ("+" in convertedProp or convertedProp in teamStats[player]):
 								totalGames += 1
 								val = 0
 								for p in convertedProp.split("+"):
 									val += teamStats[player][p]
 								totalSplits.append(str(int(val)))
-								valPerMin = round(avgMin * int(val) / minutes, 2)
+								valPerMin = round(projMin * int(val) / m, 2)
 								totalSplitsPerMin.append(str(valPerMin))
 								if val > float(playerHandicap):
 									totalOver += 1
-								if val * avgMin / minutes > float(playerHandicap):
+								if val * projMin / m > float(playerHandicap):
 									totalOverPerMin += 1
 
 								teamScore = scores[chkDate][currTeam]
@@ -2732,8 +2966,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					if team in lastYearStats and player in lastYearStats[team] and lastYearStats[team][player]:
 						for idx, d in enumerate(lastYearStats[team][player]):
-							minutes = lastYearStats[team][player][d]["min"]
-							if minutes > 0 and (convertedProp in lastYearStats[team][player][d] or "+" in convertedProp):
+							m = lastYearStats[team][player][d]["min"]
+							if m > 0 and (convertedProp in lastYearStats[team][player][d] or "+" in convertedProp):
 								lastTotalGames += 1
 								val = 0
 								for p in convertedProp.split("+"):
@@ -2746,7 +2980,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 										last20TotalOver += 1
 									if idx < 50:
 										last50TotalOver += 1
-								if val * avgMin / minutes > float(playerHandicap):
+								if val * projMin / m > float(playerHandicap):
 									lastTotalOverPerMin += 1
 					if lastTotalGames:
 						lastTotalOver = int(lastTotalOver * 100 / lastTotalGames)
@@ -3056,7 +3290,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"odds": line,
 								"totalSplits": ",".join(totalSplits[-10:]),
 								"totalSplitsPerMin": ",".join(totalSplitsPerMin[-10:]),
-								"avgMin": 0 if not avgMin else round(avgMin),
+								"avgMin": 0 if not projMin else round(projMin),
 								"isAway": isAway,
 								"gameLine": gameLine,
 								"bookOdds": ", ".join([f"{b}: {o}" for o, b in zip(l, books)])
@@ -3288,12 +3522,15 @@ if __name__ == '__main__':
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--matchups", action="store_true", help="Matchups")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
+	parser.add_argument("--minutes", action="store_true", help="Minutes")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--debug", action="store_true", help="Debug")
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
 	parser.add_argument("--threesday", action="store_true", help="3sday")
 	parser.add_argument("--injuries", action="store_true", help="injuries")
 	parser.add_argument("--leaders", action="store_true", help="leaders")
+	parser.add_argument("--sgp", action="store_true", help="SGP")
+	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Player")
@@ -3303,10 +3540,18 @@ if __name__ == '__main__':
 	if args.lineups:
 		writeLineups()
 
+	if args.minutes:
+		writeMinutes()
+
 	dinger = False
 	if args.dinger:
 		dinger = True
 
+	if args.writeSGP:
+		writeSGP()
+
+	if args.sgp:
+		readSGP()
 
 	if args.injuries:
 		writeInjuries()

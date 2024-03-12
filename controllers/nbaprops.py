@@ -785,7 +785,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", alt=""):
 
 @nbaprops_blueprint.route('/getNBAProps')
 def getProps_route():
-	if request.args.get("teams") or request.args.get("players") or request.args.get("date"):
+	if request.args.get("players") or request.args.get("date"):
 		alt = ""
 		if request.args.get("alt"):
 			alt = request.args.get("alt")
@@ -805,6 +805,13 @@ def getProps_route():
 	else:
 		with open(f"{prefix}static/nba/html.json") as fh:
 			props = json.load(fh)
+
+		res = []
+		if request.args.get("teams"):
+			for row in props:
+				if row["team"] in request.args.get("teams").split(","):
+					res.append(row)
+			props = res
 	return jsonify(props)
 
 def writeStaticAltProps():
