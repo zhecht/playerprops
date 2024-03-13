@@ -2259,7 +2259,8 @@ def writeESPNIds(date=""):
 		if "women" in league or league.endswith(" f"):
 			continue
 		if league not in ["uefa-champions-league", "english-league-championship", "afc-champions-league", "australian-a-league-men", "english-league-one", "english-league-two"]:
-			continue
+			pass
+			#continue
 		if not os.path.isdir(f"static/soccerreference/{league}"):
 			os.mkdir(f"static/soccerreference/{league}")
 
