@@ -2102,8 +2102,8 @@ def writeESPN(teamArg):
 
 				#print(gameId)
 				if gameId in boxscores[team]:
-					pass
-					#continue
+					#pass
+					continue
 				#if gameId != "699148":
 				#	continue
 				boxscores[team].append(gameId)
@@ -2235,7 +2235,10 @@ def writeESPN(teamArg):
 					#with open("out", "w") as fh:
 					#	json.dump(data, fh, indent=4)
 
-					allCommentary = data["page"]["content"]["gamepackage"]["mtchCmmntry"]["allCommentary"][::-1]
+					try:
+						allCommentary = data["page"]["content"]["gamepackage"]["mtchCmmntry"]["allCommentary"][::-1]
+					except:
+						continue
 					if len(allCommentary) < 30:
 						continue
 					for player in teamData["playerStats"]:
