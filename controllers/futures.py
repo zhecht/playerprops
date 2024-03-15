@@ -23,8 +23,8 @@ def parsePlayer(player):
 	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 
 def convertTeam(team):
-	team = team.lower()
-	t = team.split(" ")[0]
+	team = team.lower().replace(".", "")
+	t = team.split(" ")[0][:3]
 	if t == "was":
 		t = "wsh"
 	elif "yankees" in team:
@@ -40,6 +40,320 @@ def convertTeam(team):
 	elif "white sox" in team:
 		t = "chw"
 	return t
+
+def convertMGMTeam(team):
+	if team == "diamondbacks":
+		return "ari"
+	elif team == "braves":
+		return "atl"
+	elif team == "orioles":
+		return "bal"
+	elif team == "red sox":
+		return "bos"
+	elif team == "cubs":
+		return "chc"
+	elif team == "white sox":
+		return "chw"
+	elif team == "reds":
+		return "cin"
+	elif team == "guardians":
+		return "cle"
+	elif team == "rockies":
+		return "col"
+	elif team == "tigers":
+		return "det"
+	elif team == "astros":
+		return "hou"
+	elif team == "royals":
+		return "kc"
+	elif team == "angels":
+		return "laa"
+	elif team == "dodgers":
+		return "lad"
+	elif team == "marlins":
+		return "mia"
+	elif team == "brewers":
+		return "mil"
+	elif team == "twins":
+		return "min"
+	elif team == "mets":
+		return "nym"
+	elif team == "yankees":
+		return "nyy"
+	elif team == "athletics":
+		return "oak"
+	elif team == "phillies":
+		return "phi"
+	elif team == "pirates":
+		return "pit"
+	elif team == "padres":
+		return "sd"
+	elif team == "giants":
+		return "sf"
+	elif team == "mariners":
+		return "sea"
+	elif team == "cardinals":
+		return "stl"
+	elif team == "rays":
+		return "tb"
+	elif team == "rangers":
+		return "tex"
+	elif team == "blue jays":
+		return "tor"
+	elif team == "nationals":
+		return "wsh"
+	return team
+
+def writeMGM():
+	ids = ["14881765", "14944813"]
+	for fixture in ids:
+		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={fixture}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&isBettingInsightsEnabled=true&useRegionalisedConfiguration=true&includeRelatedFixtures=false&statisticsModes=All"
+		outfile = "outfuture"
+		time.sleep(0.2)
+		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		data = data["fixture"]
+		res = {}
+		for gameRow in data["games"]:
+			prop = gameRow["name"]["value"].strip().lower()
+			player = ""
+			if prop == "world series winner":
+				prop = "world_series"
+			elif "league winner" in prop:
+				prop = "league_winner"
+			elif "league winner" in prop:
+				prop = "league_winner"
+			elif prop.endswith(" leader"):
+				prop = prop.split(" season ")[-1].replace("home run", "hr").replace("hits", "h").replace("strikeout", "k").replace("saves", "sv").replace("doubles", "double").replace("triples", "triple").replace("stolen base", "sb")
+				prop = prop.replace(" ", "_")
+			elif "must play 159 regular season" in prop:
+				player = parsePlayer(prop.split(" (")[0].split(" will ")[-1])
+				p = "hr"
+				if "strikeouts" in prop:
+					p = "k"
+				prop = p
+			else:
+				#print(prop)
+				continue
+
+			if prop not in res:
+				res[prop] = {}
+
+			if player:
+				res[prop][player] = {}
+				line = gameRow["results"][0]["name"]["value"].split(" ")[-1]
+				res[prop][player][line] = str(gameRow["results"][0]["americanOdds"])+"/"+str(gameRow["results"][1]["americanOdds"])
+				continue
+
+			for row in gameRow["results"]:
+				if "leader" in prop:
+					team = parsePlayer(row["name"]["value"])
+				else:
+					team = convertMGMTeam(row["name"]["value"].lower())
+				odds = str(row["americanOdds"])
+
+				res[prop][team] = odds
+
+
+	with open("static/mlbfutures/mgm.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+def writeKambi():
+	outfile = "outfuture"
+	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/baseball/mlb/all/all/competitions.json?lang=en_US&market=US&client_id=2&channel_id=7&ncid=1710474292570"
+
+	os.system(f"curl \"{url}\" -o {outfile}")
+	with open(outfile) as fh:
+		j = json.load(fh)
+
+	res = {}
+	playerMarkets = False
+	for event in j["events"]:
+		prop = event["event"]["name"].lower()
+		eventId = event["event"]["id"]
+
+		player = team = ""
+		if prop == "world series 2024":
+			prop = "world_series"
+		elif prop == "american league 2024" or prop == "national league 2024":
+			prop = "league_winner"
+		elif " west " in  prop or " east " in prop or " central " in prop:
+			prop = "division_winner"
+		elif "cy young" in prop:
+			prop = "cy_young"
+		elif "rookie of the year" in prop:
+			prop = "roty"
+		elif " mvp " in prop:
+			prop = "mvp"
+		elif " leader " in prop:
+			prop = prop.split(" 2024")[0].replace("home run", "hr").replace("hits", "h").replace("runs", "r").replace("strikeout", "k").replace("saves", "sv").replace("doubles", "double").replace("triples", "triple").replace("stolen base", "sb")
+			prop = prop.replace(" ", "_")
+		elif " markets " in prop:
+			if prop.startswith("general") or prop.startswith("world"):
+				continue
+
+			if prop == "aaron judge markets 2024":
+				playerMarkets = True
+
+			if playerMarkets:
+				player = parsePlayer(prop.split(" markets")[0])
+			else:
+				team = convertTeam(prop.split(" markets")[0])
+			prop = "market"
+		else:
+			continue
+
+		#if prop not in ["market"]:
+		#	continue
+
+		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json?includeParticipants=true"
+		time.sleep(0.2)
+		os.system(f"curl \"{url}\" -o {outfile}")
+		with open(outfile) as fh:
+			j = json.load(fh)
+
+		#with open("out", "w") as fh:
+		#	json.dump(j, fh, indent=4)
+		skip = 1
+		if prop in ["market"]:
+			skip = 2
+
+		for offerRow in j["betOffers"]:
+			outcomes = offerRow["outcomes"]
+			offerLabel = offerRow["criterion"]["label"].lower()
+			if "make the playoffs" in offerLabel:
+				prop = "make_playoffs"
+			elif "total matches won" in offerLabel:
+				prop = "team_wins"
+			elif offerLabel.startswith("total runs scored"):
+				prop = "r"
+			elif offerLabel.startswith("total rbis"):
+				prop = "rbi"
+			elif offerLabel.startswith("total home runs"):
+				prop = "hr"
+			elif offerLabel.startswith("total hits"):
+				prop = "h"
+			elif offerLabel.startswith("stolen bases"):
+				prop = "sb"
+			elif offerLabel.startswith("total strikeouts"):
+				prop = "k"
+			elif offerLabel.startswith("total wins by the pitcher"):
+				prop = "w"
+
+			if prop not in res:
+				res[prop] = {}
+
+			for i in range(0, len(outcomes), skip):
+				outcome = outcomes[i]
+				if prop == "make_playoffs":
+					res[prop][team] = outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
+				elif prop == "team_wins":
+					line = str(outcome["line"] / 1000)
+					res[prop][team] = {
+						line: outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
+					}
+				elif prop in ["r", "rbi", "hr", "h", "sb", "k", "w"]:
+					line = str(outcome["line"] / 1000)
+					res[prop][player] = {
+						line: outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
+					}
+				elif prop in ["world_series", "league_winner", "division_winner"]:
+					team = convertTeam(outcome["participant"].lower())
+					res[prop][team] = outcome["oddsAmerican"]
+				else:
+					try:
+						last, first = outcome["participant"].lower().split(", ")
+						player = parsePlayer(f"{first} {last}")
+					except:
+						player = parsePlayer(outcome["participant"])
+					res[prop][player] = outcome["oddsAmerican"]
+
+	with open("static/mlbfutures/kambi.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+def writeBV():
+
+	res = {}
+	for which in ["mlb-futures", "mlb-regular-season-props"]:
+		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description/baseball/{which}?marketFilterId=rank&preMatchOnly=true&eventsLimit=1000&lang=en"
+		outfile = "outfuture"
+		os.system(f"curl \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		for mainRow in data:
+			for eventRow in mainRow["events"]:
+				for marketRow in eventRow["displayGroups"][0]["markets"]:
+					prop = marketRow["description"].lower()
+					player = ""
+					if " - " in prop and " total " in prop:
+						player = parsePlayer(prop.split(" - ")[-1].split(" total ")[0])
+						prop = prop.split(" total ")[-1].replace("strikeouts", "k").replace("wins", "w").replace("hits", "h").replace("home runs", "hr").replace("rbis", "rbi").replace("runs scored", "r").replace("stolen bases", "sb")
+					elif prop.endswith(" era"):
+						player = parsePlayer(prop.split(" - ")[-1].split(" era")[0])
+						prop = "era"
+					elif "regular season win total" in prop:
+						player = convertTeam(marketRow["description"])
+						prop = "team_wins" 
+					elif "to make the playoffs" in prop:
+						prop = "make_playoffs"
+					elif "world series winner" in prop:
+						prop = "world_series"
+					elif "american league winner" in prop or "national league winner" in prop:
+						prop = "league_winner"
+					elif prop.split(" ")[-1] in ["west", "east", "central"]:
+						prop = "division_winner"
+					elif "cy young" in prop:
+						prop = "cy_young"
+					elif "mvp" in prop:
+						prop = "mvp"
+					elif prop.endswith(" roy"):
+						prop = "roty"
+					elif "player to hit the most" in prop:
+						prop = prop.split(" most ")[-1].replace("doubles", "double").replace("home runs", "hr").replace("hits", "h").replace("rbis", "rbi").replace("regular season wins", "w").replace("saves", "sv").replace("stolen bases", "sb").replace("strikeouts", "k")
+						if "dnu" in prop:
+							continue
+						prop += "_leader"
+					else:
+						continue
+
+					if prop not in res:
+						res[prop] = {}
+
+					skip = 2
+					if prop in ["world_series", "league_winner", "division_winner", "cy_young", "mvp", "roty"] or "leader" in prop:
+						skip = 1
+					outcomes = marketRow["outcomes"]
+					for i in range(0, len(outcomes), skip):
+						outcome = outcomes[i]
+						ou = outcome["price"]["american"]
+						if skip == 2:
+							ou = outcome["price"]["american"]+"/"+outcomes[i+1]["price"]["american"]
+						ou = ou.replace("EVEN", "100")
+						if player:
+							line = outcome["description"].split(" ")[-1]
+							res[prop][player] = {
+								line: ou
+							}
+						elif skip == 1:
+							if prop in ["cy_young", "mvp", "roty"] or "leader" in prop:
+								team = parsePlayer(outcome["description"].split(" (")[0])
+							else:
+								team = convertTeam(outcome["description"])
+							res[prop][team] = ou
+						else:
+							team = convertTeam(marketRow["description"])
+							res[prop][team] = ou
+
+
+
+	with open("static/mlbfutures/bovada.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
 
 def writeDK(date=None):
 	if not date:
@@ -244,11 +558,372 @@ def writeFanduelManual():
 
 """
 
+def convertDecOdds(odds):
+	if odds == 0:
+		return 0
+	if odds > 0:
+		decOdds = 1 + (odds / 100)
+	else:
+		decOdds = 1 - (100 / odds)
+	return decOdds
+
+def convertAmericanOdds(avg):
+	if avg >= 2:
+		avg = (avg - 1) * 100
+	else:
+		avg = -100 / (avg - 1)
+	return round(avg)
+
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
+
+	prefix = ""
+
+	impliedOver = impliedUnder = 0
+	over = int(ou.split("/")[0])
+	if over > 0:
+		impliedOver = 100 / (over+100)
+	else:
+		impliedOver = -1*over / (-1*over+100)
+
+	bet = 100
+	profit = finalOdds / 100 * bet
+	if finalOdds < 0:
+		profit = 100 * bet / (finalOdds * -1)
+
+	if "/" not in ou:
+		u = 1.07 - impliedOver
+		if u > 1:
+			return
+		if over > 0:
+			under = int((100*u) / (-1+u))
+		else:
+			under = int((100 - 100*u) / u)
+	else:
+		under = int(ou.split("/")[1])
+
+
+	if under > 0:
+		impliedUnder = 100 / (under+100)
+	else:
+		impliedUnder = -1*under / (-1*under+100)
+
+	x = impliedOver
+	y = impliedUnder
+	while round(x+y, 8) != 1.0:
+		k = math.log(2) / math.log(2 / (x+y))
+		x = x**k
+		y = y**k
+
+	dec = 1 / x
+	if dec >= 2:
+		fairVal = round((dec - 1)  * 100)
+	else:
+		fairVal = round(-100 / (dec - 1))
+	#fairVal = round((1 / x - 1)  * 100)
+	implied = round(x*100, 2)
+	#ev = round(x * (finalOdds - fairVal), 1)
+
+	#multiplicative 
+	mult = impliedOver / (impliedOver + impliedUnder)
+	add = impliedOver - (impliedOver+impliedUnder-1) / 2
+
+	evs = []
+	for method in [x, mult, add]:
+		ev = method * profit + (1-method) * -1 * bet
+		ev = round(ev, 1)
+		evs.append(ev)
+
+	ev = min(evs)
+
+	if player not in evData:
+		evData[player] = {}
+	evData[player][f"{prefix}fairVal"] = fairVal
+	evData[player][f"{prefix}implied"] = implied
+	
+	evData[player][f"{prefix}ev"] = ev
+
+def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
+	if not boost:
+		boost = 1
+
+	with open(f"static/mlbfutures/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"static/mlbfutures/bovada.json") as fh:
+		bvLines = json.load(fh)
+
+	with open(f"static/mlbfutures/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"static/mlbfutures/fanduel.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"static/mlbfutures/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	lines = {
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"bv": bvLines,
+		"dk": dkLines
+	}
+
+	with open("static/mlbfutures/ev.json") as fh:
+		evData = json.load(fh)
+
+	evData = {}
+
+	props = {}
+	for book in lines:
+		for prop in lines[book]:
+			props[prop] = 1
+
+	for prop in props:
+		if propArg and prop != propArg:
+			continue
+		handicaps = {}
+		for book in lines:
+			lineData = lines[book]
+			if prop in lineData:
+				if type(lineData[prop]) is not dict:
+					handicaps[(" ", " ")] = ""
+					break
+				for handicap in lineData[prop]:
+					player = playerHandicap = ""
+					try:
+						player = float(handicap)
+						player = ""
+						handicaps[(handicap, playerHandicap)] = player
+					except:
+						player = handicap
+						playerHandicap = ""
+						if type(lineData[prop][player]) is dict:
+							for h in lineData[prop][player]:
+								handicaps[(handicap, h)] = player
+						elif type(lineData[prop][player]) is str:
+							handicaps[(handicap, " ")] = player
+						else:
+							for h in lineData[prop][player]:
+								handicaps[(handicap, " ")] = player
+
+		for handicap, playerHandicap in handicaps:
+			player = handicaps[(handicap, playerHandicap)]
+
+			for i in range(2):
+				highestOdds = []
+				books = []
+				odds = []
+
+				for book in lines:
+					lineData = lines[book]
+					if prop in lineData:
+
+						if type(lineData[prop]) is str:
+							val = lineData[prop]
+						else:
+							if handicap not in lineData[prop]:
+								continue
+							val = lineData[prop][handicap]
+
+						if player.strip():
+							if type(val) is dict:
+								if playerHandicap not in val:
+									continue
+								val = lineData[prop][handicap][playerHandicap]
+							else:
+								val = lineData[prop][handicap].split(" ")[-1]
+
+						#print(book, prop, player, val)
+						try:
+							o = val.split(" ")[-1].split("/")[i]
+							ou = val.split(" ")[-1]
+						except:
+							if i == 1:
+								continue
+							o = val
+							ou = val
+
+						if not o or o == "-":
+							continue
+
+						try:
+							highestOdds.append(int(o))
+						except:
+							continue
+						odds.append(ou)
+						books.append(book)
+
+				if len(books) < 2:
+					continue
+
+				evBook = ""
+				l = odds
+				if bookArg:
+					if bookArg not in books:
+						continue
+					evBook = bookArg
+					idx = books.index(bookArg)
+					maxOU = odds[idx]
+					try:
+						line = maxOU.split("/")[i]
+					except:
+						continue
+				else:
+					maxOdds = []
+					for odds in l:
+						try:
+							maxOdds.append(int(odds.split("/")[i]))
+						except:
+							maxOdds.append(-10000)
+
+					if not maxOdds:
+						continue
+
+					maxOdds = max(maxOdds)
+					maxOU = ""
+					for odds, book in zip(l, books):
+						try:
+							if str(int(odds.split("/")[i])) == str(maxOdds):
+								evBook = book
+								maxOU = odds
+								break
+						except:
+							pass
+
+					line = maxOdds
+
+				line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
+				l.remove(maxOU)
+				books.remove(evBook)
+
+				avgOver = []
+				avgUnder = []
+				for book in l:
+					if book and book != "-":
+						try:
+							avgOver.append(convertDecOdds(int(book.split("/")[0])))
+							if "/" in book:
+								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
+						except:
+							continue
+
+				if avgOver:
+					avgOver = float(sum(avgOver) / len(avgOver))
+					avgOver = convertAmericanOdds(avgOver)
+				else:
+					avgOver = "-"
+				if avgUnder:
+					avgUnder = float(sum(avgUnder) / len(avgUnder))
+					avgUnder = convertAmericanOdds(avgUnder)
+				else:
+					avgUnder = "-"
+
+				if i == 1:
+					ou = f"{avgUnder}/{avgOver}"
+				else:
+					ou = f"{avgOver}/{avgUnder}"
+
+				if ou == "-/-" or ou.startswith("-/"):
+					continue
+
+				if ou.endswith("/-"):
+					ou = ou.split("/")[0]
+					
+				key = f"{handicap} {playerHandicap} {prop} {'over' if i == 0 else 'under'}"
+				if key in evData:
+					continue
+
+				devig(evData, key, ou, line, prop=prop)
+				if key not in evData:
+					continue
+				implied = 0
+				if line > 0:
+					implied = 100 / (line + 100)
+				else:
+					implied = -1*line / (-1*line + 100)
+				implied *= 100
+
+				evData[key]["imp"] = round(implied)
+				evData[key]["prop"] = prop
+				evData[key]["book"] = evBook
+				evData[key]["books"] = books
+				evData[key]["ou"] = ou
+				evData[key]["under"] = i == 1
+				evData[key]["line"] = line
+				evData[key]["fullLine"] = maxOU
+				evData[key]["handicap"] = handicap
+				evData[key]["playerHandicap"] = playerHandicap
+				evData[key]["odds"] = l
+				evData[key]["player"] = player
+				j = {b: o for o, b in zip(l, books)}
+				j[evBook] = maxOU
+				evData[key]["bookOdds"] = j
+
+	with open("static/mlbfutures/ev.json", "w") as fh:
+		json.dump(evData, fh, indent=4)
+
+def printEV():
+	with open(f"static/mlbfutures/ev.json") as fh:
+		evData = json.load(fh)
+
+	data = []
+	for player in evData:
+		d = evData[player]
+		j = [f"{k}:{d['bookOdds'][k]}" for k in d["bookOdds"] if k != d["book"]]
+		data.append((d["ev"], player, d["playerHandicap"], d["line"], d["book"], j, d))
+
+	for row in sorted(data):
+		print(row[:-1])
+
+	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "Kambi/BR"]) + "\n"
+	for row in sorted(data, reverse=True):
+		player = row[-1]["player"]
+		prop = row[-1]["prop"]
+		
+		ou = ("u" if row[-1]["under"] else "o")+" "
+		if player:
+			ou += row[-1]["playerHandicap"]
+		else:
+			ou += row[-1]["handicap"]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(row[-1]['imp'])}%", player.title(), row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "bv", "kambi"]:
+			o = str(row[-1]["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/mlbfutures/props.csv", "w") as fh:
+		fh.write(output)
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-d", "--date", help="date")
 	parser.add_argument("--dk", action="store_true", help="Fanduel")
+	parser.add_argument("--mgm", action="store_true", help="MGM")
+	parser.add_argument("--kambi", action="store_true")
+	parser.add_argument("--pn", action="store_true")
+	parser.add_argument("--bv", action="store_true")
+	parser.add_argument("--ev", action="store_true")
+	parser.add_argument("--boost", help="Boost", type=float)
+	parser.add_argument("--book", help="Book")
+	parser.add_argument("--prop", help="Prop")
+	parser.add_argument("-t", "--team", help="Team")
+	parser.add_argument("-p", "--print", action="store_true", help="Print")
 
 	args = parser.parse_args()
 	if args.dk:
-		writeDK(args.date)
+		writeDK()
+	if args.mgm:
+		writeMGM()
+	if args.kambi:
+		writeKambi()
+	if args.bv:
+		writeBV()
+	if args.ev:
+		writeEV(args.prop, args.book, args.team, args.boost)
+	if args.print:
+		printEV()
+
+	#writePN()
