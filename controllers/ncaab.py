@@ -1040,12 +1040,7 @@ def writeKambi(date):
 	swapped = {}
 	for event in j["events"]:
 		game = event["event"]["name"].lower()
-		swap = False
-		if " @ " in game:
-			away, home = map(str, game.split(" @ "))
-		else:
-			home, away = map(str, game.split(" vs "))
-			swap = True
+		away, home = event["event"]["awayName"].lower(), event["event"]["homeName"].lower()
 		games = []
 		for team in [away, home]:
 			t = convertNBATeam(team)
@@ -1056,7 +1051,7 @@ def writeKambi(date):
 		if game in eventIds:
 			continue
 			#pass
-		swapped[game] = swap
+		#swapped[game] = swap
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
@@ -1084,11 +1079,7 @@ def writeKambi(date):
 		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
 
-		fullTeam = j["events"][0]["name"].lower()
-		if " @ " in fullTeam:
-			awayFull, homeFull = map(str, fullTeam.split(" @ "))
-		else:
-			homeFull, awayFull = map(str, fullTeam.split(" vs "))
+		awayFull, homeFull = j["events"][0]["awayName"].lower(), j["events"][0]["homeName"].lower()
 
 		i = 0
 		for betOffer in j["betOffers"]:

@@ -241,7 +241,12 @@ def convertTeam(game):
 	return tr.get(game, game)
 
 def parsePlayer(player):
-	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	if player == "mohammed diomande":
+		player = "mohamed diomande"
+	elif player == "toral bayramov":
+		player = "tural bayramov"
+	return player
 
 def parseTeam(player):
 	return strip_accents(player).lower().replace(".", "").replace("'", "").replace(" ", "-")
@@ -2074,7 +2079,7 @@ def writeESPN(teamArg):
 		teamData = j.copy()
 
 	years = [""]
-	if league == "mls" or team == "jeonbuk-motors":
+	if league == "mls" or team in ["jeonbuk-motors", "fk-qarabag"]:
 		years.append("2023")
 
 	for year in years:
@@ -2097,8 +2102,10 @@ def writeESPN(teamArg):
 
 				#print(gameId)
 				if gameId in boxscores[team]:
-					#pass
-					continue
+					pass
+					#continue
+				#if gameId != "699148":
+				#	continue
 				boxscores[team].append(gameId)
 
 				time.sleep(0.2)
@@ -2119,31 +2126,19 @@ def writeESPN(teamArg):
 
 				data = eval(data)
 
-				if "page" not in data or "tmStatsGrph" not in data["page"]["content"]["gamepackage"] or "lineUps" not in data["page"]["content"]["gamepackage"] or "tmlne" not in data["page"]["content"]["gamepackage"]:
+				if "page" not in data or "lineUps" not in data["page"]["content"]["gamepackage"] or "tmlne" not in data["page"]["content"]["gamepackage"]:
 					continue
 
-				#with open("out", "w") as fh:
-				#	json.dump(data, fh, indent=4)
+				teamGraphs = "tmStatsGrph" in data["page"]["content"]["gamepackage"]
+				#teamGraphs = False
 
-				# Write Team Stats
-				teamData["teamStats"][date] = {}
-				idx = 0 if data["page"]["content"]["gamepackage"]["tmStatsGrph"]["teams"][0]["link"].split("/")[-1] == team else 1
-				isHome = False
-				if idx == 0:
-					isHome = True
-
-				for teamStatsRow in data["page"]["content"]["gamepackage"]["tmStatsGrph"]["stats"][0]["data"]:
-					stat = convertStat(teamStatsRow["name"].lower())
-					teamData["teamStats"][date][stat] = teamStatsRow["values"][idx]
-					otherIdx = 1 if idx == 0 else 0
-					if stat in ["sot", "shots", "corners"]:
-						teamData["teamStats"][date][stat+"_against"] = teamStatsRow["values"][otherIdx]
+				with open("out", "w") as fh:
+					json.dump(data, fh, indent=4)
 
 				# Write Player Stats
+				oppTeamStats = {}
 				for lineupRow in data["page"]["content"]["gamepackage"]["lineUps"]:
 					currTeam = parseTeam(lineupRow["team"]["displayName"])
-					if currTeam != team:
-						continue
 					if currTeam not in playerIds:
 						playerIds[currTeam] = {}
 
@@ -2152,19 +2147,52 @@ def writeESPN(teamArg):
 						player = parsePlayer(playerRow["name"])
 						playerIds[currTeam][player] = playerId
 
-						if "stats" not in playerRow:
-							continue
+						if currTeam == team:
+							if player not in teamData["playerStats"]:
+								teamData["playerStats"][player] = {
+									"tot": {}
+								}
 
-						if player not in teamData["playerStats"]:
-							teamData["playerStats"][player] = {
-								"tot": {}
-							}
+							# When no tmGraph, players that don't play have stats = {}. players that play have no stats key
+							if "stats" not in playerRow:
+								if not teamGraphs:
+									#print(player)
+									teamData["playerStats"][player][date] = {}
+								continue
 
-						if "appearances" in playerRow["stats"]:
-							teamData["playerStats"][player][date] = {}
+							if "appearances" in playerRow["stats"]:
+								teamData["playerStats"][player][date] = {}
 
-						for stat in playerRow["stats"]:
-							teamData["playerStats"][player][date][convertStat(stat)] = playerRow["stats"][stat]
+							for stat in playerRow["stats"]:
+								teamData["playerStats"][player][date][convertStat(stat)] = playerRow["stats"][stat]
+
+
+				teamData["teamStats"][date] = {}
+				isTeam = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["links"].split("/")[-1] == team
+				idx = 0
+				if isTeam and not data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["isHome"]:
+					idx = 1
+				elif not isTeam and data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["isHome"]:
+					idx = 1
+				
+				fullTeam = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["displayName"].lower()
+				fullTeamOpp = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][1]["displayName"].lower()
+				if not isTeam:
+					fullTeam = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][1]["displayName"].lower()
+					fullTeamOpp = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["displayName"].lower()
+
+				isHome = False
+				if idx == 0:
+					isHome = True
+
+				if teamGraphs:
+					# Write Team Stats
+					for teamStatsRow in data["page"]["content"]["gamepackage"]["tmStatsGrph"]["stats"][0]["data"]:
+						stat = convertStat(teamStatsRow["name"].lower())
+						teamData["teamStats"][date][stat] = teamStatsRow["values"][idx]
+						otherIdx = 1 if idx == 0 else 0
+						if stat in ["sot", "shots", "corners"]:
+							teamData["teamStats"][date][stat+"_against"] = teamStatsRow["values"][otherIdx]
 
 				# Write Timeline Info
 				firstHalfScore = [0,0]
@@ -2176,12 +2204,78 @@ def writeESPN(teamArg):
 						halftime = True
 						continue
 
-					if "goal" in eventType:
+					if "goal" in eventType or "scored" in eventType:
 						eventTeamIdx = 0 if eventRow["homeAway"] == "home" else 1
 						if not halftime:
 							firstHalfScore[eventTeamIdx] += 1
 						else:
 							secondHalfScore[eventTeamIdx] += 1
+
+				# If no graph and no player stats, read from commentary
+				if not teamGraphs:
+					commentary = data["page"]["content"]["gamepackage"]["meta"]["mtchCmmntry"]["lnk"]
+					time.sleep(0.2)
+					url = "https://www.espn.com"+commentary
+					os.system(f"curl {url} -o {outfile}")
+					soup = BS(open(outfile, 'rb').read(), "lxml")
+
+					data = "{}"
+					for script in soup.findAll("script"):
+						if not script.string:
+							continue
+						if "__espnfitt__" in script.string:
+							m = re.search(r"__espnfitt__'\]={(.*?)};", script.string)
+							if m:
+								data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+								data = f"{{{data}}}"
+								break
+
+					data = eval(data)
+
+					#with open("out", "w") as fh:
+					#	json.dump(data, fh, indent=4)
+
+					allCommentary = data["page"]["content"]["gamepackage"]["mtchCmmntry"]["allCommentary"][::-1]
+					if len(allCommentary) < 30:
+						continue
+					for player in teamData["playerStats"]:
+						if date in teamData["playerStats"][player]:
+							teamData["playerStats"][player][date] = {"shots": 0, "sot": 0}
+
+					for row in allCommentary:
+						detail = row["dtls"].lower()
+						suffix = ""
+						if detail.split(".")[0].endswith(fullTeamOpp):
+							suffix = "_against"
+						
+						stat = player = ""
+						if detail.startswith("corner,"):
+							stat = "corners"
+						elif detail.split(".")[0] in ["attempt blocked", "attempt missed", "attempt saved", "penalty saved", "penalty missed", "penalty blocked"] or " post " in detail or "goal!" in detail:
+							player = parsePlayer(detail.split(" (")[0].split(". ")[-1])
+							stat = "shots"
+							if " saved." in detail or "goal!" in detail:
+								stat = "sot"
+							if detail.split("(")[-1].split(")")[0] == fullTeamOpp:
+								suffix = "_against"
+
+						if not stat:
+							continue
+
+						if stat+suffix not in teamData["teamStats"][date]:
+							teamData["teamStats"][date][stat+suffix] = 0
+						if stat == "sot" and "shots"+suffix not in teamData["teamStats"][date]:
+							teamData["teamStats"][date]["shots"+suffix] = 0
+						teamData["teamStats"][date][stat+suffix] += 1
+						if stat == "sot":
+							teamData["teamStats"][date]["shots"+suffix] += 1
+
+						if player and not suffix:
+							teamData["playerStats"][player][date][stat] += 1
+							if stat == "sot":
+								teamData["playerStats"][player][date]["shots"] += 1
+
+
 
 				finalScore = [firstHalfScore[0]+secondHalfScore[0], firstHalfScore[1]+secondHalfScore[1]]
 				teamData["teamStats"][date]["btts"] = "y" if 0 not in finalScore else "n"
@@ -2230,7 +2324,7 @@ def writeTotals(teamData):
 
 		stats = tot.keys()
 		for stat in stats:
-			tot[stat] = ",".join(tot[stat])
+			tot[stat] = ",".join([str(x) for x in tot[stat]])
 
 		teamData["playerStats"][player]["tot"] = tot.copy()
 
@@ -2904,14 +2998,19 @@ if __name__ == '__main__':
 	parser.add_argument("--sgp", action="store_true", help="SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
-	parser.add_argument("--espn", action="store_true", help="ESPN Ids")
+	parser.add_argument("--espnIds", action="store_true", help="ESPN Ids")
+	parser.add_argument("--espn", action="store_true", help="ESPN")
 	parser.add_argument("-m", "--matchup", help="Matchup")
 	parser.add_argument("--player", help="Player")
 
 	args = parser.parse_args()
 
-	if args.espn:
+	if args.espnIds:
 		writeESPNIds(date=args.date)
+
+	if args.espn:
+		for team in args.team.split(","):
+			writeESPN(team)
 
 	if args.matchup:
 		#writeESPN(args.matchup.split(" v ")[0])

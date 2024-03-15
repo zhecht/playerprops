@@ -8,8 +8,22 @@ import re
 import argparse
 import unicodedata
 import time
+import csv
 from twilio.rest import Client
 from glob import glob
+
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
+
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+
+	return str(text)
+
+def parsePlayer(player):
+	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 
 def writeSavant():
 
@@ -51,6 +65,21 @@ def writeSavant():
 	with open("static/mlb/percentiles.json", "w") as fh:
 		json.dump(percentiles, fh, indent=4)
 
+def writePitchers():
+	pitchers = []
+	with open("static/mlb/fantasypros_pitchers.csv") as fh:
+		reader = csv.reader(fh, delimiter=",")
+		for idx, row in enumerate(reader):
+			if idx == 0 or len(row) < 3:
+				continue
+
+			if float(row[3]) >= 100:
+				pitchers.append(parsePlayer(row[0]))
+
+	with open("static/mlb/pitchers.json", "w") as fh:
+		json.dump(pitchers, fh, indent=4)
+
 if __name__ == "__main__":
 
+	#writePitchers()
 	writeSavant()

@@ -2389,13 +2389,13 @@ def writeThreesday():
 	with open(f"{prefix}static/nba/rankings.json") as fh:
 		rankings = json.load(fh)
 
-	with open(f"{prefix}static/nba/kambi.json") as fh:
-		kambiLines = json.load(fh)
+	with open(f"{prefix}static/nba/draftkings.json") as fh:
+		dkLines = json.load(fh)
 
 	output = "Game|away 3ptm|away opp 3ptm|home 3ptm|home opp 3ptm|avg\n"
 	output += ":--|:--|:--|:--|:--|:--\n"
 	data = []
-	for game in kambiLines:
+	for game in dkLines:
 		away, home = map(str, game.split(" @ "))
 		avg = (rankings[away]["3ptm"] + rankings[away]["opp_3ptm"] + rankings[home]["3ptm"] + rankings[home]["opp_3ptm"]) / 4
 
@@ -2405,7 +2405,7 @@ def writeThreesday():
 			"away_opp_3ptm": rankings[away]["opp_3ptm"],
 			"home_3ptm": rankings[home]["3ptm"],
 			"home_opp_3ptm": rankings[home]["opp_3ptm"],
-			"avg": avg
+			"avg": round(avg, 3)
 		})
 
 	for row in sorted(data, key=lambda k: k["avg"], reverse=True):
@@ -2417,16 +2417,16 @@ def writeInjuries():
 	with open(f"{prefix}static/nba/lineups.json") as fh:
 		lineups = json.load(fh)
 
-	with open(f"{prefix}static/nba/kambi.json") as fh:
-		kambiLines = json.load(fh)
+	with open(f"{prefix}static/nba/draftkings.json") as fh:
+		dkLines = json.load(fh)
 
 	with open(f"{prefix}static/basketballreference/totals.json") as fh:
 		totals = json.load(fh)
 
 	output = "Injury Watch -- (3ptm-3pta)\n\n"
-	for game in kambiLines:
+	for game in dkLines:
 		output += f"{game.upper()}  \n"
-		for status in ["out", "50/50", "likely"]:
+		for status in ["out", "50/50", "likely", "unlikely"]:
 			for team in game.split(" @ "):
 				for player in lineups[team][status]:
 					if player not in totals[team]:
@@ -2686,6 +2686,7 @@ def writeLineups():
 				"starters": [],
 				"50/50": [],
 				"likely": [],
+				"unlikely": [],
 				"out": []
 			}
 			for playerIdx, li in enumerate(lineupList[idx].findAll("li", class_="lineup__player")):
@@ -2699,6 +2700,8 @@ def writeLineups():
 					continue
 				elif "is-pct-play-0" in li.get("class"):
 					lineups[team]["out"].append(player)
+				elif "is-pct-play-25" in li.get("class"):
+					lineups[team]["unlikely"].append(player)
 				elif "is-pct-play-50" in li.get("class"):
 					lineups[team]["50/50"].append(player)
 				elif "is-pct-play-75" in li.get("class"):
@@ -3458,7 +3461,7 @@ def sortEV():
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
-		if "total" in prop or "spread" in prop or "ml" in prop:
+		if "total" in prop or "spread" in prop or "ml" in prop or prop == "first_3ptm":
 			continue
 		
 		ou = ("u" if row[-1]["under"] else "o")+" "
