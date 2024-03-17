@@ -1763,6 +1763,9 @@ def printMatchup(matchup):
 	# total goals
 	output = ""
 
+	homeAH = homeData["teamStats"]["tot"]["awayHome"].split(",")
+	awayAH = awayData["teamStats"]["tot"]["awayHome"].split(",")
+
 	output += f"\nTotal Goals\n"
 	totGoals = homeData["teamStats"]["tot"]["total_goals"].split(",")
 	awayTotGoals = awayData["teamStats"]["tot"]["total_goals"].split(",")
@@ -1773,6 +1776,10 @@ def printMatchup(matchup):
 		overArr = [x for x in totGoals if int(x) > ou]
 		over = int(len(overArr) * 100 / len(totGoals))
 
+		overArr = [x for x, ah in zip(totGoals, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
+
 		overArrL10 = [x for x in totGoals[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
 
@@ -1782,7 +1789,11 @@ def printMatchup(matchup):
 		awayOverArrL10 = [x for x in awayTotGoals[-10:] if int(x) > ou]
 		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
 
-		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+		overArr = [x for x, ah in zip(totGoals, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
+
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{awayOver}%/{awayOverL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n{home} Goals\n"
 	tot = homeData["teamStats"]["tot"]["goals"].split(",")
@@ -1794,13 +1805,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n{away} Goals\n"
 	tot = awayData["teamStats"]["tot"]["goals"].split(",")
@@ -1812,13 +1829,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n{home} SOT\n"
 	tot = homeData["teamStats"]["tot"]["sot"].split(",")
@@ -1830,13 +1853,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n{home} Shots\n"
 	tot = homeData["teamStats"]["tot"]["shots"].split(",")
@@ -1848,13 +1877,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 
 	output += f"\n{away} SOT\n"
@@ -1867,13 +1902,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n{away} Shots\n"
 	tot = awayData["teamStats"]["tot"]["shots"].split(",")
@@ -1885,13 +1926,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\nTotal Shots\n"
 	totGoals = homeData["teamStats"]["tot"]["shots"].split(",")
@@ -1904,17 +1951,21 @@ def printMatchup(matchup):
 	for ou in [20.5, 21.5, 22.5, 23.5, 24.5, 25.5, 26.5, 27.5, 28.5, 29.5, 30.5]:
 		overArr = [x for x, y in zip(totGoals, totGoalsAgainst) if int(x) + int(y) > ou]
 		over = int(len(overArr) * 100 / len(totGoals))
-
 		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+		overArr = [x for x, y, ah in zip(totGoals, totGoalsAgainst, homeAH) if int(x) + int(y) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
 		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
-
 		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+		overArr = [x for x, y, ah in zip(awayTotGoals, awayTotGoalsAgainst, awayAH) if int(x) + int(y) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{awayOver}%/{awayOverL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\nTotal SOT\n"
 	totGoals = homeData["teamStats"]["tot"]["sot"].split(",")
@@ -1927,17 +1978,21 @@ def printMatchup(matchup):
 	for ou in [6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5, 14.5]:
 		overArr = [x for x, y in zip(totGoals, totGoalsAgainst) if int(x) + int(y) > ou]
 		over = int(len(overArr) * 100 / len(totGoals))
-
 		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+		overArr = [x for x, y, ah in zip(totGoals, totGoalsAgainst, homeAH) if int(x) + int(y) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
 		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
-
 		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+		overArr = [x for x, y, ah in zip(awayTotGoals, awayTotGoalsAgainst, awayAH) if int(x) + int(y) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{awayOver}%/{awayOverL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n1H Goals\n"
 	totGoals = homeData["teamStats"]["tot"]["1h_goals"].split(",")
@@ -1950,17 +2005,22 @@ def printMatchup(matchup):
 	for ou in [0.5,1.5,2.5,3.5]:
 		overArr = [x for x, y in zip(totGoals, totGoalsAgainst) if int(x) + int(y) > ou]
 		over = int(len(overArr) * 100 / len(totGoals))
-
 		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+		overArr = [x for x, y, ah in zip(totGoals, totGoalsAgainst, homeAH) if int(x) + int(y) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
 		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
 
 		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+		overArr = [x for x, y, ah in zip(awayTotGoals, awayTotGoalsAgainst, awayAH) if int(x) + int(y) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{awayOver}%/{awayOverL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n2H Goals\n"
 	totGoals = homeData["teamStats"]["tot"]["2h_goals"].split(",")
@@ -1976,14 +2036,20 @@ def printMatchup(matchup):
 
 		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+		overArr = [x for x, y, ah in zip(totGoals, totGoalsAgainst, homeAH) if int(x) + int(y) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
 		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
 
 		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+		overArr = [x for x, y, ah in zip(awayTotGoals, awayTotGoalsAgainst, awayAH) if int(x) + int(y) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{awayOver}%/{awayOverL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\nTotal Corners\n"
 	totGoals = homeData["teamStats"]["tot"]["corners"].split(",")
@@ -1999,14 +2065,20 @@ def printMatchup(matchup):
 
 		overArrL10 = [x for x, y in zip(totGoals[-10:], totGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(totGoals[-10:]))
+		overArr = [x for x, y, ah in zip(totGoals, totGoalsAgainst, homeAH) if int(x) + int(y) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		awayOverArr = [x for x, y in zip(awayTotGoals, awayTotGoalsAgainst) if int(x) + int(y) > ou]
 		awayOver = int(len(awayOverArr) * 100 / len(awayTotGoals))
 
 		awayOverArrL10 = [x for x, y in zip(awayTotGoals[-10:], awayTotGoalsAgainst[-10:]) if int(x) + int(y) > ou]
 		awayOverL10 = int(len(awayOverArrL10) * 100 / len(awayTotGoals[-10:]))
+		overArr = [x for x, y, ah in zip(awayTotGoals, awayTotGoalsAgainst, awayAH) if int(x) + int(y) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{awayOver}%/{awayOverL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n{home} Corners\n"
 	tot = homeData["teamStats"]["tot"]["corners"].split(",")
@@ -2018,13 +2090,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\n{away} Corners\n"
 	tot = awayData["teamStats"]["tot"]["corners"].split(",")
@@ -2036,13 +2114,19 @@ def printMatchup(matchup):
 		over = int(len(overArr) * 100 / len(tot))
 		overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 		overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+		overArr = [x for x, ah in zip(tot, homeAH) if int(x) > ou and ah == "h"]
+		l = [x for x in homeAH if x == "h"]
+		overAH = int(len(overArr) * 100 / len(l))
 
 		underArr = [x for x in totAgainst if int(x) > ou]
 		under = int(len(underArr) * 100 / len(totAgainst))
 		underArrL10 = [x for x in totAgainst[-10:] if int(x) > ou]
 		underL10 = int(len(underArrL10) * 100 / len(totAgainst[-10:]))
+		overArr = [x for x, ah in zip(totAgainst, awayAH) if int(x) > ou and ah == "a"]
+		l = [x for x in awayAH if x == "a"]
+		awayOverAH = int(len(overArr) * 100 / len(l))
 
-		output += f"{over}%/{overL10}%\t\t{under}%/{underL10}%\t\to{ou}\n"
+		output += f"{over}%/{overL10}%/{overAH}%\t\t{under}%/{underL10}%/{awayOverAH}%\t\to{ou}\n"
 
 	output += f"\nBTTS\n"
 	homeTot = homeData["teamStats"]["tot"]["btts"].split(",")
@@ -2063,11 +2147,12 @@ def printMatchup(matchup):
 
 	output += f"{over}%/{overL10}%\t\t{awayOver}%/{awayOverL10}%\n\n"
 
-	for teamData in [homeData, awayData]:
+	for idx, teamData in enumerate([homeData, awayData]):
 		for player in teamData["playerStats"]:
 			if not teamData["playerStats"][player]["tot"]:
 				continue
-			output += f"\n{player.title()}\n"
+			team = home if idx == 0 else away
+			output += f"\n{player.title()} ({team})\n"
 			for stat in ["sot", "shots"]:
 				tot = teamData["playerStats"][player]["tot"][stat].split(",")
 				output += f"{stat} {', '.join(tot[-20:])}\n"
@@ -2076,6 +2161,14 @@ def printMatchup(matchup):
 					over = int(len(overArr) * 100 / len(tot))
 					overArrL10 = [x for x in tot[-10:] if int(x) > ou]
 					overL10 = int(len(overArrL10) * 100 / len(tot[-10:]))
+					ahData = homeAH if idx == 0 else awayAH
+					if idx == 0:
+						overArr = [x for x, ah in zip(tot, ahData) if int(x) > ou and ah == "h"]
+						l = [x for x in ahData if x == "h"]
+					else:
+						overArr = [x for x, ah in zip(tot, ahData) if int(x) > ou and ah == "a"]
+						l = [x for x in ahData if x == "a"]
+					overAH = int(len(overArr) * 100 / len(l))
 
 					output += f"\t{ou} {over}%/{overL10}%\n"
 
@@ -2232,6 +2325,7 @@ def writeESPN(teamArg):
 				isHome = False
 				if idx == 0:
 					isHome = True
+				teamData["teamStats"][date]["awayHome"] = "h" if isHome else "a"
 
 				if teamGraphs:
 					# Write Team Stats

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MLB Draft</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/nhlteams.css" type="text/css">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#header {
+			height: 7.5%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="header">
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<div id="footer">
+		</div>
+		<script>
+			let TABLE;
+			const teamNames = ["All", "ANA", "ARI", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI", "COL", "DAL", "DET", "EDM", "FLA", "LA", "MIN", "MTL", "NJ", "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA", "SJ", "STL", "TB", "TOR", "VAN", "VGK", "WPG", "WSH"];
+
+			
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const percentileFormatter = function(cell, params, rendered) {
+				const val = parseInt(cell.getValue());
+				let suffix = "";
+				let a = val % 10;
+				let b = val % 100;
+				if (a == 1 && b != 11) {
+					suffix = "st";
+				} else if (a == 2 && b != 12) {
+					suffix = "nd";
+				} else if (a == 3 && b != 13) {
+					suffix = "rd";
+				} else {
+					suffix = "th";
+				}
+				let class_ = "";
+				if (val >= 70) {
+					class_ = "positive";
+				} else if (val <= 30) {
+					class_ = "negative";
+				}
+				const html = "<div class='"+class_+"'>"+val+suffix+"</div>";
+				return html;
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const linkFormatter = function(cell, params, rendered) {
+
+				const a = "<a href='https://baseballsavant.mlb.com/savant-player/"+cell.getData().player.toLowerCase().replaceAll(" ", "-")+"-"+cell.getData().savantId+"' target='_blank'>Link</a>"
+				return a;
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getMLBDraft",
+					ajaxParams:{},
+					responsiveLayout:"collapse",
+					//responsiveLayoutCollapseStartOpen: "{{prop}}" == "sv" ? true : false,
+					responsiveLayoutCollapseStartOpen: false,
+					//layout: "fitDataFill",
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					//groupBy: "team",
+					initialSort: [
+						{column: "xera", dir: "desc"},
+					],
+					columns: [
+						/*{formatter:"responsiveCollapse", width:30, minWidth:30, hozAlign:"center", resizable:false, headerSort:false},
+                        {formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+                            cell.getRow().toggleSelect();
+                        }},*/
+						{title: "Player", field: "player", headerFilter: "input", width: 150},
+						{title: "Link", field: "savantId", formatter: linkFormatter, hozAlign: "center"},
+						{title: "xERA", field: "xera", hozAlign: "center", formatter: percentileFormatter},
+						{title: "xBA", field: "xba", hozAlign: "center", formatter: percentileFormatter},
+						{title: "xOBP", field: "xobp", hozAlign: "center", formatter: percentileFormatter},
+						{title: "K %", field: "k_percent", hozAlign: "center", formatter: percentileFormatter},
+						{title: "BB %", field: "bb_percent", hozAlign: "center", formatter: percentileFormatter},
+						{title: "Chase %", field: "chase_percent", hozAlign: "center", formatter: percentileFormatter},
+						{title: "Whiff %", field: "whiff_percent", hozAlign: "center", formatter: percentileFormatter},
+						{title: "Hard Hit %", field: "hard_hit_percent", hozAlign: "center", formatter: percentileFormatter},
+						{title: "BABIP", field: "babip", hozAlign: "center", formatter: percentileFormatter},
+						{title: "xBACON", field: "xbacon", hozAlign: "center", formatter: percentileFormatter},
+					]
+				})
+				TABLE.on("rowClick", function(e, row) {
+					row.getElement().getElementsByClassName("tabulator-responsive-collapse-toggle")[0].click()
+				});
+			}
+
+			renderTable();
+		</script>
+	</body>
+
+</html>

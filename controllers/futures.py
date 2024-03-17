@@ -946,6 +946,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 	with open(f"static/mlbfutures/bet365.json") as fh:
 		bet365Lines = json.load(fh)
 
+	with open(f"static/mlbfutures/circa.json") as fh:
+		circaLines = json.load(fh)
+
 	lines = {
 		"kambi": kambiLines,
 		"mgm": mgmLines,
@@ -953,7 +956,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 		"bv": bvLines,
 		"dk": dkLines,
 		"pn": pnLines,
-		"bet365": bet365Lines
+		"bet365": bet365Lines,
+		"circa": circaLines
 	}
 
 	with open("static/mlbfutures/ev.json") as fh:
@@ -1165,7 +1169,7 @@ def printEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "Kambi/BR", "PN", "bet365"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "Kambi/BR", "PN", "bet365", "Circa"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"].title()
 		if len(player) < 4:
@@ -1178,7 +1182,7 @@ def printEV():
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR").replace("BET", ""), f"{round(row[-1]['imp'])}%", player, row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "kambi", "pn", "bet365"]:
+		for book in ["fd", "dk", "mgm", "bv", "kambi", "pn", "bet365", "circa"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -1250,7 +1254,8 @@ if __name__ == '__main__':
 			"bv": bvLines,
 			"dk": dkLines,
 			"pn": pnLines,
-			"bet365": bet365Lines
+			"bet365": bet365Lines,
+			"circa": circaLines
 		}
 
 		for book in lines:

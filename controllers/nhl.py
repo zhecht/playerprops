@@ -2402,6 +2402,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					#if player in trades:
 					#	l.extend(glob(f"static/hockeyreference/{trades[player]}/*"))
 
+					#arr = sorted(l, key=lambda k: datetime.strptime(k.split("/")[-1][:-5], "%Y-%m-%d"))
+
 					for d in sorted(os.listdir(f"static/hockeyreference/{team}")):
 						with open(f"static/hockeyreference/{team}/{d}") as fh:
 							teamStats = json.load(fh)

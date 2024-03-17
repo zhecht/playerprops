@@ -11,3 +11,4 @@ from controllers.mlbprops import *
 from controllers.props import *
 from controllers.ravendawn import *
 from controllers.profootballreference import *
+from controllers.mlbdraft import *
