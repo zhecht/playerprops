@@ -23,10 +23,16 @@ def parsePlayer(player):
 	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 
 def convertTeam(team):
-	team = team.lower().replace(".", "")
+	team = team.lower().replace(".", "").replace(" ", "")
 	t = team.split(" ")[0][:3]
 	if t == "was":
 		t = "wsh"
+	elif t == "san":
+		t = "sf"
+	elif t == "tam":
+		t = "tb"
+	elif t == "kan":
+		t = "kc"
 	elif "yankees" in team:
 		t = "nyy"
 	elif "mets" in team:
@@ -37,7 +43,7 @@ def convertTeam(team):
 		t = "lad"
 	elif "cubs" in team:
 		t = "chc"
-	elif "white sox" in team:
+	elif "whitesox" in team:
 		t = "chw"
 	return t
 
@@ -159,6 +165,95 @@ def writeMGM():
 
 
 	with open("static/mlbfutures/mgm.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+def writePN(debug):
+	outfile = "outfuture"
+
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/246/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o '+outfile
+
+	os.system(url)
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/246/markets/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o '+outfile
+
+	time.sleep(0.2)
+	os.system(url)
+	with open(outfile) as fh:
+		markets = json.load(fh)
+
+	if debug:
+		with open("t", "w") as fh:
+			json.dump(data, fh, indent=4)
+
+		with open("t2", "w") as fh:
+			json.dump(markets, fh, indent=4)
+
+	res = {}
+	propData = {}
+	for row in data:
+		prop = row["special"]["category"].lower()
+		desc = row["special"]["description"].lower()
+		extra = row["participants"]
+
+		if prop == "regular season wins":
+			prop = "team_wins"
+		elif prop == "futures":
+			if desc.split(" ")[-2] in ["west", "east", "central"]:
+				prop = "division_winner"
+			elif desc.split(" ")[-2] == "pennant":
+				prop = "league_winner"
+			elif "world series champion" in desc:
+				prop = "world_series"
+		elif prop.endswith("mvp"):
+			prop = "mvp"
+		elif prop.endswith("rookie of the year"):
+			prop = "roty"
+		elif "cy young" in prop:
+			prop = "cy_young"
+		else:
+			continue
+
+		propData[row["id"]] = [prop, desc, extra]
+
+	for row in markets:
+		if row["matchupId"] not in propData:
+			continue
+		marketData = propData[row["matchupId"]]
+		prop = marketData[0]
+		desc = marketData[1]
+		extra = marketData[2]
+		outcomes = row["prices"]
+
+		if prop not in res:
+			res[prop] = {}
+
+		skip = 2
+		if prop in ["division_winner", "league_winner", "world_series", "mvp", "roty", "cy_young"]:
+			skip = 1
+
+		for i in range(0, len(outcomes), skip):
+
+			ou = str(outcomes[i]["price"])
+			line = outcomes[i].get("points", 0)
+			if skip == 2:
+				ou += f"/{outcomes[i+1]['price']}"
+				if (outcomes[i]['participantId'] == extra[0]['id'] and extra[0]['name'] == 'Under') or (outcomes[i]['participantId'] != extra[0]['id'] and extra[0]['name'] == 'Over'):
+					ou = f"{outcomes[i+1]['price']}/{outcomes[i]['price']}"
+
+				if line:
+					res[prop][convertTeam(desc)] = {
+						str(line): ou
+					}
+			else:
+				teamData = [x for x in extra if x["id"] == outcomes[i]["participantId"]][0]
+				if prop in ["division_winner", "league_winner", "world_series"]:
+					res[prop][convertTeam(teamData["name"])] = ou
+				else:
+					res[prop][parsePlayer(teamData["name"])] = ou
+
+	with open("static/mlbfutures/pn.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
 def writeKambi():
@@ -379,11 +474,11 @@ def writeDK(date=None):
 
 	if False:
 		mainCats = {
-			"player_totals": 1279
+			"leaders": 685
 		}
 
 		subCats = {
-			1279: [15165]
+			685: [5884]
 		}
 
 	lines = {}
@@ -447,6 +542,7 @@ def writeDK(date=None):
 											continue
 										team = events[row["eventId"]]
 									line = outcome["label"].split(" ")[-1]
+									#print(mainCat, subCat)
 									ou = outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
 									if "under" in outcome["label"].lower() or outcome["label"].lower() == "no":
 										ou = outcomes[i+1]["oddsAmerican"]+"/"+outcome["oddsAmerican"]
@@ -460,6 +556,8 @@ def writeDK(date=None):
 								else:
 									if prop in ["mvp", "cy_young", "roty"]:
 										team = parsePlayer(outcome["participant"])
+									elif mainCat == "leaders":
+										team = parsePlayer(outcome["label"])
 									else:
 										team = convertTeam(outcome["participant"])
 									lines[prop][team] = outcome["oddsAmerican"]
@@ -554,6 +652,187 @@ def writeFanduelManual():
 		}
 
 		console.log(data);
+	}
+
+"""
+
+def write365():
+
+	js = """
+
+	{
+
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			let t = team.split(" ")[0];
+			if (t == "la") {
+				if (team.indexOf("angels") >= 0) {
+					return "laa";
+				}
+				return "lad";
+			} else if (t == "ny") {
+				if (team.indexOf("yankees") >= 0) {
+					return "nyy";
+				}
+				return "nym";
+			} else if (t == "chi") {
+				if (team.indexOf("white sox") >= 0) {
+					return "chw";
+				}
+				return "chc";
+			} else if (t == "was") {
+				return "wsh";
+			}
+			return t;
+		}
+
+		function parsePlayer(player) {
+			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+		}
+
+		let prop = document.querySelector(".rcl-MarketGroupButton_MarketTitle").innerText.toLowerCase();
+
+		let skip = 1;
+		if (prop == "to win outright") {
+			prop = "world_series";
+		} else if (prop == "to join the 30-30 club") {
+			prop = "30/30";
+			skip = 2;
+		} else if (prop == "to win league") {
+			prop = "league_winner";
+		} else if (prop == "to win division") {
+			prop = "division_winner";
+		} else if (prop == "regular season awards") {
+			prop = "awards";
+		} else if (prop == "regular season stat leaders") {
+			prop = "leaders";
+		} else if (prop == "regular season wins") {
+			prop = "team_wins";
+		} else if (prop == "to make the playoffs") {
+			prop = "make_playoffs";
+		} else if (prop.indexOf("player regular season") >= 0) {
+			prop = prop.split(" season ")[1].replace("runs batted in", "rbi").replace("home runs", "hr").replace("stolen bases", "sb");
+			skip = 2;
+		} else if (prop.indexOf("pitcher regular season strikeouts") >= 0) {
+			prop = "k";
+			skip = 2;
+		}
+
+		if (prop == "team_wins" || prop == "make_playoffs") {
+			data[prop] = {};
+			let teams = [];
+			for (let div of document.querySelectorAll(".srb-ParticipantLabel_Name")) {
+				teams.push(convertTeam(div.innerText));
+			}
+			let overs = [];
+			let div = document.querySelectorAll(".gl-Market")[1];
+			for (let overDiv of div.querySelectorAll(".gl-Participant_General")) {
+				let spans = overDiv.querySelectorAll("span"); 
+				if (spans.length == 1) {
+					overs.push(spans[0].innerText);
+				} else {
+					overs.push(spans[1].innerText);
+				}
+			}
+			div = document.querySelectorAll(".gl-Market")[2];
+			let idx = 0;
+			for (let underDiv of div.querySelectorAll(".gl-Participant_General")) {
+				let spans = underDiv.querySelectorAll("span"); 
+				if (spans.length == 1) {
+					let odds = spans[0].innerText;
+					data[prop][teams[idx]] = overs[idx]+"/"+odds;
+				} else {
+					let line = spans[0].innerText;
+					let odds = spans[1].innerText;
+					data[prop][teams[idx]] = {};
+					data[prop][teams[idx]][line] = overs[idx]+"/"+odds;
+				}
+				idx += 1;
+			}
+		} else if (prop) {
+			let player = "";
+			for (let row of document.querySelectorAll(".gl-MarketGroupPod")) {
+				if (row.className.indexOf("src-FixtureSubGroupWithShowMore_Closed") >= 0) {
+					row.click();
+				}
+
+				if (["hr", "k", "sb", "h", "rbi"].includes(prop)) {
+					player = parsePlayer(row.querySelector(".src-FixtureSubGroupButton_Text").innerText.split(" - ")[1]);
+				}
+
+				if (["awards", "cy_young", "mvp", "roty"].includes(prop) || prop.indexOf("leader") >= 0) {
+					if (!row.querySelector(".src-FixtureSubGroupButton_Text")) {
+						continue;
+					}
+					let p = row.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase();
+					if (p.indexOf("cy young") >= 0) {
+						p = "cy_young";
+					} else if (p.indexOf(" mvp ") > 0) {
+						p = "mvp";
+					} else if (p.indexOf("rookie") > 0) {
+						p = "roty";
+					} else if (p.indexOf("home runs") >= 0) {
+						p = "hr_leader";
+					} else if (p.indexOf("hits") >= 0) {
+						p = "h_leader";
+					} else if (p.indexOf("rbis") >= 0) {
+						p = "rbi_leader";
+					} else if (p.indexOf("strikeouts") >= 0) {
+						p = "k_leader";
+					} else if (p.indexOf("wins") >= 0) {
+						p = "w_leader";
+					} else if (p.indexOf("saves") >= 0) {
+						p = "sv_leader";
+					} else if (p.indexOf("stolen bases") >= 0) {
+						p = "sb_leader";
+					} else if (p.indexOf("doubles") >= 0) {
+						p = "double_leader";
+					} else if (p.indexOf("triples") >= 0) {
+						p = "triple_leader";
+					} else {
+						continue;
+					}
+					prop = p;
+				}
+
+				if (!data[prop]) {
+					data[prop] = {};
+				}
+
+				let btns = row.querySelectorAll(".gl-Participant_General");
+				for (let i = 0; i < btns.length; i += skip) {
+					if (!btns[i].querySelector("span")) {
+						continue;
+					}
+					let team = btns[i].querySelector("span").innerText;
+					let odds = btns[i].querySelectorAll("span")[1].innerText;
+
+					if (skip == 1) {
+						if (["roty", "cy_young", "mvp"].includes(prop) || prop.indexOf("leader") >= 0) {
+							data[prop][parsePlayer(team)] = odds;
+						} else {
+							data[prop][convertTeam(team)] = odds;
+						}
+					} else {
+						let ou = odds;
+						ou += "/"+btns[i+1].querySelectorAll("span")[1].innerText;
+						if (team.indexOf("- No") >= 0) {
+							ou = btns[i+1].querySelectorAll("span")[1].innerText+"/"+odds;
+						}
+						if (prop == "team_wins") {
+							data[prop][convertTeam(team.split(" - ")[0])] = ou;
+						} else if (["hr", "k", "sb", "h", "rbi"].includes(prop)) {
+							data[prop][player] = {};
+							data[prop][player][team.split(" ")[1]] = ou;
+						} else {
+							data[prop][parsePlayer(team.split(" - ")[0])] = ou;
+						}
+					}
+				}
+			}
+		}
+
+		console.log(data[prop]);
 	}
 
 """
@@ -661,12 +940,20 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 	with open(f"static/mlbfutures/draftkings.json") as fh:
 		dkLines = json.load(fh)
 
+	with open(f"static/mlbfutures/pn.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"static/mlbfutures/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
 	lines = {
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
 		"bv": bvLines,
-		"dk": dkLines
+		"dk": dkLines,
+		"pn": pnLines,
+		"bet365": bet365Lines
 	}
 
 	with open("static/mlbfutures/ev.json") as fh:
@@ -690,6 +977,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 					handicaps[(" ", " ")] = ""
 					break
 				for handicap in lineData[prop]:
+					if "hr_leader" in prop:
+						print(handicap)
 					player = playerHandicap = ""
 					try:
 						player = float(handicap)
@@ -718,7 +1007,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 				for book in lines:
 					lineData = lines[book]
 					if prop in lineData:
-
 						if type(lineData[prop]) is str:
 							val = lineData[prop]
 						else:
@@ -755,6 +1043,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 						books.append(book)
 
 				if len(books) < 2:
+					#print(prop)
 					continue
 
 				evBook = ""
@@ -876,9 +1165,11 @@ def printEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "Kambi/BR"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "Kambi/BR", "PN", "bet365"]) + "\n"
 	for row in sorted(data, reverse=True):
-		player = row[-1]["player"]
+		player = row[-1]["player"].title()
+		if len(player) < 4:
+			player = player.upper()
 		prop = row[-1]["prop"]
 		
 		ou = ("u" if row[-1]["under"] else "o")+" "
@@ -886,8 +1177,8 @@ def printEV():
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(row[-1]['imp'])}%", player.title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "kambi"]:
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR").replace("BET", ""), f"{round(row[-1]['imp'])}%", player, row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "bv", "kambi", "pn", "bet365"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -904,8 +1195,10 @@ if __name__ == '__main__':
 	parser.add_argument("--mgm", action="store_true", help="MGM")
 	parser.add_argument("--kambi", action="store_true")
 	parser.add_argument("--pn", action="store_true")
+	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--bv", action="store_true")
 	parser.add_argument("--ev", action="store_true")
+	parser.add_argument("--summary", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--prop", help="Prop")
@@ -921,9 +1214,51 @@ if __name__ == '__main__':
 		writeKambi()
 	if args.bv:
 		writeBV()
+	if args.pn:
+		writePN(args.debug)
 	if args.ev:
 		writeEV(args.prop, args.book, args.team, args.boost)
 	if args.print:
 		printEV()
 
-	#writePN()
+	if args.summary:
+		with open(f"static/mlbfutures/kambi.json") as fh:
+			kambiLines = json.load(fh)
+
+		with open(f"static/mlbfutures/bovada.json") as fh:
+			bvLines = json.load(fh)
+
+		with open(f"static/mlbfutures/mgm.json") as fh:
+			mgmLines = json.load(fh)
+
+		with open(f"static/mlbfutures/fanduel.json") as fh:
+			fdLines = json.load(fh)
+
+		with open(f"static/mlbfutures/draftkings.json") as fh:
+			dkLines = json.load(fh)
+
+		with open(f"static/mlbfutures/pn.json") as fh:
+			pnLines = json.load(fh)
+
+		with open(f"static/mlbfutures/bet365.json") as fh:
+			bet365Lines = json.load(fh)
+
+		lines = {
+			"kambi": kambiLines,
+			"mgm": mgmLines,
+			"fd": fdLines,
+			"bv": bvLines,
+			"dk": dkLines,
+			"pn": pnLines,
+			"bet365": bet365Lines
+		}
+
+		for book in lines:
+			for prop in lines[book]:
+				if prop != args.prop:
+					continue
+				for team in lines[book][prop]:
+					if team != args.team:
+						continue
+
+					print(book, prop, lines[book][prop][team])

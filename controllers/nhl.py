@@ -2420,7 +2420,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					if totalGames:
 						totalOver = int(totalOver * 100 / totalGames)
 						tot = len(totalSplits) if len(totalSplits) < 10 else 10
-						for x in totalSplits[::-1][:10]:
+						for x in totalSplits[-10:]:
 							if float(x) > float(playerHandicap):
 								total10Over += 1
 						total10Over = int(total10Over * 100 / tot)
