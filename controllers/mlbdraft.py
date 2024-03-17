@@ -15,6 +15,14 @@ from glob import glob
 
 mlbdraft_blueprint = Blueprint('mlbdraft', __name__, template_folder='views')
 
+prefix = ""
+if os.path.exists("/home/zhecht/playerprops"):
+	# if on linux aka prod
+	prefix = "/home/zhecht/playerprops/"
+elif os.path.exists("/home/playerprops/playerprops"):
+	# if on linux aka prod
+	prefix = "/home/playerprops/playerprops/"
+
 def strip_accents(text):
 	try:
 		text = unicode(text, 'utf-8')
@@ -85,10 +93,10 @@ def writePitchers():
 
 @mlbdraft_blueprint.route('/getMLBDraft')
 def getmlbdraft_route():
-	with open("static/mlb/percentiles.json") as fh:
+	with open(f"{prefix}static/mlb/percentiles.json") as fh:
 		percentiles = json.load(fh)
 
-	with open("static/baseballreference/advanced.json") as fh:
+	with open(f"{prefix}static/baseballreference/advanced.json") as fh:
 		advanced = json.load(fh)
 
 	res = []
