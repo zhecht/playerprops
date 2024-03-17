@@ -2403,7 +2403,7 @@ def writeESPNIds(date=""):
 		league = parseTeam(league).replace(" ", "-")
 		if "women" in league or league.endswith(" f"):
 			continue
-		if league not in ["german-bundesliga"]:
+		if league not in ["english-fa-cup", "english-premier-league", "spanish-laliga", "german-bundesliga", "italian-serie-a", "french-ligue-1"]:
 			pass
 			continue
 		if not os.path.isdir(f"static/soccerreference/{league}"):
