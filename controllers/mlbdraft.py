@@ -1,4 +1,5 @@
 
+from flask import *
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
@@ -11,6 +12,16 @@ import time
 import csv
 from twilio.rest import Client
 from glob import glob
+
+mlbdraft_blueprint = Blueprint('mlbdraft', __name__, template_folder='views')
+
+prefix = ""
+if os.path.exists("/home/zhecht/playerprops"):
+	# if on linux aka prod
+	prefix = "/home/zhecht/playerprops/"
+elif os.path.exists("/home/playerprops/playerprops"):
+	# if on linux aka prod
+	prefix = "/home/playerprops/playerprops/"
 
 def strip_accents(text):
 	try:
@@ -33,10 +44,11 @@ def writeSavant():
 	with open("static/baseballreference/advanced.json") as fh:
 		advanced = json.load(fh)
 
-	for player in ["pablo lopez"]:
+	for player in advanced:
 		savantId = advanced[player]["player_id"]
 		url = f"https://baseballsavant.mlb.com/savant-player/{player.replace(' ', '-')}-{savantId}"
 		outfile = "outdraft"
+		time.sleep(0.2)
 		os.system(f"curl {url} -o {outfile}")
 
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -78,6 +90,30 @@ def writePitchers():
 
 	with open("static/mlb/pitchers.json", "w") as fh:
 		json.dump(pitchers, fh, indent=4)
+
+@mlbdraft_blueprint.route('/getMLBDraft')
+def getmlbdraft_route():
+	with open(f"{prefix}static/mlb/percentiles.json") as fh:
+		percentiles = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/advanced.json") as fh:
+		advanced = json.load(fh)
+
+	res = []
+	for player in percentiles:
+		savantId = advanced[player]["player_id"]
+		j = {"player": player.title(), "savantId": savantId}
+		for stat in percentiles[player]:
+			s = stat.replace("percent_rank_", "")
+			j[s] = percentiles[player][stat]
+		res.append(j)
+
+	return jsonify(res)
+
+@mlbdraft_blueprint.route('/mlbdraft')
+def mlbdraft_route():
+
+	return render_template("mlbdraft.html")
 
 if __name__ == "__main__":
 
