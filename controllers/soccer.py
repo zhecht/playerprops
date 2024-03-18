@@ -248,6 +248,12 @@ def parsePlayer(player):
 		player = "tural bayramov"
 	elif player == "matt godden":
 		player = "matthew godden"
+	elif player == "danilo orsi":
+		player = "danilo orsi dadomo"
+	elif player == "will wright":
+		return "william wright"
+	elif player == "paddy madden":
+		return "patrick madden"
 	return player
 
 def parseTeam(player):
@@ -2244,7 +2250,7 @@ def writeESPN(teamArg):
 				#print(gameId)
 				if gameId in boxscores[team]:
 					pass
-					#continue
+					continue
 				#if gameId != "699148":
 				#	continue
 				boxscores[team].append(gameId)
@@ -2321,6 +2327,8 @@ def writeESPN(teamArg):
 				if not isTeam:
 					fullTeam = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][1]["displayName"].lower()
 					fullTeamOpp = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["displayName"].lower()
+				if fullTeamOpp == "milton keynes dons":
+					fullTeamOpp == "mk dons"
 
 				isHome = False
 				if idx == 0:
@@ -2499,7 +2507,7 @@ def writeESPNIds(date=""):
 			continue
 		if league not in ["english-fa-cup", "english-premier-league", "spanish-laliga", "german-bundesliga", "italian-serie-a", "french-ligue-1"]:
 			pass
-			continue
+			#continue
 		if not os.path.isdir(f"static/soccerreference/{league}"):
 			os.mkdir(f"static/soccerreference/{league}")
 

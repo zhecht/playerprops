@@ -206,6 +206,9 @@ def write_stats(date):
 	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
 
+def parsePlayer(player):
+	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+
 def sumStat(header, target, source):
 	if header not in target:
 		target[header] = 0
@@ -594,7 +597,7 @@ def write_averages():
 								yearStats[year][team][player][date]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
 				with open(f"{prefix}static/mlbprops/stats/{year}.json", "w") as fh:
-					print(year)
+					#print(year)
 					json.dump(yearStats[year], fh, indent=4)
 
 	writeYearAverages()
@@ -708,7 +711,7 @@ def strip_accents(text):
 
 	return str(text)
 
-def write_roster():
+def writeRoster():
 
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
@@ -716,11 +719,11 @@ def write_roster():
 	roster = {}
 	for team in os.listdir(f"{prefix}static/baseballreference/"):
 
-		if team not in playerIds:
-			playerIds[team] = {}
-
 		if team.endswith(".json"):
 			continue
+
+		if team not in playerIds:
+			playerIds[team] = {}
 
 		roster[team] = {}
 		time.sleep(0.2)
@@ -732,7 +735,7 @@ def write_roster():
 		for table in soup.findAll("table"):
 			for row in table.findAll("tr")[1:]:
 				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
-				fullName = row.findAll("td")[1].find("a").text.lower().replace("'", "").replace("-", " ").replace(".", "").replace(" jr", "").replace(" ii", "")
+				fullName = parsePlayer(row.findAll("td")[1].find("a").text)
 				playerId = int(nameLink[-1])
 				playerIds[team][fullName] = playerId
 				roster[team][fullName] = row.findAll("td")[2].text.strip()
@@ -1486,7 +1489,7 @@ if __name__ == "__main__":
 		write_rankings()
 		write_player_rankings()
 	elif args.roster:
-		write_roster()
+		writeRoster()
 	elif args.pitches:
 		write_batting_pitches()
 		write_pitching_pitches()

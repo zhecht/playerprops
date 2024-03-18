@@ -823,42 +823,6 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr")
 		evData[player]["bet365ev"] = ev
 		evData[player]["bet365Implied"] = implied
 
-def devigger(evData, player="", bet365Odds="575/-900", finalOdds=630, dinger=False, avg=False, prop="hr", expectedHR=0):
-
-	if dinger:
-		# assuming 2hr/g = 40% FB @ 70% conversion
-		if expectedHR:
-			finalOdds = f"1={finalOdds};n={round(expectedHR, 4)}x"
-		else:
-			finalOdds = f"1={finalOdds};n=0.28x"
-
-	outfile = f"out_{prop}"
-	post = ["curl", 'https://crazyninjaodds.com/Public/sportsbooks/sportsbook_devigger.aspx', "-X", "POST", "-H", 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0', "-H", 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8', "-H",'Accept-Language: en-US,en;q=0.5', "-H",'Accept-Encoding: gzip, deflate', "-H",'Content-Type: application/x-www-form-urlencoded', "-H",'Origin: https://crazyninjaodds.com', "-H",'Connection: keep-alive', "-H",'Referer: https://crazyninjaodds.com/Public/sportsbooks/sportsbook_devigger.aspx', "-H",'Cookie: ASP.NET_SessionId=ytnh3dbruzkf32qaweb3wio3; General=KellyMultiplier=.25&KellyBankRoll=1000&DevigMethodIndex=4&WorstCaseDevigMethod_Multiplicative=True&WorstCaseDevigMethod_Additive=True&WorstCaseDevigMethod_Power=True&WorstCaseDevigMethod_Shin=True&MultiplicativeWeight=0&AdditiveWeight=0&PowerWeight=0&ShinWeight=0&ShowEVColorIndicator=False&ShowDetailedDevigInfo=False&CopyToClipboard_Reddit=False&CopyToClipboard_DevigURL=True&CopyToClipboard_Reddit_IncludeDevigURL=False&ShowHedgeDevigMethod=False&UseMultilineTextbox=False', "-H",'Upgrade-Insecure-Requests: 1', "-H",'Pragma: no-cache', "-H",'Cache-Control: no-cache', "--data-raw", '__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=mmD0Dl1C6EgV%2BDqOi7tbA%2BnOlOxGkYdG1DQ0Dv9Don%2FcQnhqZ977VWb3vTBqmdT3S%2Fng2DngDHu87Smxc5GuAeDG%2FPE8ol%2FtlxKl3NuULU42P3Y7PwndnRpvWouYQTQBejSCEBuxZDYcBxxi5lVFeP0EPAhUqWsNj0TpzBsd2w9qU7GPmdrYtts8bFB9SPbdWnU33UQOrXf%2FP2PsekX%2FtNLaqtv0EQCef%2F11tDhlGestDGZNSzI4H962zIGo6aIThiN7O6l%2BJsymp2Bowj%2BYrhbDAZz90Fi0tMxzPaFMKwnsTV2GTc58vxJ8MwN75qvEl7aWbao34JBR2BNtixrALDbrpzfuqZsQafZCxqeFpxsv6i343etGvHHjFdA2B%2F%2BldeU2hLuslsKR98VxHHUNpIZdXW%2FBPxcBGvKiah9iaglqHRNJbO9%2FgZRFLH4Jlz42uPBjEeKOMRMHqLOVFk8Alt7ZvDa%2BYAVKj3ke7sFTXiLqCSP9GFcrhsdFh3%2FlyMK1KQa2uO9rs3y1bb6PamvzPY78KK4MvA6Wppvxw65ICHypxw5feEqIpv0WbVPHzlyohKf1Bomt40NH6dlVnMK5D0LHDWRT49k5%2FB4NojdQYxcAibx2h%2BdO46udYv%2FAFF53kxSeQMtKqDwkSqqSgYBJT6Q1qO7cyU61qfVtX1IkxylJws%2BRDL818HSeUL5sUqpS1YO1BN5YYZPlwtGvOnUopGBdBZ3lPcOJKarZI5b4oj2ukSbbR1NAVgio0Fx9fZlkst6Zp4JszRup%2BxQipCBpjclBHCeuQc0xQf9bpeAU7jj%2BpS2lrK%2FfGp6doUd1psrdhWuuXZn2H96wlKpOtJQFjXNmDV1e7yQ4Xg1N9IKsVyZsL9aIZbx91qHjbW5p5bYLfV6WgTGl748OFWYYQXRgLv9p7gLI6zIkpOW%2FfC1YZP%2FRAmFXeXdT1REmgMR1A6I%2Bwu4w3Gt6VVDDVlkXhB2gF6ibfrWKRtjWCmbo8rI%2F2oSBOTBhpcMQ2ZxYJyHuRFQUSP63pyeRVw25jQZG2o%2FuAwHAKZuCR6i4DMylsVmd3eDzdLXzU4FdSQLs41xuS51F%2B0%2BbOhTyLhACABpOgn%2FpFdiA9yAVh9g7eMcYWrWDrwuHDCUbCvcWmdWGdlYlRcOGtd5SYegC06AiIRGzQNmYmhMFtdssQ8MThQI7EJNf9INitgKG0j%2F0ucxSCBZ%2BhwyzstbTPjvZKeFKr%2FSwWlqOkGAmFpMUeQjaGd9mRBeKNSlQql2cEs5UmHN8asvDPZJ%2BIHBg1Bgz5Uvj9v%2B7D14ujxugjATPgJXLBO9nUcS3UM1AJBf8FpRFHhTljZNKjTZdOPam%2FaZeV2hQU%2FQuCASAN5SgD2dFlTr4xFU6XkzKTRtRN%2FrFc21LqJHBe1V4AGuQ5sA%2B4ClPpVyKzjZkImOoqeLs1RFNfEBF1du2mx08iSQZQR%2F8IHEkcIIJnB%2BJO8doPyIDYlTs0D5TcuEV19y6%2Fuz%2BhGopH3VWyXZF3995CdXYXoaXeQnjCYU3LohkMWEMKYzFmI6u2dN0ZC6hBRgmOlAMLRHAB9Tv%2BuozseQYeuAxK%2BFpcGy73FpDKbIeoOkkm8xMBNNUWLwdP9tm8XQ7yGUgJEABRkZLC8cbe5z8Jt1202t3YO4%2BUFxusPMu4L1s1lX%2B%2F%2F2mJhpboAi9QHZrtGHV0luWzBfFe0PV51KhmWN56NtbLqo2MHVTSb0wlf%2B1gVB9tAkNG31ioJIjUfhtdLK6nbjW6GKBiwGAIsYcYl8by0uLeN2%2BaeSru8WRyVle%2BqXv83Cap35tdZg89vNnHqEbBba950MpN6cEmwHUViyP88XO6VctlhyhKpjEL%2BYI0NG1IoU1Mz%2BFmQcRck1fc2DYJdoUbGoOAIYiFlpKXwUMoeIlQNX5KEEKo50CshCUlwO0TFGCmaPlvuIPuVkR8cCxzdouuC6Tr5JHuENmRNbvkTcVwCSDPue04tjFPz83&__VIEWSTATEGENERATOR=75A63123&__EVENTVALIDATION=Zr5waX29KFtDx%2B%2BTw51Tt8HB5B0GTcdcqlawxLCwmhEYuz7ZzMAfiq2Rax%2FjuEFCG8QtUbvGvUNRuKP%2Fzh5HI%2FlUqyw0KbImM%2FIYe%2FsBbhqvqP3Jm6SmAo6buwGM51cAvXCGtI5DEO%2FLEiPuQyvg9nPgJI4WbaoK8%2B%2BXxqVcC8nM%2BiZkP6ny9CpojqCqCXwtRZa87knXf6wGnTJJ3fmLZoWSXHqaSQfU0a2j0hXL%2B7G4IFUkenNSxacAhym7pIBIbkX2OSWDpPWY242nH1mnKjQCekp3fUJaWPiTf%2F9vZlI3CHez7M%2B1L7q9ltWhynNHCZXkV5BX5UAzxL0W%2FFo6QiPTi0EPu7ckqmYYaQVey0K%2FWde5nDU%2FgiMBjD9u9VFxNslbqytjT4Xn8H5659GVxHOZCGke3N2U1%2FEasCInKUrq5pURmsTIlmqpgXpaJKW1JI1edPzr4JsVosHsYC7iTyoHNNX2lVLtwxnOWCmxsMuBUbW2T%2BfGd62SQovw0rDpBe8wvZkG1075LdVuzcOI2%2B8b%2BrEqan2bTJacf%2BQWcXB1Wba9v%2Bha4ekXUflA%2FT9uQofbNGLO3%2Fk%2FYbN2P8miLiDflzT55LvqRJ0b4m8L51kKoPcubP4sAtAZiSTgJ7XZCWpL14PQCvh%2FLA0QyGhlPvRFkUhqrc90HLjlZAeYIuNAKQ306Q0gXT5CbP8xNtxzSzORR3gtjDBHQ46YfO5VG0XOT9un%2BA0kfmCun43YrozvVcpILbJwOjbFtA4EbiIbvAoDn09Swo3D%2BtKyIbveoDyM%2FWDpTmFb2UYD4dSvooDffp%2FeSljH89b2L3MSSBP3sS7xDLj2rGP1GeXJr2%2F%2BVyt%2B8Xm5BGt%2FgJiu9T1ND0jAlILHuG%2FyLZxWkPlpiPO0R6GnLS%2B7aztX2T1sBxmqr874atOJKg77T4NMcSC%2FClMoNnFI2YS%2FEbK92IadQNpFulWIcRYKwMPN7RBmi1kV2oUpmCdD%2F7Mv95Uy%2BlhI05jSt2sICSlZvHz5D9QaFvPHnhH%2FL%2BjZpEIl09JPgyeFX5h2Gb5iR%2F6TMmx94zGblnRV4x2iMNmnm7T98Ve3sRcd3LXLxXO92tW9kXvxtCD7rSnZ5du1SmJnWwE1qwfsTEeE671V%2BxAIrAhTUWBpNHSF8W4iEvN2swA22wM2SemIzsmLXYJUCXIwHZ3bo3Kgm2Qm93nJSP%2BpvfFQC5W%2BAsQuaxxgIh7FH2yIUXWUzokKwHcrsAhmGMkJM64o6OFFRFKJwVoXKThwERuuU7u2Bi2x86%2FwKEkvdMLa6cemCqieEWRzTR9WT0qIUaPn%2BhLunuW5%2FnSernkf7Qhn51ukrRK0pdZv6kZESHyx4BsxoA8L5oWGNCvZJajHI304I4kFIM0sKP3CHpPZ3iq79qEGo%2FUl5JnuXHN9HF23INR2HrEjR%2BUgMdJfoehGly3KNtQw%2F1NOnJG7TRC8Sj5NE%2FTrbjzH3cLqL1grHOI2PS45hoRD1Q%3D%3D&TextBoxKellyMultiplier=.25&TextBoxBankRoll=1000&RadioButtonListDevigMethod=worstcase&TextBoxLegOdds='+str(bet365Odds)+'&TextBoxFinalOdds='+str(finalOdds)+'&TextBoxCorrelation=0&TextBoxBoost=0%25&Boost=RadioButtonBoostProfit&DropDownListDailyFantasy=0&ButtonCalculate=Calculate&Text1=https%3A%2F%2Fcrazyninjaodds.com%2FPublic%2Fsportsbooks%2Fsportsbook_devigger.aspx%3Fautofill%3D1%26LegOdds%3DAVG%28350%252c275%252c300%252c350%252c400%29%26FinalOdds%3D312&CheckBoxListWorstCaseMethodSettings%240=The+Multiplicative%2FNormalization%2FTraditional+Method&CheckBoxListWorstCaseMethodSettings%241=The+Additive+Method&CheckBoxListWorstCaseMethodSettings%242=The+Power+Method&CheckBoxListWorstCaseMethodSettings%243=The+Shin+Method&TextBoxMultiplicativeWeight=0%25&TextBoxAdditiveWeight=0%25&TextBoxPowerWeight=0%25&TextBoxShinWeight=0%25&CheckBoxListCopyToClipboardSettings%240=devigurl', "-o", outfile]
-
-	time.sleep(0.3)
-	call(post)
-
-	soup = BS(open(outfile, 'rb').read(), "lxml")
-	try:
-		output = soup.find("span", id="LabelOutput").text
-	except:
-		return
-
-	m = re.search(r".* Fair Value = (.*?) \((.*?)\)Summary\; EV% = (.*?)%", output)
-	if m:
-		fairVal = m.group(1)
-		implied = m.group(2)
-		ev = m.group(3)
-		if player not in evData:
-			evData[player] = {}
-		evData[player]["fairVal"] = fairVal
-		evData[player]["implied"] = implied
-		if avg:
-			evData[player]["ev"] = ev
-		else:
-			evData[player]["bet365ev"] = ev
-			evData[player]["bet365Implied"] = implied
-
 def write365():
 	js = """
 	{
@@ -975,9 +939,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlb/bovada.json") as fh:
 		bvLines = json.load(fh)
 
-	with open(f"{prefix}static/mlb/pointsbet.json") as fh:
-		pbLines = json.load(fh)
-
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
@@ -1068,14 +1029,11 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			if prop == "hr" and game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
 				pn = pnLines[game]["hr"][player].split(" ")[-1]
 
-			if prop == "hr" and game in pbLines and "hr" in pbLines[game] and player in pbLines[game]["hr"]:
-				pb = pbLines[game]["hr"][player].split(" ")[-1]
-
 			if prop == "hr" and game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
-				cz = czLines[game]["hr"][player].split(" ")[-1]
+				cz = czLines[game]["hr"][player]
 
 			if prop == "hr" and game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
-				mgm = mgmLines[game]["hr"][player].split(" ")[-1]
+				mgm = mgmLines[game]["hr"][player]["0.5"]
 
 			bv = ""
 			if prop == "hr" and game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
@@ -1096,24 +1054,24 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						bet365ou = bet365ou.split(" ")[-1]
 
 			line = fdLine
-			l = [dk, bet365ou, mgm, pb]
+			l = [dk, bet365ou, mgm]
 
 			avgOver = []
 			avgUnder = []
 			if prop in ["single", "double"]:
-				l = [dk, bet365ou, mgm, pb]
+				l = [dk, bet365ou, mgm]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
 					l.append(br.split("/")[0])
 			elif prop == "k":
-				l = [dk, bet365ou, mgm, pb, pn, bs]
+				l = [dk, bet365ou, mgm, pn, bs]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
 					l.append(br.split("/")[0])
 			if allArg:
-				l = [dk, bet365ou, mgm, pb, pn.split("/")[0], bs, bv]
+				l = [dk, bet365ou, mgm, pn.split("/")[0], bs, bv]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
@@ -1256,9 +1214,6 @@ def sortEV(dinger=False):
 	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
 		pnLines = json.load(fh)
 
-	with open(f"{prefix}static/mlb/pointsbet.json") as fh:
-		pbLines = json.load(fh)
-
 	with open(f"{prefix}static/mlb/bovada.json") as fh:
 		bvLines = json.load(fh)
 
@@ -1267,6 +1222,9 @@ def sortEV(dinger=False):
 
 	with open(f"{prefix}static/mlb/mgm.json") as fh:
 		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/caesars.json") as fh:
+		czLines = json.load(fh)
 
 	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
@@ -1315,7 +1273,6 @@ def sortEV(dinger=False):
 				mgm = an.get("mgm", "-")
 				br = an.get("betrivers", "-")
 				cz = an.get("caesars", "-")
-				pb = an.get("pointsbet", "-")
 
 			pn = bs = "-"
 			if team in bppLines and player in bppLines[team] and prop in bppLines[team][player]:
@@ -1328,19 +1285,19 @@ def sortEV(dinger=False):
 					bs = bppLines[team][player][prop]["0.5"].get("bs", "-")
 
 			bv = ""
-
+			cz = ""
 			if prop == "hr":
 				if game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
 					pn = pnLines[game]["hr"][player].split(" ")[-1]
 
-				if game in pbLines and "hr" in pbLines[game] and player in pbLines[game]["hr"]:
-					pb = pbLines[game]["hr"][player].split(" ")[-1]
-
 				if game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
-					mgm = mgmLines[game]["hr"][player].split(" ")[-1]
+					mgm = mgmLines[game]["hr"][player]["0.5"]
 
 				if game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
 					bv = bvLines[game]["hr"][player].split(" ")[-1].replace("+", "")
+
+				if game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
+					cz = czLines[game]["hr"][player]
 
 				if game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
 					kambi = kambiLines[game]["hr"][player]["1.0"].split(" ")[-1]
@@ -1360,7 +1317,7 @@ def sortEV(dinger=False):
 
 			l = [ev, team.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 			if prop not in ["single", "double", "tb"]:
-				l.extend([pb, kambi, pn, bs, bv])
+				l.extend([kambi, pn, bs, bv])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
@@ -1375,7 +1332,7 @@ def sortEV(dinger=False):
 		output = f"\t\t\tUPD: {dt}\n\n"
 		l = ["EV (AVG)", "Team", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop not in ["single", "double", "tb"]:
-			l.extend(["PB", "Kambi", "PN", "BS", "BV"])
+			l.extend(["Kambi", "PN", "BS", "BV"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":
@@ -1505,33 +1462,8 @@ if __name__ == '__main__':
 
 	data = {}
 	#devigger(data, player="dean kremer", bet365Odds="-115/-115", finalOdds="-128")
-	devig(data, player="judge", ou="-110/-120", finalOdds=-105, avg=True)
+	#devig(data, player="judge", ou="-110/-120", finalOdds=-105, avg=True)
 	#print(data)
-
-	with open("static/freebets/passing_boost.json") as fh:
-		boost = json.load(fh)
-
-	with open("passing_boost.json") as fh:
-		boostOdds = json.load(fh)
-
-	data = []
-	for player in boost:
-		data.append((float(boost[player]["bet365ev"]), player, boost[player]))
-
-	output = "\t".join(["EV%", "Player", "Prop", "FD", "Bet365", "DK", "MGM", "Kambi", "CZ"])+"\n"
-	for row in sorted(data, reverse=True):
-		player = row[1].replace("_"+row[-1]["prop"], "")
-		prop = row[-1]["prop"]
-		arr = [str(row[0]), player.title(), prop, str(row[-1]['fd']*1.25)]
-		for book in ["bet365", "draftkings", "mgm", "kambi", "caesars"]:
-			if book in boostOdds[player] and prop in boostOdds[player][book]:
-				arr.append(boostOdds[player][book][prop])
-			else:
-				arr.append("-")
-		output += "\t".join(arr)+"\n"
-
-	with open("static/freebets/passing_boost.csv", "w") as fh:
-		fh.write(output)
 
 	summaryOutput = {}
 	if args.plays:

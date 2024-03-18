@@ -49,6 +49,31 @@ def convertFDTeam(team):
 	team = team.lower().replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "oak").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
 	return team
 
+def convertTeam(team):
+	team = team.lower().replace(".", "").replace(" ", "")
+	t = team.split(" ")[0][:3]
+	if t == "was":
+		t = "wsh"
+	elif t == "san":
+		t = "sf"
+	elif t == "tam":
+		t = "tb"
+	elif t == "kan":
+		t = "kc"
+	elif "yankees" in team:
+		t = "nyy"
+	elif "mets" in team:
+		t = "nym"
+	elif "angels" in team:
+		t = "laa"
+	elif "dodgers" in team:
+		t = "lad"
+	elif "cubs" in team:
+		t = "chc"
+	elif "whitesox" in team:
+		t = "chw"
+	return t
+
 def strip_accents(text):
 	try:
 		text = unicode(text, 'utf-8')
@@ -209,7 +234,7 @@ def writeCZ(date=None):
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule/?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "mlboutCZ"
-	os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -224,7 +249,7 @@ def writeCZ(date=None):
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
-		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -263,6 +288,10 @@ def writeCZ(date=None):
 					prop = "r"
 				elif "total bases" in prop:
 					prop = "tb"
+				elif "hits allowed" in prop:
+					prop = "h_allowed"
+				elif "walks allowed" in prop:
+					prop = "bb_allowed"
 				elif "total hits" in prop:
 					prop = "h"
 				elif "total singles" in prop:
@@ -275,10 +304,6 @@ def writeCZ(date=None):
 					prop = "rbi"
 				elif "strikeouts" in prop:
 					prop = "k"
-				elif "hits allowed" in prop:
-					prop = "h_allowed"
-				elif "walks allowed" in prop:
-					prop = "bb_allowed"
 				elif "outs" in prop:
 					prop = "outs"
 				elif "win" in prop:
@@ -323,7 +348,7 @@ def writeCZ(date=None):
 					res[game][prop] = ou
 				elif prop == "hr":
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
-					res[game][prop][player] = f"0.5 {ou}"
+					res[game][prop][player] = ou
 				elif "spread" in prop:
 					line = str(float(market["line"]) * -1)
 					mainLine = line
@@ -345,9 +370,11 @@ def writeCZ(date=None):
 				else:
 					try:
 						line = str(float(market["line"]))
+						if player not in res[game][prop]:
+							res[game][prop][player] = {}
+						res[game][prop][player][line] = ou
 					except:
-						line = "0.5"
-					res[game][prop][player] = f"{line} {ou}"
+						res[game][prop][player] = ou
 
 			#print(market["name"], prop, mainLine)
 			if prop in ["spread", "total"]:
@@ -769,13 +796,17 @@ def writeBV():
 							continue
 						if "home run" in prop:
 							prop = "hr"
+						elif prop == "player to record a double":
+							prop = "double"
+						elif prop == "player to record a single":
+							prop = "single"
 						elif prop == "to steal a base":
 							prop = "sb"
 						elif prop == "to record a hit":
 							prop = "h"
 						elif prop == "to record a run":
 							prop = "r"
-						elif prop == "to record an rbi":
+						elif prop == "player to record an rbi":
 							prop = "rbi"
 						elif prop.startswith("total hits, runs"):
 							prop = "h+r+rbi"
@@ -820,13 +851,15 @@ def writeBV():
 							ou = f"{market['outcomes'][0]['price']['american']}"
 							if len(market["outcomes"]) > 1:
 								ou += f"/{market['outcomes'][1]['price']['american']}"
-							res[game][prop][player] = f"{handicap} {ou}".replace("EVEN", "100")
+							if player not in res[game][prop]:
+								res[game][prop][player] = {}
+							res[game][prop][player][handicap] = f"{ou}".replace("EVEN", "100")
 						except:
 							continue
 					else:
 						for i in range(0, len(market["outcomes"]), 1):
 							player = parsePlayer(market['outcomes'][i]["description"].split(" - ")[-1].split(" (")[0])
-							ou = f"0.5 {market['outcomes'][i]['price']['american']}"
+							ou = f"{market['outcomes'][i]['price']['american']}"
 							res[game][prop][player] = ou.replace("EVEN", "100")
 
 
@@ -856,7 +889,7 @@ def writeMGM(date=None):
 	for row in rows:
 		if row["stage"].lower() == "live":
 			continue
-		if "2023/2024" in row["name"]["value"] or "2023/24" in row["name"]["value"]:
+		if "2024/2025" in row["name"]["value"] or "2024/25" in row["name"]["value"]:
 			continue
 
 		if str(datetime.strptime(row["startDate"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
@@ -877,7 +910,7 @@ def writeMGM(date=None):
 		if " at " not in data["name"]["value"]:
 			continue
 		game = strip_accents(data["name"]["value"].lower()).replace(" at ", " @ ")
-		game = game.replace(" (game 2)", "").replace(" (game 1)", "")
+		game = game.replace(" (game 2)", "").replace(" (game 1)", "").replace(" (neutral venue)", "")
 		fullTeam1, fullTeam2 = game.split(" @ ")
 		game = convertFDTeam(f"{fullTeam1} @ {fullTeam2}")
 
@@ -902,57 +935,44 @@ def writeMGM(date=None):
 				prop = "total"
 			elif "spread" in prop:
 				prop = "spread"
-			elif prop == "which player will score a touchdown in the game?":
-				prop = "attd"
-			elif prop.startswith("how many "):
-				if prop.startswith("how many points will be scored in the game") or "extra points" in prop:
-					continue
-				if fullTeam1 in prop or fullTeam2 in prop:
-					p = "away_total"
-					team = prop.split(" will ")[-1].split(" score")[0]
-					if fullTeam2 in prop:
-						p = "home_total"
-					prop = p
-				else:
-					if "his 1st" in prop:
-						continue
-					player = prop.split(" (")[0].split("(")[0].split(" will ")[-1]
-					p = prop.split(" ")[2]
-					if p == "total":
-						if "hits," in prop:
-							p = "h+r+rbi"
-						else:
-							p = prop.split(" ")[3]
-
-					if p == "walks":
-						p = "bb"
-						if "allow" in prop:
-							p = "bb_allowed"
-					elif p == "times":
+			elif "):" in prop:
+				player = parsePlayer(prop.split(" (")[0])
+				p = prop.split("): ")[-1]
+				if "home run" in p:
+					p = "hr"
+				elif p == "runs":
+					p = "r"
+				elif p == "hits":
+					p = "h"
+				elif p == "triples":
+					p = "triple"
+				elif p == "doubles":
+					p = "double"
+				elif p == "singles":
+					p = "single"
+				elif p == "bases":
+					p = "tb"
+				elif "strikeouts" in p:
+					p = "k"
+					if "batter" in prop:
 						p = "so"
-					elif p == "runs":
-						p = "r"
-					elif p == "rbis":
-						p = "rbi"
-					elif p == "stolen":
-						p = "sb"
-					elif p == "home":
-						p = "hr"
-					elif p == "hits":
-						p = "h"
-						if "allow" in prop:
-							p = "h_allowed"
-					elif p == "bases":
-						p = "tb"
-					elif p == "earned":
-						p = "er"
-					elif p == "strikeouts":
-						p = "k"
-
-
-					if p != "outs" and p.endswith("s"):
-						p = p[:-1]
-					prop = p
+				elif p == "stolen bases":
+					p = "sb"
+				elif "walks" in p:
+					p = "bb"
+				elif p == "runs batted in":
+					p = "rbi"
+				elif p == "total hits, runs and rbis":
+					p = "h+r+rbi"
+				elif "earned runs" in p:
+					p = "er"
+				elif "hits allowed" in p:
+					p = "h_allowed"
+				prop = p
+			elif prop.endswith(": home runs"):
+				prop = "hr"
+			elif prop.endswith(": home runs"):
+				prop = "hr"
 			else:
 				continue
 
@@ -988,7 +1008,9 @@ def writeMGM(date=None):
 						player = parsePlayer(player)
 						if prop not in res[game]:
 							res[game][prop] = {}
-						res[game][prop][player] = val+" "+ou
+						if player not in res[game][prop]:
+							res[game][prop][player] = {}
+						res[game][prop][player][val] = ou
 					else:
 						if prop not in res[game]:
 							res[game][prop] = {}
@@ -1014,26 +1036,12 @@ def writeKambi():
 	fullTeam = {}
 	eventIds = {}
 	for event in j["events"]:
-		game = event["event"]["name"].lower()
+		game = f"{event['event']['awayName']} @ {event['event']['homeName']}"
 		away, home = map(str, game.split(" @ "))
 		homeFull, awayFull = map(str, event["event"]["englishName"].lower().split(" - "))
 		games = []
 		for team, full in zip([away, home], [awayFull, homeFull]):
-			t = team.split(" ")[0]
-			if t == "was":
-				t = "wsh"
-			elif "yankees" in team:
-				t = "nyy"
-			elif "mets" in team:
-				t = "nym"
-			elif "angels" in team:
-				t = "laa"
-			elif "dodgers" in team:
-				t = "lad"
-			elif "cubs" in team:
-				t = "chc"
-			elif "white sox" in team:
-				t = "chw"
+			t = convertTeam(team.split(" ")[0])
 			fullTeam[t] = full
 			games.append(t)
 		game = " @ ".join(games)
@@ -1151,7 +1159,7 @@ def writeKambi():
 		json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
-	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
 
 def writeFanduel():
 	apiKey = "FhMFpcPWXMeyZxOx"
@@ -1170,7 +1178,7 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-arizona-diamondbacks-32746638"
+  "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-33103370"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649"]
@@ -1184,15 +1192,20 @@ def writeFanduel():
 
 		outfile = "outmlb"
 
-		for tab in ["", "alt-lines-runs"]:
-			time.sleep(2.1)
-			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
+		#for tab in ["", "alt-lines-runs"]:
+		for tab in [""]:
+			time.sleep(0.4)
+			#url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
+			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}&tab=popular"
 			if tab:
 				url += f"&tab={tab}"
-			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-H", "x-sportsbook-region: MI", url, "-o", outfile])
 
 			with open(outfile) as fh:
 				data = json.load(fh)
+
+			#with open("out", "w") as fh:
+			#	json.dump(data, fh, indent=4)
 
 			if "markets" not in data["attachments"]:
 				continue
@@ -1282,7 +1295,7 @@ def writeFanduel():
 								if handicap not in lines[game][prop]:
 									lines[game][prop][handicap] = odds
 									if "total" not in prop and "spread" not in prop:
-										lines[game][prop][handicap] = f"0.5 {odds}"
+										lines[game][prop][handicap] = odds
 								else:
 									if runners[i]["runnerName"].startswith("Under") or runners[i]["result"].get("type", "") == "HOME" or " ".join(runners[i]["runnerName"].lower().split(" ")[:-1]) == home:
 										if len(lines[game][prop][handicap].split("/")) == 2:
@@ -1304,7 +1317,10 @@ def writeFanduel():
 									player = parsePlayer(runners[i]["runnerName"].replace(" Over", "").replace(" Under", ""))
 								else:
 									player = parsePlayer(runners[i]["runnerName"].lower())
-								lines[game][prop][player] = f"{handicap} {ou}"
+								if player not in lines[game][prop]:
+									lines[game][prop][player] = {}
+
+								lines[game][prop][player][handicap] = ou
 	
 	with open(f"static/mlb/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -1410,12 +1426,12 @@ def writeDK(date=None):
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
 			time.sleep(0.3)
-			url = f"https://sportsbook-us-mi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}"
+			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}"
 			if subCat:
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
 			outfile = "outmlb"
-			call(["curl", "-k", url, "-o", outfile])
+			os.system(f"curl {url} -o {outfile}")
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -1430,26 +1446,12 @@ def writeDK(date=None):
 				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
 				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
 				if startDt.day != int(date[-2:]):
-					continue
+					#continue
 					pass
 				game = event["name"].lower()
 				games = []
 				for team in game.split(" @ "):
-					t = team.split(" ")[0]
-					if t == "was":
-						t = "wsh"
-					elif "yankees" in team:
-						t = "nyy"
-					elif "mets" in team:
-						t = "nym"
-					elif "angels" in team:
-						t = "laa"
-					elif "dodgers" in team:
-						t = "lad"
-					elif "cubs" in team:
-						t = "chc"
-					elif "white sox" in team:
-						t = "chw"
+					t = convertTeam(team)
 					games.append(t)
 				game = " @ ".join(games)
 				if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
@@ -1500,21 +1502,7 @@ def writeDK(date=None):
 								elif "run line" in prop:
 									prop = "spread"
 								elif prop.endswith("team total runs"):
-									team = prop.split(":")[0]
-									if "was" in team:
-										team = "wsh"
-									elif "yankees" in team:
-										team = "nyy"
-									elif "mets" in team:
-										team = "nym"
-									elif "angels" in team:
-										team = "laa"
-									elif "dodgers" in team:
-										team = "lad"
-									elif "cubs" in team:
-										team = "chc"
-									elif "white sox" in team:
-										team = "chw"
+									team = convertTeam(prop.split(":")[0])
 									if game.startswith(team.split(" ")[0]):
 										prop = "away_total"
 									else:
@@ -1583,16 +1571,18 @@ def writeDK(date=None):
 											else:
 												lines[game][prop][line] = odds+"/"+lines[game][prop][line]
 							else:
+								ou = f"{outcomes[0]['oddsAmerican']}"
+								if len(row["outcomes"]) > 1:
+									ou += f"/{outcomes[1]['oddsAmerican']}"
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
-								lines[game][prop][player] = ""
+								if player not in lines[game][prop]:
+									lines[game][prop][player] = {}
 
 								if prop in ["w", "hr", "sb"]:
-									lines[game][prop][player] = "0.5 "
+									lines[game][prop][player] = ou
 								else:
-									lines[game][prop][player] = f"{outcomes[0]['line']} "
-								lines[game][prop][player] += f"{outcomes[0]['oddsAmerican']}"
-								if len(row["outcomes"]) > 1:
-									lines[game][prop][player] += f"/{outcomes[1]['oddsAmerican']}"
+									lines[game][prop][player][outcomes[0]['line']] = ou
+								
 
 	with open("static/mlb/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -1838,9 +1828,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/mlb/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
-	with open(f"{prefix}static/mlb/pointsbet.json") as fh:
-		pbLines = json.load(fh)
-
 	with open(f"{prefix}static/mlb/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
 
@@ -1858,7 +1845,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines
@@ -1906,12 +1892,19 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						try:
 							player = float(handicap)
 							player = ""
+							handicaps[(handicap, playerHandicap)] = player
 						except:
 							player = handicap
 							playerHandicap = ""
 							if " " in lineData[game][prop][player]:
 								playerHandicap = lineData[game][prop][player].split(" ")[0]
-						handicaps[(handicap, playerHandicap)] = player
+								handicaps[(handicap, playerHandicap)] = player
+							elif type(lineData[game][prop][player]) is dict:
+								for h in lineData[game][prop][player]:
+									handicaps[(handicap, h)] = player
+							else:
+								for h in lineData[game][prop][player]:
+									handicaps[(handicap, " ")] = player
 
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
@@ -2101,7 +2094,7 @@ def sortEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
@@ -2109,7 +2102,7 @@ def sortEV():
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
+		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -2204,14 +2197,20 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.update:
-		writeFanduel()
+		#writeFanduel()
+		print("pn")
 		writePinnacle(args.date)
+		print("kambi")
 		writeKambi()
+		print("mgm")
 		writeMGM(args.date)
-		writePointsbet(args.date)
+		#writePointsbet(args.date)
+		print("bv")
 		writeBV()
+		print("dk")
 		writeDK(args.date)
 		#writeActionNetwork()
+		print("cz")
 		writeCZ(args.date)
 
 	if args.ev:
