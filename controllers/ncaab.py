@@ -1,4 +1,4 @@
-
+from flask import *
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
@@ -19,7 +19,124 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
-def convertNBATeam(team):
+march_blueprint = Blueprint('march', __name__, template_folder='views')
+
+@march_blueprint.route('/getMarch')
+def getmarch_route():
+	with open(f"{prefix}static/ncaab/kenpom.json") as fh:
+		kenpom = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/bovada.json") as fh:
+		bvLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/fdMarch.json") as fh:
+		fdLines = json.load(fh)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"bv": bvLines,
+		"dk": dkLines,
+		"cz": czLines,
+		"fd": fdLines
+	}
+
+	matchups = {}
+	mls = {}
+	for book in lines:
+		for game in lines[book]:
+			if book != "fd" and "ml" not in lines[book][game]:
+				continue
+			away, home = map(str, game.split(" @ "))
+			if book == "fd":
+				ml = lines[book][game]
+			else:
+				ml = lines[book][game]["ml"]
+
+			if away not in mls:
+				mls[away] = {}
+			if home not in mls:
+				mls[home] = {}
+
+			mls[away][book] = ml
+			mls[home][book] = ml.split("/")[1]+"/"+ml.split("/")[0]
+			matchups[away] = game
+			matchups[home] = game
+
+	res = []
+	for team in kenpom:
+		if kenpom[team]["seed"] == 0:
+			continue
+		matchup = matchups.get(team, "")
+		j = {"team": team.title(), "matchup": matchup}
+		for book in lines:
+			j[book] = ""
+			if team in mls and book in mls[team]:
+				j[book] = mls[team][book]
+		for stat in kenpom[team]:
+			j[stat] = kenpom[team][stat]
+		res.append(j)
+
+	return jsonify(res)
+
+@march_blueprint.route('/march')
+def march_route():
+	return render_template("march.html")
+
+def writeKenpom():
+	url = "https://kenpom.com/"
+	outfile = "outKP"
+	#os.system(f"curl {url} -o {outfile}")
+
+	data = {}
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+	for tr in soup.find("table", id="ratings-table").findAll("tr")[2:]:
+		tds = tr.findAll("td")
+		if not tds:
+			continue
+		team = tds[1].find("a").text.lower().replace(".", "").replace("'", "")
+		if team.endswith(" st"):
+			team += "ate"
+		team = convertTeam(team)
+		seed = 0
+		if tds[1].find("span"):
+			seed = int(tds[1].find("span").text)
+		data[team] = {
+			"kpRank": int(tds[0].text),
+			"seed": seed,
+			"record": tr.find("td", class_="wl").text,
+			"adjEM": float(tds[4].text)
+		}
+
+		idx = 5
+		for hdr in ["adjO", "adjD", "adjT", "luck", "sos", "oppO", "oppD", "nonConfSOS"]:
+			data[team][hdr] = f"{tds[idx].text} ({tds[idx+1].text})"
+			idx += 2
+
+	with open("static/ncaab/kenpom.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+def convertTeam(team):
 	team = strip_accents(team.lower().split(" (")[0])
 	team = team.replace("'", "").replace(".", "").replace("- ", "").replace("-", " ").replace("a and m", "a&m")
 	if team.endswith(" u"):
@@ -290,8 +407,7 @@ def writeActionNetwork(dateArg = None):
 	with open(f"{prefix}static/ncaab/actionnetwork.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
 
-
-def writeCZ(date):
+def writeCZ(date, march):
 	if not date:
 		date = str(datetime.now())[:10]
 
@@ -308,7 +424,7 @@ def writeCZ(date):
 		if not event["active"]:
 			continue
 		d = datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5)
-		if str(d)[:10] != date:
+		if not march and str(d)[:10] != date:
 			continue
 		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
@@ -330,8 +446,8 @@ def writeCZ(date):
 		game = ""
 		for market in data["markets"]:
 			if market["selections"] and "teamData" in market["selections"][0] and "teamData" in market["selections"][1]:
-				away = convertNBATeam(market["selections"][0]["teamData"]["teamCity"])
-				home = convertNBATeam(market["selections"][1]["teamData"]["teamCity"])
+				away = convertTeam(market["selections"][0]["teamData"]["teamCity"])
+				home = convertTeam(market["selections"][1]["teamData"]["teamCity"])
 				game = f"{away} @ {home}"
 				res[game] = {}
 				break
@@ -461,7 +577,7 @@ def writePointsbet(date):
 
 		game = data["name"].lower()
 		fullAway, fullHome = map(str, game.split(" @ "))
-		game = f"{convertNBATeam(fullAway)} @ {convertNBATeam(fullHome)}"
+		game = f"{convertTeam(fullAway)} @ {convertTeam(fullHome)}"
 		res[game] = {}
 
 		playerIds = {}
@@ -695,7 +811,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 			else:
 				res[game][prop] = ou
 
-def writePinnacle(date, debug):
+def writePinnacle(date, debug, march):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -712,13 +828,13 @@ def writePinnacle(date, debug):
 	games = {}
 	for row in data:
 		d = datetime.strptime(row["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5)
-		if str(d)[:10] != date:
+		if str(d)[:10] != date and not march:
 			continue
 		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
 		if row["type"] == "matchup" and not row["parent"]:
-			player1 = convertNBATeam(row["participants"][0]["name"].lower())
-			player2 = convertNBATeam(row["participants"][1]["name"].lower())
+			player1 = convertTeam(row["participants"][0]["name"].lower())
+			player2 = convertTeam(row["participants"][1]["name"].lower())
 			games[str(row["id"])] = f"{player2} @ {player1}"
 
 	res = {}
@@ -733,7 +849,7 @@ def writePinnacle(date, debug):
 	with open("static/ncaab/pinnacle.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-def writeBV(date):
+def writeBV(date, march):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -750,7 +866,7 @@ def writeBV(date):
 
 	ids = []
 	for row in data[0]["events"]:
-		if str(datetime.fromtimestamp(row["startTime"] / 1000))[:10] != date:
+		if not march and str(datetime.fromtimestamp(row["startTime"] / 1000))[:10] != date:
 			continue
 		ids.append(row["link"])
 
@@ -771,7 +887,7 @@ def writeBV(date):
 		except:
 			continue
 		fullAway, fullHome = game.split(" @ ")
-		game = f"{convertNBATeam(fullAway)} @ {convertNBATeam(fullHome)}"
+		game = f"{convertTeam(fullAway)} @ {convertTeam(fullHome)}"
 
 		res[game] = {}
 
@@ -875,7 +991,7 @@ def writeBV(date):
 	with open("static/ncaab/bovada.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-def writeMGM(date):
+def writeMGM(date, march):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -901,7 +1017,7 @@ def writeMGM(date):
 		if "2023/2024" in row["name"]["value"] or "2023/24" in row["name"]["value"]:
 			continue
 		d = datetime.strptime(row["startDate"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4)
-		if str(d)[:10] != date:
+		if not march and str(d)[:10] != date:
 			continue
 		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
@@ -924,7 +1040,7 @@ def writeMGM(date):
 			continue
 		game = strip_accents(data["name"]["value"].lower()).replace(" at ", " @ ")
 		fullTeam1, fullTeam2 = game.split(" @ ")
-		game = f"{convertNBATeam(fullTeam1)} @ {convertNBATeam(fullTeam2)}"
+		game = f"{convertTeam(fullTeam1)} @ {convertTeam(fullTeam2)}"
 
 		res[game] = {}
 		for row in data["games"]:
@@ -1021,7 +1137,7 @@ def writeMGM(date):
 	with open("static/ncaab/mgm.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-def writeKambi(date):
+def writeKambi(date, march):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -1043,7 +1159,7 @@ def writeKambi(date):
 		away, home = event["event"]["awayName"].lower(), event["event"]["homeName"].lower()
 		games = []
 		for team in [away, home]:
-			t = convertNBATeam(team)
+			t = convertTeam(team)
 			fullTeam[t] = team
 			games.append(t)
 		game = " @ ".join(games)
@@ -1074,7 +1190,7 @@ def writeKambi(date):
 			continue
 
 		d = datetime.strptime(j["betOffers"][0]["closed"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5)
-		if str(d)[:10] != date:
+		if not march and str(d)[:10] != date:
 			continue
 		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
@@ -1105,7 +1221,7 @@ def writeKambi(date):
 			elif label.split(" -")[0] == "handicap":
 				label = "spread"
 			elif "total points by" in label:
-				team = convertNBATeam(label.split(" by ")[-1].split(" - ")[0])
+				team = convertTeam(label.split(" by ")[-1].split(" - ")[0])
 				if team.startswith(awayFull):
 					label = "away_total"
 				else:
@@ -1146,7 +1262,8 @@ def writeKambi(date):
 					pass
 			if "ml" in label:
 				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
-				if betOffer["outcomes"][0]["participant"].lower().startswith(awayFull):
+				t = betOffer["outcomes"][0].get("participant", betOffer["outcomes"][0]["label"])
+				if t.lower().startswith(awayFull):
 				 	data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 			else:
 				if label not in data[game]:
@@ -1492,6 +1609,73 @@ def writeFanduelManual():
 
 """
 
+def writeFDMoneylines():
+	js = """
+
+	let data = {};
+	{
+
+		function convertTeam(team) {
+			team = team.toLowerCase().replaceAll("'", "").replaceAll(".", "").replace("-", " ");
+			if (team == "st johns") {
+				return "saint johns";
+			} else if (team == "nebraska cornhuskers") {
+				return "nebraska";
+			} else if (team == "siu edwardsville") {
+				return "siue";
+			} else if (team == "louisiana monroe") {
+				return "ul monroe";
+			} else if (team == "nicholls") {
+				return "nicholls state";
+			} else if (team == "san jose st") {
+				return "san jose";
+			} else if (team == "purdue fort wayne") {
+				return "ipfw";
+			} else if (team == "stephen f austin") {
+				return "sfa";
+			} else if (team == "citadel") {
+				return "the citadel";
+			} else if (team == "wv mountaineers") {
+				return "west virginia";
+			} else if (team == "gw colonials") {
+				return "george washington";
+			} else if (team == "long island university") {
+				return "liu";
+			} else if (team == "north carolina central") {
+				return "nc central";
+			} else if (team == "grambling") {
+				return "grambling state";
+			} else if (team == "mt st marys") {
+				return "mount st marys";
+			} else if (team == "detroit mercy") {
+				return "detroit";
+			} else if (team == "unc greensboro") {
+				return "nc greensboro";
+			} else if (team == "miami (oh)") {
+				return "miami oh";
+			} else if (team == "youngstown st") {
+				return "youngstown state";
+			}
+			return team
+		}
+
+		const ul = document.querySelectorAll("ul")[5];
+		const lis = Array.from(ul.querySelectorAll("li"));
+		for (const li of lis) {
+			if (!li.querySelector("svg")) {
+				continue;
+			}
+
+			let btns = Array.from(li.querySelectorAll("div[role=button]"));
+			let game = convertTeam(btns[1].getAttribute("aria-label").split(", ")[0].toLowerCase())+" @ "+convertTeam(btns[4].getAttribute("aria-label").split(", ")[0].toLowerCase());
+			data[game] = btns[1].innerText+"/"+btns[4].innerText;
+		}
+
+		console.log(data);
+	}
+
+"""
+
 def writeFanduel():
 	apiKey = "FhMFpcPWXMeyZxOx"
 
@@ -1500,7 +1684,7 @@ def writeFanduel():
 		const as = document.querySelectorAll("a");
 		const urls = {};
 		for (a of as) {
-			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("football/nba") >= 0) {
+			if (a.innerText.indexOf("More wagers") >= 0 && a.href.indexOf("/basketball") >= 0) {
 				urls[a.href] = 1;
 			}
 		}
@@ -1529,8 +1713,8 @@ def writeFanduel():
 	for game in games:
 		gameId = game.split("-")[-1]
 		game = game.split("/")[-1][:-9].replace("-", " ")
-		away = convertNBATeam(game.split(" @ ")[0])
-		home = convertNBATeam(game.split(" @ ")[1])
+		away = convertTeam(game.split(" @ ")[0])
+		home = convertTeam(game.split(" @ ")[1])
 		game = f"{away} @ {home}"
 		if game in lines:
 			continue
@@ -1730,7 +1914,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	
 	evData[player][f"{prefix}ev"] = ev
 
-def writeDK(date):
+def writeDK(date, march):
 	url = "https://sportsbook.draftkings.com/leagues/football/nba"
 
 	if not date:
@@ -1787,7 +1971,7 @@ def writeDK(date):
 			for event in data["eventGroup"]["events"]:
 				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
 				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=5)
-				if startDt.day != int(date[-2:]):
+				if not march and startDt.day != int(date[-2:]):
 					continue
 					pass
 				elif startDt < datetime.now():
@@ -1795,7 +1979,7 @@ def writeDK(date):
 				game = event["name"].lower()
 				games = []
 				for team in game.split(" @ "):
-					t = convertNBATeam(team)
+					t = convertTeam(team)
 					games.append(t)
 				game = " @ ".join(games)
 				if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
@@ -2335,7 +2519,7 @@ def writePlayers(keep=None):
 
 	teamIds = {}
 	for div in soup.findAll("section", class_="TeamLinks"):
-		team = convertNBATeam(strip_accents(div.find("a").text.lower()))
+		team = convertTeam(strip_accents(div.find("a").text.lower()))
 		id = div.find("a").get("href").split("/")[-2]
 		teamIds[team] = id
 
@@ -2839,6 +3023,8 @@ if __name__ == '__main__':
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--debug", action="store_true", help="Debug")
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
+	parser.add_argument("--kenpom", action="store_true")
+	parser.add_argument("--march", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Player")
@@ -2865,28 +3051,28 @@ if __name__ == '__main__':
 		writeFanduel()
 
 	if args.mgm:
-		writeMGM(args.date)
+		writeMGM(args.date, args.march)
 
 	if args.pb:
 		writePointsbet(args.date)
 
 	if args.dk:
-		writeDK(args.date)
+		writeDK(args.date, args.march)
 
 	if args.kambi:
-		writeKambi(args.date)
+		writeKambi(args.date, args.march)
 
 	if args.pn:
-		writePinnacle(args.date, args.debug)
+		writePinnacle(args.date, args.debug, args.march)
 
 	if args.bv:
-		writeBV(args.date)
+		writeBV(args.date, args.march)
 
 	if args.bvParlay:
 		bvParlay()
 
 	if args.cz:
-		writeCZ(args.date)
+		writeCZ(args.date, args.march)
 
 	if args.matchups:
 		writeMatchups()
@@ -2894,22 +3080,25 @@ if __name__ == '__main__':
 	if args.players:
 		writePlayers(args.keep)
 
+	if args.kenpom:
+		writeKenpom()
+
 	if args.update:
 		#writeFanduel()
 		print("pn")
-		writePinnacle(args.date, args.debug)
+		writePinnacle(args.date, args.debug, args.march)
 		print("kambi")
-		writeKambi(args.date)
+		writeKambi(args.date, args.march)
 		print("mgm")
-		writeMGM(args.date)
+		writeMGM(args.date, args.march)
 		#print("pb")
 		#writePointsbet(args.date)
 		print("bv")
-		writeBV(args.date)
+		writeBV(args.date, args.march)
 		print("dk")
-		writeDK(args.date)
+		writeDK(args.date, args.march)
 		print("cz")
-		writeCZ(args.date)
+		writeCZ(args.date, args.march)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)

@@ -50,7 +50,7 @@ def convertFDTeam(team):
 	return team
 
 def convertTeam(team):
-	team = team.lower().replace(".", "").replace(" ", "")
+	team = team.lower().replace(".", "")
 	t = team.split(" ")[0][:3]
 	if t == "was":
 		t = "wsh"
@@ -1388,7 +1388,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	
 	evData[player][f"{prefix}ev"] = ev
 
-def writeDK(date=None):
+def writeDK(date, propArg):
 	url = "https://sportsbook.draftkings.com/leagues/football/nfl"
 
 	if not date:
@@ -1425,6 +1425,8 @@ def writeDK(date=None):
 	lines = {}
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
+			if propArg and subCat != 6606:
+				continue
 			time.sleep(0.3)
 			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}"
 			if subCat:
@@ -2182,7 +2184,7 @@ if __name__ == '__main__':
 		writePointsbet(args.date)
 
 	if args.dk:
-		writeDK(args.date)
+		writeDK(args.date, args.prop)
 
 	if args.kambi:
 		writeKambi()
@@ -2197,7 +2199,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.update:
-		#writeFanduel()
+		writeFanduel()
 		print("pn")
 		writePinnacle(args.date)
 		print("kambi")
@@ -2208,7 +2210,7 @@ if __name__ == '__main__':
 		print("bv")
 		writeBV()
 		print("dk")
-		writeDK(args.date)
+		writeDK(args.date, args.prop)
 		#writeActionNetwork()
 		print("cz")
 		writeCZ(args.date)

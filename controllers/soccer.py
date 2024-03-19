@@ -254,6 +254,24 @@ def parsePlayer(player):
 		return "william wright"
 	elif player == "paddy madden":
 		return "patrick madden"
+	elif player == "macauley southam hales":
+		return "macauley southam"
+	elif player == "emmanuel osadebe":
+		return "emma osaoabe"
+	elif player == "chris maguire":
+		return "christopher maguire"
+	elif player == "tam oware":
+		return "thomas oware"
+	elif player == "cameron odonnel":
+		return "cameron odonnell"
+	elif player == "morgyn neill":
+		return "morgyn neil"
+	elif player == "jon robertson":
+		return "john robertson"
+	elif player == "joshua debayo":
+		return "josh debayo"
+	elif player == "cammy ballantyne":
+		return "cameron ballantyne"
 	return player
 
 def parseTeam(player):
@@ -2245,14 +2263,18 @@ def writeESPN(teamArg):
 				date = row.find("td").text.strip().split(", ")[-1]
 				dt = datetime.strptime(date+" "+year, "%b %d %Y")
 				date = str(dt)[:10]
-				gameId = row.find("span", class_="score").findAll("a")[1].get("href").split("/")[-2]
+				try:
+					gameId = row.find("span", class_="score").findAll("a")[1].get("href").split("/")[-2]
+				except:
+					continue
 
 				#print(gameId)
 				if gameId in boxscores[team]:
 					pass
-					continue
-				#if gameId != "699148":
-				#	continue
+					#continue
+				if gameId != "672806":
+					pass
+					#continue
 				boxscores[team].append(gameId)
 
 				time.sleep(0.2)
@@ -2328,7 +2350,9 @@ def writeESPN(teamArg):
 					fullTeam = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][1]["displayName"].lower()
 					fullTeamOpp = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["displayName"].lower()
 				if fullTeamOpp == "milton keynes dons":
-					fullTeamOpp == "mk dons"
+					fullTeamOpp = "mk dons"
+				elif fullTeamOpp == "st johnstone":
+					fullTeamOpp = "st. johnstone"
 
 				isHome = False
 				if idx == 0:
@@ -2388,15 +2412,38 @@ def writeESPN(teamArg):
 					try:
 						allCommentary = data["page"]["content"]["gamepackage"]["mtchCmmntry"]["allCommentary"][::-1]
 					except:
+						del teamData["teamStats"][date]
 						continue
 					if len(allCommentary) < 30:
 						continue
+
+					# halftime wasn't found in timeline
+					if not halftime:
+						firstHalfScore[0] = 0
+						firstHalfScore[1] = 0
+						secondHalfScore[0] = 0
+						secondHalfScore[1] = 0
+
 					for player in teamData["playerStats"]:
 						if date in teamData["playerStats"][player]:
 							teamData["playerStats"][player][date] = {"shots": 0, "sot": 0}
 
 					for row in allCommentary:
 						detail = row["dtls"].lower()
+
+						if not halftime:
+							if detail.startswith("first half ends"):
+								homeScore = detail.split(", ")[1][-1]
+								awayScore = detail[-2]
+								firstHalfScore[0] = int(homeScore)
+								firstHalfScore[1] = int(awayScore)
+							elif detail.startswith("second half ends"):
+								homeScore = int(detail.split(", ")[1][-1])
+								awayScore = int(detail[-2])
+								secondHalfScore[0] = homeScore - firstHalfScore[0]
+								secondHalfScore[1] = awayScore - firstHalfScore[1]
+
+
 						suffix = ""
 						if detail.split(".")[0].endswith(fullTeamOpp):
 							suffix = "_against"
@@ -2427,7 +2474,6 @@ def writeESPN(teamArg):
 							teamData["playerStats"][player][date][stat] += 1
 							if stat == "sot":
 								teamData["playerStats"][player][date]["shots"] += 1
-
 
 
 				finalScore = [firstHalfScore[0]+secondHalfScore[0], firstHalfScore[1]+secondHalfScore[1]]
@@ -2505,9 +2551,9 @@ def writeESPNIds(date=""):
 		league = parseTeam(league).replace(" ", "-")
 		if "women" in league or league.endswith(" f"):
 			continue
-		if league not in ["english-fa-cup", "english-premier-league", "spanish-laliga", "german-bundesliga", "italian-serie-a", "french-ligue-1"]:
+		if league not in ["us-open-cup", "english-league-two", "english-national-league", "scottish-league-one"]:
 			pass
-			#continue
+			continue
 		if not os.path.isdir(f"static/soccerreference/{league}"):
 			os.mkdir(f"static/soccerreference/{league}")
 

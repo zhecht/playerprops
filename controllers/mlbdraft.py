@@ -112,7 +112,6 @@ def getmlbdraft_route():
 
 @mlbdraft_blueprint.route('/mlbdraft')
 def mlbdraft_route():
-
 	return render_template("mlbdraft.html")
 
 if __name__ == "__main__":
