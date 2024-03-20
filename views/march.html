@@ -42,6 +42,7 @@
 		</div>
 		<div id="footer">
 			<button onclick="compare();">Compare</button>
+			<button onclick="seedless();">Seedless</button>
 			<button onclick="clearFilter();">Clear Filter</button>
 			<button onclick="groupBy();">Group By</button>
 		</div>
@@ -135,6 +136,7 @@
 				TABLE.on("rowClick", function(e, row) {
 					row.getElement().querySelector("input").click();
 				});
+				TABLE.setFilter([{field:"seed", type:"!=", value:0}]);
 			}
 
 			renderTable();
@@ -146,16 +148,25 @@
 					for (let row of rows) {
 						ranks.push(parseInt(row.getData().kpRank));
 					}
-					TABLE.setFilter([{field: "kpRank", type:"in", value:ranks}]);
+					TABLE.addFilter("kpRank", "in", ranks);
 				}
 			}
 
 			function clearFilter() {
-				TABLE.setFilter();
+				TABLE.setFilter([{field:"seed", type:"!=", value:0}]);
 				let rows = TABLE.getSelectedRows();
 				for (let row of rows) {
 					row.getElement().querySelector("input").click();
 				}
+			}
+
+			let isSeedless = false;
+			function seedless() {
+				TABLE.removeFilter("seed", "!=", 0);
+				if (isSeedless) {
+					TABLE.addFilter("seed", "!=", 0);
+				}
+				isSeedless = !isSeedless;
 			}
 
 			function groupBy() {

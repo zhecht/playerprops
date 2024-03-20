@@ -85,8 +85,6 @@ def getmarch_route():
 
 	res = []
 	for team in kenpom:
-		if kenpom[team]["seed"] == 0:
-			continue
 		matchup = matchups.get(team, "")
 		j = {"team": team.title(), "matchup": matchup}
 		for book in lines:

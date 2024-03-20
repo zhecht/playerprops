@@ -1105,6 +1105,8 @@ def parsePlayer(player):
 		player = "cam thomas"
 	elif player == "jadeney":
 		player = "jaden ivey"
+	elif player == "nicolas claxton":
+		player = "nic claxton"
 	return player
 
 def writeESPN():
@@ -2292,7 +2294,7 @@ def writeSGP():
 
 	#readSGP()
 
-def readSGP():
+def readSGP(insurance=False):
 
 	#game = "phx @ cle"
 
@@ -2310,6 +2312,12 @@ def readSGP():
 
 	with open(f"static/nba/minutes.json") as fh:
 		minutes = json.load(fh)
+
+	with open(f"{prefix}static/basketballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"{prefix}static/nba/matchups.json") as fh:
+		matchups = json.load(fh)
 
 	out = ""
 	for game in res:
@@ -2334,14 +2342,20 @@ def readSGP():
 						oddsStr = res[game][prop][line].split("/")
 					for ouIdx, odds in enumerate(oddsStr):
 						isOver = ouIdx == 0
-						if int(odds) <= -360 or int(odds) >= -185:
-							continue
+						if insurance:
+							if int(odds) <= -300 or int(odds) >= -185:
+								continue
+						else:
+							if int(odds) <= -360 or int(odds) >= -185:
+								continue
 
 						over = overL15 = overPerMin = 0
 						lastArr = []
 						if player:
 							team = away
+							opp = home
 							if home in playerIds and player in playerIds[home]:
+								opp = away
 								team = home
 
 							playerSplits = {}
@@ -2369,9 +2383,21 @@ def readSGP():
 							overL15 = int(len(overArrL15) * 100 / len(arr[-15:]))
 							overPerMin = int(len(overArrPerMin) * 100 / len(arr))
 
+							pos = ""
+							if player in roster[team]:
+								pos = roster[team][player].lower()
+
+							rank = posRank = ""
+							try:
+								rank = matchups[opp]["szn"]["all"][prop+"Rank"]
+								posRank = matchups[opp]["szn"][pos][prop+"Rank"]
+							except:
+								pass
+
 							txt = f"\n{player} o{line} {prop} {odds}\n"
 							txt += f"{over}%, {overL15}% L15, {overPerMin}% per min\n"
 							txt += f"{','.join(lastArr)}\n"
+							txt += f"Rank: {rank}, Pos Rank: {posRank}\n"
 
 							output.append([overL15, txt])
 
@@ -2409,7 +2435,7 @@ def writeThreesday():
 		})
 
 	for row in sorted(data, key=lambda k: k["avg"], reverse=True):
-		output += f"{row['game'].upper()}|{row['away_3ptm']}|{row['away_opp_3ptm']}|{row['home_3ptm']}|{row['home_opp_3ptm']}|{row['avg']}\n"
+		output += f"{row['game'].upper()}|{row['away_3ptm']}|{row['away_opp_3ptm']}|{row['home_3ptm']}|{row['home_opp_3ptm']}|{row['avg']}  \n"
 
 	print(output)
 
@@ -3533,6 +3559,7 @@ if __name__ == '__main__':
 	parser.add_argument("--injuries", action="store_true", help="injuries")
 	parser.add_argument("--leaders", action="store_true", help="leaders")
 	parser.add_argument("--sgp", action="store_true", help="SGP")
+	parser.add_argument("--insurance", action="store_true")
 	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
@@ -3555,6 +3582,8 @@ if __name__ == '__main__':
 
 	if args.sgp:
 		readSGP()
+	if args.insurance:
+		readSGP(insurance=True)
 
 	if args.injuries:
 		writeInjuries()

@@ -1027,12 +1027,13 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
 
 			if prop == "hr" and game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
-				pn = pnLines[game]["hr"][player].split(" ")[-1]
+				pn = pnLines[game]["hr"][player]["0.5"]
 
 			if prop == "hr" and game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
 				cz = czLines[game]["hr"][player]
 
 			if prop == "hr" and game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
+				pass
 				mgm = mgmLines[game]["hr"][player]["0.5"]
 
 			bv = ""
@@ -1041,7 +1042,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 			kambi = ""
 			if prop == "hr" and game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
-				kambi = kambiLines[game]["hr"][player]["1.0"].split(" ")[-1]
+				kambi = kambiLines[game]["hr"][player]["1.0"]
 
 			if team not in bet365Lines or player not in bet365Lines[team]:
 				bet365ou = ""
@@ -1071,11 +1072,12 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				if not nobr:
 					l.append(br.split("/")[0])
 			if allArg:
-				l = [dk, bet365ou, mgm, pn.split("/")[0], bs, bv]
+				l = [dk, bet365ou, mgm, pn, bs, bv]
 				if not nocz:
 					l.append(cz)
 				if not nobr:
-					l.append(kambi.split("/")[0])
+					#l.append(kambi.split("/")[0])
+					l.append(kambi)
 
 			evBook = "fd"
 			if bookArg == "dk":
@@ -1288,7 +1290,7 @@ def sortEV(dinger=False):
 			cz = ""
 			if prop == "hr":
 				if game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
-					pn = pnLines[game]["hr"][player].split(" ")[-1]
+					pn = pnLines[game]["hr"][player]["0.5"]
 
 				if game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
 					mgm = mgmLines[game]["hr"][player]["0.5"]

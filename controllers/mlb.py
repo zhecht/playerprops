@@ -668,10 +668,12 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 			if prop not in res[game]:
 				res[game][prop] = {}
+			if player not in res[game][prop]:
+				res[game][prop][player] = {}
 
 			if "points" in prices[0] and prop not in []:
 				handicap = str(float(prices[switched]["points"]))
-				res[game][prop][player] = handicap+" "+ou
+				res[game][prop][player][handicap] = ou
 			else:
 				res[game][prop][player] = ou
 		else:
@@ -689,8 +691,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 			else:
 				res[game][prop] = ou
 
-def writePinnacle(date):
-	debug = False
+def writePinnacle(date, debug=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -900,7 +901,7 @@ def writeMGM(date=None):
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
-		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+		os.system(f"curl -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -1023,7 +1024,10 @@ def writeMGM(date=None):
 	with open("static/mlb/mgm.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-def writeKambi():
+def writeKambi(date):
+	if not date:
+		date = str(datetime.now())[:10]
+
 	data = {}
 	outfile = f"outmlb.json"
 	url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/baseball/nfl"
@@ -1036,6 +1040,8 @@ def writeKambi():
 	fullTeam = {}
 	eventIds = {}
 	for event in j["events"]:
+		if str(datetime.strptime(event["event"]["start"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+			continue
 		game = f"{event['event']['awayName']} @ {event['event']['homeName']}"
 		away, home = map(str, game.split(" @ "))
 		homeFull, awayFull = map(str, event["event"]["englishName"].lower().split(" - "))
@@ -1126,7 +1132,7 @@ def writeKambi():
 				ou = betOffer["outcomes"][0]["oddsAmerican"]
 			player = ""
 			if playerProp:
-				player = parsePlayer(betOffer["outcomes"][0]["participant"])
+				player = parsePlayer(betOffer["outcomes"][0]["participant"].split(") ")[-1])
 				try:
 					last, first = map(str, player.split(", "))
 					player = f"{first} {last}"
@@ -1504,8 +1510,8 @@ def writeDK(date, propArg):
 								elif "run line" in prop:
 									prop = "spread"
 								elif prop.endswith("team total runs"):
-									team = convertTeam(prop)
-									if game.startswith(team):
+									team = convertTeam(prop.split(":")[0])
+									if game.startswith(team.split(" ")[0]):
 										prop = "away_total"
 									else:
 										prop = "home_total"
@@ -1807,7 +1813,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg=None, underArg=None):
+def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 
 	if not boost:
 		boost = 1
@@ -1845,7 +1851,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
-		"mgm": mgmLines,
+		#"mgm": mgmLines,
 		"fd": fdLines,
 		"bv": bvLines,
 		"dk": dkLines,
@@ -2151,7 +2157,7 @@ if __name__ == '__main__':
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
-	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
+	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Book")
@@ -2187,10 +2193,10 @@ if __name__ == '__main__':
 		writeDK(args.date, args.prop)
 
 	if args.kambi:
-		writeKambi()
+		writeKambi(args.date)
 
 	if args.pn:
-		writePinnacle(args.date)
+		writePinnacle(args.date, args.debug)
 
 	if args.bv:
 		writeBV()
@@ -2203,10 +2209,9 @@ if __name__ == '__main__':
 		print("pn")
 		writePinnacle(args.date)
 		print("kambi")
-		writeKambi()
+		writeKambi(args.date)
 		print("mgm")
 		writeMGM(args.date)
-		#writePointsbet(args.date)
 		print("bv")
 		writeBV()
 		print("dk")
@@ -2216,7 +2221,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under)
+		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under)
 
 	if args.print:
 		sortEV()

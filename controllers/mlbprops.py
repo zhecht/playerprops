@@ -56,83 +56,6 @@ def addNumSuffix(val):
 	else:
 		return f"{val}th"
 
-def writeGameLines(date):
-	lines = {}
-	if os.path.exists(f"{prefix}static/mlbprops/lines/{date}.json"):
-		with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
-			lines = json.load(fh)
-
-	time.sleep(0.3)
-	url = "https://sportsbook-us-mi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/493/subcategories/4519?format=json"
-	outfile = "outmlb2"
-	call(["curl", "-k", url, "-o", outfile])
-
-	with open("outmlb2") as fh:
-		data = json.load(fh)
-
-	events = {}
-	displayTeams = {}
-	if "eventGroup" not in data:
-		return
-	seen = {}
-	for event in data["eventGroup"]["events"]:
-		start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
-		startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=5)
-		if startDt.day != int(date[-2:]):
-			continue
-			pass
-		displayTeams[event["teamName1"].lower()] = event.get("teamShortName1", "").lower()
-		displayTeams[event["teamName2"].lower()] = event.get("teamShortName2", "").lower()
-		if "teamShortName1" not in event:
-			game = convertDKTeam(event["teamName1"].lower()) + " @ " + convertDKTeam(event["teamName2"].lower())
-		else:
-			game = convertDKTeam(event["teamShortName1"].lower()) + " @ " + convertDKTeam(event["teamShortName2"].lower())
-		if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
-			continue
-
-		if game in seen:
-			game += " gm2"
-
-		seen[game] = True
-		if game not in lines:
-			lines[game] = {}
-		events[event["eventId"]] = game
-
-	for catRow in data["eventGroup"]["offerCategories"]:
-		if catRow["name"].lower() != "game lines":
-			continue
-		for cRow in catRow["offerSubcategoryDescriptors"]:
-			if cRow["name"].lower() != "game":
-				continue
-			for offerRow in cRow["offerSubcategory"]["offers"]:
-				for row in offerRow:
-					try:
-						game = events[row["eventId"]]
-						gameType = row["label"].lower().split(" ")[-1]
-					except:
-						continue
-
-					switchOdds = False
-					team1 = ""
-					if gameType != "total":
-						outcomeTeam1 = row["outcomes"][0]["label"].lower()
-						team1 = displayTeams[outcomeTeam1]
-						if team1 != game.split(" @ ")[0]:
-							switchOdds = True
-
-					odds = [row["outcomes"][0]["oddsAmerican"], row["outcomes"][1]["oddsAmerican"]]
-					if switchOdds:
-						odds[0], odds[1] = odds[1], odds[0]
-
-					line = row["outcomes"][0].get("line", 0)
-					lines[game][gameType] = {
-						"line": line,
-						"odds": ",".join(odds)
-					}
-
-	with open(f"{prefix}static/mlbprops/lines/{date}.json", "w") as fh:
-		json.dump(lines, fh, indent=4)
-
 def convertDKProp(mainCat, prop):
 	if prop == "home runs":
 		return "hr"
@@ -185,9 +108,9 @@ def writeProps(date):
 
 	for mainCat in mainCats:
 		time.sleep(0.4)
-		url = f"https://sportsbook-us-mi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}?format=json"
+		url = f"https://sportsbook-nash-usmi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}?format=json"
 		outfile = "outmlb2"
-		call(["curl", "-k", url, "-o", outfile])
+		call(["curl", url, "-o", outfile])
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -230,10 +153,10 @@ def writeProps(date):
 
 		for prop in subCats:
 			time.sleep(0.4)
-			url = f"https://sportsbook-us-mi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}/subcategories/{subCats[prop]}?format=json"
+			url = f"https://sportsbook-nash-usmi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}/subcategories/{subCats[prop]}?format=json"
 			outfile = "outmlb2"
 			#print(url)
-			call(["curl", "-k", url, "-o", outfile])
+			call(["curl", url, "-o", outfile])
 
 			with open("outmlb2") as fh:
 				data = json.load(fh)
@@ -495,12 +418,10 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 		statsVsTeamCurrYear = json.load(fh)
 	with open(f"{prefix}static/baseballreference/trades.json") as fh:
 		trades = json.load(fh)
-	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
-		gameLines = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
 		lineups = json.load(fh)
 
-	with open(f"{prefix}static/mlbprops/stats/2022.json") as fh:
+	with open(f"{prefix}static/mlbprops/stats/2023.json") as fh:
 		lastYearStats = json.load(fh)
 	yearStats = {}
 	for yr in os.listdir(f"{prefix}static/mlbprops/stats/"):
@@ -704,7 +625,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				if tradeFrom:
 					teams.append(tradeFrom)
 				for t in teams:
-					if opp in statsVsTeamCurrYear[t] and player in statsVsTeamCurrYear[t][opp]:
+					if t in statsVsTeamCurrYear and opp in statsVsTeamCurrYear[t] and player in statsVsTeamCurrYear[t][opp]:
 						for hdr in statsVsTeamCurrYear[t][opp][player]:
 							if hdr not in againstTeamStats:
 								againstTeamStats[hdr] = statsVsTeamCurrYear[t][opp][player][hdr]
@@ -722,7 +643,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				played = againstTeamStats.get("gamesPlayed", 0)
 
 				for t in teams:
-					if opp in statsVsTeamCurrYear[t] and player in statsVsTeamCurrYear[t][opp]:
+					if t in statsVsTeamCurrYear and opp in statsVsTeamCurrYear[t] and player in statsVsTeamCurrYear[t][opp]:
 						if f"{prop}Overs" in statsVsTeamCurrYear[t][opp][player]:
 							overs += statsVsTeamCurrYear[t][opp][player][prop+"Overs"].get(str(math.ceil(line)), 0)
 						played += statsVsTeamCurrYear[t][opp][player]["gamesPlayed"]
@@ -810,7 +731,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				totalOver = battingAvg = avg = hitter_babip = babip = bbpg = 0
 				
 				playerStats = {}
-				if player in stats[team] or (tradeFrom and player in stats[tradeFrom]):
+				if team in stats and player in stats[team] or (tradeFrom and player in stats[tradeFrom]):
 					try:
 						playerStats = stats[team][player].copy()
 					except:
@@ -1845,9 +1766,10 @@ if __name__ == "__main__":
 		writeProps(date)
 		#writeBallparks(date)
 		#writeBPPlayerProps(date)
+		#writeGameLines(date)
+
 		write_projections(date)
 		writeLeftRightSplits()
-		writeGameLines(date)
 		writeStaticProps(date)
 
 	#writeBPPlayerProps(date)
