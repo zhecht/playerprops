@@ -3642,11 +3642,11 @@ if __name__ == '__main__':
 		writeMGM(args.date)
 		#print("pb")
 		#writePointsbet(args.date)
-		print("bv")
-		writeBV(args.date)
 		print("dk")
 		writeDK(args.date)
 		writeCZ(args.date)
+		print("bv")
+		writeBV(args.date)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
