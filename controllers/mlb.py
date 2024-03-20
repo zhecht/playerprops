@@ -1041,7 +1041,7 @@ def writeKambi():
 		homeFull, awayFull = map(str, event["event"]["englishName"].lower().split(" - "))
 		games = []
 		for team, full in zip([away, home], [awayFull, homeFull]):
-			t = convertTeam(team.split(" ")[0])
+			t = convertTeam(team)
 			fullTeam[t] = full
 			games.append(t)
 		game = " @ ".join(games)
@@ -1504,8 +1504,8 @@ def writeDK(date, propArg):
 								elif "run line" in prop:
 									prop = "spread"
 								elif prop.endswith("team total runs"):
-									team = convertTeam(prop.split(":")[0])
-									if game.startswith(team.split(" ")[0]):
+									team = convertTeam(prop)
+									if game.startswith(team):
 										prop = "away_total"
 									else:
 										prop = "home_total"
