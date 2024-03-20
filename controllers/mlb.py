@@ -2212,13 +2212,13 @@ if __name__ == '__main__':
 		writeKambi(args.date)
 		print("mgm")
 		writeMGM(args.date)
-		print("bv")
-		writeBV()
 		print("dk")
 		writeDK(args.date, args.prop)
 		#writeActionNetwork()
 		print("cz")
 		writeCZ(args.date)
+		print("bv")
+		writeBV()
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under)

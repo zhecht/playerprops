@@ -2807,12 +2807,12 @@ if __name__ == '__main__':
 		writeKambi()
 		print("mgm")
 		writeMGM(args.date)
-		print("bv")
-		writeBV()
 		print("dk")
 		writeDK(args.date)
 		print("cz")
 		writeCZ(args.date)
+		print("bv")
+		writeBV()
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under, nocz=args.nocz)
