@@ -688,7 +688,7 @@ def writeFanduel(team=None):
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-philadelphia-phillies-32738902"
+	"https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-los-angeles-dodgers-33118594"
 ]
 
 	lines = {}
@@ -892,7 +892,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, prop="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd"):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd"):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -900,8 +900,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	if not boost:
 		boost = 1
 
-	if prop != "hr":
-		with open(f"{prefix}static/mlbprops/bet365_{prop}s.json") as fh:
+	if propArg != "hr":
+		with open(f"{prefix}static/mlbprops/bet365_{propArg}s.json") as fh:
 			bet365Lines = json.load(fh)
 	else:
 		with open(f"{prefix}static/mlbprops/bet365.json") as fh:
@@ -909,17 +909,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 
 	with open(f"{prefix}static/mlb/fanduelLines.json") as fh:
-		lines = json.load(fh)
-
-	fdLines = {}
-	for game in lines:
-		if "hr" not in lines[game]:
-			continue
-		fdLines[game] = {}
-		for player in lines[game]["hr"]:
-			fdLines[game][player] = {
-				"hr": lines[game]["hr"][player].split(" ")[-1]
-			}
+		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/mlb/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -945,10 +935,13 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlb/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
+	with open(f"{prefix}static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
 	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
 		bppExpectedHomers = json.load(fh)
 
-	with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
+	with open(f"{prefix}static/mlbprops/ev_{propArg}.json") as fh:
 		evData = json.load(fh)
 
 	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
@@ -970,201 +963,192 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 			continue
 		if teamArg and teamArg not in game:
 			continue
-		for player in fdLines[game]:
-			if prop not in fdLines[game][player]:
+		for prop in fdLines[game]:
+			if propArg and propArg != prop:
 				continue
 			team1, team2 = map(str, game.split(" @ "))
-			team = ""
-			if not useDK:
-				if team1 in bet365Lines and player in bet365Lines[team1]:
+
+			for player in fdLines[game][prop]:
+				team = team2
+				if player in roster[team1]:
 					team = team1
-				elif team2 in bet365Lines and player in bet365Lines[team2]:
-					team = team2
-				else:
-					if team1 in actionnetwork and player in actionnetwork[team1]:
-						team = team1
-					elif team2 in actionnetwork and player in actionnetwork[team2]:
-						team = team2
+				fdLine = fdLines[game][prop][player]
+				handicap = ""
+				if prop in "k":
+					handicap = float(fdLine.split(" ")[0][1:])
+					if under:
+						fdLine = int(fdLine.split(" ")[1].split("/")[1])
 					else:
+						fdLine = int(fdLine.split(" ")[1].split("/")[0])
+
+				dk = ""
+				dkLine = 0
+				dkProp = prop.replace("single", "1b").replace("double", "2b")
+				if game in dkLines and prop in dkLines[game] and player in dkLines[game][prop]:
+					dk = dkLines[game][prop][player]
+				elif useDK:
+					continue
+
+				mgm = pb = cz = br = kambi = ""
+				if team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
+					data = actionnetwork[team][player][prop]
+					if prop == "k":
+						data = actionnetwork[team][player][prop].get(str(handicap), {})
+					mgm = data.get("mgm", "-")
+					br = data.get("betrivers", "-")
+					cz = data.get("caesars", "-")
+					pb = data.get("pointsbet", "-")
+
+					if dk == "":
+						dk = data.get("draftkings", "-")
+
+				pn = bs = ""
+				if prop == "k" and team in bpp and player in bpp[team] and "k" in bpp[team][player] and str(handicap) in bpp[team][player]["k"]:
+					pn = bpp[team][player]["k"][str(handicap)].get("pn", "-")
+					bs = bpp[team][player]["k"][str(handicap)].get("bs", "-")
+				elif prop == "hr" and team in bpp and player in bpp[team] and "hr" in bpp[team][player]:
+					pn = bpp[team][player]["hr"]["0.5"].get("pn", "-")
+					bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
+
+				if prop == "hr" and game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
+					pn = pnLines[game]["hr"][player]["0.5"]
+
+				if prop == "hr" and game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
+					cz = czLines[game]["hr"][player]
+
+				if prop == "hr" and game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
+					pass
+					mgm = mgmLines[game]["hr"][player]["0.5"]
+
+				bv = ""
+				if prop == "hr" and game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
+					bv = bvLines[game]["hr"][player].split(" ")[-1]
+
+				kambi = ""
+				if prop == "hr" and game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
+					kambi = kambiLines[game]["hr"][player]["1.0"]
+
+				if team not in bet365Lines or player not in bet365Lines[team]:
+					bet365ou = ""
+				else:
+					bet365ou = bet365Lines[team][player]
+					if prop == "k":
+						if bet365ou.split(" ")[0] != str(handicap):
+							bet365ou = ""
+						else:
+							bet365ou = bet365ou.split(" ")[-1]
+
+				line = fdLine
+				l = [dk, bet365ou, mgm]
+
+				avgOver = []
+				avgUnder = []
+				if prop in ["single", "double"]:
+					l = [dk, bet365ou, mgm]
+					if not nocz:
+						l.append(cz)
+					if not nobr:
+						l.append(br.split("/")[0])
+				elif prop == "k":
+					l = [dk, bet365ou, mgm, pn, bs]
+					if not nocz:
+						l.append(cz)
+					if not nobr:
+						l.append(br.split("/")[0])
+				if allArg:
+					l = [dk, bet365ou, mgm, pn, bs, bv]
+					if not nocz:
+						l.append(cz)
+					if not nobr:
+						#l.append(kambi.split("/")[0])
+						l.append(kambi)
+
+				evBook = "fd"
+				if bookArg == "dk":
+					evBook = "dk"
+					line = dk.split("/")[0]
+					l[0] = str(fdLine)
+
+					if line == "-":
+						continue
+				elif bookArg == "cz":
+					evBook = "cz"
+					line = cz
+					l[7] = str(fdLine)
+
+					if line == "-":
+						continue
+				elif bookArg == "mgm":
+					evBook = "mgm"
+					line = mgm.split("/")[0]
+					l[2] = str(fdLine)
+
+					if line == "-":
 						continue
 
-			fdLine = fdLines[game][player][prop]
-			handicap = ""
-			if prop in "k":
-				handicap = float(fdLine.split(" ")[0][1:])
-				if under:
-					fdLine = int(fdLine.split(" ")[1].split("/")[1])
+				for book in l:
+					if book and book != "-":
+						avgOver.append(convertDecOdds(int(book.split("/")[0])))
+						if "/" in book and book.split("/")[1] != "0":
+							avgUnder.append(convertDecOdds(int(book.split("/")[1])))
+				if avgOver:
+					avgOver = float(sum(avgOver) / len(avgOver))
+					avgOver = convertAmericanOdds(avgOver)
 				else:
-					fdLine = int(fdLine.split(" ")[1].split("/")[0])
+					avgOver = "-"
+				if avgUnder:
+					avgUnder = float(sum(avgUnder) / len(avgUnder))
+					avgUnder = convertAmericanOdds(avgUnder)
+				else:
+					avgUnder = "-"
 
-			dk = ""
-			dkLine = 0
-			dkProp = prop.replace("single", "1b").replace("double", "2b")
-			if game in dkLines and prop in dkLines[game] and player in dkLines[game][prop]:
-				dk = dkLines[game][prop][player].split(" ")[-1]
-			elif useDK:
-				continue
+				if under:
+					ou = f"{avgUnder}/{avgOver}"
+				else:
+					ou = f"{avgOver}/{avgUnder}"
 
-			mgm = pb = cz = br = kambi = ""
-			if team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
-				data = actionnetwork[team][player][prop]
-				if prop == "k":
-					data = actionnetwork[team][player][prop].get(str(handicap), {})
-				mgm = data.get("mgm", "-")
-				br = data.get("betrivers", "-")
-				cz = data.get("caesars", "-")
-				pb = data.get("pointsbet", "-")
-
-				if dk == "":
-					dk = data.get("draftkings", "-")
-
-			pn = bs = ""
-			if prop == "k" and team in bpp and player in bpp[team] and "k" in bpp[team][player] and str(handicap) in bpp[team][player]["k"]:
-				pn = bpp[team][player]["k"][str(handicap)].get("pn", "-")
-				bs = bpp[team][player]["k"][str(handicap)].get("bs", "-")
-			elif prop == "hr" and team in bpp and player in bpp[team] and "hr" in bpp[team][player]:
-				pn = bpp[team][player]["hr"]["0.5"].get("pn", "-")
-				bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
-
-			if prop == "hr" and game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
-				pn = pnLines[game]["hr"][player]["0.5"]
-
-			if prop == "hr" and game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
-				cz = czLines[game]["hr"][player]
-
-			if prop == "hr" and game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
-				pass
-				mgm = mgmLines[game]["hr"][player]["0.5"]
-
-			bv = ""
-			if prop == "hr" and game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
-				bv = bvLines[game]["hr"][player].split(" ")[-1]
-
-			kambi = ""
-			if prop == "hr" and game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
-				kambi = kambiLines[game]["hr"][player]["1.0"]
-
-			if team not in bet365Lines or player not in bet365Lines[team]:
-				bet365ou = ""
-			else:
-				bet365ou = bet365Lines[team][player]
-				if prop == "k":
-					if bet365ou.split(" ")[0] != str(handicap):
-						bet365ou = ""
-					else:
-						bet365ou = bet365ou.split(" ")[-1]
-
-			line = fdLine
-			l = [dk, bet365ou, mgm]
-
-			avgOver = []
-			avgUnder = []
-			if prop in ["single", "double"]:
-				l = [dk, bet365ou, mgm]
-				if not nocz:
-					l.append(cz)
-				if not nobr:
-					l.append(br.split("/")[0])
-			elif prop == "k":
-				l = [dk, bet365ou, mgm, pn, bs]
-				if not nocz:
-					l.append(cz)
-				if not nobr:
-					l.append(br.split("/")[0])
-			if allArg:
-				l = [dk, bet365ou, mgm, pn, bs, bv]
-				if not nocz:
-					l.append(cz)
-				if not nobr:
-					#l.append(kambi.split("/")[0])
-					l.append(kambi)
-
-			evBook = "fd"
-			if bookArg == "dk":
-				evBook = "dk"
-				line = dk.split("/")[0]
-				l[0] = str(fdLine)
-
-				if line == "-":
-					continue
-			elif bookArg == "cz":
-				evBook = "cz"
-				line = cz
-				l[7] = str(fdLine)
-
-				if line == "-":
-					continue
-			elif bookArg == "mgm":
-				evBook = "mgm"
-				line = mgm.split("/")[0]
-				l[2] = str(fdLine)
-
-				if line == "-":
+				if ou.startswith("-/") or ou.endswith("/-"):
 					continue
 
-			for book in l:
-				if book and book != "-":
-					avgOver.append(convertDecOdds(int(book.split("/")[0])))
-					if "/" in book and book.split("/")[1] != "0":
-						avgUnder.append(convertDecOdds(int(book.split("/")[1])))
-			if avgOver:
-				avgOver = float(sum(avgOver) / len(avgOver))
-				avgOver = convertAmericanOdds(avgOver)
-			else:
-				avgOver = "-"
-			if avgUnder:
-				avgUnder = float(sum(avgUnder) / len(avgUnder))
-				avgUnder = convertAmericanOdds(avgUnder)
-			else:
-				avgUnder = "-"
 
-			if under:
-				ou = f"{avgUnder}/{avgOver}"
-			else:
-				ou = f"{avgOver}/{avgUnder}"
-
-			if ou.startswith("-/") or ou.endswith("/-"):
-				continue
-
-
-			if not line:
-				continue
-
-			line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
-
-			if player in evData:
-				continue
-			if True or dinger or prop == "k" or line > sharpUnderdog:
-				pass
-				if useDK:
-					bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
-
-				expectedHR = 0.28
-				if game in bppExpectedHomers and dinger:
-					expectedHR = .70 * (bppExpectedHomers[game] / 5)
-
-				if prop == "hr" and bet365ou and not no365:
-					devig(evData, player, bet365ou, int(line))
-					#devigger(evData, player, bet365ou, line, dinger)
-				devig(evData, player, ou, int(line), avg=True, prop=prop)
-				#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
-				if player not in evData:
-					print(player)
+				if not line:
 					continue
-				if float(evData[player]["ev"]) > 0:
-					print(player, evData[player]["ev"], int(line), ou)
-				evData[player]["pitcher"] = strikeouts
-				evData[player]["game"] = game
-				evData[player]["book"] = bookArg
-				evData[player]["team"] = team
-				evData[player]["ou"] = ou
-				evData[player]["odds"] = l
-				evData[player]["line"] = line
-				evData[player]["under"] = under
-				evData[player]["bet365"] = bet365ou
-				evData[player]["fanduel"] = str(fdLines[game][player][prop]).split(" ")[-1]
-				evData[player]["dk"] = dk
-				evData[player]["value"] = str(handicap)
+
+				line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
+
+				if player in evData:
+					continue
+				if True or dinger or prop == "k" or line > sharpUnderdog:
+					pass
+					if useDK:
+						bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
+
+					expectedHR = 0.28
+					if game in bppExpectedHomers and dinger:
+						expectedHR = .70 * (bppExpectedHomers[game] / 5)
+
+					if prop == "hr" and bet365ou and not no365:
+						devig(evData, player, bet365ou, int(line))
+						#devigger(evData, player, bet365ou, line, dinger)
+					devig(evData, player, ou, int(line), avg=True, prop=prop)
+					#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
+					if player not in evData:
+						print(player)
+						continue
+					if float(evData[player]["ev"]) > 0:
+						print(player, evData[player]["ev"], int(line), ou)
+					evData[player]["pitcher"] = strikeouts
+					evData[player]["game"] = game
+					evData[player]["book"] = bookArg
+					evData[player]["team"] = team
+					evData[player]["ou"] = ou
+					evData[player]["odds"] = l
+					evData[player]["line"] = line
+					evData[player]["under"] = under
+					evData[player]["bet365"] = bet365ou
+					evData[player]["fanduel"] = str(fdLines[game][prop][player])
+					evData[player]["dk"] = dk
+					evData[player]["value"] = str(handicap)
 
 		with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
 			json.dump(evData, fh, indent=4)
@@ -1302,7 +1286,10 @@ def sortEV(dinger=False):
 					cz = czLines[game]["hr"][player]
 
 				if game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
-					kambi = kambiLines[game]["hr"][player]["1.0"].split(" ")[-1]
+					kambi = kambiLines[game]["hr"][player]["1.0"]
+
+				if game in dkLines and "hr" in dkLines[game] and player in dkLines[game]["hr"]:
+					dk = dkLines[game]["hr"][player].replace("+", "")
 
 			bet365 = evData[player]['bet365']
 			if "/" in bet365 and int(bet365.split("/")[0]) > 0:
@@ -1447,7 +1434,7 @@ if __name__ == '__main__':
 		writeActionNetworkML()
 
 	if args.ev:
-		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, prop=args.prop, nocz=args.nocz, boost=args.boost, bookArg=args.book)
+		writeEV(dinger=dinger, date=args.date, useDK=args.dk, avg=args.avg, allArg=args.all, gameArg=args.game, strikeouts=args.k, propArg=args.prop, nocz=args.nocz, boost=args.boost, bookArg=args.book)
 
 	if args.bpp:
 		writeBPPHomers()
@@ -1459,7 +1446,7 @@ if __name__ == '__main__':
 		sortEV(args.dinger)
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, prop=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
 		sortEV(args.dinger)
 
 	data = {}
