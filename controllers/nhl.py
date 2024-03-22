@@ -1528,12 +1528,20 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/toronto-maple-leafs-@-detroit-red-wings-32801099",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/buffalo-sabres-@-winnipeg-jets-32803656",
-  "https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/florida-panthers-@-anaheim-ducks-32803657"
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/new-york-rangers-@-boston-bruins-33125260",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/new-york-islanders-@-detroit-red-wings-33125403",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/philadelphia-flyers-@-carolina-hurricanes-33125395",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/winnipeg-jets-@-new-jersey-devils-33125407",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/st.-louis-blues-@-ottawa-senators-33125413",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/nashville-predators-@-florida-panthers-33125419",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/buffalo-sabres-@-edmonton-oilers-33125439",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/chicago-blackhawks-@-anaheim-ducks-33125801",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/montreal-canadiens-@-vancouver-canucks-33125800",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/seattle-kraken-@-vegas-golden-knights-33125847",
+    "https://sportsbook.fanduel.com/ice-hockey/nhl---matches/tampa-bay-lightning-@-san-jose-sharks-33125845"
 ]
 
-	#games = ["https://mi.sportsbook.fanduel.com/ice-hockey/nhl---matches/nashville-predators-@-tampa-bay-lightning-32450515"]
+	#games = ["https://sportsbook.fanduel.com/ice-hockey/nhl---matches/new-york-rangers-@-boston-bruins-33125260"]
 	lines = {}
 	for game in games:	
 		gameId = game.split("-")[-1]
@@ -1542,18 +1550,22 @@ def writeFanduel():
 		game = f"{convertFDTeam(away)} @ {convertFDTeam(home)}"
 		lines[game] = {}
 
-		outfile = "outnhl"
+		outfile = "outnhlfd"
 
-		for tab in ["", "points-assists", "shots"]:
+		#for tab in ["", "points-assists", "shots"]:
+		for tab in ["goal-scorer"]:
 			time.sleep(0.6)
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
+			#url = f"https://boapi.sportsbook.fanduel.com/popular/events/{gameId}?_ak=FhMFpcPWXMeyZxOx"
 			if tab:
 				url += f"&tab={tab}"
-			#call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-H", 'x-px-context: _px3=c402b3ed30e4c127a527513499624707d7461377294b1fdb6fc0da482d6c799d:hQzUhc35G2KLlhekJJmqTKmCNZoX75mKi7X9Xihzu/cX8CE8a+xat+EddyilXY+F0zQKqR51TfkfTxKfXYZnFA==:1000:yaktVjRcUsLEEvFv6dvaUtKaq67RVL4P9s0A735J5G5bJnuV/RcyF07Z3jZt+d7vPVBnd8jN5wvsvK5ozJE04aWoJmREo9s3xpESxPMKOKm4xDi8c7yRJhpLBl5ApZHEJMLuw3q5Re/Vxjq7qDmp938eD/hF6SctkXZCj3U8FUxqKde51JMeF9ErXaWatBWxN3AZVcONO7H+197jqRFkCZGqnnVy2JVbc3ll8f3LGLQ=;_pxvid=00692951-e181-11ed-a499-ebf9b9755f04;pxcts=006939ed-e181-11ed-a499-537250516c45;', "-H", 'X-Sportsbook-Region: MI', "-k", url, "-o", outfile])
-			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", url, "-o", outfile])
 
 			with open(outfile) as fh:
 				data = json.load(fh)
+
+			with open("out", "w") as fh:
+				json.dump(data, fh, indent=4)
 
 			if "markets" not in data["attachments"]:
 				continue
@@ -1629,7 +1641,7 @@ def writeFanduel():
 							playerHandicap = str(float(marketName.split(" ")[-2][:-1]) - 0.5)
 					elif " - " in marketName:
 						marketName = marketName.split(" - ")[-1]
-						prop = "_".join(marketName.split(" ")).replace("strikeouts", "k")
+						prop = "_".join(marketName.split(" "))
 					else:
 						continue
 
@@ -1689,7 +1701,7 @@ def writeFanduel():
 								if handicap not in lines[game][prop]:
 									lines[game][prop][handicap] = odds
 									if "total" not in prop and "spread" not in prop:
-										lines[game][prop][handicap] = f"0.5 {odds}"
+										lines[game][prop][handicap] = odds
 								else:
 									if runners[i]["runnerName"].startswith("Under") or runners[i]["result"].get("type", "") == "HOME" or " ".join(runners[i]["runnerName"].lower().split(" ")[:-1]) == home:
 										if len(lines[game][prop][handicap].split("/")) == 2:

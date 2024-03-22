@@ -1477,17 +1477,15 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/basketball/nba/milwaukee-bucks-@-charlotte-hornets-32803962",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/new-york-knicks-@-washington-wizards-32803963",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/sacramento-kings-@-san-antonio-spurs-32803961",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/boston-celtics-@-toronto-raptors-32803964",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/philadelphia-76ers-@-atlanta-hawks-32803965",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/detroit-pistons-@-cleveland-cavaliers-32803971",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/denver-nuggets-@-new-orleans-pelicans-32803966",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/orlando-magic-@-chicago-bulls-32803967",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/phoenix-suns-@-utah-jazz-32803969",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/los-angeles-lakers-@-portland-trail-blazers-32803970",
-  "https://mi.sportsbook.fanduel.com/basketball/nba/houston-rockets-@-los-angeles-clippers-32803968"
+    "https://sportsbook.fanduel.com/basketball/nba/new-orleans-pelicans-@-orlando-magic-33121993",
+    "https://sportsbook.fanduel.com/basketball/nba/sacramento-kings-@-washington-wizards-33121994",
+    "https://sportsbook.fanduel.com/basketball/nba/chicago-bulls-@-houston-rockets-33121995",
+    "https://sportsbook.fanduel.com/basketball/nba/brooklyn-nets-@-milwaukee-bucks-33121996",
+    "https://sportsbook.fanduel.com/basketball/nba/utah-jazz-@-dallas-mavericks-33121998",
+    "https://sportsbook.fanduel.com/basketball/nba/new-york-knicks-@-denver-nuggets-33121999",
+    "https://sportsbook.fanduel.com/basketball/nba/atlanta-hawks-@-phoenix-suns-33121997",
+    "https://sportsbook.fanduel.com/basketball/nba/boston-celtics-@-detroit-pistons-33124791",
+    "https://sportsbook.fanduel.com/basketball/nba/oklahoma-city-thunder-@-toronto-raptors-33124795"
 ]
 	
 	#games = ["https://mi.sportsbook.fanduel.com/basketball/nba/milwaukee-bucks-@-charlotte-hornets-32803962"]
@@ -1504,12 +1502,12 @@ def writeFanduel():
 
 		outfile = "outnba"
 
-		for tab in ["", "player-points", "player-threes", "player-rebounds", "player-assists", "player-combos"]:
+		for tab in ["", "player-points", "player-threes", "player-rebounds", "player-assists", "player-combos", "player-defense"]:
 		#for tab in ["player-combos"]:
 			url = f"https://sbapi.mi.sportsbook.fanduel.com/api/event-page?_ak={apiKey}&eventId={gameId}"
 			if tab:
 				url += f"&tab={tab}"
-			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", url, "-o", outfile])
 			time.sleep(0.6)
 
 			with open(outfile) as fh:
@@ -2394,10 +2392,10 @@ def readSGP(insurance=False):
 							except:
 								pass
 
-							txt = f"\n{player} o{line} {prop} {odds}\n"
+							txt = f"\n{player} o{line} {prop} ({avgMin}m) {odds}\n"
 							txt += f"{over}%, {overL15}% L15, {overPerMin}% per min\n"
 							txt += f"{','.join(lastArr)}\n"
-							txt += f"Rank: {rank}, Pos Rank: {posRank}\n"
+							txt += f"Rank: {rank}, {pos.upper()} Pos Rank: {posRank}\n"
 
 							output.append([overL15, txt])
 

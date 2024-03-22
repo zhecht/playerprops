@@ -2582,6 +2582,7 @@ def writePlayers(keep=None):
 				stats[team][player] = {}
 			elif keep:
 				continue
+
 			url = f"https://www.espn.com/mens-college-basketball/player/gamelog/_/id/{players[team][player]}"
 			time.sleep(0.3)
 			os.system(f"curl -k \"{url}\" -o {outfile}")
@@ -2592,19 +2593,23 @@ def writePlayers(keep=None):
 				hdrs.append(td.text.lower())
 
 			playerStats = {}
-			for row in soup.find("tbody").findAll("tr"):
-				if "note-row" in row.get("class"):
-					continue
-				for td, hdr in zip(row.findAll("td")[1:], hdrs):
-					val = td.text
-					if hdr == "opp":
-						val = "A" if "@" in val else "H"
-					elif hdr == "result":
-						val = td.find("div", class_="ResultCell").text
+			for tbody in soup.find("div", class_="gamelog").findAll("tbody"):
+				for row in tbody.findAll("tr"):
+					if "note-row" in row.get("class") or "totals_row" in row.get("class"):
+						continue
+					for td, hdr in zip(row.findAll("td")[1:], hdrs):
+						val = td.text
+						if hdr == "opp":
+							val = "A" if "@" in val else "H"
+						elif hdr == "result":
+							try:
+								val = td.find("div", class_="ResultCell").text
+							except:
+								continue
 
-					if hdr not in playerStats:
-						playerStats[hdr] = []	
-					playerStats[hdr].append(val)
+						if hdr not in playerStats:
+							playerStats[hdr] = []	
+						playerStats[hdr].append(val)
 
 			playerStats["pts+reb+ast"] = []
 			playerStats["pts+reb"] = []
@@ -2744,6 +2749,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						else:
 							arr = stats[team][player][prop]
 						totalGames = len(stats[team][player]["min"].split(","))
+						print(player, team, prop, arr)
 						totalOver = [x for x in arr.split(",") if int(x) > float(playerHandicap)]
 						totalOver = round(len(totalOver) * 100 / totalGames)
 						total5Over = [x for x in arr.split(",")[:5] if int(x) > float(playerHandicap)]
