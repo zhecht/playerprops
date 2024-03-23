@@ -2749,7 +2749,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						else:
 							arr = stats[team][player][prop]
 						totalGames = len(stats[team][player]["min"].split(","))
-						print(player, team, prop, arr)
+						#print(player, team, prop, arr)
 						totalOver = [x for x in arr.split(",") if int(x) > float(playerHandicap)]
 						totalOver = round(len(totalOver) * 100 / totalGames)
 						total5Over = [x for x in arr.split(",")[:5] if int(x) > float(playerHandicap)]

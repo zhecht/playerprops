@@ -422,6 +422,12 @@ def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
 	if player == "k caldwell pope":
 		player = "kentavious caldwell pope"
+	elif player == "cameron thomas":
+		player = "cam thomas"
+	elif player == "jadeney":
+		player = "jaden ivey"
+	elif player == "nicolas claxton":
+		player = "nic claxton"
 	return player
 
 def writePlayerIds():

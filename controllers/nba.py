@@ -1098,7 +1098,7 @@ def writeKambi(date):
 		json.dump(data, fh, indent=4)
 
 def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
 	if player == "k caldwell pope":
 		player = "kentavious caldwell pope"
 	elif player == "cameron thomas":
@@ -1107,6 +1107,8 @@ def parsePlayer(player):
 		player = "jaden ivey"
 	elif player == "nicolas claxton":
 		player = "nic claxton"
+	elif player == "gregory jackson":
+		player = "gg jackson"
 	return player
 
 def writeESPN():
@@ -1878,11 +1880,11 @@ def writeDK(date):
 									lines[game][prop][line] = ou
 							elif prop == "first_3ptm":
 								for outcome in row["outcomes"]:
-									player = parsePlayer(outcome["participant"].split(" (")[0])
+									player = parsePlayer(outcome["participant"].split(" (")[0]).strip()
 									lines[game][prop][player] = f"{outcome['oddsAmerican']}"
 							elif len(outcomes) > 2:
 								for i in range(0, len(outcomes), 2):
-									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
+									player = parsePlayer(outcomes[i]["participant"].split(" (")[0]).strip()
 									if player not in lines[game][prop]:
 										lines[game][prop][player] = {}
 									try:
@@ -1892,7 +1894,7 @@ def writeDK(date):
 									except:
 										continue
 							else:
-								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
+								player = parsePlayer(outcomes[0]["participant"].split(" (")[0]).strip()
 								if player not in lines[game][prop]:
 									lines[game][prop][player] = {}
 								lines[game][prop][player][outcomes[0]['line']] = f"{outcomes[0]['oddsAmerican']}"
@@ -2242,7 +2244,7 @@ def writeSGP():
 				elif "playerNameIdentifier" in offerRow:
 					if " - " in prop:
 						continue
-					participant = offerRow["outcomes"][0]["participant"].lower()
+					participant = offerRow["outcomes"][0]["participant"].lower().strip()
 					player = parsePlayer(participant)
 					if " alt " in prop:
 						alt = True
