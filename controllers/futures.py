@@ -1203,6 +1203,7 @@ if __name__ == '__main__':
 	parser.add_argument("--bv", action="store_true")
 	parser.add_argument("--ev", action="store_true")
 	parser.add_argument("--summary", action="store_true")
+	parser.add_argument("-u", "--update", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--prop", help="Prop")
@@ -1219,6 +1220,12 @@ if __name__ == '__main__':
 	if args.bv:
 		writeBV()
 	if args.pn:
+		writePN(args.debug)
+	if args.update:
+		writeDK()
+		writeMGM()
+		writeKambi()
+		writeBV()
 		writePN(args.debug)
 	if args.ev:
 		writeEV(args.prop, args.book, args.team, args.boost)

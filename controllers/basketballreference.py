@@ -164,6 +164,16 @@ def writeSplits():
 						splits[team][player][header] = []
 					splits[team][player][header].append(str(stats[player][header]))
 
+				for prop in ["pts+ast", "pts+reb", "pts+reb+ast", "reb+ast", "stl+blk"]:
+					if stats[player].get("min", 0) == 0:
+						continue
+					val = 0
+					for p in prop.split("+"):
+						val += int(stats[player][p])
+					if prop not in splits[team][player]:
+						splits[team][player][prop] = []
+					splits[team][player][prop].append(str(val))
+
 		for player in splits[team]:
 			for hdr in splits[team][player]:
 				splits[team][player][hdr] = ",".join(splits[team][player][hdr])

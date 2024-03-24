@@ -2304,6 +2304,9 @@ def readSGP(insurance=False):
 	with open(f"static/basketballreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
+	with open(f"static/nba/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
 	with open(f"static/basketballreference/trades.json") as fh:
 		trades = json.load(fh)
 
@@ -2403,6 +2406,8 @@ def readSGP(insurance=False):
 
 
 		out += f"\ngame: {game}\n"
+		line = list(fdLines[game]['spread'].keys())[0]
+		out += f"{line} {fdLines[game]['spread'][line]}\n"
 		for L15, txt in sorted(output, reverse=True):
 			out += txt
 
