@@ -661,7 +661,7 @@ def write365():
 	js = """
 
 	{
-
+		let data = {};
 		function convertTeam(team) {
 			team = team.toLowerCase();
 			let t = team.split(" ")[0];
@@ -832,10 +832,118 @@ def write365():
 			}
 		}
 
-		console.log(data[prop]);
+		if (["cy_young", "mvp", "roty"].indexOf(prop) >= 0 || prop.indexOf("_leader") >= 0) {
+			console.log(data);
+		} else {
+			console.log(data[prop]);
+		}
 	}
 
 """
+
+def writeCZ():
+
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/futures?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
+	outfile = "outfuture"
+
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	res = {}
+	for event in data["competitions"][0]["events"]:
+		for market in event["markets"]:
+			if not market["display"]:
+				continue
+
+			prop = market["name"].lower().replace("|", "")
+
+			if prop == "world series winner":
+				prop = "world_series"
+			elif prop == "american league outright" or prop == "national league outright":
+				prop = "league_winner"
+			elif prop == "division winner":
+				prop = "division_winner"
+			elif prop == "regular season wins" or prop.startswith("alternate regular season wins"):
+				prop = "team_wins"
+			elif prop == "to make the playoffs":
+				prop = "make_playoffs"
+			elif prop == "mvp winner":
+				prop = "mvp"
+			elif prop == "cy young winner":
+				prop = "cy_young"
+			elif prop == "rookie of the year winner":
+				prop = "roty"
+			elif prop == "home run leader":
+				prop = "hr_leader"
+			elif prop == "hits leader":
+				prop = "h_leader"
+			elif prop == "rbi leader":
+				prop = "rbi_leader"
+			elif prop == "stolen base leader":
+				prop = "sb_leader"
+			elif prop == "runs scored leader":
+				prop = "r_leader"
+			elif prop == "wins leader":
+				prop = "w_leader"
+			elif prop == "strikeouts leader":
+				prop = "k_leader"
+			elif prop == "saves leader":
+				prop = "sv_leader"
+			elif prop == "doubles leader":
+				prop = "double_leader"
+			elif prop == "triples leader":
+				prop = "triple_leader"
+			elif prop == "total home runs":
+				prop = "hr"
+			else:
+				continue
+
+			if prop not in res:
+				res[prop] = {}
+
+			selections = market["selections"]
+			skip = 1
+			if prop in ["team_wins", "make_playoffs", "hr"]:
+				skip = 2
+			for i in range(0, len(selections), skip):
+				try:
+					ou = str(selections[i]["price"]["a"])
+				except:
+					continue
+				if skip == 2:
+					ou += f"/{selections[i+1]['price']['a']}"
+					if selections[i]["name"].lower().replace("|", "") == "under":
+						ou = f"{selections[i+1]['price']['a']}/{selections[i]['price']['a']}"
+
+				if skip == 1:
+					if prop in ["division_winner", "league_winner", "world_series"]:
+						team = convertTeam(selections[i]["name"].replace("|", ""))
+					else:
+						team = parsePlayer(selections[i]["name"].replace("|", ""))
+					res[prop][team] = ou
+				elif prop in ["hr"]:
+					player = parsePlayer(event["name"].replace("|", "").split(" 2024")[0])
+					line = str(market["line"])
+					if player not in res[prop]:
+						res[prop][player] = {}
+					res[prop][player][line] = ou
+				else:
+					team = convertTeam(event["name"].replace("|", ""))
+
+					if prop in ["team_wins", "hr"]:
+						line = str(market["line"])
+						if team not in res[prop]:
+							res[prop][team] = {}
+						res[prop][team][line] = ou
+					else:
+						res[prop][team] = ou
+
+
+	with open("static/mlbfutures/cz.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
 
 def convertDecOdds(odds):
 	if odds == 0:
@@ -946,6 +1054,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 	with open(f"static/mlbfutures/bet365.json") as fh:
 		bet365Lines = json.load(fh)
 
+	with open(f"static/mlbfutures/cz.json") as fh:
+		czLines = json.load(fh)
+
 	with open(f"static/mlbfutures/circa.json") as fh:
 		circaLines = json.load(fh)
 
@@ -956,6 +1067,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 		"bv": bvLines,
 		"dk": dkLines,
 		"pn": pnLines,
+		"cz": czLines,
 		"bet365": bet365Lines,
 		"circa": circaLines
 	}
@@ -1169,7 +1281,7 @@ def printEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "Kambi/BR", "PN", "bet365", "Circa"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "Kambi/BR", "PN", "bet365", "Circa"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"].title()
 		if len(player) < 4:
@@ -1182,7 +1294,7 @@ def printEV():
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR").replace("BET", ""), f"{round(row[-1]['imp'])}%", player, row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "kambi", "pn", "bet365", "circa"]:
+		for book in ["fd", "dk", "mgm", "bv", "cz", "kambi", "pn", "bet365", "circa"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -1201,6 +1313,7 @@ if __name__ == '__main__':
 	parser.add_argument("--pn", action="store_true")
 	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--bv", action="store_true")
+	parser.add_argument("--cz", action="store_true")
 	parser.add_argument("--ev", action="store_true")
 	parser.add_argument("--summary", action="store_true")
 	parser.add_argument("-u", "--update", action="store_true")
@@ -1219,10 +1332,13 @@ if __name__ == '__main__':
 		writeKambi()
 	if args.bv:
 		writeBV()
+	if args.cz:
+		writeCZ()
 	if args.pn:
 		writePN(args.debug)
 	if args.update:
 		writeDK()
+		writeCZ()
 		writeMGM()
 		writeKambi()
 		writeBV()

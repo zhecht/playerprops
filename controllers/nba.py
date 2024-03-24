@@ -2404,7 +2404,8 @@ def readSGP(insurance=False):
 
 							output.append([overL15, txt])
 
-
+		if game not in fdLines:
+			continue
 		out += f"\ngame: {game}\n"
 		line = list(fdLines[game]['spread'].keys())[0]
 		out += f"{line} {fdLines[game]['spread'][line]}\n"
