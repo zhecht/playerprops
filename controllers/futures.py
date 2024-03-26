@@ -614,10 +614,10 @@ def writeFanduelManual():
 			if (li.querySelector("svg")) {
 				//break;
 			}
-			if (li.innerText.indexOf("fewjio") >= 0) {
+			if (li.innerText.indexOf("Strikeouts") >= 0) {
 				break;
 			}
-			if (li.innerText.indexOf("Strikeouts") >= 0) {
+			if (li.innerText.indexOf("Home Runs") >= 0) {
 				start = true;
 			}
 			if (start && li.querySelector("div[data-test-id='ArrowAction']")) {
@@ -977,6 +977,18 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr"):
 	if finalOdds < 0:
 		profit = 100 * bet / (finalOdds * -1)
 
+	if prop == "hr_leader":
+		mult = impliedOver
+		ev = mult * profit + (1-mult) * -1 * bet
+		ev = round(ev, 1)
+		if player not in evData:
+			evData[player] = {}
+		evData[player][f"{prefix}fairVal"] = 0
+		evData[player][f"{prefix}implied"] = 0
+		
+		evData[player][f"{prefix}ev"] = ev
+		return
+
 	if "/" not in ou:
 		u = 1.07 - impliedOver
 		if u > 1:
@@ -1093,8 +1105,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 					handicaps[(" ", " ")] = ""
 					break
 				for handicap in lineData[prop]:
-					if "hr_leader" in prop:
-						print(handicap)
 					player = playerHandicap = ""
 					try:
 						player = float(handicap)
@@ -1138,7 +1148,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 							else:
 								val = lineData[prop][handicap].split(" ")[-1]
 
-						#print(book, prop, player, val)
+						#if player == "ronald acuna":
+						#	print(book, prop, player, val)
 						try:
 							o = val.split(" ")[-1].split("/")[i]
 							ou = val.split(" ")[-1]
@@ -1159,7 +1170,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 						books.append(book)
 
 				if len(books) < 2:
-					#print(prop)
+					#print(player, prop, books, odds)
 					continue
 
 				evBook = ""

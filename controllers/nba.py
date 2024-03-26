@@ -2824,6 +2824,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/basketballreference/schedule.json") as fh:
 		schedule = json.load(fh)
 
+	with open(f"{prefix}static/basketballreference/splits.json") as fh:
+		splits = json.load(fh)
+
 	with open(f"{prefix}static/nba/matchups.json") as fh:
 		matchups = json.load(fh)
 
@@ -2838,7 +2841,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		#"pb": pbLines,
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines,
@@ -2913,10 +2915,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				totalSplits = []
 				totalSplitsPerMin = []
 				avgMin = []
-				winLossSplits = [[],[]]
-				awayHomeSplits = [[],[]]
-				winLossSplitsPerMin = [[],[]]
-				awayHomeSplitsPerMin = [[],[]]
+				winLossSplits = [0,0]
+				awayHomeSplits = [0,0]
+				winLossSplitsPerMin = [0,0]
+				awayHomeSplitsPerMin = [0,0]
 				team = opp = gameLine = ""
 				if player:
 					convertedProp = prop
@@ -2926,78 +2928,40 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						t = home
 
 					team = t
-					l = glob(f"static/basketballreference/{team}/*")
-					if player in trades:
-						l.extend(glob(f"static/basketballreference/{trades[player]}/*"))
 
-					arr = sorted(l, key=lambda k: datetime.strptime(k.split("/")[-1][:-5], "%Y-%m-%d"))
+					if player not in splits[team] or prop not in splits[team][player]:
+						continue
+
+					playerSplits = {}
+					if player in trades:
+						for hdr in splits[trades[player]][player]:
+							playerSplits[hdr] = splits[trades[player]][player][hdr]
+						for hdr in splits[team][player]:
+							playerSplits[hdr] += ","+splits[team][player][hdr]
+					else:
+						playerSplits = splits[team][player]
 
 					projMin = minutes[team].get(player, 0)
+					minArr = playerSplits["min"].split(",")
+					winLossArr = playerSplits["winLoss"].split(",")
+					awayHomeArr = playerSplits["awayHome"].split(",")
 
-					for d in arr:
-						chkDate = d.split("/")[-1].replace(".json","")
-						currTeam = d.split("/")[-2]
-						with open(d) as fh:
-							teamStats = json.load(fh)
+					totalSplits = playerSplits[prop]
+					totalOver = round(len([x for x in playerSplits[prop].split(",") if int(x) > float(playerHandicap)]) * 100 / len(minArr))
+					totalOverPerMin = round(len([x for i, x in enumerate(playerSplits[prop].split(",")) if int(x) * projMin / int(minArr[i]) > float(playerHandicap)]) * 100 / len(minArr))
+					total15Over = round(len([x for x in playerSplits[prop].split(",")[-15:] if int(x) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
+					total15OverPerMin = round(len([x for x, m in zip(playerSplits[prop].split(",")[-15:], minArr[-15:]) if int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
 
-						pastOpp = ""
-						teamIsAway = False
-						for g in schedule[chkDate]:
-							gameSp = g.split(" @ ")
-							if currTeam in gameSp:
-								if currTeam == gameSp[0]:
-									teamIsAway = True
-									pastOpp = gameSp[1]
-								else:
-									pastOpp = gameSp[0]
-								break
+					winLossSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "W" and int(x) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "W"]))
+					winLossSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "L" and int(x) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "L"]))
+					winLossSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "W" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "W"]))
+					winLossSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "L" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "L"]))
 
-						if player in teamStats:
-							m = teamStats[player].get("min", 0)
-							if m > 0 and ("+" in convertedProp or convertedProp in teamStats[player]):
-								totalGames += 1
-								val = 0
-								for p in convertedProp.split("+"):
-									val += teamStats[player][p]
-								totalSplits.append(str(int(val)))
-								valPerMin = round(projMin * int(val) / m, 2)
-								totalSplitsPerMin.append(str(valPerMin))
-								if val > float(playerHandicap):
-									totalOver += 1
-								if val * projMin / m > float(playerHandicap):
-									totalOverPerMin += 1
-
-								teamScore = scores[chkDate][currTeam]
-								oppScore = scores[chkDate][pastOpp]
-
-								if teamScore > oppScore:
-									winLossSplits[0].append(val)
-									winLossSplitsPerMin[0].append(valPerMin)
-								elif teamScore < oppScore:
-									winLossSplits[1].append(val)
-									winLossSplitsPerMin[1].append(valPerMin)
-
-								if teamIsAway:
-									awayHomeSplits[0].append(val)
-									awayHomeSplitsPerMin[0].append(valPerMin)
-								else:
-									awayHomeSplits[1].append(val)
-									awayHomeSplitsPerMin[1].append(valPerMin)
-
-					if totalGames:
-						totalOver = int(totalOver * 100 / totalGames)
-						totalOverPerMin = int(totalOverPerMin * 100 / totalGames)
-						tot = len(totalSplits) if len(totalSplits) < 15 else 15
-
-						for x in totalSplits[::-1][:15]:
-							if float(x) > float(playerHandicap):
-								total15Over += 1
-						total15Over = int(total15Over * 100 / tot)
-
-						for x in totalSplitsPerMin[::-1][:15]:
-							if float(x) > float(playerHandicap):
-								total15OverPerMin += 1
-						total15OverPerMin = int(total15OverPerMin * 100 / tot)
+					#print(player)
+					awayHomeSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "A" and int(x) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "A"]))
+					awayHomeSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "H" and int(x) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "H"]))
+					awayHomeSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "A" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "A"]))
+					awayHomeSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "H" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "H"]))
 
 					if team in lastYearStats and player in lastYearStats[team] and lastYearStats[team][player]:
 						for idx, d in enumerate(lastYearStats[team][player]):
@@ -3218,57 +3182,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							implied = -1*line / (-1*line + 100)
 						implied *= 100
 
-						winSplitAvg = lossSplitAvg = 0
-						if len(winLossSplits[0]):
-							arr = [x for x in winLossSplits[0] if x > float(playerHandicap)]
-							winSplitAvg = round(len(arr) * 100 / len(winLossSplits[0]))
-							if i == 1:
-								winSplitAvg = 100 - winSplitAvg
-						if len(winLossSplits[1]):
-							arr = [x for x in winLossSplits[1] if x > float(playerHandicap)]
-							lossSplitAvg = round(len(arr) * 100 / len(winLossSplits[1]))
-							if i == 1:
-								lossSplitAvg = 100 - lossSplitAvg
-						winLoss = f"{winSplitAvg}% - {lossSplitAvg}%"
-
-						winSplitAvg = lossSplitAvg = 0
-						if len(winLossSplitsPerMin[0]):
-							arr = [x for x in winLossSplitsPerMin[0] if x > float(playerHandicap)]
-							winSplitAvg = round(len(arr) * 100 / len(winLossSplitsPerMin[0]))
-							if i == 1:
-								winSplitAvg = 100 - winSplitAvg
-						if len(winLossSplitsPerMin[1]):
-							arr = [x for x in winLossSplitsPerMin[1] if x > float(playerHandicap)]
-							lossSplitAvg = round(len(arr) * 100 / len(winLossSplitsPerMin[1]))
-							if i == 1:
-								lossSplitAvg = 100 - lossSplitAvg
-						winLossPerMin = f"{winSplitAvg}% - {lossSplitAvg}%"
-
-						awaySplitAvg = homeSplitAvg = 0
-						if len(awayHomeSplits[0]):
-							arr = [x for x in awayHomeSplits[0] if x > float(playerHandicap)]
-							awaySplitAvg = round(len(arr) * 100 / len(awayHomeSplits[0]))
-							if i == 1:
-								awaySplitAvg = 100 - awaySplitAvg
-						if len(awayHomeSplits[1]):
-							arr = [x for x in awayHomeSplits[1] if x > float(playerHandicap)]
-							homeSplitAvg = round(len(arr) * 100 / len(awayHomeSplits[1]))
-							if i == 1:
-								homeSplitAvg = 100 - homeSplitAvg
-						awayHome = f"{awaySplitAvg}% - {homeSplitAvg}%"
-
-						awaySplitAvg = homeSplitAvg = 0
-						if len(awayHomeSplitsPerMin[0]):
-							arr = [x for x in awayHomeSplitsPerMin[0] if x > float(playerHandicap)]
-							awaySplitAvg = round(len(arr) * 100 / len(awayHomeSplitsPerMin[0]))
-							if i == 1:
-								awaySplitAvg = 100 - awaySplitAvg
-						if len(awayHomeSplitsPerMin[1]):
-							arr = [x for x in awayHomeSplitsPerMin[1] if x > float(playerHandicap)]
-							homeSplitAvg = round(len(arr) * 100 / len(awayHomeSplitsPerMin[1]))
-							if i == 1:
-								homeSplitAvg = 100 - homeSplitAvg
-						awayHomePerMin = f"{awaySplitAvg}% - {homeSplitAvg}%"
+						winLoss = f"{winLossSplits[0]}% - {winLossSplits[1]}%"
+						winLossPerMin = f"{winLossSplitsPerMin[0]}% - {winLossSplitsPerMin[1]}%"
+						awayHome = f"{awayHomeSplits[0]}% - {awayHomeSplits[1]}%"
+						awayHomePerMin = f"{awayHomeSplitsPerMin[0]}% - {awayHomeSplitsPerMin[1]}%"
+						if i == 1:
+							winLoss = f"{100 - winLossSplits[0]}% - {100 - winLossSplits[1]}%"
+							winLossPerMin = f"{100 - winLossSplitsPerMin[0]}% - {100 - winLossSplitsPerMin[1]}%"
+							awayHome = f"{100 - awayHomeSplits[0]}% - {100 - awayHomeSplits[1]}%"
+							awayHomePerMin = f"{100 - awayHomeSplitsPerMin[0]}% - {100 - awayHomeSplitsPerMin[1]}%"
 
 						confirmed = False
 						if team in lineups:
@@ -3285,7 +3207,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["totalOverPerMin"] = totalOverPerMin
 						evData[key]["total15Over"] = total15Over
 						evData[key]["total15OverPerMin"] = total15OverPerMin
-						evData[key]["totalSplits"] = ",".join(totalSplits)
+						evData[key]["totalSplits"] = totalSplits
 						evData[key]["totalSplitsPerMin"] = ",".join(totalSplitsPerMin)
 						evData[key]["lastYearTotal"] = lastTotalOver
 						evData[key]["lastYearTotalPerMin"] = lastTotalOverPerMin
@@ -3323,7 +3245,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"book": f"{line} {evBook.replace('kambi', 'br').upper()}",
 								"evBook": evBook,
 								"odds": line,
-								"totalSplits": ",".join(totalSplits[-10:]),
+								"totalSplits": ",".join(totalSplits.split(",")[-10:]),
 								"totalSplitsPerMin": ",".join(totalSplitsPerMin[-10:]),
 								"avgMin": 0 if not projMin else round(projMin),
 								"isAway": isAway,

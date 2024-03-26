@@ -146,6 +146,12 @@ def write_totals():
 		json.dump(totals, fh, indent=4)
 
 def writeSplits():
+	with open(f"{prefix}static/basketballreference/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	with open(f"{prefix}static/basketballreference/scores.json") as fh:
+		scores = json.load(fh)
+
 	splits = {}
 	for team in os.listdir(f"{prefix}static/basketballreference/"):
 		if team not in splits:
@@ -154,11 +160,41 @@ def writeSplits():
 		for file in sorted(glob(f"{prefix}static/basketballreference/{team}/*.json")):
 			with open(file) as fh:
 				stats = json.load(fh)
+
+			if not stats:
+				continue
+				
+			date = file.split("/")[-1][:-5]
+			game = opp = awayHome = ""
+			for g in schedule[date]:
+				teams = g.split(" @ ")
+				if team in teams:
+					game = g
+					opp = teams[0]
+					awayHome = "H"
+					if teams[0] == team:
+						opp = teams[1]
+						awayHome = "A"
+					break
+			score = scores[date][team]
+			oppScore = scores[date][opp]
+			winLoss = "W"
+			if oppScore > score:
+				winLoss = "L"
+
 			for player in stats:
 				if stats[player].get("min", 0) == 0:
 					continue
 				if player not in splits[team]:
 					splits[team][player] = {}
+
+				if "winLoss" not in splits[team][player]:
+					splits[team][player]["winLoss"] = []
+				if "awayHome" not in splits[team][player]:
+					splits[team][player]["awayHome"] = []
+				splits[team][player]["awayHome"].append(awayHome)
+				splits[team][player]["winLoss"].append(winLoss)
+
 				for header in stats[player]:
 					if header not in splits[team][player]:
 						splits[team][player][header] = []
@@ -429,7 +465,7 @@ def strip_accents(text):
 	return str(text)
 
 def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" sr", "").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
 	if player == "k caldwell pope":
 		player = "kentavious caldwell pope"
 	elif player == "cameron thomas":
