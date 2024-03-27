@@ -1150,6 +1150,11 @@ def writeKambi(date):
 						line = str(float(line) * -1)
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 					data[game][label][line] = ou
+				elif label == "hr":
+					if betOffer["outcomes"][0]["label"] == "Under":
+						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+
+					data[game][label][player] = ou
 				else:
 					line = str(betOffer["outcomes"][0]["line"] / 1000)
 					if betOffer["outcomes"][0]["label"] == "Under":
