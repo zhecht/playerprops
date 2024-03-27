@@ -1184,7 +1184,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-los-angeles-dodgers-33118594"
+  "https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-33128319",
+  "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-baltimore-orioles-33128375",
+  "https://sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-33128397",
+  "https://sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-houston-astros-33128216",
+  "https://sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-cincinnati-reds-33128423",
+  "https://sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-33128460",
+  "https://sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-kansas-city-royals-33128466",
+  "https://sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-chicago-white-sox-33128498",
+  "https://sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-miami-marlins-33128536",
+  "https://sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-san-diego-padres-33130545",
+  "https://sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-los-angeles-dodgers-33134421",
+  "https://sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-texas-rangers-33128587",
+  "https://sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-oakland-athletics-33128597",
+  "https://sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-arizona-diamondbacks-33128609",
+  "https://sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-33128627"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649"]
@@ -2205,7 +2219,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.update:
-		writeFanduel()
+		#writeFanduel()
 		print("pn")
 		writePinnacle(args.date)
 		print("kambi")
