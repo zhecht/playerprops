@@ -140,9 +140,78 @@ def write_stats(date):
 					json.dump(allStats[team], fh, indent=4)
 
 	write_totals()
+	writeSplits()
 
 	with open(f"{prefix}static/hockeyreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
+
+def writeSplits():
+	with open(f"{prefix}static/hockeyreference/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	with open(f"{prefix}static/hockeyreference/scores.json") as fh:
+		scores = json.load(fh)
+
+	splits = {}
+	for team in os.listdir(f"{prefix}static/hockeyreference/"):
+		if "json" in team:
+			continue
+		if team not in splits:
+			splits[team] = {}
+
+		for file in sorted(glob(f"{prefix}static/hockeyreference/{team}/*.json")):
+			with open(file) as fh:
+				stats = json.load(fh)
+
+			if not stats:
+				continue
+				
+			date = file.split("/")[-1][:-5]
+			game = opp = awayHome = ""
+			for g in schedule[date]:
+				teams = g.split(" @ ")
+				if team in teams:
+					game = g
+					opp = teams[0]
+					awayHome = "H"
+					if teams[0] == team:
+						opp = teams[1]
+						awayHome = "A"
+					break
+			score = scores[date][team]
+			oppScore = scores[date][opp]
+			winLoss = "W"
+			if oppScore > score:
+				winLoss = "L"
+
+			for player in stats:
+				if stats[player].get("toi", 0) == 0:
+					continue
+				if player not in splits[team]:
+					splits[team][player] = {}
+
+				if "winLoss" not in splits[team][player]:
+					splits[team][player]["winLoss"] = []
+				if "awayHome" not in splits[team][player]:
+					splits[team][player]["awayHome"] = []
+				splits[team][player]["awayHome"].append(awayHome)
+				splits[team][player]["winLoss"].append(winLoss)
+
+				for header in stats[player]:
+					if header not in splits[team][player]:
+						splits[team][player][header] = []
+					splits[team][player][header].append(str(stats[player][header]))
+
+				if "pts" not in splits[team][player]:
+					splits[team][player]["pts"] = []
+				splits[team][player]["pts"].append(str(stats[player].get("g", 0) + stats[player].get("a", 0)))
+
+		for player in splits[team]:
+			for hdr in splits[team][player]:
+				splits[team][player][hdr] = ",".join(splits[team][player][hdr])
+
+	with open(f"{prefix}static/hockeyreference/splits.json", "w") as fh:
+		json.dump(splits, fh, indent=4)
 
 def write_totals():
 	totals = {}
@@ -451,6 +520,7 @@ if __name__ == "__main__":
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
+	parser.add_argument("--splits", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
 	parser.add_argument("--stats", help="Stats", action="store_true")
 	parser.add_argument("--ttoi", help="Team TTOI", action="store_true")
@@ -479,6 +549,8 @@ if __name__ == "__main__":
 		writeTeamTTOI()
 	elif args.averages:
 		write_averages()
+	elif args.splits:
+		writeSplits()
 	elif args.stats:
 		write_stats(date)
 	elif args.cron:

@@ -1026,7 +1026,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 				kambi = ""
 				if prop == "hr" and game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
-					kambi = kambiLines[game]["hr"][player]["1.0"]
+					kambi = kambiLines[game]["hr"][player]
 
 				if team not in bet365Lines or player not in bet365Lines[team]:
 					bet365ou = ""
@@ -1131,7 +1131,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						devig(evData, player, bet365ou, int(line))
 						#devigger(evData, player, bet365ou, line, dinger)
 					devig(evData, player, ou, int(line), avg=True, prop=prop)
-					#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 					if player not in evData:
 						print(player)
 						continue
@@ -1150,11 +1149,11 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evData[player]["dk"] = dk
 					evData[player]["value"] = str(handicap)
 
-		with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
-			json.dump(evData, fh, indent=4)
+			with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
+				json.dump(evData, fh, indent=4)
 
-	with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
-		json.dump(evData, fh, indent=4)
+	#with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
+	#	json.dump(evData, fh, indent=4)
 
 
 def writeBoostTMP():
@@ -1286,7 +1285,7 @@ def sortEV(dinger=False):
 					cz = czLines[game]["hr"][player]
 
 				if game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
-					kambi = kambiLines[game]["hr"][player]["1.0"]
+					kambi = kambiLines[game]["hr"][player]
 
 				if game in dkLines and "hr" in dkLines[game] and player in dkLines[game]["hr"]:
 					dk = dkLines[game]["hr"][player].replace("+", "")

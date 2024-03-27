@@ -2295,6 +2295,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/hockeyreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
+	with open(f"{prefix}static/hockeyreference/splits.json") as fh:
+		splits = json.load(fh)
+
 	with open(f"{prefix}static/nhl/caesars.json") as fh:
 		czLines = json.load(fh)
 
@@ -2410,34 +2413,22 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					if lastTotalGames:
 						lastTotalOver = int(lastTotalOver * 100 / lastTotalGames)
 
-					#l = glob(f"static/hockeyreference/{team}/*")
-					#if player in trades:
-					#	l.extend(glob(f"static/hockeyreference/{trades[player]}/*"))
+					if name not in splits[team]:
+						continue
+						
+					playerSplits = {}
+					if player in trades:
+						for hdr in splits[trades[player]][name]:
+							playerSplits[hdr] = splits[trades[player]][name][hdr]
+						for hdr in splits[team][name]:
+							playerSplits[hdr] += ","+splits[team][name][hdr]
+					else:
+						playerSplits = splits[team][name]
 
-					#arr = sorted(l, key=lambda k: datetime.strptime(k.split("/")[-1][:-5], "%Y-%m-%d"))
-
-					for d in sorted(os.listdir(f"static/hockeyreference/{team}")):
-						with open(f"static/hockeyreference/{team}/{d}") as fh:
-							teamStats = json.load(fh)
-						if name in teamStats:
-							minutes = teamStats[name]["toi"]
-							if minutes > 0 and (convertedProp == "pts" or convertedProp in teamStats[name]):
-								totalGames += 1
-								if convertedProp == "pts":
-									val = teamStats[name]["g"] + teamStats[name]["a"]
-								else:
-									val = teamStats[name][convertedProp]
-								totalSplits.append(str(int(val)))
-								if val > float(playerHandicap):
-									totalOver += 1
-
-					if totalGames:
-						totalOver = int(totalOver * 100 / totalGames)
-						tot = len(totalSplits) if len(totalSplits) < 10 else 10
-						for x in totalSplits[-10:]:
-							if float(x) > float(playerHandicap):
-								total10Over += 1
-						total10Over = int(total10Over * 100 / tot)
+					minArr = playerSplits["toi"].split(",")
+					totalSplits = playerSplits[convertedProp]
+					totalOver = round(len([x for x in playerSplits[convertedProp].split(",") if float(x) > float(playerHandicap)]) * 100 / len(minArr))
+					total10Over = round(len([x for x in playerSplits[convertedProp].split(",")[-10:] if float(x) > float(playerHandicap)]) * 100 / len(minArr[-10:]))
 
 				for i in range(2):
 
@@ -2607,7 +2598,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						evData[key]["lastYearTotal"] = lastTotalOver
 						evData[key]["totalOver"] = totalOver
 						evData[key]["total10Over"] = total10Over
-						evData[key]["totalSplits"] = ",".join(totalSplits)
+						evData[key]["totalSplits"] = totalSplits
 						evData[key]["game"] = game
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook

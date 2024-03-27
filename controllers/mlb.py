@@ -1146,7 +1146,7 @@ def writeKambi(date):
 				if not playerProp:
 					#print(betOffer["criterion"]["label"], label)
 					line = str(betOffer["outcomes"][0]["line"] / 1000)
-					if betOffer["outcomes"][0]["label"] == "Under" or convertFDTeam(betOffer["outcomes"][0]["label"].lower()) == home:
+					if betOffer["outcomes"][0]["label"] == "Under" or convertTeam(betOffer["outcomes"][0]["label"].lower()) == home:
 						line = str(float(line) * -1)
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 					data[game][label][line] = ou
@@ -1206,7 +1206,7 @@ def writeFanduel():
   "https://sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-33128627"
 ]
 
-	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-32629649"]
+	#games = ["https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-33128319"]
 	lines = {}
 	for game in games:	
 		gameId = game.split("-")[-1]
@@ -1273,9 +1273,21 @@ def writeFanduel():
 							prop = "total"
 					elif "run line" in marketName:
 						prop = "spread"
+					elif " hit" in marketName and "record" in marketName:
+						alt = True
+						prop = "h"
+					elif " rbi" in marketName and "record" in marketName:
+						alt = True
+						prop = "rbi"
+					elif " run" in marketName and "record" in marketName:
+						alt = True
+						prop = "r"
+					elif " total bases" in marketName and "record" in marketName:
+						alt = True
+						prop = "tb"
 					elif marketName.startswith("to record a ") or marketName.startswith("to record an ") or marketName.startswith("to hit a "):
 						alt = True
-						prop = marketName.split("to hit a ")[-1].split("to record a ")[-1].split("to record an ")[-1].replace("stolen base", "sb").replace("hit", "h").replace("home run", "hr").replace("run", "r")
+						prop = marketName.split("to hit a ")[-1].split("to record a ")[-1].split("to record an ")[-1].replace("stolen base", "sb").replace("home run", "hr")
 					elif " - " in marketName:
 						marketName = marketName.split(" - ")[-1]
 						prop = "_".join(marketName.split(" ")).replace("strikeouts", "k")
@@ -1317,7 +1329,14 @@ def writeFanduel():
 								else:
 									handicap = parsePlayer(runners[i]["runnerName"])
 
-								if handicap not in lines[game][prop]:
+								if prop in ["h", "r", "rbi", "tb"]:
+									if handicap not in lines[game][prop]:
+										lines[game][prop][handicap] = {}
+									line = "0.5"
+									if "+" in marketName:
+										line = str(float(marketName.split("+")[0].split(" ")[-1]) - 0.5)
+									lines[game][prop][handicap][line] = odds
+								elif handicap not in lines[game][prop]:
 									lines[game][prop][handicap] = odds
 									if "total" not in prop and "spread" not in prop:
 										lines[game][prop][handicap] = odds
@@ -1355,8 +1374,6 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	prefix = ""
 	if sharp:
 		prefix = "pn_"
-	if player not in evData:
-		evData[player] = {}
 
 	impliedOver = impliedUnder = 0
 	over = int(ou.split("/")[0])
@@ -1371,45 +1388,53 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 		profit = 100 * bet / (finalOdds * -1)
 
 	if "/" not in ou:
-		ev = impliedOver * profit + (1-impliedOver) * -1 * bet
-		ev = round(ev, 1)
+		u = 1.07 - impliedOver
+		if u > 1:
+			return
+		if over > 0:
+			under = int((100*u) / (-1+u))
+		else:
+			under = int((100 - 100*u) / u)
 	else:
 		under = int(ou.split("/")[1])
-		if under > 0:
-			impliedUnder = 100 / (under+100)
-		else:
-			impliedUnder = -1*under / (-1*under+100)
 
-		x = impliedOver
-		y = impliedUnder
-		while round(x+y, 8) != 1.0:
-			k = math.log(2) / math.log(2 / (x+y))
-			x = x**k
-			y = y**k
+	if under > 0:
+		impliedUnder = 100 / (under+100)
+	else:
+		impliedUnder = -1*under / (-1*under+100)
 
-		dec = 1 / x
-		if dec >= 2:
-			fairVal = round((dec - 1)  * 100)
-		else:
-			fairVal = round(-100 / (dec - 1))
-		#fairVal = round((1 / x - 1)  * 100)
-		implied = round(x*100, 2)
-		#ev = round(x * (finalOdds - fairVal), 1)
+	x = impliedOver
+	y = impliedUnder
+	while round(x+y, 8) != 1.0:
+		k = math.log(2) / math.log(2 / (x+y))
+		x = x**k
+		y = y**k
 
-		#multiplicative 
-		mult = impliedOver / (impliedOver + impliedUnder)
-		add = impliedOver - (impliedOver+impliedUnder-1) / 2
+	dec = 1 / x
+	if dec >= 2:
+		fairVal = round((dec - 1)  * 100)
+	else:
+		fairVal = round(-100 / (dec - 1))
+	#fairVal = round((1 / x - 1)  * 100)
+	implied = round(x*100, 2)
+	#ev = round(x * (finalOdds - fairVal), 1)
 
-		evs = []
-		for method in [x, mult, add]:
-			ev = method * profit + (1-method) * -1 * bet
-			ev = round(ev, 1)
-			evs.append(ev)
+	#multiplicative 
+	mult = impliedOver / (impliedOver + impliedUnder)
+	add = impliedOver - (impliedOver+impliedUnder-1) / 2
 
-		ev = min(evs)
+	evs = []
+	for method in [x, mult, add]:
+		ev = method * profit + (1-method) * -1 * bet
+		ev = round(ev, 1)
+		evs.append(ev)
 
-		evData[player][f"{prefix}fairVal"] = fairVal
-		evData[player][f"{prefix}implied"] = implied
+	ev = min(evs)
+
+	if player not in evData:
+		evData[player] = {}
+	evData[player][f"{prefix}fairVal"] = fairVal
+	evData[player][f"{prefix}implied"] = implied
 	
 	evData[player][f"{prefix}ev"] = ev
 
@@ -1870,7 +1895,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
-		#"mgm": mgmLines,
+		"mgm": mgmLines,
 		"fd": fdLines,
 		"bv": bvLines,
 		"dk": dkLines,
@@ -1903,7 +1928,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 			if propArg and prop != propArg:
 				continue
 
-			if not propArg and prop in ["triple", "single", "double", "h", "sb", "hr", "rbi", "r"]:
+			if not propArg and prop in ["triple", "single", "double", "sb"]:
 				#pass
 				continue
 
@@ -2123,6 +2148,8 @@ def sortEV():
 
 	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
+		if row[-1]["book"] in ["kambi"]:
+			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]

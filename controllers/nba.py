@@ -2304,8 +2304,8 @@ def readSGP(insurance=False):
 	with open(f"static/basketballreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
-	with open(f"static/nba/fanduelLines.json") as fh:
-		fdLines = json.load(fh)
+	with open(f"static/nba/draftkings.json") as fh:
+		dkLines = json.load(fh)
 
 	with open(f"static/basketballreference/trades.json") as fh:
 		trades = json.load(fh)
@@ -2346,7 +2346,7 @@ def readSGP(insurance=False):
 					for ouIdx, odds in enumerate(oddsStr):
 						isOver = ouIdx == 0
 						if insurance:
-							if int(odds) <= -300 or int(odds) >= -185:
+							if int(odds) < -300 or int(odds) >= -185:
 								continue
 						else:
 							if int(odds) <= -360 or int(odds) >= -185:
@@ -2389,6 +2389,10 @@ def readSGP(insurance=False):
 							pos = ""
 							if player in roster[team]:
 								pos = roster[team][player].lower()
+							if pos == "g":
+								pos = "sg"
+							elif pos == "f":
+								pos = "sf"
 
 							rank = posRank = ""
 							try:
@@ -2404,11 +2408,11 @@ def readSGP(insurance=False):
 
 							output.append([overL15, txt])
 
-		if game not in fdLines:
+		if game not in dkLines:
 			continue
 		out += f"\ngame: {game}\n"
-		line = list(fdLines[game]['spread'].keys())[0]
-		out += f"{line} {fdLines[game]['spread'][line]}\n"
+		line = list(dkLines[game]['spread'].keys())[0]
+		out += f"{line} {dkLines[game]['spread'][line]}\n"
 		for L15, txt in sorted(output, reverse=True):
 			out += txt
 

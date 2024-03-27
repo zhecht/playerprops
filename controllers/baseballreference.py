@@ -434,8 +434,8 @@ def write_averages():
 	with open(f"{prefix}static/baseballreference/averages.json") as fh:
 		averages = json.load(fh)
 
-	with open(f"{prefix}static/baseballreference/lastYearStats.json") as fh:
-		lastYearStats = json.load(fh)
+	with open(f"{prefix}static/baseballreference/statsVsTeam.json") as fh:
+		statsVsTeam = json.load(fh)
 
 	currYear = str(datetime.datetime.now())[:4]
 
@@ -448,27 +448,16 @@ def write_averages():
 				stats = json.load(fh)
 			yearStats[year] = stats.copy()
 
-	if False:
+	if True:
 		ids = {
-			"stl": {
-				"paul dejong": 35185
+			"det": {
+				"tarik skubal": 42409
 			}
 		}
 
 	for team in ids:
-		if team not in averages:
-			averages[team] = {}
-		if team not in lastYearStats:
-			lastYearStats[team] = {}
-
 		for player in ids[team]:
 			pId = ids[team][player]
-			if player in averages[team]:
-				#pass
-				continue
-			
-			averages[team][player] = {}
-			lastYearStats[team][player] = {}
 
 			time.sleep(0.175)
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
@@ -481,7 +470,23 @@ def write_averages():
 				continue
 			years = [y.text for y in select.findAll("option")]
 
+			if team not in averages:
+				averages[team] = {}
+			if player not in averages[team]:
+				averages[team][player] = {"tot": {}}
+
+			if team not in statsVsTeam:
+				statsVsTeam[team] = {}
+
+			averages[team][player] = {"tot": {}}
+			statsVsTeam[team][player] = {}
+
 			for year in years:
+				if year == currYear:
+					continue
+				if year != "2023":
+					#continue
+					pass
 				if len(year) != 4:
 					for title in soup.find("div", class_="gamelog").findAll("div", class_="Table__Title"):
 						if "regular" in title.text.lower():
@@ -492,14 +497,13 @@ def write_averages():
 					yearStats[year] = {}
 				if team not in yearStats[year]:
 					yearStats[year][team] = {}
-				
 				if player not in yearStats[year][team]:
 					yearStats[year][team][player] = {}
-				elif year != currYear:
-					pass
-					#continue
+				
+				if year not in averages[team][player]:
+					averages[team][player][year] = {}
 
-				yearStats[year][team][player] = {}
+				yearStats[year][team][player] = {"tot": {}, "splits": {}}
 				gamesPlayed = 0
 
 				time.sleep(0.175)
@@ -524,7 +528,6 @@ def write_averages():
 						for td in tds:
 							headers.append(td.text.strip().lower())
 					elif row.text.startswith("Totals"):
-						yearStats[year][team][player]["tot"] = {}
 						for idx, td in enumerate(row.findAll("td")[1:]):
 							header = headers[idx]
 							try:
@@ -532,39 +535,41 @@ def write_averages():
 							except:
 								val = "-"
 							yearStats[year][team][player]["tot"][header] = val
-						yearStats[year][team][player]["tot"]["gamesPlayed"] = gamesPlayed
-						if "ip" in yearStats[year][team][player]["tot"]:
-							ip = yearStats[year][team][player]["tot"]["ip"]
-							outs = int(ip)*3 + int(str(ip).split(".")[-1])
-							yearStats[year][team][player]["tot"]["outs"] = outs
-						if "ab" in yearStats[year][team][player]["tot"]:
-							_3b = yearStats[year][team][player]["tot"]["3b"]
-							_2b = yearStats[year][team][player]["tot"]["2b"]
-							hr = yearStats[year][team][player]["tot"]["hr"]
-							h = yearStats[year][team][player]["tot"]["h"]
-							_1b = h - (_3b+_2b+hr)
-							yearStats[year][team][player]["tot"]["1b"] = _1b
-							yearStats[year][team][player]["tot"]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
+						yearStats[year][team][player]["tot"]["gamesPlayed"] = len(yearStats[year][team][player]["splits"]["opp"])
+						
+						if "outs" in yearStats[year][team][player]["splits"]:
+							yearStats[year][team][player]["tot"]["outs"] = sum(yearStats[year][team][player]["splits"]["outs"])
+							for p in ["w", "l"]:
+								yearStats[year][team][player]["tot"][p] = len([x for x in yearStats[year][team][player]["splits"]["dec"] if x == p.upper()])
+							for p in ["sv", "hld", "blsv"]:
+								yearStats[year][team][player]["tot"][p] = len([x for x in yearStats[year][team][player]["splits"]["rel"] if x == p.upper()])
+						if "tb" in yearStats[year][team][player]["splits"]:
+							yearStats[year][team][player]["tot"]["tb"] = sum(yearStats[year][team][player]["splits"]["tb"])
+							yearStats[year][team][player]["tot"]["1b"] = sum(yearStats[year][team][player]["splits"]["1b"])
+							yearStats[year][team][player]["tot"]["h+r+rbi"] = sum(yearStats[year][team][player]["splits"]["h+r+rbi"])
 					else:
 						tds = row.findAll("td")
 						if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
 							date = str(datetime.datetime.strptime(tds[0].text.strip()+"/"+year, "%a %m/%d/%Y")).split(" ")[0]
-							gamesPlayed += 1
-							isAway = "@" in tds[1].text
+							awayHome = "A" if "@" in tds[1].text else "H"
 							try:
-								vs = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+								opp = tds[1].findAll("a")[-1].get("href").split("/")[-2]
 							except:
 								continue
 
-							if date not in yearStats[year][team][player]:
-								yearStats[year][team][player][date] = {}
-							else:
-								date = date + " gm2"
+							if opp not in statsVsTeam[team][player]:
+								statsVsTeam[team][player][opp] = {"gamesPlayed": 0}
+							statsVsTeam[team][player][opp]["gamesPlayed"] += 1
 
-							yearStats[year][team][player][date] = {
-								"isAway": isAway,
-								"vs": vs
-							}
+							result = "L" if tds[2].find("div", class_="loss-stat") else "W"
+							if "splits" not in yearStats[year][team][player]:
+								yearStats[year][team][player]["splits"] = {}
+
+							for prop, val in [("awayHome", awayHome), ("opp", opp), ("winLoss", result)]:
+								if prop not in yearStats[year][team][player]["splits"]:
+									yearStats[year][team][player]["splits"][prop] = []
+								yearStats[year][team][player]["splits"][prop].append(val)
+
 							for idx, td in enumerate(tds[3:]):
 								header = headers[idx]
 
@@ -572,133 +577,124 @@ def write_averages():
 								if header in ["dec", "rel"]:
 									val = td.text.strip()
 									if "(" in val:
-										p = val.split("(")[0].lower()
-										if p not in yearStats[year][team][player][date]:
-											yearStats[year][team][player][date][p] = 0
-										yearStats[year][team][player][date][p] += 1
+										val = val.split("(")[0]
+									else:
+										val = "-"
 								else:
 									try:
-										val = float(td.text.strip())
+										val = int(td.text.strip())
 									except:
-										val = "-"
+										try:
+											val = float(td.text.strip())
+										except:
+											val = "-"
 
-								yearStats[year][team][player][date][header] = val
-							if "ip" in yearStats[year][team][player][date]:
-								ip = yearStats[year][team][player][date]["ip"]
-								outs = int(ip)*3 + int(str(ip).split(".")[-1])
-								yearStats[year][team][player][date]["outs"] = outs
-							if "ab" in yearStats[year][team][player][date]:
-								_3b = yearStats[year][team][player][date]["3b"]
-								_2b = yearStats[year][team][player][date]["2b"]
-								hr = yearStats[year][team][player][date]["hr"]
-								h = yearStats[year][team][player][date]["h"]
+								if header not in yearStats[year][team][player]["splits"]:
+									yearStats[year][team][player]["splits"][header] = []
+
+								yearStats[year][team][player]["splits"][header].append(val)
+
+								if header == "ip":
+									if "outs" not in yearStats[year][team][player]["splits"]:
+										yearStats[year][team][player]["splits"]["outs"] = []
+									outs = int(val)*3 + int(str(val).split(".")[-1])
+									yearStats[year][team][player]["splits"]["outs"].append(outs)
+
+							if "ab" in yearStats[year][team][player]["splits"]:
+								_3b = yearStats[year][team][player]["splits"]["3b"][-1]
+								_2b = yearStats[year][team][player]["splits"]["2b"][-1]
+								hr = yearStats[year][team][player]["splits"]["hr"][-1]
+								h = yearStats[year][team][player]["splits"]["h"][-1]
 								_1b = h - (_3b+_2b+hr)
-								yearStats[year][team][player][date]["1b"] = _1b
-								yearStats[year][team][player][date]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
+								# 1B
+								if "1b" not in yearStats[year][team][player]["splits"]:
+									yearStats[year][team][player]["splits"]["1b"] = []
+								yearStats[year][team][player]["splits"]["1b"].append(_1b)
+
+								# TB
+								if "tb" not in yearStats[year][team][player]["splits"]:
+									yearStats[year][team][player]["splits"]["tb"] = []
+								yearStats[year][team][player]["splits"]["tb"].append(4*hr + 3*_3b + 2*_2b + _1b)
+
+								# HRR
+								r = yearStats[year][team][player]["splits"]["r"][-1]
+								rbi = yearStats[year][team][player]["splits"]["rbi"][-1]
+								hrr = h + r + rbi
+								if "h+r+rbi" not in yearStats[year][team][player]["splits"]:
+									yearStats[year][team][player]["splits"]["h+r+rbi"] = []
+								yearStats[year][team][player]["splits"]["h+r+rbi"].append(hrr)
+
+							# Overs
+							for header in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er", "outs"]:
+								if header not in yearStats[year][team][player]["splits"]:
+									continue
+
+								opp = yearStats[year][team][player]["splits"]["opp"][-1]
+								val = yearStats[year][team][player]["splits"][header][-1]
+								hdrOver = header+"Overs"
+								if hdrOver not in yearStats[year][team][player]["tot"]:
+									yearStats[year][team][player]["tot"][hdrOver] = {}
+								if hdrOver not in statsVsTeam[team][player][opp]:
+									statsVsTeam[team][player][opp][hdrOver] = {}
+								for i in range(1, int(val)+1):
+									if i not in yearStats[year][team][player]["tot"][hdrOver]:
+										yearStats[year][team][player]["tot"][hdrOver][i] = 0
+									if i not in statsVsTeam[team][player][opp][hdrOver]:
+										statsVsTeam[team][player][opp][hdrOver][i] = 0
+									yearStats[year][team][player]["tot"][hdrOver][i] += 1
+									statsVsTeam[team][player][opp][hdrOver][i] += 1
+
+							# statsVsTeam
+							for hdr in yearStats[year][team][player]["splits"]:
+								if hdr in ["awayHome", "opp", "winLoss"] or "Overs" in hdr:
+									continue
+								if hdr in ["dec", "rel"]:
+									val = yearStats[year][team][player]["splits"][hdr][-1]
+									if val in ["W", "L", "SV", "HLD", "BLSV"]:
+										hdr = val
+									else:
+										continue
+									if hdr not in statsVsTeam[team][player][opp]:
+										statsVsTeam[team][player][opp][hdr] = 0
+									statsVsTeam[team][player][opp][hdr] += 1
+								else:
+									if hdr not in statsVsTeam[team][player][opp]:
+										statsVsTeam[team][player][opp][hdr] = 0
+									statsVsTeam[team][player][opp][hdr] += yearStats[year][team][player]["splits"][hdr][-1]
+
+
+
+				for player in yearStats[year][team]:
+					for hdr in yearStats[year][team][player]["splits"]:
+						arr = ",".join([str(x) for x in yearStats[year][team][player]["splits"][hdr]][::-1])
+						yearStats[year][team][player]["splits"][hdr] = arr
+
+				averages[team][player][year] = yearStats[year][team][player]["tot"].copy()
+				for hdr in averages[team][player][year]:
+					if "Overs" in hdr:
+						if hdr not in averages[team][player]["tot"]:
+							averages[team][player]["tot"][hdr] = {}
+						for val in averages[team][player][year][hdr]:
+							if val not in averages[team][player]["tot"][hdr]:
+								averages[team][player]["tot"][hdr][val] = 0
+							averages[team][player]["tot"][hdr][val] += averages[team][player][year][hdr][val]
+					else:
+						if hdr in ["rel", "dec"]:
+							continue
+						if hdr not in averages[team][player]["tot"]:
+							averages[team][player]["tot"][hdr] = 0
+						averages[team][player]["tot"][hdr] += averages[team][player][year][hdr]
+
 
 				with open(f"{prefix}static/mlbprops/stats/{year}.json", "w") as fh:
 					#print(year)
 					json.dump(yearStats[year], fh, indent=4)
 
-	writeYearAverages()
-
-def writeYearAverages():
-	averages = {}
-	statsVsTeam = {}
-	currYear = datetime.datetime.now().year
-	for file in os.listdir(f"{prefix}static/mlbprops/stats/"):
-		year = file[:4]
-		isCurrYear = False
-		if year == currYear:
-			isCurrYear = True
-
-		with open(f"{prefix}static/mlbprops/stats/{file}") as fh:
-			yearStats = json.load(fh)
-
-		for team in yearStats:
-
-			if team not in averages:
-				averages[team] = {}
-			if team not in statsVsTeam:
-				statsVsTeam[team] = {}
-
-			for player in yearStats[team]:
-				tot = {}
-				playerStats = yearStats[team][player].copy()
-				if player not in averages[team]:
-					averages[team][player] = {"tot": {}}
-				if True or "tot" not in playerStats:
-					gamesPlayed = totalHitGames = total2HitGames = 0
-					for dt in playerStats:
-						if dt == "tot":
-							continue
-						gamesPlayed += 1
-						gameStats = playerStats[dt]
-						currOpp = gameStats["vs"]
-						if currOpp not in statsVsTeam[team]:
-							statsVsTeam[team][currOpp] = {}
-						if not isCurrYear and player not in statsVsTeam[team][currOpp]:
-							statsVsTeam[team][currOpp][player] = {"gamesPlayed": 0}
-
-						if not isCurrYear:
-							statsVsTeam[team][currOpp][player]["gamesPlayed"] += 1
-						if "ab" in gameStats and "h+r+rbi" not in gameStats:
-							gameStats["h+r+rbi"] = 0
-						if "ab" in gameStats and "tb" not in gameStats:
-							gameStats["tb"] = 0
-						for header in gameStats:
-							if header not in ["isAway", "vs"]:
-								if not isCurrYear and header not in statsVsTeam[team][currOpp][player]:
-									statsVsTeam[team][currOpp][player][header] = 0
-								if header not in tot:
-									tot[header] = 0
-								try:
-									val = 0
-									if header == "tb" and "ab" in gameStats:
-										val = 4*gameStats["hr"] + 3*gameStats["3b"] + 2*gameStats["2b"] + gameStats["1b"]
-									else:
-										for p in header.split("+"):
-											val += gameStats[p]
-
-									tot[header] += val
-									if not isCurrYear:
-										statsVsTeam[team][currOpp][player][header] += val
-									if header in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er", "outs"]:
-
-										if not isCurrYear and header+"Overs" not in statsVsTeam[team][currOpp][player]:
-											statsVsTeam[team][currOpp][player][header+"Overs"] = {}
-										if header+"Overs" not in tot:
-											tot[header+"Overs"] = {}
-
-										for i in range(1, int(val)+1):
-											if i not in tot[header+"Overs"]:
-												tot[header+"Overs"][i] = 0
-											if not isCurrYear and i not in statsVsTeam[team][currOpp][player][header+"Overs"]:
-												statsVsTeam[team][currOpp][player][header+"Overs"][i] = 0
-
-											if not isCurrYear:
-												statsVsTeam[team][currOpp][player][header+"Overs"][i] += 1
-											tot[header+"Overs"][i] += 1
-								except:
-									pass
-
-					tot["gamesPlayed"] = gamesPlayed
-					yearStats[team][player]["tot"] = tot
-				else:
-					tot = playerStats["tot"]
-				
-				averages[team][player][year] = tot
-				for header in tot:
-					sumStat(header, averages[team][player]["tot"], tot)
-
-		with open(f"{prefix}static/mlbprops/stats/{file}", "w") as fh:
-			json.dump(yearStats, fh, indent=4)
+	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
+		json.dump(statsVsTeam, fh)
 
 	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
 		json.dump(averages, fh, indent=4)
-
-	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
-		json.dump(statsVsTeam, fh, indent=4)
 
 
 def strip_accents(text):
