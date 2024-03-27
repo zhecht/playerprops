@@ -1156,6 +1156,8 @@ def writeKambi(date):
 
 					data[game][label][player] = ou
 				else:
+					if "line" not in betOffer["outcomes"][0]:
+						continue
 					line = str(betOffer["outcomes"][0]["line"] / 1000)
 					if betOffer["outcomes"][0]["label"] == "Under":
 						line = str(betOffer["outcomes"][1]["line"] / 1000)
@@ -2251,7 +2253,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.update:
-		#writeFanduel()
+		writeFanduel()
 		print("pn")
 		writePinnacle(args.date)
 		print("kambi")
