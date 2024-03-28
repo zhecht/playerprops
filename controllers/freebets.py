@@ -835,6 +835,11 @@ def write365():
 			let playerList = [];
 			for (playerDiv of div.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
 				let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(". ", "").replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
+				if (player.indexOf("julio rodr") >= 0) {
+					player = "julio rodriguez";
+				} else if (player == "jpcrawford") {
+					player = "jp crawford";
+				}
 				let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" - ")[0];
 
 				if (team === "la angels") {
@@ -1395,7 +1400,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("trea turner", 500, "phi"), ("jt realmuto", 560, "phi"), ("mitch garver", 400, "tex"), ("marcus semien", 500, "tex")]
+	plays = [("corey seager", 420, "tex"), ("spencer torkelson", 350, "det"), ("rafael devers", 300, "bos"), ("julio rodriguez", 390, "sea"), ("shohei ohtani", 280, "lad"), ("ketel marte", 420, "ari"), ("mark canha", 800, "det"), ("jorge polanco", 390, "sea")]
 
 	if args.lineups:
 		writeLineups(plays)
