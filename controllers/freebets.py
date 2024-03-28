@@ -1008,7 +1008,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					bs = bpp[team][player]["k"][str(handicap)].get("bs", "-")
 				elif prop == "hr" and team in bpp and player in bpp[team] and "hr" in bpp[team][player]:
 					pn = bpp[team][player]["hr"]["0.5"].get("pn", "-")
-					bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
+					#bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
 
 				if prop == "hr" and game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
 					pn = pnLines[game]["hr"][player]["0.5"]
@@ -1267,7 +1267,7 @@ def sortEV(dinger=False):
 						bs = bppLines[team][player]["k"][value].get("bs", "-")
 				else:
 					pn = bppLines[team][player][prop]["0.5"].get("pn", "-")
-					bs = bppLines[team][player][prop]["0.5"].get("bs", "-")
+					#bs = bppLines[team][player][prop]["0.5"].get("bs", "-")
 
 			bv = ""
 			cz = ""
