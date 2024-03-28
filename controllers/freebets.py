@@ -1067,6 +1067,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					if not nobr:
 						#l.append(kambi.split("/")[0])
 						l.append(kambi)
+				elif bookArg == "cz":
+					l.append(cz)
 
 				evBook = "fd"
 				if bookArg == "dk":
@@ -1079,7 +1081,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				elif bookArg == "cz":
 					evBook = "cz"
 					line = cz
-					l[7] = str(fdLine)
+					if allArg:
+						l[7] = str(fdLine)
+					else:
+						l[-1] = str(fdLine)
 
 					if line == "-":
 						continue

@@ -1738,6 +1738,7 @@ if __name__ == "__main__":
 	parser.add_argument("--lineups", help="Lineups", action="store_true")
 	parser.add_argument("--lines", action="store_true", help="Game Lines")
 	parser.add_argument("-p", "--props", action="store_true", help="Props")
+	parser.add_argument("--prop")
 	parser.add_argument("-b", "--bovada", action="store_true", help="Bovada")
 	parser.add_argument("--projections", help="Projections", action="store_true")
 	parser.add_argument("-w", "--week", help="Week", type=int)
