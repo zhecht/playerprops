@@ -2304,8 +2304,8 @@ def readSGP(insurance=False):
 	with open(f"static/basketballreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
-	with open(f"static/nba/draftkings.json") as fh:
-		dkLines = json.load(fh)
+	with open(f"static/nba/pinnacle.json") as fh:
+		pnLines = json.load(fh)
 
 	with open(f"static/basketballreference/trades.json") as fh:
 		trades = json.load(fh)
@@ -2408,11 +2408,11 @@ def readSGP(insurance=False):
 
 							output.append([overL15, txt])
 
-		if game not in dkLines:
+		if game not in pnLines:
 			continue
 		out += f"\ngame: {game}\n"
-		line = list(dkLines[game]['spread'].keys())[0]
-		out += f"{line} {dkLines[game]['spread'][line]}\n"
+		line = list(pnLines[game]['spread'].keys())[0]
+		out += f"{line} {pnLines[game]['spread'][line]}\n"
 		for L15, txt in sorted(output, reverse=True):
 			out += txt
 

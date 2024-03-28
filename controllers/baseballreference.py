@@ -448,8 +448,13 @@ def write_averages():
 				stats = json.load(fh)
 			yearStats[year] = stats.copy()
 
-	if True:
+	#yearStats = {}
+
+	if False:
 		ids = {
+			"ari": {
+				"ketel marte": 32512
+			},
 			"det": {
 				"tarik skubal": 42409
 			}
@@ -459,12 +464,14 @@ def write_averages():
 		for player in ids[team]:
 			pId = ids[team][player]
 
-			time.sleep(0.175)
+			time.sleep(0.2)
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
 			outfile = "outmlb3"
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 			#print(url)
+			if not soup.find("div", class_="gamelog"):
+				continue
 			select = soup.find("div", class_="gamelog").find("select", class_="dropdown__select")
 			if not select:
 				continue
@@ -497,6 +504,10 @@ def write_averages():
 					yearStats[year] = {}
 				if team not in yearStats[year]:
 					yearStats[year][team] = {}
+
+				if player in yearStats[year][team]:
+					continue
+					pass
 				if player not in yearStats[year][team]:
 					yearStats[year][team][player] = {}
 				
@@ -506,11 +517,10 @@ def write_averages():
 				yearStats[year][team][player] = {"tot": {}, "splits": {}}
 				gamesPlayed = 0
 
-				time.sleep(0.175)
+				time.sleep(0.2)
 				url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}/type/mlb/year/{year}"
-				#print(url)
 				outfile = "outmlb3"
-				call(["curl", "-k", url, "-o", outfile])
+				call(["curl", url, "-o", outfile])
 				soup = BS(open(outfile, 'rb').read(), "lxml")
 
 				headers = []
@@ -573,6 +583,8 @@ def write_averages():
 							for idx, td in enumerate(tds[3:]):
 								header = headers[idx]
 
+								if header in ["era", "avg", "obp", "slg", "ops"]:
+									continue
 								val = 0.0
 								if header in ["dec", "rel"]:
 									val = td.text.strip()
@@ -625,7 +637,7 @@ def write_averages():
 								yearStats[year][team][player]["splits"]["h+r+rbi"].append(hrr)
 
 							# Overs
-							for header in ["h", "1b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er", "outs"]:
+							for header in ["h", "1b", "2b", "3b", "tb", "r", "rbi", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er", "outs"]:
 								if header not in yearStats[year][team][player]["splits"]:
 									continue
 
@@ -660,15 +672,17 @@ def write_averages():
 								else:
 									if hdr not in statsVsTeam[team][player][opp]:
 										statsVsTeam[team][player][opp][hdr] = 0
+
+									#print(year,hdr, yearStats[year][team][player]["splits"][hdr])
 									statsVsTeam[team][player][opp][hdr] += yearStats[year][team][player]["splits"][hdr][-1]
 
 
 
-				for player in yearStats[year][team]:
-					for hdr in yearStats[year][team][player]["splits"]:
-						arr = ",".join([str(x) for x in yearStats[year][team][player]["splits"][hdr]][::-1])
-						yearStats[year][team][player]["splits"][hdr] = arr
+				for hdr in yearStats[year][team][player]["splits"]:
+					arr = ",".join([str(x) for x in yearStats[year][team][player]["splits"][hdr]][::-1])
+					yearStats[year][team][player]["splits"][hdr] = arr
 
+				#print(year, player in averages[team])
 				averages[team][player][year] = yearStats[year][team][player]["tot"].copy()
 				for hdr in averages[team][player][year]:
 					if "Overs" in hdr:
@@ -690,11 +704,11 @@ def write_averages():
 					#print(year)
 					json.dump(yearStats[year], fh, indent=4)
 
-	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
-		json.dump(statsVsTeam, fh)
+				with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
+					json.dump(statsVsTeam, fh)
 
-	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
-		json.dump(averages, fh, indent=4)
+				with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
+					json.dump(averages, fh, indent=4)
 
 
 def strip_accents(text):

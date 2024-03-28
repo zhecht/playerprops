@@ -69,7 +69,7 @@ def convertDKProp(mainCat, prop):
 		return "rbi"
 	elif prop == "runs scored":
 		return "r"
-	elif prop == "earned runs":
+	elif prop == "earned runs allowed":
 		return "er"
 	elif prop == "stolen bases":
 		return "sb"
@@ -77,11 +77,11 @@ def convertDKProp(mainCat, prop):
 		return "outs"
 	elif prop == "hits + runs + rbis":
 		return "h+r+rbi"
-	elif prop == "strikeouts":
+	elif prop == "strikeouts" or prop == "strikeouts thrown":
 		if mainCat == "batter":
 			return "so"
 		return "k"
-	elif prop == "walks":
+	elif prop == "walks" or prop == "walks allowed":
 		if mainCat == "batter":
 			return "bb"
 		return "bb_allowed"
@@ -94,7 +94,7 @@ def convertDKProp(mainCat, prop):
 	
 	return "_".join(prop.split(" "))
 
-def writeProps(date):
+def writeProps(date, propArg):
 
 	props = {}
 	if os.path.exists(f"{prefix}static/mlbprops/dates/{date}.json"):
@@ -152,6 +152,8 @@ def writeProps(date):
 				subCats[prop] = cRow["subcategoryId"]
 
 		for prop in subCats:
+			if propArg and prop != propArg:
+				continue
 			time.sleep(0.4)
 			url = f"https://sportsbook-nash-usmi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}/subcategories/{subCats[prop]}?format=json"
 			outfile = "outmlb2"
@@ -618,8 +620,8 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				lastYrLast20 = []
 				againstTeamLastYearStats = {"ab": 0, "h": 0, "hr": 0, "rbi": 0, "bb": 0, "so": 0}
 				againstTeamStats = {}
-
-				againstTeamStats = statsVsTeam[team][opp].get(player, {})
+				if team in statsVsTeam and player in statsVsTeam[team]:
+					againstTeamStats = statsVsTeam[team][player].get(opp, {})
 
 				teams = [team]
 				if tradeFrom:
@@ -651,7 +653,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					againstTeamTotalOver = round(overs * 100 / played)
 
 				for t in teams:
-					if player in averages[t]:
+					if t in averages and player in averages[t]:
 						for yr in averages[t][player]:
 							if yr == "tot":
 								continue
@@ -676,53 +678,36 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					except:
 						pass
 
+				lastYearTeamMatchupOver = lastYearTotalOver = 0
+				awayGames = homeGames = 0
 				for t in teams:
 					if t in lastYearStats and player in lastYearStats[t]:
-						l = [d.replace(" gm2", "") for d in lastYearStats[t][player] if d != "tot"]
-						seen = {}
-						for d in sorted(l, key=lambda k: datetime.strptime(k, "%Y-%m-%d"), reverse=True):
-							if d in seen:
-								d += " gm2"
-							seen[d] = True
-							lastTotalGames += 1
-							val = 0
-							for p in prop.split("+"):
-								val += lastYearStats[t][player][d].get(p, 0)
 
-							if val > line:
-								lastYearTotalOver += 1
+						try:
+							propArr = lastYearStats[t][player]["splits"][prop].split(",")
+						except:
+							#print(player, prop, "skipping lastYrStats")
+							continue
+						oppArr = lastYearStats[t][player]["splits"]["opp"].split(",")
+						awayHomeArr = lastYearStats[t][player]["splits"]["awayHome"].split(",")
+						try:
+							lastYearTotalOver = round(lastYearStats[t][player]["tot"][prop+"Overs"][str(int(math.ceil(line)))] * 100 / lastYearStats[t][player]["tot"]["gamesPlayed"])
+						except:
+							pass
+							#print(prop)
 
-							if len(lastYrLast20) < 20:
-								lastYrLast20.append(val)
+						lastYrLast20 = [int(x) for x in propArr[-20:]]
+						totAwayGames = len([x for x in awayHomeArr if x == "A"])
+						awayGames = len([x for x, ah in zip(propArr, awayHomeArr) if ah == "A" and float(x) > line]) * 100 / totAwayGames
+						totHomeGames = len([x for x in awayHomeArr if x == "H"])
+						if totHomeGames:
+							homeGames = len([x for x, ah in zip(propArr, awayHomeArr) if ah == "H" and float(x) > line]) * 100 / totHomeGames
+						try:
+							lastYearTeamMatchupOver = round(len([x for x, o in zip(propArr, oppArr) if o == opp and float(x) > line]) * 100 / len([x for x in oppArr if x == opp]))
+						except:
+							pass
 
-							currOpp = lastYearStats[t][player][d]["vs"]
-
-							if currOpp == opp:
-								prevMatchup.append(val)
-								for hdr in againstTeamLastYearStats:
-									againstTeamLastYearStats[hdr] += lastYearStats[t][player][d].get(hdr, 0)
-
-							if lastYearStats[t][player][d]["isAway"]:
-								lastYrAwayHomeSplits[0].append(val)
-							else:
-								lastYrAwayHomeSplits[1].append(val)
-
-				if lastTotalGames:
-					lastYearTotalOver = round(lastYearTotalOver * 100 / lastTotalGames)
-				awayGames = len(lastYrAwayHomeSplits[0])
-				homeGames = len(lastYrAwayHomeSplits[1])
-				if awayGames:
-					arr = [x for x in lastYrAwayHomeSplits[0] if x > line]
-					awayGames = round(len(arr) * 100 / awayGames)
-				if homeGames:
-					arr = [x for x in lastYrAwayHomeSplits[1] if x > line]
-					homeGames = round(len(arr) * 100 / homeGames)
-				lastYrAwayHomeSplits = f"{awayGames}% - {homeGames}%"
-
-				lastYearTeamMatchupOver = 0
-				if prevMatchup:
-					over = len([x for x in prevMatchup if x > line])
-					lastYearTeamMatchupOver = round(over * 100 / len(prevMatchup))
+				lastYrAwayHomeSplits = f"{round(awayGames)}% - {round(homeGames)}%"
 
 				# current year stats
 				lastAll = []
@@ -921,14 +906,16 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				last20Over = last10Over = 0
 				arr = lastAll.copy()
 				if len(arr) < 10:
-					arr.extend(lastYrLast20[:10-len(lastAll)])
+					arr = lastYrLast20
+					arr.extend(lastAll)
 				if arr:
-					last10Over = round(len([x for x in arr[:10] if float(str(x).replace("'", "")) > line]) * 100 / len(arr[:10]))
+					last10Over = round(len([x for x in arr[-10:] if float(str(x).replace("'", "")) > line]) * 100 / len(arr[-10:]))
 				arr = lastAll.copy()
 				if len(arr) < 20:
-					arr.extend(lastYrLast20[:20-len(lastAll)])
+					arr = lastYrLast20
+					arr.extend(lastAll)
 				if arr:
-					last20Over = round(len([x for x in arr[:20] if float(str(x).replace("'", "")) > line]) * 100 / len(arr[:20]))
+					last20Over = round(len([x for x in arr[-20:] if float(str(x).replace("'", "")) > line]) * 100 / len(arr[-20:]))
 
 				projDiff = 0
 				if proj:
@@ -1208,6 +1195,19 @@ def write_numberfire_projections():
 	with open(f"{prefix}static/baseballreference/numberfireProjections.json", "w") as fh:
 		json.dump(projections, fh, indent=4)
 
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
+
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+
+	return str(text)
+
+def parsePlayer(player):
+	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+
 def write_projections(date):
 	write_numberfire_projections()
 	year = datetime.now().year
@@ -1225,17 +1225,18 @@ def write_projections(date):
 				else:
 					if len(row) < 2:
 						continue
-					player = row[1].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+					player = parsePlayer(row[1].lower().split(" (")[0])
 					team = row[2].lower()
 					if team == "cws":
 						team = "chw"
+
+					if player.startswith("shohei") and row[3] != "SP,DH":
+						continue
+
 					if team not in projections:
 						projections[team] = {}
 					if player not in projections[team]:
 						projections[team][player] = {}
-
-					if player.startswith("shohei") and row[3] != "SP,DH":
-						continue
 						
 
 					for hdr, col in zip(headers, row[5:-1]):
@@ -1426,12 +1427,12 @@ def strip_accents(text):
 	return str(text)
 
 def writeBPPlayerProps(date):
-	url = f"https://ballparkpal.com/PlayerProps.php?date={date}"
+	url = f"https://www.ballparkpal.com/PlayerProps.php?date={date}"
 
 	playerProps = {}
 	outfile = "outmlb2"
 	time.sleep(0.2)
-	call(["curl", "-k", url, "-o", outfile])
+	call(["curl", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	bps = {}
@@ -1751,7 +1752,7 @@ if __name__ == "__main__":
 	if args.lineups:
 		writeLineups(date)
 	elif args.lines:
-		writeProps(date)
+		writeProps(date, args.prop)
 	elif args.props:
 		writeStaticProps(date)
 	elif args.bovada:
@@ -1763,7 +1764,7 @@ if __name__ == "__main__":
 		writeStaticProps()
 	elif args.cron:
 		writeLineups(date)
-		writeProps(date)
+		writeProps(date, args.prop)
 		#writeBallparks(date)
 		#writeBPPlayerProps(date)
 		#writeGameLines(date)
@@ -1775,6 +1776,7 @@ if __name__ == "__main__":
 	#writeBPPlayerProps(date)
 	#writeGameLines(date)
 	#write_numberfire_projections()
+	#write_projections(date)
 	#writeBallparks(date)
 	#Walks Allowed (Proj) = (FantasyPros Projection) * (Pitches per Plate Appearance) * (Opponent BB Rank) * (K/BB) / (Season Average) * (Career Walk Average)
 

@@ -2415,7 +2415,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					if name not in splits[team]:
 						continue
-						
+
 					playerSplits = {}
 					if player in trades:
 						for hdr in splits[trades[player]][name]:
@@ -2426,7 +2426,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						playerSplits = splits[team][name]
 
 					minArr = playerSplits["toi"].split(",")
-					totalSplits = playerSplits[convertedProp]
+					totalSplits = ",".join([str(int(float(x))) for x in playerSplits[convertedProp].split(",")])
 					totalOver = round(len([x for x in playerSplits[convertedProp].split(",") if float(x) > float(playerHandicap)]) * 100 / len(minArr))
 					total10Over = round(len([x for x in playerSplits[convertedProp].split(",")[-10:] if float(x) > float(playerHandicap)]) * 100 / len(minArr[-10:]))
 
