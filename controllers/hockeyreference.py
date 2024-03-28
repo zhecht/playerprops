@@ -178,6 +178,7 @@ def writeSplits():
 						opp = teams[1]
 						awayHome = "A"
 					break
+			#print(date, team)
 			score = scores[date][team]
 			oppScore = scores[date][opp]
 			winLoss = "W"
