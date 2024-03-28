@@ -835,6 +835,7 @@ def write365():
 			let playerList = [];
 			for (playerDiv of div.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
 				let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(". ", "").replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
+				
 				if (player.indexOf("julio rodr") >= 0) {
 					player = "julio rodriguez";
 				} else if (player == "jpcrawford") {
