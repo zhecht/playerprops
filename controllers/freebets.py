@@ -1427,7 +1427,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("corey seager", 420, "tex"), ("spencer torkelson", 350, "det"), ("rafael devers", 300, "bos"), ("julio rodriguez", 390, "sea"), ("shohei ohtani", 280, "lad"), ("ketel marte", 420, "ari"), ("mark canha", 800, "det"), ("jorge polanco", 390, "sea"), ("max muncy", 370, "lad")]
+	plays = [("rhys hoskins", 360, "mil"), ("jorge polanco", 450, "sea"), ("ketel marte", 500, "ari"), ("giancarlo stanton", 370, "nyy"), ("mitch garver", 420, "sea")]
 
 	if args.lineups:
 		writeLineups(plays)
