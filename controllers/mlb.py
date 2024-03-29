@@ -19,31 +19,6 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
-def convertNFLTeam(team):
-	team = team.lower()
-	if team.endswith("packers"):
-		return "gb"
-	elif team.endswith("49ers"):
-		return "sf"
-	elif team.endswith("patriots"):
-		return "ne"
-	elif team.endswith("giants"):
-		return "nyg"
-	elif team.endswith("jets"):
-		return "nyj"
-	elif team.endswith("chargers"):
-		return "lac"
-	elif team.endswith("rams"):
-		return "lar"
-	elif team.endswith("raiders"):
-		return "lv"
-	elif team.endswith("chiefs"):
-		return "kc"
-	elif team.endswith("saints"):
-		return "no"
-	elif team.endswith("buccaneers"):
-		return "tb"
-	return team[:3]
 
 def convertFDTeam(team):
 	team = team.lower().replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "oak").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
@@ -100,6 +75,44 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
+
+def writeBPP():
+	res = {}
+	books = ["bpp", "fn", "betonline", "bet365", "sugarhouse", "mgm", "espnbet"]
+	for side in [1,-1]:
+		time.sleep(0.2)
+		url = f"https://www.ballparkpal.com/PlayerProps.php?book1=15&book2=8&book3=27&book4=22&book5=5&book6=14&BetSide={side}"
+		outfile = "outmlb"
+		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		for row in soup.find("table", id="table_id").findAll("tr")[1:]:
+			tds = row.findAll("td")
+			team = tds[0].text.lower().strip()
+			if team == "was":
+				team = "wsh"
+			player = parsePlayer(tds[1].text.strip())
+
+			if team not in res:
+				res[team] = {}
+			if player not in res[team]:
+				res[team][player] = {}
+
+			for td, book in zip(tds[6:], books):
+				if not td.text:
+					continue
+				if book in res[team][player]:
+					if book == "bpp":
+						continue
+					res[team][player][book] += "/"+td.text
+				else:
+					res[team][player][book] = td.text
+
+	with open("static/mlb/bpp.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+
 actionNetworkBookIds = {
 	1541: "draftkings",
 	69: "fanduel",
@@ -112,7 +125,8 @@ actionNetworkBookIds = {
 
 def writeActionNetwork(dateArg = None):
 
-	props = ["33_hr", "37_strikeouts", "34_rbi"]
+	#props = ["33_hr", "37_strikeouts", "34_rbi"]
+	props = ["33_hr"]
 
 	odds = {}
 	optionTypes = {}
@@ -2155,7 +2169,6 @@ if __name__ == '__main__':
 	parser.add_argument("--bv", action="store_true", help="Bovada")
 	parser.add_argument("--pb", action="store_true", help="Pointsbet")
 	parser.add_argument("--ev", action="store_true", help="EV")
-	parser.add_argument("--bpp", action="store_true", help="BPP")
 	parser.add_argument("--kambi", action="store_true", help="Kambi")
 	parser.add_argument("--pn", action="store_true", help="Pinnacle")
 	parser.add_argument("--cz", action="store_true", help="Caesars")
@@ -2179,6 +2192,7 @@ if __name__ == '__main__':
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--debug", action="store_true")
+	parser.add_argument("--bpp", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Book")
@@ -2225,6 +2239,9 @@ if __name__ == '__main__':
 	if args.cz:
 		writeCZ(args.date)
 
+	if args.bpp:
+		writeBPP()
+
 	if args.update:
 		writeFanduel()
 		print("pn")
@@ -2235,7 +2252,7 @@ if __name__ == '__main__':
 		#writeMGM(args.date)
 		print("dk")
 		writeDK(args.date, args.prop)
-		#writeActionNetwork()
+		writeActionNetwork(args.date)
 		print("cz")
 		writeCZ(args.date)
 		print("bv")

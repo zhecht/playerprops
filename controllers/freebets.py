@@ -148,7 +148,7 @@ def writeBallparkpal():
 				data[team] = {};
 			}
 
-			let player = tds[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "").replace("michael a taylor", "michael taylor");
+			let player = tds[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
 
 			if (data[team][player] === undefined) {
 				data[team][player] = {};
@@ -898,7 +898,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd"):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd", nopn=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -920,7 +920,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlb/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
-	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
+	with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
 	with open(f"{prefix}static/freebets/bovada.json") as fh:
@@ -950,7 +950,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlbprops/ev_{propArg}.json") as fh:
 		evData = json.load(fh)
 
-	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
+	with open(f"{prefix}static/mlb/bpp.json") as fh:
 		bpp = json.load(fh)
 
 	if not teamArg and not gameArg:
@@ -995,45 +995,56 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				elif useDK:
 					continue
 
-				mgm = pb = cz = br = kambi = ""
-				if team in actionnetwork and player in actionnetwork[team] and prop in actionnetwork[team][player]:
-					data = actionnetwork[team][player][prop]
-					if prop == "k":
-						data = actionnetwork[team][player][prop].get(str(handicap), {})
-					mgm = data.get("mgm", "-")
-					br = data.get("betrivers", "-")
-					cz = data.get("caesars", "-")
-					pb = data.get("pointsbet", "-")
-
-					if dk == "":
-						dk = data.get("draftkings", "-")
-
-				pn = bs = ""
+				"""
 				if prop == "k" and team in bpp and player in bpp[team] and "k" in bpp[team][player] and str(handicap) in bpp[team][player]["k"]:
 					pn = bpp[team][player]["k"][str(handicap)].get("pn", "-")
 					bs = bpp[team][player]["k"][str(handicap)].get("bs", "-")
 				elif prop == "hr" and team in bpp and player in bpp[team] and "hr" in bpp[team][player]:
 					pn = bpp[team][player]["hr"]["0.5"].get("pn", "-")
 					#bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
+				"""
 
-				if prop == "hr" and game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
-					pn = pnLines[game]["hr"][player]["0.5"]
+				pn = bs = cz = mgm = bv = bet365ou = kambi = ""
+				if prop == "hr":
+					try:
+						pn = pnLines[game]["hr"][player]["0.5"]
+					except:
+						pass
+					try:
+						cz = czLines[game]["hr"][player]
+					except:
+						pass
+					try:
+						mgm = mgmLines[game]["hr"][player]["0.5"]
+					except:
+						pass
+					if not mgm:
+						try:
+							mgm = actionnetwork[team][player]["hr"]["mgm"]
+						except:
+							pass
+					try:
+						bv = bvLines[game]["hr"][player].split(" ")[-1]
+					except:
+						pass
+					try:
+						kambi = kambiLines[game]["hr"][player]
+					except:
+						pass
+					try:
+						bet365ou = bet365Lines[game]["hr"][player]
+					except:
+						pass
+					try:
+						#bet365ou = bpp[team][player].get("bet365", "")
+						fn = bpp[team][player].get("fn", "")
+						sh = bpp[team][player].get("sugarhouse", "")
+						#mgm = bpp[team][player].get("mgm", "")
+						espn = bpp[team][player].get("espnbet", "")
+					except:
+						pass
 
-				if prop == "hr" and game in czLines and "hr" in czLines[game] and player in czLines[game]["hr"]:
-					cz = czLines[game]["hr"][player]
-
-				if prop == "hr" and game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
-					pass
-					mgm = mgmLines[game]["hr"][player]["0.5"]
-
-				bv = ""
-				if prop == "hr" and game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
-					bv = bvLines[game]["hr"][player].split(" ")[-1]
-
-				kambi = ""
-				if prop == "hr" and game in kambiLines and "hr" in kambiLines[game] and player in kambiLines[game]["hr"]:
-					kambi = kambiLines[game]["hr"][player]
-
+				"""
 				if team not in bet365Lines or player not in bet365Lines[team]:
 					bet365ou = ""
 				else:
@@ -1043,6 +1054,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 							bet365ou = ""
 						else:
 							bet365ou = bet365ou.split(" ")[-1]
+				"""
 
 				line = fdLine
 				l = [dk, bet365ou, mgm]
@@ -1062,12 +1074,14 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					if not nobr:
 						l.append(br.split("/")[0])
 				if allArg:
-					l = [dk, bet365ou, mgm, pn, bs, bv]
+					l = [dk, bet365ou, mgm, bs, bv]
 					if not nocz:
 						l.append(cz)
 					if not nobr:
 						#l.append(kambi.split("/")[0])
 						l.append(kambi)
+					if not nopn:
+						l.append(pn)
 				elif bookArg == "cz":
 					l.append(cz)
 
@@ -1083,7 +1097,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evBook = "cz"
 					line = cz
 					if allArg:
-						l[7] = str(fdLine)
+						l[5] = str(fdLine)
 					else:
 						l[-1] = str(fdLine)
 
@@ -1395,6 +1409,7 @@ if __name__ == '__main__':
 	parser.add_argument("--nocz", action="store_true", help="No CZ Lines")
 	parser.add_argument("--no365", action="store_true", help="No 365 Devig")
 	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
+	parser.add_argument("--nopn", action="store_true")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
 	parser.add_argument("--summary", action="store_true", help="Summary")
@@ -1406,7 +1421,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("corey seager", 420, "tex"), ("spencer torkelson", 350, "det"), ("rafael devers", 300, "bos"), ("julio rodriguez", 390, "sea"), ("shohei ohtani", 280, "lad"), ("ketel marte", 420, "ari"), ("mark canha", 800, "det"), ("jorge polanco", 390, "sea")]
+	plays = [("corey seager", 420, "tex"), ("spencer torkelson", 350, "det"), ("rafael devers", 300, "bos"), ("julio rodriguez", 390, "sea"), ("shohei ohtani", 280, "lad"), ("ketel marte", 420, "ari"), ("mark canha", 800, "det"), ("jorge polanco", 390, "sea"), ("max muncy", 370, "lad")]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1456,7 +1471,7 @@ if __name__ == '__main__':
 		sortEV(args.dinger)
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book, nopn=args.nopn)
 		sortEV(args.dinger)
 
 	data = {}
