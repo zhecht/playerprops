@@ -1004,7 +1004,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					#bs = bpp[team][player]["hr"]["0.5"].get("bs", "-")
 				"""
 
-				pn = bs = cz = mgm = bv = bet365ou = kambi = ""
+				fn = sh = espn = pn = bs = cz = mgm = bv = bet365ou = kambi = ""
 				if prop == "hr":
 					try:
 						pn = pnLines[game]["hr"][player]["0.5"]
@@ -1062,7 +1062,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				avgOver = []
 				avgUnder = []
 				if prop in ["single", "double"]:
-					l = [dk, bet365ou, mgm]
 					if not nocz:
 						l.append(cz)
 					if not nobr:
@@ -1082,6 +1081,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						l.append(kambi)
 					if not nopn:
 						l.append(pn)
+					l.extend([fn, sh, espn])
 				elif bookArg == "cz":
 					l.append(cz)
 
@@ -1181,42 +1181,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	#	json.dump(evData, fh, indent=4)
 
 
-def writeBoostTMP():
-
-	with open("passing_boost.json") as fh:
-		boost = json.load(fh)
-
-	ev = {}
-	for player in boost:
-	#for player in ["patrick mahomes"]:
-		for prop in ["pass_yd", "pass_td", "int"]:
-			if prop not in boost[player]["fanduel"]:
-				continue
-			overs = []
-			fdBoost = boost[player]["fanduel"][prop] * 1.25
-
-			for book in ["bet365", "draftkings", "mgm", "kambi", "caesars"]:
-				if book not in boost[player] or prop not in boost[player][book]:
-					continue
-				overs.append(int(boost[player][book][prop]))
-
-			ou = f"AVG({','.join([str(x) for x in overs])})"
-			playerProp = player+"_"+prop
-			devigger(ev, player=playerProp, bet365Odds=ou, finalOdds=int(fdBoost))
-			if playerProp not in ev:
-				continue
-			ev[playerProp]["prop"] = prop
-			ev[playerProp]["overs"] = overs
-			ev[playerProp]["fd"] = boost[player]["fanduel"][prop]
-
-	with open("static/freebets/passing_boost.json", "w") as fh:
-		json.dump(ev, fh, indent=4)
-
-
 def sortEV(dinger=False):
 
-	with open(f"{prefix}static/mlbprops/bpp.json") as fh:
-		bppLines = json.load(fh)
+	with open(f"{prefix}static/mlb/bpp.json") as fh:
+		bpp = json.load(fh)
 
 	with open(f"{prefix}static/mlb/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -1263,7 +1231,7 @@ def sortEV(dinger=False):
 				bet365ev = 0
 			else:
 				bet365ev = float(evData[player]["bet365ev"])
-			bpp = dk = mgm = pb = cz = br = kambi = ""
+			dk = mgm = pb = cz = br = kambi = ""
 			line = evData[player].get("line", 0)
 			game = evData[player]["game"]
 			team = evData[player].get("team", "")
@@ -1284,18 +1252,7 @@ def sortEV(dinger=False):
 				br = an.get("betrivers", "-")
 				cz = an.get("caesars", "-")
 
-			pn = bs = "-"
-			if team in bppLines and player in bppLines[team] and prop in bppLines[team][player]:
-				if prop == "k":
-					if value in bppLines[team][player]["k"]:
-						pn = bppLines[team][player]["k"][value].get("pn", "-")
-						bs = bppLines[team][player]["k"][value].get("bs", "-")
-				else:
-					pn = bppLines[team][player][prop]["0.5"].get("pn", "-")
-					#bs = bppLines[team][player][prop]["0.5"].get("bs", "-")
-
-			bv = ""
-			cz = ""
+			bv = pn = cz = fn = sh = espn = ""
 			if prop == "hr":
 				if game in pnLines and "hr" in pnLines[game] and player in pnLines[game]["hr"]:
 					pn = pnLines[game]["hr"][player]["0.5"]
@@ -1321,6 +1278,13 @@ def sortEV(dinger=False):
 				if game in dkLines and "hr" in dkLines[game] and player in dkLines[game]["hr"]:
 					dk = dkLines[game]["hr"][player].replace("+", "")
 
+				try:
+					fn = bpp[team][player].get("fn", "")
+					sh = bpp[team][player].get("sugarhouse", "")
+					espn = bpp[team][player].get("espnbet", "")
+				except:
+					pass
+
 			bet365 = evData[player]['bet365']
 			if "/" in bet365 and int(bet365.split("/")[0]) > 0:
 				bet365 = str(bet365)[1:]
@@ -1336,7 +1300,7 @@ def sortEV(dinger=False):
 
 			l = [ev, team.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 			if prop not in ["single", "double", "tb"]:
-				l.extend([kambi, pn, bv])
+				l.extend([kambi, pn, bv, fn, sh, espn])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
@@ -1351,7 +1315,7 @@ def sortEV(dinger=False):
 		output = f"\t\t\tUPD: {dt}\n\n"
 		l = ["EV (AVG)", "Team", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop not in ["single", "double", "tb"]:
-			l.extend(["Kambi", "PN", "BV"])
+			l.extend(["Kambi", "PN", "BV", "FN", "SH", "ESPN"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":
@@ -1427,7 +1391,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("rhys hoskins", 360, "mil"), ("jorge polanco", 450, "sea"), ("ketel marte", 500, "ari"), ("giancarlo stanton", 370, "nyy"), ("mitch garver", 420, "sea")]
+	plays = [("rhys hoskins", 360, "mil"), ("jorge polanco", 450, "sea"), ("ketel marte", 500, "ari"), ("giancarlo stanton", 370, "nyy"), ("mitch garver", 420, "sea"), ("joc pederson", 350, "ari"), ("gleyber torres", 430, "nyy"), ("juan soto", 450, "nyy"), ("eugenio suarez", 540, "ari"), ("julio rodriguez", 320, "sea"), ("mookie betts", 420, "lad"), ("jose abreu", 480, "hou"), ("alex bregman", 600, "hou"), ("ryan noda", 750, "oak")]
 
 	if args.lineups:
 		writeLineups(plays)

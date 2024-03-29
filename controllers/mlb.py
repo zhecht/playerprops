@@ -1189,6 +1189,8 @@ def writeFanduel():
 	"""
 
 	games = [
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-33144816",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-33144817",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-33140462",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-miami-marlins-33140459",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-houston-astros-33140463",
@@ -1921,7 +1923,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 			if propArg and prop != propArg:
 				continue
 
-			if not propArg and prop in ["triple", "single", "double", "sb"]:
+			if not propArg and prop in ["triple", "single", "double", "sb", "spread", "r"]:
 				#pass
 				continue
 
@@ -2256,6 +2258,7 @@ if __name__ == '__main__':
 		#writeMGM(args.date)
 		print("dk")
 		writeDK(args.date, args.prop)
+		writeBPP()
 		writeActionNetwork(args.date)
 		print("cz")
 		writeCZ(args.date)
