@@ -41,6 +41,9 @@ def write_stats(date):
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
+	with open(f"{prefix}static/baseballreference/scores.json") as fh:
+		scores = json.load(fh)
+
 	if date not in boxscores:
 		print("No games found for this date")
 		exit()
@@ -52,7 +55,7 @@ def write_stats(date):
 		for game in boxscores[date]:
 			away, home = map(str, game.split(" @ "))
 
-			gameId = boxscores[date][game].split("/")[-1].split("=")[-1]
+			gameId = boxscores[date][game].split("/")[-2]
 			url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
 			outfile = "outmlb2"
 			time.sleep(0.3)
@@ -64,13 +67,21 @@ def write_stats(date):
 			if "code" in data and data["code"] == 400:
 				continue
 
-			if "boxscore" not in data or "players" not in data["boxscore"]:
+			if "boxscore" not in data or "players" not in data["boxscore"] or "plays" not in data:
 				continue
 
 			if away not in allStats:
 				allStats[away] = {}
 			if home not in allStats:
 				allStats[home] = {}
+
+			#scores[away][date]["innings"] = []
+			for row in data["plays"]:
+				txt = row.get("text", "").lower()
+				if "inning" in txt and txt.startswith("end"):
+					inning = txt.split(" ")[3][:-2]
+
+					#print(txt, row["awayScore"], row["homeScore"])
 
 			lastNames = {}
 			for teamRow in data["boxscore"]["players"]:
@@ -88,7 +99,7 @@ def write_stats(date):
 					headers = [h.lower() for h in statRow["labels"]]
 
 					for playerRow in statRow["athletes"]:
-						player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+						player = parsePlayer(playerRow["athlete"]["displayName"])
 						playerId = int(playerRow["athlete"]["id"])
 						lastNames[team][player.split(" ")[-1]] = player
 
@@ -114,20 +125,23 @@ def write_stats(date):
 							if header == "k" and title == "batting":
 								header = "so"
 							if header in ["pc-st"]:
-								pc, st = map(float, stat.split("-"))
+								pc, st = map(int, stat.split("-"))
 								allStats[t][player]["pc"] = pc
 								allStats[t][player]["st"] = st
 							elif header in ["bb", "hr", "h"] and title == "pitching":
 								try:
-									allStats[t][player][header+"_allowed"] = float(stat)
+									allStats[t][player][header+"_allowed"] = int(stat)
 								except:
 									allStats[t][player][header+"_allowed"] = 0
 							else:
 								val = stat
 								try:
-									val = float(val)
+									val = int(val)
 								except:
-									val = 0.0
+									try:
+										val = float(val)
+									except:
+										val = 0
 								allStats[t][player][header] = val
 
 			for teamRow in data["boxscore"]["teams"]:
@@ -142,7 +156,7 @@ def write_stats(date):
 						continue
 
 					for playerVal in detailRow["displayValue"].split("; "):
-						name = strip_accents(playerVal).split(" (")[0].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+						name = parsePlayer(playerVal.split(" (")[0])
 						try:
 							val = int(name.split(" ")[-1])
 							name = " ".join(name.split(" ")[:-1])
@@ -171,11 +185,16 @@ def write_stats(date):
 				if "roster" not in rosterRow:
 					continue
 				for playerRow in rosterRow["roster"]:
-					player = playerRow["athlete"]["displayName"].lower().replace("'", "").replace(".", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+					player = parsePlayer(playerRow["athlete"]["displayName"])
 					for statRow in playerRow.get("stats", []):
 						hdr = statRow["shortDisplayName"].lower()
 						if hdr not in allStats[t][player]:
-							allStats[t][player][hdr] = statRow["value"]
+							val = statRow["value"]
+							try:
+								val = int(val)
+							except:
+								pass
+							allStats[t][player][hdr] = val
 
 			for team in allStats:
 				for player in allStats[team]:
@@ -192,6 +211,10 @@ def write_stats(date):
 						allStats[team][player]["1b"] = _1b
 						allStats[team][player]["tb"] = 4*hr + 3*_3b + 2*_2b + _1b
 
+						r = allStats[team][player]["r"]
+						rbi = allStats[team][player]["rbi"]
+						allStats[team][player]["h+r+rbi"] = h + r + rbi
+
 		for team in allStats:
 			realTeam = team.replace(" gm2", "")
 			if not os.path.isdir(f"{prefix}static/baseballreference/{realTeam}"):
@@ -202,12 +225,76 @@ def write_stats(date):
 				json.dump(allStats[team], fh, indent=4)
 
 	write_totals()
+	writeSplits()
 
 	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
 
 def parsePlayer(player):
 	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+
+def writeSplits():
+	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/scores.json") as fh:
+		scores = json.load(fh)
+
+	splits = {}
+	for team in os.listdir(f"{prefix}static/baseballreference/"):
+		if "json" in team:
+			continue
+		if team not in splits:
+			splits[team] = {}
+
+		for file in sorted(glob(f"{prefix}static/baseballreference/{team}/*.json")):
+			with open(file) as fh:
+				stats = json.load(fh)
+
+			if not stats:
+				continue
+				
+			date = file.split("/")[-1][:-5]
+			game = opp = awayHome = ""
+			for g in schedule[date]:
+				teams = g.split(" @ ")
+				if team in teams:
+					game = g
+					opp = teams[0]
+					awayHome = "H"
+					if teams[0] == team:
+						opp = teams[1]
+						awayHome = "A"
+					break
+			#print(date, team)
+			score = scores[date][team]
+			oppScore = scores[date][opp]
+			winLoss = "W"
+			if oppScore > score:
+				winLoss = "L"
+
+			for player in stats:
+				if player not in splits[team]:
+					splits[team][player] = {}
+
+				if "winLoss" not in splits[team][player]:
+					splits[team][player]["winLoss"] = []
+				if "awayHome" not in splits[team][player]:
+					splits[team][player]["awayHome"] = []
+				splits[team][player]["awayHome"].append(awayHome)
+				splits[team][player]["winLoss"].append(winLoss)
+
+				for header in stats[player]:
+					if header not in splits[team][player]:
+						splits[team][player][header] = []
+					splits[team][player][header].append(str(stats[player][header]))
+
+		for player in splits[team]:
+			for hdr in splits[team][player]:
+				splits[team][player][hdr] = ",".join(splits[team][player][hdr])
+
+	with open(f"{prefix}static/baseballreference/splits.json", "w") as fh:
+		json.dump(splits, fh, indent=4)
 
 def sumStat(header, target, source):
 	if header not in target:
@@ -367,12 +454,12 @@ def write_schedule(date):
 	with open(f"{prefix}static/baseballreference/scores.json") as fh:
 		scores = json.load(fh)
 
-	schedule[date] = []
+	#schedule[date] = []
 
 	date = ""
 
 	for table in soup.findAll("div", class_="ResponsiveTable"):
-		if table.find("div", class_="Table__Title"):
+		if table.find("div", class_="Table__Title") and "spring training" not in table.find("div", class_="Table__Title").text.lower():
 			date = table.find("div", class_="Table__Title").text.strip()
 			date = str(datetime.datetime.strptime(date, "%A, %B %d, %Y"))[:10]
 			date = date.split(" ")[-1]
@@ -397,16 +484,21 @@ def write_schedule(date):
 			except:
 				continue
 
+			game = awayTeam + " @ " + homeTeam
 			if (awayTeam, homeTeam) in seen:
 				awayTeam += " gm2"
 				homeTeam += " gm2"
 			seen[(awayTeam, homeTeam)] = True
 			boxscore = tds[2].find("a").get("href")
 			score = tds[2].find("a").text.strip()
-			if score.lower() == "postponed":
+			if score.lower() == "postponed" or score.lower() == "canceled":
 				continue
 
-			if ", " in score and os.path.exists(f"{prefix}static/baseballreference/{awayTeam.split(' ')[0]}/{date}.json"):
+			if date in ["2024-03-20", "2024-03-21"] and "lad" not in game:
+				continue
+
+			#if ", " in score and os.path.exists(f"{prefix}static/baseballreference/{awayTeam.split(' ')[0]}/{date}.json"):
+			if ", " in score:
 				scoreSp = score.split(", ")
 				if awayTeam == scoreSp[0].split(" ")[0].lower():
 					scores[date][awayTeam] = int(scoreSp[0].split(" ")[1])
@@ -417,6 +509,8 @@ def write_schedule(date):
 
 			boxscores[date][f"{awayTeam} @ {homeTeam}"] = boxscore
 			schedule[date].append(f"{awayTeam} @ {homeTeam}")
+
+	
 
 	with open(f"{prefix}static/baseballreference/boxscores.json", "w") as fh:
 		json.dump(boxscores, fh, indent=4)
@@ -1469,10 +1563,11 @@ if __name__ == "__main__":
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
+	parser.add_argument("--stats", action="store_true")
+	parser.add_argument("--splits", action="store_true")
 	parser.add_argument("--pitches", help="Pitches", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
 	parser.add_argument("--trades", help="Trades", action="store_true")
-	parser.add_argument("--stats", help="Stats", action="store_true")
 	parser.add_argument("--pitching", help="Pitching", action="store_true")
 	parser.add_argument("--ttoi", help="Team TTOI", action="store_true")
 	parser.add_argument("--ph", help="baseball reference pinch hits", action="store_true")
@@ -1507,6 +1602,10 @@ if __name__ == "__main__":
 		write_pitching()
 	elif args.schedule:
 		write_schedule(date)
+	elif args.stats:
+		write_stats(date)
+	elif args.splits:
+		writeSplits()
 	elif args.trades:
 		writeTrades()
 	elif args.cron:
@@ -1524,6 +1623,7 @@ if __name__ == "__main__":
 
 	#write_pitching()
 	#writeYearAverages()
+	#write_schedule(date)
 	#write_stats(date)
 	#write_totals()
 	#write_curr_year_averages()

@@ -1068,13 +1068,13 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					if not nobr:
 						l.append(br.split("/")[0])
 				elif prop == "k":
-					l = [dk, bet365ou, mgm, pn, bs]
+					l = [dk, bet365ou, mgm, pn]
 					if not nocz:
 						l.append(cz)
 					if not nobr:
 						l.append(br.split("/")[0])
 				if allArg:
-					l = [dk, bet365ou, mgm, bs, bv]
+					l = [dk, bet365ou, mgm, bv]
 					if not nocz:
 						l.append(cz)
 					if not nobr:
@@ -1097,7 +1097,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evBook = "cz"
 					line = cz
 					if allArg:
-						l[5] = str(fdLine)
+						l[4] = str(fdLine)
 					else:
 						l[-1] = str(fdLine)
 
@@ -1336,7 +1336,7 @@ def sortEV(dinger=False):
 
 			l = [ev, team.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 			if prop not in ["single", "double", "tb"]:
-				l.extend([kambi, pn, bs, bv])
+				l.extend([kambi, pn, bv])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
@@ -1351,7 +1351,7 @@ def sortEV(dinger=False):
 		output = f"\t\t\tUPD: {dt}\n\n"
 		l = ["EV (AVG)", "Team", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop not in ["single", "double", "tb"]:
-			l.extend(["Kambi", "PN", "BS", "BV"])
+			l.extend(["Kambi", "PN", "BV"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":
