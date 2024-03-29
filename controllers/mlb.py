@@ -112,19 +112,7 @@ actionNetworkBookIds = {
 
 def writeActionNetwork(dateArg = None):
 
-	with open(f"{prefix}static/mlb/fanduelLines.json") as fh:
-		fdLines = json.load(fh)
-
-	teamGame = {}
-	for game in fdLines:
-		away, home = map(str, game.split(" @ "))
-		if away not in teamGame:
-			teamGame[away] = game
-		if home not in teamGame:
-			teamGame[home] = game
-
-	props = ["56_first_touchdown_scorer", "62_anytime_touchdown_scorer", "60_longest_completion", "59_longest_reception", "58_longest_rush", "30_passing_attempts", "10_pass_completions", "11_passing_tds", "9_passing_yards", "17_receiving_tds", "16_receiving_yards", "15_receptions", "18_rushing_attempts", "13_rushing_tds", "12_rushing_yards", "70_tackles_assists"]
-	props = ["70_tackles_assists"]
+	props = ["33_hr", "37_strikeouts", "34_rbi"]
 
 	odds = {}
 	optionTypes = {}
@@ -140,44 +128,27 @@ def writeActionNetwork(dateArg = None):
 
 	for actionProp in props:
 		time.sleep(0.2)
-		path = f"nflout.json"
-		url = f"https://api.actionnetwork.com/web/v1/leagues/1/props/core_bet_type_{actionProp}?bookIds=69,1541,283,348,351,355&date={date.replace('-', '')}"
+		path = f"out.json"
+		url = f"https://api.actionnetwork.com/web/v1/leagues/8/props/core_bet_type_{actionProp}?bookIds=69,283,348,351,355,1541&date={date.replace('-', '')}"
 		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {path}")
 
-		prop = ""
-		if "touchdown" in actionProp:
-			prop = "ftd"
-			if "anytime" in actionProp:
-				prop = "attd"
-		elif "tackles_assist" in actionProp:
-			prop = "tackles+ast"
-		else:
-			prop = "_".join(actionProp.split("_")[1:]).replace("rushing", "rush").replace("passing", "pass").replace("receiving", "rec").replace("yards", "yd").replace("attempts", "att").replace("reception", "rec")
-			if prop == "longest_completion":
-				prop = "longest_pass"
-
+		prop = actionProp.split("_")[-1].replace("strikeouts", "k").replace("base", "tb")
 		if prop.endswith("s"):
 			prop = prop[:-1]
 
 		with open(path) as fh:
 			j = json.load(fh)
 
-		if "markets" not in j or not j["markets"]:
-			continue
+		if "markets" not in j:
+			return
 		market = j["markets"][0]
-
-		if "teams" not in market:
-			continue
 
 		for option in market["rules"]["options"]:
 			optionTypes[int(option)] = market["rules"]["options"][option]["option_type"].lower()
 
 		teamIds = {}
 		for row in market["teams"]:
-			team = row["abbr"].lower()
-			if team == "la":
-				team = "lar"
-			teamIds[row["id"]] = team
+			teamIds[row["id"]] = row["abbr"].lower().replace("cws", "chw")
 
 		playerIds = {}
 		for row in market["players"]:
@@ -191,38 +162,51 @@ def writeActionNetwork(dateArg = None):
 				pass
 			for oddData in bookData["odds"]:
 				player = playerIds[oddData["player_id"]]
+				if player == "michael a taylor":
+					player = "michael taylor"
 				team = teamIds[oddData["team_id"]]
-				game = teamGame[team]
-				overUnder = "over"
-				try:
-					overUnder = optionTypes[oddData["option_type_id"]]
-				except:
-					pass
+				overUnder = optionTypes[oddData["option_type_id"]]
 				book = actionNetworkBookIds.get(bookId, "")
-				value = str(oddData["value"])
+				value = oddData["value"]
 
-				if game not in odds:
-					odds[game] = {}
-				if prop not in odds[game]:
-					odds[game][prop] = {}
-				if player not in odds[game][prop]:
-					odds[game][prop][player] = {}
+				if book == "pointsbet" and oddData["grade"] == None:
+					continue
 
-				if book not in odds[game][prop][player]:
-					v = ""
-					if prop not in ["attd", "ftd"]:
-						v = value+" "
-					odds[game][prop][player][book] = f"{v}{oddData['money']}"
-				elif overUnder == "over":
-					v = ""
-					if prop not in ["attd", "ftd"]:
-						v = value+" "
-					odds[game][prop][player][book] = f"{v}{oddData['money']}/{odds[game][prop][player][book].replace(v, '')}"
+				if team not in odds:
+					odds[team] = {}
+				if player not in odds[team]:
+					odds[team][player] = {}
+				if prop not in odds[team][player]:
+					odds[team][player][prop] = {}
+
+				if prop in ["k", "tb"]:
+					if value not in odds[team][player][prop]:
+						odds[team][player][prop][value] = {}
+
+					if book not in odds[team][player][prop][value]:
+						odds[team][player][prop][value][book] = f"{oddData['money']}"
+					elif overUnder == "over":
+						odds[team][player][prop][value][book] = f"{oddData['money']}/{odds[team][player][prop][value][book]}"
+					else:
+						odds[team][player][prop][value][book] += f"/{oddData['money']}"
 				else:
-					odds[game][prop][player][book] += f"/{oddData['money']}"
-				sp = odds[game][prop][player][book].split("/")
-				if odds[game][prop][player][book].count("/") == 3:
-					odds[game][prop][player][book] = sp[1]+"/"+sp[2]
+					if book not in odds[team][player][prop]:
+						odds[team][player][prop][book] = f"{oddData['money']}"
+					elif overUnder == "over":
+						odds[team][player][prop][book] = f"{oddData['money']}/{odds[team][player][prop][book]}"
+					else:
+						odds[team][player][prop][book] += f"/{oddData['money']}"
+					sp = odds[team][player][prop][book].split("/")
+					if odds[team][player][prop][book].count("/") == 3:
+						odds[team][player][prop][book] = sp[1]+"/"+sp[2]
+					if prop == "hr" and book == "caesars" and odds[team][player][prop][book].count("/") == 1:
+						odds[team][player][prop][book] = sp[0]
+
+
+					if prop == "hr":
+						sp = odds[team][player][prop][book].split("/")
+						if len(sp) == 2 and int(sp[0]) < 0:
+							del odds[team][player][prop][book]
 
 	with open(f"{prefix}static/mlb/actionnetwork.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
@@ -1194,7 +1178,7 @@ def writeFanduel():
   "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-texas-rangers-33128587",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-oakland-athletics-33128597",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-arizona-diamondbacks-33128609",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-33128627"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-33128627",
 ]
 
 	#games = ["https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-33128319"]
@@ -2247,8 +2231,8 @@ if __name__ == '__main__':
 		writePinnacle(args.date)
 		print("kambi")
 		writeKambi(args.date)
-		print("mgm")
-		writeMGM(args.date)
+		#print("mgm")
+		#writeMGM(args.date)
 		print("dk")
 		writeDK(args.date, args.prop)
 		#writeActionNetwork()
