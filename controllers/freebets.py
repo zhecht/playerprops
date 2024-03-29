@@ -1032,7 +1032,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					except:
 						pass
 					try:
-						bet365ou = bet365Lines[game]["hr"][player]
+						bet365ou = bet365Lines[team][player]
 					except:
 						pass
 					try:
@@ -1236,7 +1236,7 @@ def sortEV(dinger=False):
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	with open(f"{prefix}static/freebets/actionnetwork.json") as fh:
+	with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
 	with open(f"{prefix}static/freebets/bovada.json") as fh:
@@ -1302,6 +1302,12 @@ def sortEV(dinger=False):
 
 				if game in mgmLines and "hr" in mgmLines[game] and player in mgmLines[game]["hr"]:
 					mgm = mgmLines[game]["hr"][player]["0.5"]
+
+				if not mgm:
+					try:
+						mgm = actionnetwork[team][player]["hr"]["mgm"]
+					except:
+						pass
 
 				if game in bvLines and "hr" in bvLines[game] and player in bvLines[game]["hr"]:
 					bv = bvLines[game]["hr"][player].split(" ")[-1].replace("+", "")
