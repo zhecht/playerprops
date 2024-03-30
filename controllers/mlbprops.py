@@ -698,7 +698,8 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 
 						lastYrLast20 = [int(x) for x in propArr[-20:]]
 						totAwayGames = len([x for x in awayHomeArr if x == "A"])
-						awayGames = len([x for x, ah in zip(propArr, awayHomeArr) if ah == "A" and float(x) > line]) * 100 / totAwayGames
+						if totAwayGames:
+							awayGames = len([x for x, ah in zip(propArr, awayHomeArr) if ah == "A" and float(x) > line]) * 100 / totAwayGames
 						totHomeGames = len([x for x in awayHomeArr if x == "H"])
 						if totHomeGames:
 							homeGames = len([x for x, ah in zip(propArr, awayHomeArr) if ah == "H" and float(x) > line]) * 100 / totHomeGames
@@ -1278,7 +1279,7 @@ def getSlateData(date = None, teams=""):
 		teamTotals = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
 		lineups = json.load(fh)
-	with open(f"{prefix}static/mlbprops/lines/{date}.json") as fh:
+	with open(f"{prefix}static/mlb/draftkings.json") as fh:
 		gameLines = json.load(fh)
 
 	for game in schedule[date]:
@@ -1289,11 +1290,11 @@ def getSlateData(date = None, teams=""):
 			if idx == 1:
 				isAway = False
 
-			if game not in gameLines or "line" not in gameLines[game]:
+			if game not in gameLines or "spread" not in gameLines[game]:
 				continue
 
-			runline = gameLines[game]["line"]["line"]
-			totalLine = gameLines[game]["total"]["line"]
+			runline = float(list(gameLines[game]["spread"].keys())[0])
+			totalLine = list(gameLines[game]["total"].keys())[0]
 			if idx == 1:
 				runline *= -1
 
@@ -1317,10 +1318,11 @@ def getSlateData(date = None, teams=""):
 			except:
 				pass
 
-			runline = f"{runline} ({gameLines[game]['line']['odds'].split(',')[idx]})"
-			moneyline = gameLines[game]["moneyline"]["odds"].split(",")[idx]
-			totalLine = gameLines[game]['total']['line']
-			total = f"{'o' if idx == 0 else 'u'}{gameLines[game]['total']['line']} ({gameLines[game]['total']['odds'].split(',')[idx]})"
+			odds = gameLines[game]['spread'][list(gameLines[game]["spread"].keys())[0]].split('/')[idx]
+			runline = f"{runline} ({odds})"
+			moneyline = gameLines[game]["ml"].split("/")[idx]
+			odds = odds = gameLines[game]['total'][list(gameLines[game]["total"].keys())[0]].split('/')[idx]
+			total = f"{'o' if idx == 0 else 'u'}{totalLine} ({odds})"
 
 			prevMatchup = []
 			totals = {"rpg": [], "rpga": [], "hpg": [], "hpga": [], "overs": [], "diff": []}
@@ -1374,9 +1376,9 @@ def getSlateData(date = None, teams=""):
 			if len(totals["overs"]):
 				totals["oversL10"] = ",".join([str(x) for x in totals["overs"][:10]])
 				totals["ttL10"] = ",".join([str(x) for x in totals["rpg"][:10]])
-				totals["totalOver"] = round(len([x for x in totals["overs"] if x > totalLine]) * 100 / len(totals["overs"]))
+				totals["totalOver"] = round(len([x for x in totals["overs"] if x > float(totalLine)]) * 100 / len(totals["overs"]))
 				totals["runlineOver"] = round(len([x for x in totals["diff"] if x+runlineSpread > 0]) * 100 / len(totals["diff"]))
-				totals["teamOver"] = f"{round(len([x for x in totals['overs'] if int(x) > totalLine]) * 100 / len(totals['overs']))}% SZN • {round(len([x for x in totals['overs'][:15] if int(x) > totalLine]) * 100 / len(totals['overs'][:15]))}% L15 • {round(len([x for x in totals['overs'][:5] if int(x) > totalLine]) * 100 / len(totals['overs'][:5]))}% L5 • {round(len([x for x in totals['overs'][:3] if int(x) > totalLine]) * 100 / len(totals['overs'][:3]))}% L3"
+				totals["teamOver"] = f"{round(len([x for x in totals['overs'] if int(x) > float(totalLine)]) * 100 / len(totals['overs']))}% SZN • {round(len([x for x in totals['overs'][:15] if int(x) > float(totalLine)]) * 100 / len(totals['overs'][:15]))}% L15 • {round(len([x for x in totals['overs'][:5] if int(x) > float(totalLine)]) * 100 / len(totals['overs'][:5]))}% L5 • {round(len([x for x in totals['overs'][:3] if int(x) > float(totalLine)]) * 100 / len(totals['overs'][:3]))}% L3"
 
 			for p in ["h", "r"]:
 				totals[f"{p}pg"] = rankings[team][f"{p}"]["season"]

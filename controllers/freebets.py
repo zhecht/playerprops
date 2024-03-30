@@ -898,7 +898,7 @@ def write365():
 	"""
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd", nopn=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd", nopn=False, nosh=False):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -1081,7 +1081,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						l.append(kambi)
 					if not nopn:
 						l.append(pn)
-					l.extend([fn, sh, espn])
+					if not nosh:
+						l.append(sh)
+					l.extend([fn, espn])
 				elif bookArg == "cz":
 					l.append(cz)
 
@@ -1282,6 +1284,7 @@ def sortEV(dinger=False):
 					fn = bpp[team][player].get("fn", "")
 					sh = bpp[team][player].get("sugarhouse", "")
 					espn = bpp[team][player].get("espnbet", "")
+					#mgm = bpp[team][player].get("mgm", "")
 				except:
 					pass
 
@@ -1380,6 +1383,7 @@ if __name__ == '__main__':
 	parser.add_argument("--no365", action="store_true", help="No 365 Devig")
 	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
 	parser.add_argument("--nopn", action="store_true")
+	parser.add_argument("--nosh", action="store_true")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
 	parser.add_argument("--summary", action="store_true", help="Summary")
@@ -1441,7 +1445,7 @@ if __name__ == '__main__':
 		sortEV(args.dinger)
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book, nopn=args.nopn)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book, nopn=args.nopn, nosh=args.nosh)
 		sortEV(args.dinger)
 
 	data = {}
