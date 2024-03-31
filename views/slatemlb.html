@@ -71,7 +71,8 @@
 			<div class="team">
 				<h2 class="{{data[game]['A'].team}}">{{ data[game]["A"].team.upper() }}</h2>
 				<div style="margin-top:0.5rem;">
-					{{ data[game]["A"].pitcher.title() }} ({{ data[game]["A"].pitcherThrows }})
+					<a target="_blank" href="https://baseballsavant.mlb.com/savant-player/{{ data[game]['A'].pitcher.replace(' ', '-') }}-{{data[game]['A'].advancedPitcher.player_id}}">{{ data[game]["A"].pitcher.title() }}</a>
+					({{ data[game]["A"].pitcherThrows }})
 					&bull;
 					{{ data[game]["A"].pitcherRecord }}
 					&bull;
@@ -182,7 +183,8 @@
 			<div class="team">
 				<h2 class="{{data[game]['H'].team}}">{{ data[game]["H"].team.upper() }}</h2>
 				<div style="margin-top:0.5rem;">
-					{{ data[game]["H"].pitcher.title() }} ({{ data[game]["H"].pitcherThrows }})
+					<a target="_blank" href="https://baseballsavant.mlb.com/savant-player/{{ data[game]['H'].pitcher.replace(' ', '-') }}-{{data[game]['H'].advancedPitcher.player_id}}">{{ data[game]["H"].pitcher.title() }}</a>
+					({{ data[game]["H"].pitcherThrows }})
 					&bull;
 					{{ data[game]["H"].pitcherRecord }}
 					&bull;

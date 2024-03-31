@@ -765,7 +765,7 @@ def writeFanduel(team=None):
 	with open(f"{prefix}static/baseballreference/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr"):
+def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr", dinger=False):
 
 	over,under = map(int, ou.split("/"))
 	impliedOver = impliedUnder = 0
@@ -812,6 +812,17 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr")
 		evs.append(ev)
 
 	ev = min(evs)
+
+	if dinger:
+		# 70% conversion * 40% (2 HR/game = $10/$25)
+		fairVal = min(x, mult, add)
+		x = 0.28
+
+		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
+		ev = round(ev, 1)
+		#if avg and player == "shohei ohtani":
+		#	print(player, fairVal, finalOdds, ev)
+
 
 	if player not in evData:
 		evData[player] = {}
@@ -906,6 +917,9 @@ def write365():
 	"""
 	pass
 
+def getFinalOdds():
+	pass
+
 def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd", nopn=False, nosh=False):
 
 	if not date:
@@ -961,6 +975,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlb/bpp.json") as fh:
 		bpp = json.load(fh)
 
+	evData = {}
 	if not teamArg and not gameArg:
 		evData = {}
 	elif teamArg:
@@ -989,11 +1004,11 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				fdLine = fdLines[game][prop][player]
 				handicap = ""
 				if prop in "k":
-					handicap = float(fdLine.split(" ")[0][1:])
+					handicap = float(list(fdLine.keys())[0])
 					if under:
-						fdLine = int(fdLine.split(" ")[1].split("/")[1])
+						fdLine = fdLine[str(handicap)].split("/")[-1]
 					else:
-						fdLine = int(fdLine.split(" ")[1].split("/")[0])
+						fdLine = fdLine[str(handicap)].split("/")[0]
 
 				dk = ""
 				dkLine = 0
@@ -1005,7 +1020,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 				if dk and prop in ["single", "double"]:
 					dk = dk["0.5"]
-				elif prop == "k":
+				elif dk and prop == "k":
 					dk = dk.get(str(handicap), "")
 
 				fn = sh = espn = pn = bs = cz = mgm = bv = bet365ou = kambi = ""
@@ -1021,7 +1036,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					if prop in ["single", "double"]:
 						cz = cz["0.5"]
 					elif prop == "k":
-						cz = cz[str(handicap)]
+						cz = ""
+						cz = czLines[game][prop][player][str(handicap)]
 				except:
 					pass
 				try:
@@ -1050,6 +1066,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				try:
 					bet365ou = bet365Lines[team][player]
 					if prop == "k":
+						bet365ou = ""
 						bet365ou = bet365Lines[team][player][str(handicap)]
 				except:
 					pass
@@ -1144,6 +1161,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 				for book in l:
 					if book and book != "-":
+						#print(l)
 						avgOver.append(convertDecOdds(int(book.split("/")[0])))
 						if "/" in book and book.split("/")[1] != "0":
 							avgUnder.append(convertDecOdds(int(book.split("/")[1])))
@@ -1184,14 +1202,20 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						expectedHR = .70 * (bppExpectedHomers[game] / 5)
 
 					if prop == "hr" and bet365ou and not no365:
-						devig(evData, player, bet365ou, int(line))
+						devig(evData, player, bet365ou, int(line), dinger=dinger)
 						#devigger(evData, player, bet365ou, line, dinger)
-					devig(evData, player, ou, int(line), avg=True, prop=prop)
+					devig(evData, player, ou, int(line), avg=True, prop=prop, dinger=dinger)
 					if player not in evData:
 						print(player)
 						continue
 					if float(evData[player]["ev"]) > 0:
 						print(player, evData[player]["ev"], int(line), ou)
+					fd = fdLines[game][prop][player]
+					try:
+						if prop == "k":
+							fd = fd[str(handicap)]
+					except:
+						fd = ""
 					evData[player]["pitcher"] = strikeouts
 					evData[player]["game"] = game
 					evData[player]["book"] = bookArg
@@ -1201,7 +1225,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evData[player]["line"] = line
 					evData[player]["under"] = under
 					evData[player]["bet365"] = bet365ou
-					evData[player]["fanduel"] = str(fdLines[game][prop][player])
+					evData[player]["fanduel"] = fd
 					evData[player]["dk"] = dk
 					evData[player]["value"] = str(handicap)
 
@@ -1278,7 +1302,7 @@ def sortEV(dinger=False):
 			bet365 = bv = pn = cz = fn = sh = espn = ""
 			try:
 				if prop == "k":
-					pn = pnLines[game][prop][player][str(handicap)]
+					pn = pnLines[game][prop][player][value]
 				else:
 					pn = pnLines[game][prop][player]["0.5"]
 			except:
@@ -1288,7 +1312,8 @@ def sortEV(dinger=False):
 				if prop in ["single", "double"]:
 					cz = cz["0.5"]
 				elif prop == "k":
-					cz = cz[str(handicap)]
+					cz = ""
+					cz = czLines[game][prop][player][value]
 			except:
 				pass
 
@@ -1304,13 +1329,14 @@ def sortEV(dinger=False):
 			try:
 				bv = bvLines[game][prop][player]
 				if prop == "k":
-					bv = bvLines[game][prop][player][str(handicap)]
+					bv = bvLines[game][prop][player][value]
 			except:
-				pass
+				bv = ""
+			bv = bv.replace("+", "")
 			try:
 				kambi = kambiLines[game][prop][player]
 				if prop == "k":
-					kambi = kambiLines[game][prop][player][str(handicap)]
+					kambi = kambiLines[game][prop][player][value]
 				elif prop == "double":
 					kambi = kambiLines[game][prop][player]["0.5"]
 			except:
@@ -1326,20 +1352,20 @@ def sortEV(dinger=False):
 				pass
 			if prop == "k":
 				try:
-					fn = bpp[team][player][prop]["fn"][str(handicap)]
+					fn = bpp[team][player][prop]["fn"][value]
 				except:
 					pass
 				try:
-					sh = bpp[team][player][prop]["sugarhouse"][str(handicap)]
+					sh = bpp[team][player][prop]["sugarhouse"][value]
 				except:
 					pass
 				try:
-					espn = bpp[team][player][prop]["espnbet"][str(handicap)]
+					espn = bpp[team][player][prop]["espnbet"][value]
 				except:
 					pass
 				try:
 					if not mgm:
-						mgm = bpp[team][player][prop]["mgm"][str(handicap)]
+						mgm = bpp[team][player][prop]["mgm"][value]
 				except:
 					pass
 
@@ -1347,8 +1373,8 @@ def sortEV(dinger=False):
 			bet365 = evData[player]["bet365"].replace("+", "")
 
 			expectedHR = 2
-			if dinger and game in bppExpectedHomers:
-				expectedHR = bppExpectedHomers[game]
+			#if dinger and game in bppExpectedHomers:
+			#	expectedHR = bppExpectedHomers[game]
 
 			starting = ""
 			if team in lineups and player in lineups[team]:
@@ -1364,8 +1390,8 @@ def sortEV(dinger=False):
 				l.insert(1, bet365ev)
 			elif prop == "k":
 				l.insert(1, value)
-			if dinger:
-				l.append(expectedHR)
+			#if dinger:
+			#	l.append(expectedHR)
 			tab = "\t".join([str(x) for x in l])
 			data.append((ev, player, tab, evData[player]))
 			bet365data.append((bet365ev, player, tab, evData[player]))
@@ -1385,8 +1411,8 @@ def sortEV(dinger=False):
 			l.insert(1, "EV (365)")
 		elif prop == "k":
 			l.insert(1, "Line")
-		if dinger:
-			l.append("xHR")
+		#if dinger:
+		#	l.append("xHR")
 		output += "\t".join(l) + "\n"
 		bet365output = output
 		reddit = bet365reddit = ""
@@ -1457,7 +1483,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("rhys hoskins", 360, "mil"), ("jorge polanco", 450, "sea"), ("ketel marte", 500, "ari"), ("giancarlo stanton", 370, "nyy"), ("mitch garver", 420, "sea"), ("joc pederson", 350, "ari"), ("gleyber torres", 430, "nyy"), ("juan soto", 450, "nyy"), ("eugenio suarez", 540, "ari"), ("julio rodriguez", 320, "sea"), ("mookie betts", 420, "lad"), ("jose abreu", 480, "hou"), ("alex bregman", 600, "hou"), ("ryan noda", 750, "oak")]
+	plays = [("aaron judge", 265, "nyy"), ("corey seager", 350, "tex"), ("gleyber torres", 500, "nyy"), ("teoscar hernandez", 480, "lad"), ("gioncarlo stanton", 360, "nyy"), ("parker meadows", 700, "det"), ("joey gallo", 340, "wsh")]
 
 	if args.lineups:
 		writeLineups(plays)

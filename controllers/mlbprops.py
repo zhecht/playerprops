@@ -207,7 +207,7 @@ def writeProps(date, propArg):
 def writeCsvs(props):
 	csvs = {}
 	splitProps = {"full": []}
-	headerList = ["NAME","OVER","POS","R/L","Batting #","B. AVG","TEAM","A/H","OPP","OPP RANK","OPP RANK LYR","PROP","LINE","LAST (new ➡️ old)","AVG","% OVER","L10 % OVER","CAREER % OVER","% OVER VS TEAM","VS TEAM","PITCHER","THROWS","VS PITCHER","UNDER"]
+	headerList = ["NAME","OVER","POS","R/L","Batting #","B. AVG","TEAM","A/H","OPP","OPP RANK","OPP RANK LYR","PROP","LINE","LAST (old ➡️ new)","AVG","% OVER","L10 % OVER","CAREER % OVER","% OVER VS TEAM","VS TEAM","PITCHER","THROWS","VS PITCHER","UNDER"]
 	headers = "\t".join(headerList)
 	reddit = "|".join(headers.split("\t"))
 	reddit += "\n"+"|".join([":--"]*len(headerList))
@@ -224,7 +224,7 @@ def writeCsvs(props):
 
 	for prop in splitProps:
 		if prop in ["k", "outs", "win", "h_allowed", "bb_allowed", "er"]:
-			csvs[prop] = "\t".join(["NAME","OVER","POS","R/L","TEAM","A/H","OPP","OPP RANK","OPP RANK LYR","PROP","LINE","LAST (new ➡️ old)","AVG","% OVER","L10 % OVER","CAREER % OVER","% OVER VS TEAM","VS TEAM","UNDER"])
+			csvs[prop] = "\t".join(["NAME","OVER","POS","R/L","TEAM","A/H","OPP","OPP RANK","OPP RANK LYR","PROP","LINE","LAST (old ➡️ new)","AVG","% OVER","L10 % OVER","CAREER % OVER","% OVER VS TEAM","VS TEAM","UNDER"])
 		else:
 			csvs[prop] = headers
 		rows = sorted(splitProps[prop], key=lambda k: (k["totalOver"], k["careerTotalOver"]), reverse=True)
@@ -263,7 +263,7 @@ def writeCsvs(props):
 
 
 	# add top 4 to reddit
-	headerList = ["NAME","Batting #","B. AVG","TEAM","A/H","OPP","OPP RANK","PROP","LINE","LAST (new ➡️ old)","AVG","% OVER", "CAREER % OVER", "% OVER VS TEAM", "VS TEAM", "PITCHER", "VS PITCHER", "OVER","UNDER"]
+	headerList = ["NAME","Batting #","B. AVG","TEAM","A/H","OPP","OPP RANK","PROP","LINE","LAST (old ➡️ new)","AVG","% OVER", "CAREER % OVER", "% OVER VS TEAM", "VS TEAM", "PITCHER", "VS PITCHER", "OVER","UNDER"]
 	headers = "\t".join(headerList)
 	reddit = "|".join(headers.split("\t"))
 	reddit += "\n"+"|".join([":--"]*len(headerList))
@@ -1279,7 +1279,7 @@ def getSlateData(date = None, teams=""):
 		teamTotals = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
 		lineups = json.load(fh)
-	with open(f"{prefix}static/mlb/draftkings.json") as fh:
+	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
 		gameLines = json.load(fh)
 
 	for game in schedule[date]:
