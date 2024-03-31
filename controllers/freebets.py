@@ -1039,8 +1039,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						#bet365ou = bpp[team][player].get("bet365", "")
 						fn = bpp[team][player].get("fn", "")
 						sh = bpp[team][player].get("sugarhouse", "")
-						#mgm = bpp[team][player].get("mgm", "")
 						espn = bpp[team][player].get("espnbet", "")
+						if not mgm:
+							mgm = bpp[team][player].get("mgm", "")
 					except:
 						pass
 
@@ -1284,7 +1285,8 @@ def sortEV(dinger=False):
 					fn = bpp[team][player].get("fn", "")
 					sh = bpp[team][player].get("sugarhouse", "")
 					espn = bpp[team][player].get("espnbet", "")
-					#mgm = bpp[team][player].get("mgm", "")
+					if not mgm:
+						mgm = bpp[team][player].get("mgm", "")
 				except:
 					pass
 

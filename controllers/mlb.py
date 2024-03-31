@@ -76,12 +76,17 @@ def convertAmericanOdds(avg):
 	return round(avg)
 
 
-def writeBPP():
+def writeBPP(date):
+
+	if not date:
+		date = datetime.now()
+		date = str(date)[:10]
+
 	res = {}
 	books = ["bpp", "fn", "betonline", "bet365", "sugarhouse", "mgm", "espnbet"]
 	for side in [1,-1]:
 		time.sleep(0.2)
-		url = f"https://www.ballparkpal.com/PlayerProps.php?book1=15&book2=8&book3=27&book4=22&book5=5&book6=14&BetSide={side}"
+		url = f"https://www.ballparkpal.com/PlayerProps.php?book1=15&book2=8&book3=27&book4=22&book5=5&book6=14&BetSide={side}&date={date}"
 		outfile = "outmlb"
 		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
 
@@ -155,7 +160,10 @@ def writeActionNetwork(dateArg = None):
 
 		if "markets" not in j:
 			return
-		market = j["markets"][0]
+		try:
+			market = j["markets"][0]
+		except:
+			continue
 
 		for option in market["rules"]["options"]:
 			optionTypes[int(option)] = market["rules"]["options"][option]["option_type"].lower()
@@ -1189,15 +1197,23 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-texas-rangers-33149195",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-san-diego-padres-33149180",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-houston-astros-33149187",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-arizona-diamondbacks-33149171",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-los-angeles-dodgers-33149184",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-33149194"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-33152020",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-baltimore-orioles-33152028",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-cincinnati-reds-33152022",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-miami-marlins-33152023",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-33152024",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-33152029",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-houston-astros-33152027",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-kansas-city-royals-33152030",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-chicago-white-sox-33152031",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-texas-rangers-33152034",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-oakland-athletics-33152032",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-arizona-diamondbacks-33152017",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-33152033",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-los-angeles-dodgers-33152026"
 ]
 
-	#games = ["https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-33128319"]
+	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-houston-astros-33152027"]
 	lines = {}
 	for game in games:	
 		gameId = game.split("-")[-1]
@@ -2242,7 +2258,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.bpp:
-		writeBPP()
+		writeBPP(args.date)
 
 	if args.update:
 		writeFanduel()
@@ -2254,7 +2270,7 @@ if __name__ == '__main__':
 		#writeMGM(args.date)
 		print("dk")
 		writeDK(args.date, args.prop)
-		writeBPP()
+		writeBPP(args.date)
 		writeActionNetwork(args.date)
 		print("cz")
 		writeCZ(args.date)

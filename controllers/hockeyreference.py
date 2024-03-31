@@ -492,7 +492,7 @@ def write_schedule(date):
 			score = tds[2].find("a").text.strip()
 			if score.lower() == "postponed":
 				continue
-			if ", " in score and os.path.exists(f"{prefix}static/hockeyreference/{awayTeam}/{date}.json"):
+			if ", " in score:
 				scoreSp = score.replace(" (SO)", "").replace(" (OT)", "").split(", ")
 				if awayTeam == scoreSp[0].split(" ")[0].lower():
 					scores[date][awayTeam] = int(scoreSp[0].split(" ")[1])
@@ -557,6 +557,5 @@ if __name__ == "__main__":
 	elif args.cron:
 		write_schedule(date)
 		write_stats(date)
-		write_schedule(date)
 		writeRankings()
 		writeTeamTTOI()
