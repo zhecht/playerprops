@@ -84,35 +84,54 @@ def writeBPP(date):
 
 	res = {}
 	books = ["bpp", "fn", "betonline", "bet365", "sugarhouse", "mgm", "espnbet"]
-	for side in [1,-1]:
-		time.sleep(0.2)
-		url = f"https://www.ballparkpal.com/PlayerProps.php?book1=15&book2=8&book3=27&book4=22&book5=5&book6=14&BetSide={side}&date={date}"
-		outfile = "outmlb"
-		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+	props = [(10, "hr"), (7, "single"), (8, "double"), (20, "k")]
+	#props = [(20, "k")]
+	for propIdx, prop in props:
+		for side in [1,-1]:
+			time.sleep(0.2)
+			url = f"https://www.ballparkpal.com/PlayerProps.php?book1=15&book2=8&book3=27&book4=22&book5=5&book6=14&BetSide={side}&date={date}&BetMarket={propIdx}"
+			outfile = "outmlb"
+			os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
 
-		soup = BS(open(outfile, 'rb').read(), "lxml")
+			soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for row in soup.find("table", id="table_id").findAll("tr")[1:]:
-			tds = row.findAll("td")
-			team = tds[0].text.lower().strip()
-			if team == "was":
-				team = "wsh"
-			player = parsePlayer(tds[1].text.strip())
+			for row in soup.find("table", id="table_id").findAll("tr")[1:]:
+				tds = row.findAll("td")
+				team = tds[0].text.lower().strip()
+				if team == "was":
+					team = "wsh"
+				player = parsePlayer(tds[1].text.strip())
 
-			if team not in res:
-				res[team] = {}
-			if player not in res[team]:
-				res[team][player] = {}
+				if team not in res:
+					res[team] = {}
+				if player not in res[team]:
+					res[team][player] = {}
+				if prop not in res[team][player]:
+					res[team][player][prop] = {}
 
-			for td, book in zip(tds[6:], books):
-				if not td.text:
+				line = tds[5].text
+				if prop in ["single", "double"] and line != "0.5":
 					continue
-				if book in res[team][player]:
-					if book == "bpp":
+				for td, book in zip(tds[6:], books):
+					if not td.text:
 						continue
-					res[team][player][book] += "/"+td.text
-				else:
-					res[team][player][book] = td.text
+					if book in res[team][player][prop]:
+						if book == "bpp":
+							continue
+						if prop == "k":
+							if line in res[team][player][prop][book]:
+								res[team][player][prop][book][line] += "/"+td.text
+							else:
+								res[team][player][prop][book][line] = td.text
+						else:
+							res[team][player][prop][book] += "/"+td.text
+					else:
+						if prop == "k":
+							if book not in res[team][player][prop]:
+								res[team][player][prop][book] = {}
+							res[team][player][prop][book][line] = td.text
+						else:
+							res[team][player][prop][book] = td.text
 
 	with open("static/mlb/bpp.json", "w") as fh:
 		json.dump(res, fh, indent=4)
