@@ -1216,16 +1216,6 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-philadelphia-phillies-33152020",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-baltimore-orioles-33152028",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-cincinnati-reds-33152022",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-miami-marlins-33152023",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-mets-33152024",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-tampa-bay-rays-33152029",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-houston-astros-33152027",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-kansas-city-royals-33152030",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-chicago-white-sox-33152031",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-texas-rangers-33152034",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-oakland-athletics-33152032",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-arizona-diamondbacks-33152017",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-seattle-mariners-33152033",
