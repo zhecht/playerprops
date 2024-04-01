@@ -1027,6 +1027,10 @@ def write_rankings():
 			rankClass = "negative"
 		rankings[x["team"]][f"h+r+rbi_allowed"]["rankClass"] = rankClass
 
+	for idx, x in enumerate(sorted(combined, key=lambda k: k["lastYear"], reverse=True)):
+		rankings[x["team"]][f"h+r+rbi_allowed"]["lastYearRank"] = idx+1
+		rankings[x["team"]][f"h+r+rbi_allowed"]["lastYearRankSuffix"] = addNumSuffix(idx+1)
+
 	with open(f"{prefix}static/baseballreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
 

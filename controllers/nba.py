@@ -2956,16 +2956,25 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					total15Over = round(len([x for x in playerSplits[prop].split(",")[-15:] if int(x) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
 					total15OverPerMin = round(len([x for x, m in zip(playerSplits[prop].split(",")[-15:], minArr[-15:]) if int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
 
-					winLossSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "W" and int(x) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "W"]))
-					winLossSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "L" and int(x) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "L"]))
-					winLossSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "W" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "W"]))
-					winLossSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "L" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in winLossArr if x == "L"]))
+					winArrLength = len([x for x in winLossArr if x == "W"])
+					if winArrLength:
+						winLossSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "W" and int(x) > float(playerHandicap)]) * 100 / winArrLength)
+						winLossSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "W" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / winArrLength)
+					loseArrLength = len([x for x in winLossArr if x == "L"])
+					if loseArrLength:
+						winLossSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "L" and int(x) > float(playerHandicap)]) * 100 / loseArrLength)
+						winLossSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "L" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / loseArrLength)
 
-					#print(player)
-					awayHomeSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "A" and int(x) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "A"]))
-					awayHomeSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "H" and int(x) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "H"]))
-					awayHomeSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "A" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "A"]))
-					awayHomeSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "H" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len([x for x in awayHomeArr if x == "H"]))
+					awayArrLength = len([x for x in awayHomeArr if x == "A"])
+					if awayArrLength:
+						awayHomeSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "A" and int(x) > float(playerHandicap)]) * 100 / awayArrLength)
+						awayHomeSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "A" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / awayArrLength)
+
+					homeArrLength = len([x for x in awayHomeArr if x == "H"])						
+					if homeArrLength:
+						awayHomeSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "H" and int(x) > float(playerHandicap)]) * 100 / homeArrLength)
+					
+						awayHomeSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "H" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / homeArrLength)
 
 					if team in lastYearStats and player in lastYearStats[team] and lastYearStats[team][player]:
 						for idx, d in enumerate(lastYearStats[team][player]):

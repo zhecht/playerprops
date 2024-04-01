@@ -45,7 +45,7 @@ def convertTeam(team):
 		t = "lad"
 	elif "cubs" in team:
 		t = "chc"
-	elif "whitesox" in team:
+	elif "whitesox" in team or "white sox" in team:
 		t = "chw"
 	return t
 

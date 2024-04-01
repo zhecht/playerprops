@@ -851,6 +851,8 @@ def write365():
 					player = "julio rodriguez";
 				} else if (player == "jpcrawford") {
 					player = "jp crawford";
+				} else if (player == "mitchell haniger") {
+					player = "mitch haniger";
 				}
 				let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" - ")[0];
 
