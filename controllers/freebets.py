@@ -45,85 +45,6 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
-def writeBovada():
-	url = "https://bv2.digitalsportstech.com/api/game?sb=bovada&league=143"
-	outfile = f"outBV"
-
-	if True:
-		os.system(f"curl -k \"{url}\" -o {outfile}")
-
-		with open(outfile) as fh:
-			data = json.load(fh)
-
-		ids = []
-		for row in data:
-			ids.append([r for r in row["providers"] if r["name"] == "nix"][0]["id"])
-
-	res = {}
-	print(ids)
-	for nixId in ids:
-		for prop in ["tb", "hr"]:
-			url = f"https://bv2.digitalsportstech.com/api/dfm/marketsBySs?sb=bovada&gameId={nixId}&statistic="
-			if prop == "tb":
-				url += "Total%2520bases"
-			else:
-				url += "Home%2520runs"
-			outfile = f"outBV"
-
-			time.sleep(0.31)
-			os.system(f"curl -k \"{url}\" -o {outfile}")
-
-			with open(outfile) as fh:
-				data = json.load(fh)
-
-			for playerRow in data[0]["players"]:
-				player = strip_accents(playerRow["name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
-				team = playerRow["team"].lower()
-
-				if team not in res:
-					res[team] = {}
-
-				if player not in res[team]:
-					res[team][player] = {}
-
-				res[team][player][prop] = {}
-				for market in playerRow["markets"]:
-					tb = market["value"]
-					odds = convertAmericanOdds(market["odds"])
-					res[team][player][prop][tb] = odds
-
-	
-	with open("static/freebets/bovada.json", "w") as fh:
-		json.dump(res, fh, indent=4)
-
-def checkBovada():
-	with open("static/freebets/bovada.json") as fh:
-		bv = json.load(fh)
-
-	with open("static/baseballreference/fanduelLines.json") as fh:
-		fd = json.load(fh)
-
-	for game in fd:
-		team1, team2 = map(str, game.split(" @ "))
-		for player in fd[game]:
-			if "hr" not in fd[game][player]:
-				continue
-
-			hr = fd[game][player]["hr"]
-			team = ""
-			if team1 in bv and player in bv[team1]:
-				team = team1
-			elif team2 in bv and player in bv[team2]:
-				team = team2
-			else:
-				continue
-
-			if "4" not in bv[team][player]["tb"]:
-				continue
-
-			if bv[team][player]["tb"]["4"] > hr:
-				print(team, player, hr, bv[team][player]["tb"]["4"])
-
 def writeBallparkpal():
 	js = """
 	{
@@ -203,39 +124,6 @@ def writeBallparkpal():
 
 def convertBPPTeam(team):
 	return team.replace("nationals", "wsh").replace("phillies", "phi").replace("twins", "min").replace("tigers", "det").replace("marlins", "mia").replace("reds", "cin").replace("cardinals", "stl").replace("rays", "tb").replace("braves", "atl").replace("pirates", "pit").replace("astros", "hou").replace("orioles", "bal").replace("blue jays", "tor").replace("guardians", "cle").replace("royals", "kc").replace("red sox", "bos").replace("cubs", "chc").replace("mets", "nym").replace("yankees", "nyy").replace("white sox", "chw").replace("rockies", "col").replace("brewers", "mil").replace("giants", "sf").replace("angels", "laa").replace("rangers", "tex").replace("athletics", "oak").replace("padres", "sd").replace("mariners", "sea").replace("dodgers", "lad").replace("dbacks", "ari")
-
-def writeBPPHomers():
-	url = "https://ballparkpal.com/index.php"
-	outfile = f"outBpp"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
-
-	soup = BS(open(outfile, 'rb').read(), "lxml")
-
-	links = []
-	for a in soup.findAll("a"):
-		if a.text == "Details":
-			links.append(a.get("href"))
-
-	data = {}
-	for url in links:
-		outfile = f"outBpp"
-		time.sleep(0.3)
-		os.system(f"curl -k \"{url}\" -o {outfile}")
-
-		soup = BS(open(outfile, 'rb').read(), "lxml")
-
-		for table in soup.findAll("table", class_="runMarginTable"):
-			if "Home Runs" not in table.text:
-				continue
-			game = convertBPPTeam(table.findAll("th")[1].text.lower()) + " @ " + convertBPPTeam(table.findAll("th")[3].text.lower())
-			if game not in data:
-				tds = table.findAll("tr")[3].findAll("td")
-				data[game] = round(float(tds[1].text) + float(tds[3].text), 2)
-			break
-
-	with open(f"{prefix}static/freebets/bppExpectedHomers.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-
 
 def checkBPP():
 	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
@@ -947,9 +835,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
-	with open(f"{prefix}static/freebets/bovada.json") as fh:
-		bovada = json.load(fh)
-
 	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
 		pnLines = json.load(fh)
 
@@ -967,9 +852,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
-
-	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
-		bppExpectedHomers = json.load(fh)
 
 	with open(f"{prefix}static/mlbprops/ev_{propArg}.json") as fh:
 		evData = json.load(fh)
@@ -1202,8 +1084,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						bet365ou = ou = f"{sharpUnderdog}/{dkLines[game][player][prop]['under']}"
 
 					expectedHR = 0.28
-					if game in bppExpectedHomers and dinger:
-						expectedHR = .70 * (bppExpectedHomers[game] / 5)
 
 					if prop == "hr" and bet365ou and not no365:
 						devig(evData, player, bet365ou, int(line), dinger=dinger)
@@ -1267,14 +1147,8 @@ def sortEV(dinger=False, teamSort=False):
 	with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
-	with open(f"{prefix}static/freebets/bovada.json") as fh:
-		bovada = json.load(fh)
-
 	with open(f"{prefix}static/freebets/lineups.json") as fh:
 		lineups = json.load(fh)
-
-	with open(f"{prefix}static/freebets/bppExpectedHomers.json") as fh:
-		bppExpectedHomers = json.load(fh)
 
 	for prop in ["hr", "k", "single", "double", "tb", "rbi"]:
 		with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
@@ -1396,7 +1270,8 @@ def sortEV(dinger=False, teamSort=False):
 			if prop in ["single", "double"]:
 				l.extend([kambi, bv, sh, espn])
 			elif prop not in ["tb"]:
-				l.extend([kambi, pn, bv, fn, sh, espn])
+				#l.extend([kambi, pn, bv, fn, sh, espn])
+				l.extend([kambi, pn, bv])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 			elif prop == "k":
@@ -1420,7 +1295,8 @@ def sortEV(dinger=False, teamSort=False):
 		if prop in ["single", "double"]:
 			l.extend(["Kambi", "BV", "SH", "ESPN"])
 		elif prop not in ["tb"]:
-			l.extend(["Kambi", "PN", "BV", "FN", "SH", "ESPN"])
+			#l.extend(["Kambi", "PN", "BV", "FN", "SH", "ESPN"])
+			l.extend(["Kambi", "PN", "BV"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 		elif prop == "k":
@@ -1554,9 +1430,6 @@ if __name__ == '__main__':
 	if args.plays:
 		with open(f"static/mlbprops/ev_hr.json") as fh:
 			ev = json.load(fh)
-
-		with open(f"static/freebets/bppExpectedHomers.json") as fh:
-			bppExpectedHomers = json.load(fh)
 		
 		output = []
 		for player, odds, team in plays:
@@ -1571,8 +1444,6 @@ if __name__ == '__main__':
 			if currOdds != odds:
 				data = {}
 				expectedHR = 0.28
-				if game in bppExpectedHomers and args.dinger:
-					expectedHR = .70 * (bppExpectedHomers[game] / 5)
 
 				devig(data, player, ou, odds, avg=True)
 				if data:

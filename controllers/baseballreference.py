@@ -804,6 +804,52 @@ def write_averages():
 				with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
 					json.dump(averages, fh, indent=4)
 
+def writeStatsVsTeam():
+	statsVsTeam = {}
+	#statsVsTeam[team][player][opp][hdr]
+	for year in os.listdir(f"{prefix}static/mlbprops/stats/"):
+		year = year[:4]
+		if not os.path.exists(f"{prefix}static/mlbprops/stats/{year}.json"):
+			continue
+		with open(f"{prefix}static/mlbprops/stats/{year}.json") as fh:
+			stats = json.load(fh)
+
+		for team in stats:
+			if team not in statsVsTeam:
+				statsVsTeam[team] = {}
+			for player in stats[team]:
+				if player not in statsVsTeam[team]:
+					statsVsTeam[team][player] = {}
+				splits = stats[team][player]["splits"]
+				if not splits:
+					continue
+				opps = splits["opp"].split(",")
+				for idx, opp in enumerate(opps):
+					if opp not in statsVsTeam[team][player]:
+						statsVsTeam[team][player][opp] = {"gamesPlayed": 0}
+					statsVsTeam[team][player][opp]["gamesPlayed"] += 1
+					for stat in splits:
+						if stat in ["awayHome", "opp", "winLoss"]:
+							continue
+
+						val = splits[stat].split(",")[idx]
+						try:
+							val = int(val)
+						except:
+							try:
+								val = float(val)
+							except:
+								pass
+
+						try:
+							statsVsTeam[team][player][opp][stat] += val
+						except:
+							statsVsTeam[team][player][opp][stat] = val
+
+
+	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
+		json.dump(statsVsTeam, fh)
+
 
 def strip_accents(text):
 	try:
@@ -1590,6 +1636,7 @@ if __name__ == "__main__":
 
 	if args.averages:
 		write_averages()
+		writeStatsVsTeam()
 	elif args.bvp:
 		writeBVP(date)
 	elif args.ph:
@@ -1625,6 +1672,7 @@ if __name__ == "__main__":
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
+	writeStatsVsTeam()
 	#write_pitching()
 	#writeYearAverages()
 	#write_schedule(date)

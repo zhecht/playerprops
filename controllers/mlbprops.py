@@ -408,6 +408,8 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 		playerHRFactors = json.load(fh)
 	with open(f"{prefix}static/baseballreference/statsVsTeam.json") as fh:
 		statsVsTeam = json.load(fh)
+	with open(f"{prefix}static/baseballreference/splits.json") as fh:
+		splits = json.load(fh)
 	with open(f"{prefix}static/baseballreference/battingPitches.json") as fh:
 		battingPitches = json.load(fh)
 	with open(f"{prefix}static/baseballreference/pitchingPitches.json") as fh:
