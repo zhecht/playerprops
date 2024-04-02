@@ -1824,12 +1824,12 @@ def writeDK(date, propArg):
 							if "label" not in row:
 								continue
 
+							prefix = ""
 							if subCat in propIds:
 								prop = propIds[subCat]
 							else:
 								prop = row["label"].lower().split(" [")[0]
 								
-								prefix = ""
 								if "1st half" in prop:
 									prefix = "1h_"
 								elif "2nd half" in prop:
