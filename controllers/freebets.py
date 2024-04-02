@@ -1001,8 +1001,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 			for player in fdLines[game][prop]:
 				team = team2
+				opp = team1
 				if player in roster[team1]:
 					team = team1
+					opp = team2
 				fdLine = fdLines[game][prop][player]
 				handicap = ""
 				if prop in "k":
@@ -1222,6 +1224,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evData[player]["game"] = game
 					evData[player]["book"] = bookArg
 					evData[player]["team"] = team
+					evData[player]["opp"] = opp
 					evData[player]["ou"] = ou
 					evData[player]["odds"] = l
 					evData[player]["line"] = line
@@ -1238,7 +1241,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 	#	json.dump(evData, fh, indent=4)
 
 
-def sortEV(dinger=False):
+def sortEV(dinger=False, teamSort=False):
 
 	with open(f"{prefix}static/mlb/bpp.json") as fh:
 		bpp = json.load(fh)
@@ -1277,6 +1280,11 @@ def sortEV(dinger=False):
 		with open(f"{prefix}static/mlbprops/ev_{prop}.json") as fh:
 			evData = json.load(fh)
 
+		if False and teamSort and prop == "hr":
+			d = sorted(evData.items(), key=lambda k_v: k_v[1]["game"])
+			evData = {}
+			for row in d:
+				evData[row[0]] = row[1]
 
 		data = []
 		bet365data = []
@@ -1293,6 +1301,7 @@ def sortEV(dinger=False):
 			line = evData[player].get("line", 0)
 			game = evData[player]["game"]
 			team = evData[player].get("team", "")
+			opp = evData[player].get("opp", "")
 			dk = evData[player]["dk"]
 			value = evData[player].get("value", 0)
 			if "/" in dk and int(dk.split("/")[0]) > 0:
@@ -1382,7 +1391,7 @@ def sortEV(dinger=False):
 			if team in lineups and player in lineups[team]:
 				starting = "*"
 
-			l = [ev, team.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
+			l = [ev, game.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 
 			if prop in ["single", "double"]:
 				l.extend([kambi, bv, sh, espn])
@@ -1395,7 +1404,10 @@ def sortEV(dinger=False):
 			#if dinger:
 			#	l.append(expectedHR)
 			tab = "\t".join([str(x) for x in l])
-			data.append((ev, player, tab, evData[player]))
+			if teamSort:
+				data.append((game, ev*-1, player, tab, evData[player]))
+			else:
+				data.append((ev, player, tab, evData[player]))
 			bet365data.append((bet365ev, player, tab, evData[player]))
 
 		dt = datetime.strftime(datetime.now(), "%I:%M %p")
@@ -1404,7 +1416,7 @@ def sortEV(dinger=False):
 		else:
 			output = f"\t\t\tUPD: {dt}\n\n"
 
-		l = ["EV (AVG)", "Team", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
+		l = ["EV (AVG)", "Game", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop in ["single", "double"]:
 			l.extend(["Kambi", "BV", "SH", "ESPN"])
 		elif prop not in ["tb"]:
@@ -1418,13 +1430,14 @@ def sortEV(dinger=False):
 		output += "\t".join(l) + "\n"
 		bet365output = output
 		reddit = bet365reddit = ""
-		for row in sorted(data, reverse=True):
-			playerData = row[-1]
-			line = f"{playerData['fanduel']} FD"
-			if not playerData["fanduel"]:
-				line = f"{playerData['other']} {playerData['otherBook']}"
+		rev = False if teamSort else True
+		lastGame = ""
+		for row in sorted(data, reverse=rev):
+			if teamSort and lastGame and lastGame != row[0]:
+				output += "\t"*len(l) + "\n"
+				output += "\t"*len(l) + "\n"
 			output += f"{row[-2]}\n"
-			reddit += f"{playerData['ev']}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs AVG {playerData['ou']}  \n"
+			lastGame = row[0]
 
 		for row in sorted(bet365data, reverse=True):
 			playerData = row[-1]
@@ -1432,15 +1445,8 @@ def sortEV(dinger=False):
 			if not playerData["fanduel"]:
 				line = f"{playerData['other']} {playerData['otherBook']}"
 			bet365output += f"{row[-2]}\n"
-			bet365reddit += f"{playerData.get('bet365ev', '-')}% EV: {playerData.get('team', '').upper()} {row[1].title()} +{line} vs bet365 {playerData['bet365']}  \n"
 
 		if prop == "hr":
-			with open(f"{prefix}static/freebets/reddit_{prop}", "w") as fh:
-				fh.write(reddit)
-
-			with open(f"{prefix}static/freebets/reddit365_{prop}", "w") as fh:
-				fh.write(bet365reddit)
-
 			with open(f"{prefix}static/freebets/ev365_{prop}.csv", "w") as fh:
 				fh.write(bet365output)
 
@@ -1480,6 +1486,7 @@ if __name__ == '__main__':
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
+	parser.add_argument("--teamSort", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 
@@ -1532,11 +1539,11 @@ if __name__ == '__main__':
 		writeActionNetwork(args.date)
 
 	if args.print:
-		sortEV(args.dinger)
+		sortEV(args.dinger, args.teamSort)
 
 	if args.prop:
 		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book, nopn=args.nopn, nosh=args.nosh)
-		sortEV(args.dinger)
+		sortEV(args.dinger, args.teamSort)
 
 	data = {}
 	#devigger(data, player="dean kremer", bet365Odds="-115/-115", finalOdds="-128")

@@ -1652,7 +1652,7 @@ def writeDK(date, propArg):
 								ou = f"{outcomes[0]['oddsAmerican']}"
 								if len(row["outcomes"]) > 1:
 									ou += f"/{outcomes[1]['oddsAmerican']}"
-								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
+								player = parsePlayer(outcomes[0]["participant"].split(" (")[0].strip())
 								if player not in lines[game][prop]:
 									lines[game][prop][player] = {}
 
