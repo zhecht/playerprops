@@ -183,9 +183,9 @@ def writeLineups(plays = []):
 			data[team] = []
 			for player in table.find("ol", class_=f"starting-lineups__team--{which}").findAll("li"):
 				try:
-					player = player.find("a").text.strip().lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+					player = parsePlayer(player.find("a").text.strip())
 				except:
-					player = player.text
+					player = parsePlayer(player.text)
 
 				data[team].append(player)
 
@@ -705,7 +705,8 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr",
 		# 70% conversion * 40% (2 HR/game = $10/$25)
 		fairVal = min(x, mult, add)
 		x = 0.28
-
+		# 80% conversion * 42% (2.1 HR/game = 2.1*$5/$25)
+		x = .336
 		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
 		ev = round(ev, 1)
 		#if avg and player == "shohei ohtani":
@@ -739,6 +740,8 @@ def write365():
 					player = "julio rodriguez";
 				} else if (player == "jpcrawford") {
 					player = "jp crawford";
+				} else if (player == "jtrealmuto") {
+					player = "jt realmuto";
 				} else if (player == "mitchell haniger") {
 					player = "mitch haniger";
 				}
@@ -1262,8 +1265,11 @@ def sortEV(dinger=False, teamSort=False):
 			#	expectedHR = bppExpectedHomers[game]
 
 			starting = ""
-			if team in lineups and player in lineups[team]:
-				starting = "*"
+			if team in lineups:
+				if player in lineups[team]:
+					starting = "✅"
+				elif "tbd" not in lineups[team]:
+					starting = "❌"
 
 			l = [ev, game.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 

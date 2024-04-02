@@ -1718,7 +1718,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	
 	evData[player][f"{prefix}ev"] = ev
 
-def writeDK(date):
+def writeDK(date, propArg):
 	url = "https://sportsbook.draftkings.com/leagues/football/nba"
 
 	if not date:
@@ -1762,6 +1762,10 @@ def writeDK(date):
 	lines = {}
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
+
+			if propArg == "first_3ptm" and subCat != 14793:
+				continue
+				
 			time.sleep(0.3)
 			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42648/categories/{mainCats[mainCat]}"
 			if subCat:
@@ -2425,13 +2429,13 @@ def writeThreesday():
 	with open(f"{prefix}static/nba/rankings.json") as fh:
 		rankings = json.load(fh)
 
-	with open(f"{prefix}static/nba/draftkings.json") as fh:
-		dkLines = json.load(fh)
+	with open(f"{prefix}static/nba/pinnacle.json") as fh:
+		pnLines = json.load(fh)
 
 	output = "Game|away 3ptm|away opp 3ptm|home 3ptm|home opp 3ptm|avg\n"
 	output += ":--|:--|:--|:--|:--|:--\n"
 	data = []
-	for game in dkLines:
+	for game in pnLines:
 		away, home = map(str, game.split(" @ "))
 		avg = (rankings[away]["3ptm"] + rankings[away]["opp_3ptm"] + rankings[home]["3ptm"] + rankings[home]["opp_3ptm"]) / 4
 
@@ -2453,22 +2457,24 @@ def writeInjuries():
 	with open(f"{prefix}static/nba/lineups.json") as fh:
 		lineups = json.load(fh)
 
-	with open(f"{prefix}static/nba/draftkings.json") as fh:
-		dkLines = json.load(fh)
+	with open(f"{prefix}static/nba/pinnacle.json") as fh:
+		pnLines = json.load(fh)
 
 	with open(f"{prefix}static/basketballreference/totals.json") as fh:
 		totals = json.load(fh)
 
 	output = "Injury Watch -- (3ptm-3pta)\n\n"
-	for game in dkLines:
+	for game in pnLines:
 		output += f"{game.upper()}  \n"
 		for status in ["out", "50/50", "likely", "unlikely"]:
 			for team in game.split(" @ "):
 				for player in lineups[team][status]:
 					if player not in totals[team]:
 						continue
-					ptm = round(totals[team][player]["3ptm"] / totals[team][player]["gamesPlayed"], 1)
-					pta = round(totals[team][player]["3pta"] / totals[team][player]["gamesPlayed"], 1)
+					if not totals[team][player]["gamesPlayed"]:
+						continue
+					ptm = round(totals[team][player].get("3ptm", 0) / totals[team][player]["gamesPlayed"], 1)
+					pta = round(totals[team][player].get("3pta", 0) / totals[team][player]["gamesPlayed"], 1)
 					output += f"{status.upper()}: {player.title()} ({ptm}-{pta})  \n"
 		output += "\n\n---\n\n"
 
@@ -2498,8 +2504,8 @@ def writeLeaders():
 						odds = dkLines[game]["first_3ptm"][player]
 					except:
 						pass
-					ptm = round(totals[team][player]["3ptm"] / totals[team][player]["gamesPlayed"], 1)
-					pta = round(totals[team][player]["3pta"] / totals[team][player]["gamesPlayed"], 1)
+					ptm = round(totals[team][player].get("3ptm", 0) / totals[team][player]["gamesPlayed"], 1)
+					pta = round(totals[team][player].get("3pta", 0) / totals[team][player]["gamesPlayed"], 1)
 					output += f"{player.title()} ({ptm}-{pta}) {odds} \n"
 		output += "\n\n---\n\n"
 
@@ -3552,7 +3558,7 @@ if __name__ == '__main__':
 		writePointsbet(args.date)
 
 	if args.dk:
-		writeDK(args.date)
+		writeDK(args.date, args.prop)
 
 	if args.kambi:
 		writeKambi(args.date)
