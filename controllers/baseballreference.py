@@ -38,6 +38,9 @@ def write_stats(date):
 	with open(f"{prefix}static/baseballreference/boxscores.json") as fh:
 		boxscores = json.load(fh)
 
+	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
+		schedule = json.load(fh)
+
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
@@ -53,6 +56,9 @@ def write_stats(date):
 	for date in dates:
 		allStats = {}
 		for game in boxscores[date]:
+			if game not in schedule[date]:
+				print("Game not in schedule")
+				continue
 			away, home = map(str, game.split(" @ "))
 
 			gameId = boxscores[date][game].split("/")[-2]
