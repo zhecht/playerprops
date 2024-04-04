@@ -397,7 +397,12 @@ def writeCZ(date=None):
 						line = str(float(market["line"]))
 						if player not in res[game][prop]:
 							res[game][prop][player] = {}
-						res[game][prop][player][line] = ou
+						if prop in ["single", "double"]:
+							if line != "0.5":
+								continue
+							res[game][prop][player] = ou
+						else:
+							res[game][prop][player][line] = ou
 					except:
 						res[game][prop][player] = ou
 
