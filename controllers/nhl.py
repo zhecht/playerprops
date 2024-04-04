@@ -1749,9 +1749,15 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 		profit = 100 * bet / (finalOdds * -1)
 
 	if prop == "fgs":
-		mult = impliedOver
-		ev = mult * profit + (1-mult) * -1 * bet
+		fairVal = impliedOver
+		x = 0.4354
+		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
 		ev = round(ev, 1)
+
+
+		#mult = impliedOver
+		#ev = mult * profit + (1-mult) * -1 * bet
+		#ev = round(ev, 1)
 		if player not in evData:
 			evData[player] = {}
 		evData[player][f"{prefix}fairVal"] = 0
@@ -2036,6 +2042,38 @@ def writeDK(date=None):
 	with open("static/nhl/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
+def writeESPN():
+	js = """
+
+	{
+		function parsePlayer(player) {
+			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+		}
+
+
+		async function main() {
+			let away = document.querySelector("div[data-testid='away-team-card'] span").innerText.split(" ")[0].toLowerCase();
+			let home = document.querySelector("div[data-testid='home-team-card'] span").innerText.split(" ")[0].toLowerCase();
+			let game = away+" @ "+home;
+			data[game] = {
+				"fgs": {}
+			};
+			let table = document.querySelector("div[data-testid='drawer-First Goalscorer']");
+			const btns = table.querySelectorAll("button");
+			for (let btn of btns) {
+				let player = parsePlayer(btn.querySelector("span").innerText);
+				let odds = btn.querySelector("span:nth-child(2)").innerText;
+				data[game]["fgs"][player] = odds;
+			}
+
+			console.log(data);
+		}
+
+		main();
+	}
+
+	"""
+
 def write365():
 
 	lines = ""
@@ -2301,6 +2339,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/nhl/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/nhl/espn.json") as fh:
+		espnLines = json.load(fh)
+
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
@@ -2311,6 +2352,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 		"dk": dkLines,
 		"cz": czLines
 	}
+
+	if propArg == "fgs":
+		lines["espn"] = espnLines
 
 	with open(f"{prefix}static/nhl/ev.json") as fh:
 		evData = json.load(fh)
@@ -2425,10 +2469,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					else:
 						playerSplits = splits[team][name]
 
-					minArr = playerSplits["toi"].split(",")
-					totalSplits = ",".join([str(int(float(x))) for x in playerSplits[convertedProp].split(",")])
-					totalOver = round(len([x for x in playerSplits[convertedProp].split(",") if float(x) > float(playerHandicap)]) * 100 / len(minArr))
-					total10Over = round(len([x for x in playerSplits[convertedProp].split(",")[-10:] if float(x) > float(playerHandicap)]) * 100 / len(minArr[-10:]))
+					if prop in playerSplits:
+						minArr = playerSplits["toi"].split(",")
+						totalSplits = ",".join([str(int(float(x))) for x in playerSplits[convertedProp].split(",")])
+						totalOver = round(len([x for x in playerSplits[convertedProp].split(",") if float(x) > float(playerHandicap)]) * 100 / len(minArr))
+						total10Over = round(len([x for x in playerSplits[convertedProp].split(",")[-10:] if float(x) > float(playerHandicap)]) * 100 / len(minArr[-10:]))
 
 				for i in range(2):
 
@@ -2698,7 +2743,7 @@ def sortEV(propArg):
 	with open("static/nhl/atgs.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "Kambi/BR"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "Kambi/BR", "ESPN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "fgs":
 			continue
@@ -2709,7 +2754,7 @@ def sortEV(propArg):
 			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
 		implied *= 100
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
-		for book in ["fd", "dk", "mgm", "bv", "kambi"]:
+		for book in ["fd", "dk", "mgm", "bv", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o

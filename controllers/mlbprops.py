@@ -772,86 +772,35 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 						pitcherSummary = f"{advanced[pitcher]['p_era']} ERA, {advanced[pitcher]['batting_avg']} AVG, {advanced[pitcher]['xba']} xAVG, {babip} BABIP, {advanced[pitcher]['slg_percent']} SLG, {advanced[pitcher]['xslg']} xSLG, {advanced[pitcher]['woba']} WOBA, {advanced[pitcher]['xwoba']} xWOBA, {advanced[pitcher]['barrel_batted_rate']}% Barrel Batted"
 
 				over5Innings = []
-				files = glob.glob(f"{prefix}static/baseballreference/{team}/*.json")
+				playerSplits = {}
 				if tradeFrom:
-					files.extend(glob.glob(f"{prefix}static/baseballreference/{tradeFrom}/*.json"))
-				files = sorted(files, key=lambda k: datetime.strptime(k.replace("-gm2", "").split("/")[-1].replace(".json", ""), "%Y-%m-%d"), reverse=True)
-				for file in files:
-					chkDate = file.replace("-gm2", "").split("/")[-1].replace(".json","")
-					currTeam = file.split("/")[-2]
-					currOpp = ""
-					currIsAway = False
-					for g in schedule[chkDate]:
-						gameSp = g.split(" @ ")
-						if currTeam in gameSp:
-							if currTeam == gameSp[0]:
-								currIsAway = True
-								currOpp = gameSp[1]
-							else:
-								currOpp = gameSp[0]
-							break
+					for hdr in splits[tradeFrom][player]:
+						playerSplits[hdr] = splits[tradeFrom][player][hdr]
+					for hdr in splits[team][player]:
+						playerSplits[hdr] += ","+splits[team][player][hdr]
+				else:
+					playerSplits = splits[team].get(player, {})
 
-					with open(file) as fh:
-						gameStats = json.load(fh)
-					if player in gameStats:
-						val = 0
-						currProp = prop
-						if propName in gameStats[player]:
-							currProp = propName
-						for p in currProp.split("+"):
-							val += gameStats[player].get(p, 0)
+				awayHomeSplits = ""
+				if prop in playerSplits:
+					oppArr = playerSplits["opp"].split(",")
+					winLossArr = playerSplits["winLoss"].split(",")
+					awayHomeArr = playerSplits["awayHome"].split(",")
+					lastAll = playerSplits[prop].split(",")
 
-						if chkDate == date:
-							if val > float(line):
-								hit = True
+					totalOver = round(len([x for x in playerSplits[prop].split(",") if int(x) > float(line)]) * 100 / len(oppArr))
+					if "P" in pos:
+						over5Innings = round(len([x for x in playerSplits["ip"].split(",") if float(x) >= 5]) * 100 / len(oppArr))
 
-						if val > line:
-							if chkDate != date:
-								totalOver += 1
+					awayGames = len([x for x in awayHomeArr if x == "A"])
+					if awayGames:
+						awayGames = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "A" and int(x) > float(line)]) * 100 / awayGames)
 
-						if len(lastAll) < 10:
-							v = str(int(val))
-							if chkDate == date:
-								v = f"'{v}'"
-								lastAll.append(v)
-								continue
+					homeGames = len([x for x in awayHomeArr if x == "H"])
+					if homeGames:
+						homeGames = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "H" and int(x) > float(line)]) * 100 / homeGames)
 
-						if chkDate == date or datetime.strptime(chkDate, "%Y-%m-%d") > datetime.strptime(date, "%Y-%m-%d"):
-							continue
-
-						if "P" in pos:
-							over5Innings.append(gameStats[player].get("ip", 0))
-
-						lastAll.append(int(val))
-
-						teamScore = scores[chkDate].get(currTeam, 0)
-						oppScore = scores[chkDate].get(currOpp, 0)
-
-						if currIsAway:
-							awayHomeSplits[0].append(val)
-						else:
-							awayHomeSplits[1].append(val)
-
-						if teamScore > oppScore:
-							winLossSplits[0].append(val)
-						elif teamScore < oppScore:
-							winLossSplits[1].append(val)
-
-				if over5Innings:
-					over5Innings = int(len([x for x in over5Innings if x >= 5]) * 100 / len(over5Innings))
-
-				awayGames = len(awayHomeSplits[0])
-				homeGames = len(awayHomeSplits[1])
-				if awayGames:
-					arr = [x for x in awayHomeSplits[0] if x > line]
-					awayGames = round(len(arr) * 100 / awayGames)
-				if homeGames:
-					arr = [x for x in awayHomeSplits[1] if x > line]
-					homeGames = round(len(arr) * 100 / homeGames)
-				awayHomeSplits = f"{awayGames}% - {homeGames}%"
-
-				if gamesPlayed:
-					totalOver = round(totalOver * 100 / gamesPlayed)
+					awayHomeSplits = f"{awayGames}% - {homeGames}%"
 
 
 				oppRank = oppRankVal = oppABRank = ""
