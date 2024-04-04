@@ -1923,6 +1923,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
+	if propArg in ["k", "single", "double"]:
+		with open(f"static/mlbprops/bet365_{propArg}s.json") as fh:
+			bet365 = json.load(fh)
+		j = {}
+		for team in bet365:
+			game = teamGame[team]
+			if game not in j:
+				j[game] = {propArg: {}}
+			for player in bet365[team]:
+				j[game][propArg][player] = bet365[team][player]
+		lines["bet365"] = j
+
 	for game in fdLines:
 		if teamArg:
 			if game.split(" @ ")[0] not in teamArg.split(",") and game.split(" @ ")[1] not in teamArg.split(","):
@@ -2144,7 +2156,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
-def sortEV():
+def sortEV(propArg=""):
 	with open(f"{prefix}static/mlb/ev.json") as fh:
 		evData = json.load(fh)
 
@@ -2157,7 +2169,16 @@ def sortEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi", "CZ"]) + "\n"
+	hdrs = ["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "BV"]
+	if propArg not in ["single", "double"]:
+		hdrs.insert(1, "PN EV")
+		hdrs.extend(["PN"])
+	if propArg != "single":
+		hdrs.append("Kambi")
+	if propArg in ["k", "single", "double"]:
+		hdrs.insert(hdrs.index("FD")+1, "bet365")
+	hdrs.append("CZ")
+	output = "\t".join(hdrs) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["book"] in ["kambi"]:
 			continue
@@ -2166,12 +2187,23 @@ def sortEV():
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("BET365", "365"), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		if propArg not in ["single", "double"]:
+			arr.insert(1, row[-1].get("pn_ev", "-"))
+
 		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
+			if book == "mgm":
+				continue
+			if propArg == "single" and book in ["pn", "kambi"]:
+				continue
+			elif propArg == "double" and book in ["pn"]:
+				continue
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
+		if propArg in ["k", "single", "double"]:
+			arr.insert(hdrs.index("FD")+1, row[-1]["bookOdds"].get("bet365", "-").replace("+", ""))
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/mlb/props.csv", "w") as fh:
@@ -2286,7 +2318,7 @@ if __name__ == '__main__':
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under)
 
 	if args.print:
-		sortEV()
+		sortEV(args.prop)
 
 	if args.player:
 		#with open(f"{prefix}static/mlb/draftkings.json") as fh:

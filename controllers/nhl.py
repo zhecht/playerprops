@@ -2469,7 +2469,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					else:
 						playerSplits = splits[team][name]
 
-					if prop in playerSplits:
+					if convertedProp in playerSplits:
 						minArr = playerSplits["toi"].split(",")
 						totalSplits = ",".join([str(int(float(x))) for x in playerSplits[convertedProp].split(",")])
 						totalOver = round(len([x for x in playerSplits[convertedProp].split(",") if float(x) > float(playerHandicap)]) * 100 / len(minArr))
