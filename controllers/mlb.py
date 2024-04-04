@@ -1190,7 +1190,13 @@ def writeKambi(date):
 
 					if player not in data[game][label]:
 						data[game][label][player] = {}
-					data[game][label][player][line] = ou
+
+					if label in ["single", "double"]:
+						if line != "0.5":
+							continue
+						data[game][label][player] = ou
+					else:
+						data[game][label][player][line] = ou
 
 
 	with open(f"static/mlb/kambi.json", "w") as fh:
@@ -1216,7 +1222,6 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-new-york-mets-33162705",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-washington-nationals-33162693",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-minnesota-twins-33162699",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-st.-louis-cardinals-33162695",
@@ -1604,22 +1609,7 @@ def writeDK(date, propArg):
 									line = str(float(outcomes[i]["line"]))
 									odds = str(outcomes[i]['oddsAmerican'])
 									team = outcomes[i]["label"].lower()
-									if "was" in team:
-										team = "wsh"
-									elif "yankees" in team:
-										team = "nyy"
-									elif "mets" in team:
-										team = "nym"
-									elif "angels" in team:
-										team = "laa"
-									elif "dodgers" in team:
-										team = "lad"
-									elif "cubs" in team:
-										team = "chc"
-									elif "white sox" in team:
-										team = "chw"
-									else:
-										team = team.split(" ")[0]
+									team = convertTeam(team)
 
 									if game.endswith(team):
 										line = str(float(line) * -1)
@@ -1648,6 +1638,10 @@ def writeDK(date, propArg):
 									lines[game][prop][player] = {}
 
 								if prop in ["w", "hr", "sb"]:
+									lines[game][prop][player] = ou
+								elif prop in ["single", "double"]:
+									if str(outcomes[0]['line']) != "0.5":
+										continue
 									lines[game][prop][player] = ou
 								else:
 									lines[game][prop][player][outcomes[0]['line']] = ou
