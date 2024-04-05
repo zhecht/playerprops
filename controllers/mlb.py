@@ -1196,7 +1196,7 @@ def writeKambi(date):
 					if player not in data[game][label]:
 						data[game][label][player] = {}
 
-					if label in ["single", "double"]:
+					if label in ["single", "double", "sb"]:
 						if line != "0.5":
 							continue
 						data[game][label][player] = ou
