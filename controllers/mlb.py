@@ -1511,7 +1511,11 @@ def writeDK(date, propArg):
 	lines = {}
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
-			if propArg and subCat != 6606:
+			if "hr" in propArg and subCat != 6606:
+				continue
+			elif "k" in propArg and subCat != 15221:
+				continue
+			elif "single" in propArg and subCat != 11031:
 				continue
 			time.sleep(0.3)
 			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}"
