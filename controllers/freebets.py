@@ -992,7 +992,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 				avgOver = []
 				avgUnder = []
-				if prop in ["single", "double"]:
+				if prop in ["single", "double", "sb"]:
 					l = [dk, bet365ou, mgm, bv]
 					if not nocz:
 						l.append(cz)
@@ -1374,7 +1374,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("trea turner", 420, "phi"), ("kebryan hayes", 600, "pit"), ("elly de la cruz", 1000, "cin"), ("vladimir guerrero", 390, "tor")]
+	plays = [("francisco lindor", 400, "nym"), ("miguel sano", 450, "laa"), ("adolis garcia", 300, "tex"), ("kris bryant", 420, "col"), ("ryan mcmahon", 420, "col")]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1436,6 +1436,9 @@ if __name__ == '__main__':
 	if args.plays:
 		with open(f"static/mlbprops/ev_hr.json") as fh:
 			ev = json.load(fh)
+
+		with open(f"static/mlbprops/bet365.json") as fh:
+			bet365 = json.load(fh)
 		
 		output = []
 		for player, odds, team in plays:
@@ -1446,6 +1449,7 @@ if __name__ == '__main__':
 			game = ev[player]["game"]
 			ou = ev[player]["ou"]
 			currEv = ev[player]["ev"]
+			bet365ev = ev[player]["bet365ev"]
 
 			if currOdds != odds:
 				data = {}
@@ -1454,8 +1458,13 @@ if __name__ == '__main__':
 				devig(data, player, ou, odds, avg=True)
 				if data:
 					currEv = data[player]["ev"]
+				if player in bet365[team]:
+					data = {}
+					devig(data, player, bet365[team][player], odds)
+					if data:
+						bet365ev = data[player]["bet365ev"]
 
-			output.append(f"{player} taken={odds} curr={currOdds} ev={currEv}")
+			output.append(f"{player} taken={odds} curr={currOdds} 365={bet365ev} ev={currEv}")
 
 			if game not in output:
 				summaryOutput[game] = []

@@ -524,9 +524,11 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				#numberfire projection
 				numberfireProj = numberfireProjIP = 0
 				try:
-					numberfireProj = round(numberfireProjections[team][player][prop], 2)
+					numberfireProj = round(numberfireProjections[team][player].get(prop, 0), 2)
 					if "P" in pos:
 						numberfireProjIP = round(numberfireProjections[team][player]["ip"], 2)
+					elif prop == "so":
+						numberfireProj = round(numberfireProjections[team][player].get("k", 0), 2)
 				except:
 					pass
 
@@ -998,7 +1000,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					"lastYearAvg": lastYearAvg,
 					"lastYearTotalOver": lastYearTotalOver,
 					"lastYearTeamMatchupOver": lastYearTeamMatchupOver,
-					"lastDisplay": ",".join([str(x) for x in lastAll[:10]]),
+					"lastDisplay": ",".join([str(x) for x in lastAll[-10:]]),
 					"lastAll": ",".join([str(x) for x in lastAll]),
 					"oppABRank": oppABRank,
 					"oppRankLastYear": oppRankLastYear,
