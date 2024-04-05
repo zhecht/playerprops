@@ -304,7 +304,10 @@ def writeSplits():
 				for header in stats[player]:
 					if header not in splits[team][player]:
 						splits[team][player][header] = []
-					splits[team][player][header].append(str(stats[player][header]))
+					val = stats[player][header]
+					if header == "sb":
+						val = int(val)
+					splits[team][player][header].append(str(val))
 
 				if "ab" in stats[player]:
 					for header in ["2b", "3b", "sf"]:
