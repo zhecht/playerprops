@@ -259,8 +259,12 @@ def writeSplits():
 
 			if not stats:
 				continue
-				
+
 			date = file.split("/")[-1][:-5]
+			gm2 = False
+			if "gm2" in date:
+				gm2 = True
+				date = date.replace("-gm2", "")
 			game = opp = awayHome = ""
 			for g in schedule[date]:
 				teams = g.split(" @ ")
@@ -272,9 +276,13 @@ def writeSplits():
 						opp = teams[1]
 						awayHome = "A"
 					break
-			#print(date, team)
+			
 			score = scores[date][team]
 			oppScore = scores[date][opp]
+			if gm2:
+				score = scores[date][team+" gm2"]
+				oppScore = scores[date][opp+" gm2"]
+
 			winLoss = "W"
 			if oppScore > score:
 				winLoss = "L"
@@ -297,6 +305,13 @@ def writeSplits():
 					if header not in splits[team][player]:
 						splits[team][player][header] = []
 					splits[team][player][header].append(str(stats[player][header]))
+
+				if "ab" in stats[player]:
+					for header in ["2b", "3b", "sf"]:
+						if header not in stats[player]:
+							if header not in splits[team][player]:
+								splits[team][player][header] = []
+							splits[team][player][header].append("0")
 
 		for player in splits[team]:
 			for hdr in splits[team][player]:
