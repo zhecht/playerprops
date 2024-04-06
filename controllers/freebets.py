@@ -1374,7 +1374,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("francisco lindor", 400, "nym"), ("miguel sano", 450, "laa"), ("adolis garcia", 300, "tex"), ("kris bryant", 420, "col"), ("ryan mcmahon", 420, "col")]
+	plays = [("francisco lindor", 400, "nym"), ("miguel sano", 450, "laa"), ("adolis garcia", 300, "tex"), ("adam duvall", 340, "atl"), ("jose abreu", 450, "hou"), ("kyle tucker", 390, "hou")]
 
 	if args.lineups:
 		writeLineups(plays)
