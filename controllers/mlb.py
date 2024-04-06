@@ -1227,7 +1227,6 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-detroit-tigers-33168225",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-minnesota-twins-33168228",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-st.-louis-cardinals-33168210",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-chicago-cubs-33168212",
@@ -1518,6 +1517,8 @@ def writeDK(date, propArg):
 			elif propArg and "k" in propArg and subCat != 15221:
 				continue
 			elif propArg and "single" in propArg and subCat != 11031:
+				continue
+			elif propArg and "double" in propArg and subCat != 11032:
 				continue
 			time.sleep(0.3)
 			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}"
