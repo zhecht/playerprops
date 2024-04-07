@@ -1818,7 +1818,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	
 	evData[player][f"{prefix}ev"] = ev
 
-def writeDK(date=None):
+def writeDK(date=None, propArg=""):
 	url = "https://sportsbook.draftkings.com/leagues/hockey/nfl"
 
 	if not date:
@@ -1860,6 +1860,8 @@ def writeDK(date=None):
 	lines = {}
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
+			if propArg == "atgs" and subCat != 13809:
+				continue
 			time.sleep(0.3)
 			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42133/categories/{mainCats[mainCat]}"
 			if subCat:
