@@ -63,7 +63,7 @@ def write_stats(date):
 
 			gameId = boxscores[date][game].split("/")[-2]
 			url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
-			outfile = "outmlb2"
+			outfile = "outmlb3"
 			time.sleep(0.3)
 			call(["curl", "-k", url, "-o", outfile])
 
@@ -468,7 +468,7 @@ def write_totals():
 
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
-	outfile = "outmlb"
+	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -905,7 +905,7 @@ def writeRoster():
 		roster[team] = {}
 		time.sleep(0.2)
 		url = f"https://www.espn.com/mlb/team/roster/_/name/{team}/"
-		outfile = "outmlb"
+		outfile = "outmlb3"
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -972,7 +972,7 @@ def write_player_rankings():
 	rankings = {}
 	for idx, page in enumerate(pages):
 		url = baseUrl+page
-		outfile = "outmlb2"
+		outfile = "outmlb3"
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -1016,7 +1016,7 @@ def write_rankings():
 	rankings = {}
 	for idx, page in enumerate(pages):
 		url = baseUrl+page
-		outfile = "outmlb2"
+		outfile = "outmlb3"
 		time.sleep(0.2)
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -1111,7 +1111,7 @@ def write_rankings():
 def write_batting_pitches():
 	url = "https://www.baseball-reference.com/leagues/majors/2023-pitches-batting.shtml"
 	time.sleep(0.2)
-	outfile = "outmlb2"
+	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -1171,7 +1171,7 @@ def write_batting_pitches():
 def write_pitching_pitches():
 	url = "https://www.baseball-reference.com/leagues/majors/2023-pitches-pitching.shtml"
 	time.sleep(0.2)
-	outfile = "outmlb2"
+	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -1341,7 +1341,7 @@ def convertSavantTeam(team):
 def writeSavantParkFactors():
 	url = "https://baseballsavant.mlb.com/leaderboard/statcast-park-factors?type=year&year=2023&batSide=&stat=index_wOBA&condition=All&rolling="
 	time.sleep(0.2)
-	outfile = "outmlb2"
+	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -1384,7 +1384,7 @@ def writeSavantExpected():
 	expected = {}
 	for t in ["", "?type=pitcher"]:
 		time.sleep(0.2)
-		outfile = "outmlb2"
+		outfile = "outmlb3"
 		call(["curl", "-k", url+t, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -1418,7 +1418,7 @@ def writeSavantPitcherAdvanced():
 	url = "https://baseballsavant.mlb.com/leaderboard/custom?year=2023&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
 	advanced = {}
 	time.sleep(0.2)
-	outfile = "outmlb2"
+	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -1483,7 +1483,7 @@ def writeSavantExpectedHR():
 	expected = {}
 	for t in ["", "?year=2023&team=&player_type=Pitcher&min=0"]:
 		time.sleep(0.2)
-		outfile = "outmlb2"
+		outfile = "outmlb3"
 		call(["curl", "-k", url+t, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -1523,7 +1523,7 @@ def writeBVP(dateArg):
 		date = str(datetime.datetime.now() + datetime.timedelta(days=1))[:10]
 
 	for hotCold in ["hot", "cold"]:
-		outfile = "outmlb2"
+		outfile = "outmlb3"
 		time.sleep(0.2)
 		url = f"https://www.rotowire.com/baseball/tables/matchup.php?type={hotCold}batter&bab=1&bhothr=0&bhotavg=0&bhottops=0&start={date}&end={date}"
 		call(["curl", "-k", url, "-o", outfile])
@@ -1554,7 +1554,7 @@ def writeBVP(dateArg):
 def writeTrades():
 
 	url = "https://www.espn.com/mlb/transactions"
-	outfile = "outmlb2"
+	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
