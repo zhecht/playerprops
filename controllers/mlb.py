@@ -1227,6 +1227,7 @@ def writeFanduel():
 	"""
 
 	games = [
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-new-york-yankees-33173362",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-cincinnati-reds-33173346",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-pittsburgh-pirates-33173363",
@@ -1241,7 +1242,7 @@ def writeFanduel():
   "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-san-francisco-giants-33173356"
 ]
 
-	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-houston-astros-33152027"]
+	games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358"]
 	lines = {}
 	for game in games:	
 		gameId = game.split("-")[-1]
