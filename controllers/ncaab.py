@@ -1957,7 +1957,7 @@ def writeDK(date, march):
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
 			outfile = "outnba"
-			call(["curl", url, "--connect-timeout", "60", "-o", outfile])
+			os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' -o {outfile}")
 
 			with open(outfile) as fh:
 				data = json.load(fh)
