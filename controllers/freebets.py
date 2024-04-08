@@ -702,9 +702,9 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr",
 	ev = min(evs)
 
 	if dinger:
-		# 70% conversion * 40% (2 HR/game = $10/$25)
+		# 70% conversion * 40% (2.1 HR/game = 2.1*$5/$25)
 		fairVal = min(x, mult, add)
-		x = 0.28
+		x = 0.2856
 		# 80% conversion * 42% (2.1 HR/game = 2.1*$5/$25)
 		x = .336
 		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
@@ -1374,7 +1374,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("francisco lindor", 400, "nym"), ("miguel sano", 450, "laa"), ("adolis garcia", 300, "tex"), ("adam duvall", 340, "atl"), ("jose abreu", 450, "hou"), ("kyle tucker", 390, "hou")]
+	plays = [("adolis garcia", 215, "tex"), ("salvador perez", 255, "kc"), ("will benson", 470, "cin"), ("bryce harper", 400, "phi"), ("nelson velazquez", 420, "kc")]
 
 	if args.lineups:
 		writeLineups(plays)

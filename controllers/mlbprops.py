@@ -110,7 +110,7 @@ def writeProps(date, propArg):
 		time.sleep(0.4)
 		url = f"https://sportsbook-nash-usmi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}?format=json"
 		outfile = "outmlb2"
-		call(["curl", url, "-o", outfile])
+		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -152,13 +152,13 @@ def writeProps(date, propArg):
 				subCats[prop] = cRow["subcategoryId"]
 
 		for prop in subCats:
-			if propArg and prop != propArg:
+			if propArg and prop not in propArg.split(","):
 				continue
 			time.sleep(0.4)
 			url = f"https://sportsbook-nash-usmi.draftkings.com//sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}/subcategories/{subCats[prop]}?format=json"
 			outfile = "outmlb2"
 			#print(url)
-			call(["curl", url, "-o", outfile])
+			os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' -o {outfile}")
 
 			with open("outmlb2") as fh:
 				data = json.load(fh)
@@ -298,10 +298,6 @@ def writeStaticProps(date=None):
 			json.dump(filteredProps, fh, indent=4)
 
 def convertProp(prop):
-	if prop == "bb_allowed":
-		return "bb"
-	elif prop == "h_allowed":
-		return "h"
 	return prop
 
 def convertRankingsProp(prop):
@@ -918,9 +914,9 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					myProj = (avgIP * 3) + ((avgIP-1) * hip) + ((avgIP-1) * bbip)
 
 					if propName == "bb_allowed":
-						myProj *= float(advancedPitcher.get("p_bb_percent", 0)) * 0.01
+						myProj *= float(advancedPitcher.get("bb_percent", 0)) * 0.01
 					elif propName == "k":
-						myProj *= float(advancedPitcher.get("p_k_percent", 0)) * 0.01
+						myProj *= float(advancedPitcher.get("k_percent", 0)) * 0.01
 					elif propName == "h_allowed":
 						myProj = avgIP * hip
 						
