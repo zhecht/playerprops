@@ -1242,7 +1242,7 @@ def writeFanduel():
   "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-san-francisco-giants-33173356"
 ]
 
-	games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358"]
+	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358"]
 	lines = {}
 	for game in games:	
 		gameId = game.split("-")[-1]
@@ -1251,7 +1251,7 @@ def writeFanduel():
 		game = convertFDTeam(game)
 		lines[game] = {}
 
-		outfile = "outmlb"
+		outfile = "outmlbFD"
 
 		#for tab in ["", "alt-lines-runs"]:
 		for tab in [""]:
