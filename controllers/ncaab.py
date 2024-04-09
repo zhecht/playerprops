@@ -2747,16 +2747,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						if prop == "3ptm":
 							arr = ",".join([x.split("-")[0] for x in stats[team][player]["3pt"].split(",")])
 						else:
-							arr = stats[team][player][prop]
-						totalGames = len(stats[team][player]["min"].split(","))
-						#print(player, team, prop, arr)
-						totalOver = [x for x in arr.split(",") if int(x) > float(playerHandicap)]
-						totalOver = round(len(totalOver) * 100 / totalGames)
-						total5Over = [x for x in arr.split(",")[:5] if int(x) > float(playerHandicap)]
-						total5Over = round(len(total5Over) * 100 / min(totalGames, 5))
-						total10Over = [x for x in arr.split(",")[:10] if int(x) > float(playerHandicap)]
-						total10Over = round(len(total10Over) * 100 / min(totalGames, 10))
-						totalSplits = ",".join(arr.split(",")[:10][::-1])
+							arr = stats[team][player].get(prop, "")
+
+						if arr:
+							totalGames = len(stats[team][player]["min"].split(","))
+							#print(player, team, prop, arr)
+							totalOver = [x for x in arr.split(",") if int(x) > float(playerHandicap)]
+							totalOver = round(len(totalOver) * 100 / totalGames)
+							total5Over = [x for x in arr.split(",")[:5] if int(x) > float(playerHandicap)]
+							total5Over = round(len(total5Over) * 100 / min(totalGames, 5))
+							total10Over = [x for x in arr.split(",")[:10] if int(x) > float(playerHandicap)]
+							total10Over = round(len(total10Over) * 100 / min(totalGames, 10))
+							totalSplits = ",".join(arr.split(",")[:10][::-1])
 
 				for i in range(2):
 					highestOdds = []
