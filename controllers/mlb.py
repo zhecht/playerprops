@@ -1227,14 +1227,10 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-san-francisco-giants-33178461",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-los-angeles-angels-33178468",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33178466",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-san-diego-padres-33178462",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-cincinnati-reds-33178463",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-new-york-yankees-33178473",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-boston-red-sox-33178469",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-atlanta-braves-33178465",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-kansas-city-royals-33178470",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-texas-rangers-33178471"
 ]
