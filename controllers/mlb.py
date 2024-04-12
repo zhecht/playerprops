@@ -1070,6 +1070,8 @@ def writeKambi(date):
 	fullTeam = {}
 	eventIds = {}
 	for event in j["events"]:
+		if "event" not in event:
+			continue
 		if str(datetime.strptime(event["event"]["start"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 			continue
 		game = f"{event['event']['awayName']} @ {event['event']['homeName']}"
