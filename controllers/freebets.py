@@ -1396,7 +1396,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("kyle schwarber", 200, "phi"), ("aaron judge", 250, "nyy")]
+	plays = [("kyle schwarber", 230), ("bryce harper", 340), ("trea turner", 340), ("will benson", 400), ("elly de la cruz", 460), ("kevin pillar", 560)]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1461,14 +1461,18 @@ if __name__ == '__main__':
 
 		with open(f"static/mlbprops/bet365.json") as fh:
 			bet365 = json.load(fh)
+
+		with open(f"static/baseballreference/roster.json") as fh:
+			roster = json.load(fh)
 		
 		output = []
-		for player, odds, team in plays:
+		for player, odds in plays:
 			if player not in ev:
 				output.append(f"{player} taken={odds}")
 				continue
 			currOdds = int(ev[player]["fanduel"])
 			game = ev[player]["game"]
+			team = ev[player]["team"]
 			ou = ev[player]["ou"]
 			currEv = ev[player]["ev"]
 			bet365ev = ev[player]["bet365ev"]

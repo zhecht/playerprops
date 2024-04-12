@@ -9,6 +9,8 @@ import re
 import argparse
 import unicodedata
 import time
+import csv
+from glob import glob
 from twilio.rest import Client
 
 prefix = ""
@@ -1504,11 +1506,14 @@ def writeDK(date, propArg):
 
 	if False:
 		mainCats = {
-			"game lines": 493
+			"game lines": 493,
+			#"game props": 724,
+			#"innings": 729
 		}
 
 		subCats = {
-			493: [13168]
+			493: [4519, 13168, 13169],
+			729: [6720, 6731, 6729],
 		}
 
 	lines = {}
@@ -1543,7 +1548,7 @@ def writeDK(date, propArg):
 				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
 				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
 				if startDt.day != int(date[-2:]):
-					#continue
+					continue
 					pass
 				game = event["name"].lower()
 				games = []
@@ -1890,6 +1895,91 @@ def write365():
 
 	"""
 	pass
+
+def convertRetroTeam(team):
+	team = team.lower()
+	if team == "chn":
+		return "chc"
+	elif team == "cha":
+		return "chw"
+	elif team == "lan":
+		return "lad"
+	elif team == "nyn":
+		return "nym"
+	elif team == "nya":
+		return "nyy"
+	elif team == "sln":
+		return "stl"
+	elif team == "was":
+		return "wsh"
+	elif team == "ana":
+		return "laa"
+	elif team in ["kca", "sdn", "sfn", "tba"]:
+		return team[:2]
+	return team
+
+def writeGamelogs():
+	data = {}
+	# headers https://www.retrosheet.org/gamelogs/glfields.txt
+	for file in glob(f"static/mlbprops/gamelogs/*"):
+		with open(file) as fh:
+			reader = csv.reader(fh)
+			rows = [x for x in reader]
+		for idx, row in enumerate(rows):
+			# 21-37 AB,H,2B,3B,HR,...
+			date = row[0]
+			dh = row[1]
+			year = date[:4]
+			date = f"{date[4:6]}-{date[-2:]}"
+			away = convertRetroTeam(row[3])
+			home = convertRetroTeam(row[6])
+			if dh == "2":
+				away += " gm2"
+				home += " gm2"
+			elif dh == "3":
+				away += " gm3"
+				home += " gm3"
+			game = f"{away} @ {home}"
+
+			awayHR = int(row[21+4])
+			homeHR = int(row[49+4])
+
+			if year not in data:
+				data[year] = {}
+			if date not in data[year]:
+				data[year][date] = {}
+			data[year][date][game] = awayHR + homeHR
+
+	with open("static/baseballreference/gamelogs.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+def readGamelogHomers():
+	with open("static/baseballreference/gamelogs.json") as fh:
+		gamelogs = json.load(fh)
+
+	monthTxt = ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct"]
+	for year in gamelogs:
+		hrs = games = 0
+		months = {}
+		for date in gamelogs[year]:
+			month = date.split("-")[0]
+			if month not in months:
+				months[month] = []
+			for game in gamelogs[year][date]:
+				games += 1
+				hrs += gamelogs[year][date][game]
+
+				months[month].append(gamelogs[year][date][game])
+
+		hrPerGame = round(hrs / games, 2)
+		out = ""
+		for month in months:
+			if month in ["09", "10", "11"]:
+				continue
+			hr = round(sum(months[month]) / len(months[month]), 2)
+			out += f"{monthTxt[int(month)-1]}: {hr}, "
+		print(year, hrPerGame, "HR/G")
+		print("\t"+out)
 
 def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 
@@ -2270,6 +2360,8 @@ if __name__ == '__main__':
 	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--skipdk", action="store_true")
 	parser.add_argument("--bpp", action="store_true")
+	parser.add_argument("--gamelogs", action="store_true")
+	parser.add_argument("--writeGamelogs", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Book")
@@ -2288,6 +2380,11 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
+	if args.writeGamelogs:
+		writeGamelogs()
+
+	if args.gamelogs:
+		readGamelogHomers()
 
 	if args.action:
 		writeActionNetwork(args.date)

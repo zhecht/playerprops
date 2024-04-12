@@ -297,9 +297,6 @@ def writeStaticProps(date=None):
 		with open(f"{prefix}static/betting/mlb_{prop}.json", "w") as fh:
 			json.dump(filteredProps, fh, indent=4)
 
-def convertProp(prop):
-	return prop
-
 def convertRankingsProp(prop):
 	if prop in ["r"]:
 		return "er"
@@ -461,7 +458,10 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				continue
 
 			for propName in propData[game][player]:
-				prop = convertProp(propName)
+				prop = propName
+				convertedProp = prop
+				if "P" in pos:
+					convertedProp = prop.replace("_allowed", "")
 				lastYearAvg = lastYearTotalOver = gamesPlayed = battingNumber = 0
 				hit = False
 				pitcher = pitcherThrows = awayHomeSplits = ""
@@ -492,29 +492,10 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				if prop == "w":
 					line = 0.5
 
-				#
-				bpOdds = 0
-				try:
-					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
-						bp = f"{addNumSuffix(ballparkPalProps[team][player][f'{line}{prop}']['bpRank'])} ({ballparkPalProps[team][player][f'{line}{prop}']['bp']})"
-						bpOdds = ballparkPalProps[team][player][f'{line}{prop}']['bp']
-					else:
-						if prop in ballparkPalProps[team][player]:
-							bp = f"{addNumSuffix(ballparkPalProps[team][player][prop]['bpRank'])} ({ballparkPalProps[team][player][prop]['bp']})"
-							bpOdds = ballparkPalProps[team][player][prop]['bp']
-						else:
-							bp = f"{addNumSuffix(ballparkPalProps[team][player]['h']['bpRank'])} ({ballparkPalProps[team][player]['h']['bp']})"
-							bpOdds = ballparkPalProps[team][player]['h']['bp']
-				except:
-					bp = ""
-
 				# projection
 				projIP = 0
 				try:
-					if propName in projections[team][player]:
-						proj = round(projections[team][player][propName], 2)
-					else:
-						proj = round(projections[team][player][prop], 2)
+					proj = round(projections[team][player][prop], 2)
 
 					if "P" in pos:
 						projIP = round(projections[team][player]["ip"], 2)
@@ -600,9 +581,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					tradeFrom = trades[player]["from"]
 					tradeTo = trades[player]["to"]
 
-				bpDiff = 0
-				if bpOdds and int(overOdds):
-					bpDiff = round((int(overOdds) - bpOdds) / abs(int(overOdds)), 3)
+				bp = bpDiff = bpOdds = 0
 
 				lastYrGamesPlayed = 0
 				prevMatchup = []
@@ -633,9 +612,10 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 							else:
 								sumStat(hdr, againstTeamStats, statsVsTeamCurrYear[t][opp][player])
 				try:
-					overs = againstTeamStats[prop+"Overs"][str(math.ceil(line))]
+					overs = againstTeamStats[convertedProp+"Overs"][str(math.ceil(line))]
 				except:
 					overs = 0
+
 				played = againstTeamStats.get("gamesPlayed", 0)
 				if played:
 					againstTeamTotalOver = round(overs * 100 / played)
@@ -646,29 +626,12 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 						if type(againstTeamLastYearStats[hdr]) is dict:
 							againstTeamLastYearStats[hdr] = dict(againstTeamLastYearStats[hdr])
 
-				for t in teams:
-					if t in averages and player in averages[t]:
-						for yr in averages[t][player]:
-							if yr == "tot":
-								continue
-							overLine = math.ceil(line)
-							try:
-								over = averages[t][player][yr][f"{prop}Overs"][str(overLine)]
-								careerTotalGames += averages[t][player][yr]["gamesPlayed"]
-								careerTotalOver += over
-							except:
-								pass
-
-				if careerTotalGames:
-					careerTotalOver = round(careerTotalOver * 100 / careerTotalGames)
+				if team in averages and player in averages[team]:
+					overLine = math.ceil(line)
 					try:
-						careerAvg = gp = 0
-						for t in teams:
-							gp += averages[t][player]["gamesPlayed"]
-							for p in prop.split("+"):
-								careerAvg += averages[t][player]["tot"][p]
-						careerAvg = round(careerAvg / gp)
-
+						over = averages[team][player]["tot"][f"{convertedProp}Overs"][str(overLine)]
+						careerTotalGames = averages[team][player]["tot"]["gamesPlayed"]
+						careerTotalOver = round(over * 100 / careerTotalGames)
 					except:
 						pass
 
@@ -678,17 +641,16 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					if t in lastYearStats and player in lastYearStats[t]:
 
 						try:
-							propArr = lastYearStats[t][player]["splits"][prop].split(",")
+							propArr = lastYearStats[t][player]["splits"][convertedProp].split(",")
 						except:
 							#print(player, prop, "skipping lastYrStats")
 							continue
 						oppArr = lastYearStats[t][player]["splits"]["opp"].split(",")
 						awayHomeArr = lastYearStats[t][player]["splits"]["awayHome"].split(",")
 						try:
-							lastYearTotalOver = round(lastYearStats[t][player]["tot"][prop+"Overs"][str(int(math.ceil(line)))] * 100 / lastYearStats[t][player]["tot"]["gamesPlayed"])
+							lastYearTotalOver = round(lastYearStats[t][player]["tot"][convertedProp+"Overs"][str(int(math.ceil(line)))] * 100 / lastYearStats[t][player]["tot"]["gamesPlayed"])
 						except:
 							pass
-							#print(prop)
 
 						lastYrLast20 = [int(x) for x in propArr[-20:]]
 						totAwayGames = len([x for x in awayHomeArr if x == "A"])
@@ -708,7 +670,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				lastAll = []
 				awayHomeSplits = [[], []]
 				winLossSplits = [[], []]
-				totalOver = battingAvg = avg = hitter_babip = babip = bbpg = 0
+				totalOver = battingAvg = avg = hitter_babip = babip = babipLastYear = bbpg = 0
 				
 				playerStats = {}
 				if team in stats and player in stats[team] or (tradeFrom and player in stats[tradeFrom]):
@@ -727,33 +689,29 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					if gamesPlayed:
 						bbpg = round(playerStats.get("bb", 0) / gamesPlayed, 2)
 					val = 0
-					currProp = prop
-					if propName in stats[team].get(player, {}) or (tradeFrom and propName in stats[tradeFrom][player]):
-						currProp = propName
-					for p in currProp.split("+"):
-						if player in stats[team]:
-							val += stats[team][player].get(p, 0)
-						if tradeFrom:
-							val += stats[tradeFrom][player].get(p, 0)
+					if player in stats[team]:
+						val = stats[team][player].get(prop, 0)
 					avg = round(val / gamesPlayed, 2)
 
+					p = pitcher
 					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
-						if player in advanced:
-							dem = int(advanced[player]["ab"])-int(advanced[player]["strikeout"])-int(advanced[player]["home_run"])+int(advanced[player]["p_sac_fly"])
-							if dem:
-								babip = format((int(advanced[player]["hit"]) - int(advanced[player]["home_run"])) / dem, '.3f')[1:]
-							pass
+						p = player
 					else:
-						if pitcher in advanced:
-							dem = int(advanced[pitcher]["ab"])-int(advanced[pitcher]["strikeout"])-int(advanced[pitcher]["home_run"])+int(advanced[pitcher]["p_sac_fly"])
-							if dem:
-								babip = format((int(advanced[pitcher]["hit"]) - int(advanced[pitcher]["home_run"])) / dem, '.3f')[1:]
-							pass
-						if playerStats['ab']:
+						if playerStats["ab"]:
 							battingAvg = str(format(round(playerStats['h']/playerStats['ab'], 3), '.3f'))[1:]
-						dem = playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)
+							dem = playerStats["ab"]-playerStats["so"]-playerStats["hr"]+playerStats.get("sf", 0)
+							if dem:
+								hitter_babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
+
+					if p in advanced:
+						dem = int(advanced[p]["ab"])-int(advanced[p]["strikeout"])-int(advanced[p]["home_run"])+int(advanced[p]["p_sac_fly"])
 						if dem:
-							hitter_babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
+							babip = format((int(advanced[p]["hit"]) - int(advanced[p]["home_run"])) / dem, '.3f')[1:]
+
+					if p in advancedLastYear:
+						dem = int(advancedLastYear[p]["ab"])-int(advancedLastYear[p]["strikeout"])-int(advancedLastYear[p]["home_run"])+int(advancedLastYear[p]["p_sac_fly"])
+						if dem:
+							babipLastYear = format((int(advancedLastYear[p]["hit"]) - int(advancedLastYear[p]["home_run"])) / dem, '.3f')[1:]
 					
 				pitcherSummary = pitcherSummaryLastYear = strikePercent = p = ""
 				if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
@@ -764,7 +722,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				if p and p in advanced:
 					pitcherSummary = f"{advanced[p]['p_era']} ERA, {advanced[p]['batting_avg']} AVG, {advanced[p]['xba']} xAVG, {babip} BABIP, {advanced[p]['slg_percent']} SLG, {advanced[p]['xslg']} xSLG, {advanced[p]['woba']} WOBA, {advanced[p]['xwoba']} xWOBA, {advanced[p]['barrel_batted_rate']}% Barrel Batted"
 				if p and p in advancedLastYear:
-					pitcherSummaryLastYear = f"{advancedLastYear[p]['p_era']} ERA, {advancedLastYear[p]['batting_avg']} AVG, {advancedLastYear[p]['xba']} xAVG, {babip} BABIP, {advancedLastYear[p]['slg_percent']} SLG, {advancedLastYear[p]['xslg']} xSLG, {advancedLastYear[p]['woba']} WOBA, {advancedLastYear[p]['xwoba']} xWOBA, {advancedLastYear[p]['barrel_batted_rate']}% Barrel Batted"
+					pitcherSummaryLastYear = f"{advancedLastYear[p]['p_era']} ERA, {advancedLastYear[p]['batting_avg']} AVG, {advancedLastYear[p]['xba']} xAVG, {babipLastYear} BABIP, {advancedLastYear[p]['slg_percent']} SLG, {advancedLastYear[p]['xslg']} xSLG, {advancedLastYear[p]['woba']} WOBA, {advancedLastYear[p]['xwoba']} xWOBA, {advancedLastYear[p]['barrel_batted_rate']}% Barrel Batted"
 
 				over5Innings = []
 				playerSplits = {}
@@ -971,7 +929,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					"hrip": hrip,
 					"kip": kip,
 					"prop": propName,
-					"displayProp": prop,
+					"displayProp": convertedProp,
 					"gamesPlayed": gamesPlayed,
 					"matchups": len(prevMatchup),
 					"line": line or 0,

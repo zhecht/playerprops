@@ -1,6 +1,5 @@
 import argparse
 import datetime
-import glob
 import json
 import math
 import os
@@ -871,7 +870,7 @@ def writeStatsVsTeam():
 									statsVsTeamLastYear[team][player][opp][stat+"Overs"][i] += 1
 
 	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
-		json.dump(statsVsTeam, fh)
+		json.dump(statsVsTeam, fh, indent=4)
 
 	with open(f"{prefix}static/baseballreference/statsVsTeamLastYear.json", "w") as fh:
 		json.dump(statsVsTeamLastYear, fh, indent=4)

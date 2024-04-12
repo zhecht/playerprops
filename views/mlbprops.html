@@ -391,7 +391,7 @@
 				try {
 					field = cell.getField();	
 				} catch {
-					return "";
+					return cell.getValue();
 				}
 				if (parseFloat(val1) >= 50) {
 					val1 = "<div class='positive'>"+val1+"</div>";
