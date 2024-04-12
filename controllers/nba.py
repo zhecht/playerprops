@@ -2846,7 +2846,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
-		"mgm": mgmLines,
+		#"mgm": mgmLines,
 		"fd": fdLines,
 		"bv": bvLines,
 		"dk": dkLines,
@@ -3052,7 +3052,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 							if not o or o == "-":
 								continue
-							highestOdds.append(int(o))
+
+							try:
+								highestOdds.append(int(o))
+							except:
+								continue
 							odds.append(ou)
 							books.append(book)
 

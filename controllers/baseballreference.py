@@ -548,15 +548,9 @@ def write_schedule(date):
 	with open(f"{prefix}static/baseballreference/schedule.json", "w") as fh:
 		json.dump(schedule, fh, indent=4)
 
-def write_averages():
+def writeYears():
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		ids = json.load(fh)
-
-	with open(f"{prefix}static/baseballreference/averages.json") as fh:
-		averages = json.load(fh)
-
-	with open(f"{prefix}static/baseballreference/statsVsTeam.json") as fh:
-		statsVsTeam = json.load(fh)
 
 	currYear = str(datetime.datetime.now())[:4]
 
@@ -573,11 +567,8 @@ def write_averages():
 
 	if False:
 		ids = {
-			"ari": {
-				"ketel marte": 32512
-			},
-			"det": {
-				"tarik skubal": 42409
+			"bos": {
+				"masataka yoshida": 4872598
 			}
 		}
 
@@ -598,21 +589,10 @@ def write_averages():
 				continue
 			years = [y.text for y in select.findAll("option")]
 
-			if team not in averages:
-				averages[team] = {}
-			if player not in averages[team]:
-				averages[team][player] = {"tot": {}}
-
-			if team not in statsVsTeam:
-				statsVsTeam[team] = {}
-
-			averages[team][player] = {"tot": {}}
-			statsVsTeam[team][player] = {}
-
 			for year in years:
 				if year == currYear:
 					continue
-				if year != "2023":
+				if year != "2020":
 					#continue
 					pass
 				if len(year) != 4:
@@ -631,9 +611,6 @@ def write_averages():
 					pass
 				if player not in yearStats[year][team]:
 					yearStats[year][team][player] = {}
-				
-				if year not in averages[team][player]:
-					averages[team][player][year] = {}
 
 				yearStats[year][team][player] = {"tot": {}, "splits": {}}
 				gamesPlayed = 0
@@ -645,7 +622,9 @@ def write_averages():
 				soup = BS(open(outfile, 'rb').read(), "lxml")
 
 				headers = []
-				for row in soup.findAll("tr"):
+				table = soup.find("div", class_="gamelog")
+				rows = table.findAll("tr")
+				for rowIdx, row in enumerate(rows):
 					try:
 						title = row.findPrevious("div", class_="Table__Title").text.lower()
 					except:
@@ -658,7 +637,9 @@ def write_averages():
 							tds = row.findAll("th")[3:]
 						for td in tds:
 							headers.append(td.text.strip().lower())
-					elif row.text.startswith("Totals"):
+					elif "totals" in row.text.lower() or rowIdx == len(rows) - 1:
+						if "totals" not in row.text.lower() and "totals_row" not in row.get("class"):
+							continue
 						for idx, td in enumerate(row.findAll("td")[1:]):
 							header = headers[idx]
 							try:
@@ -687,10 +668,6 @@ def write_averages():
 								opp = tds[1].findAll("a")[-1].get("href").split("/")[-2]
 							except:
 								continue
-
-							if opp not in statsVsTeam[team][player]:
-								statsVsTeam[team][player][opp] = {"gamesPlayed": 0}
-							statsVsTeam[team][player][opp]["gamesPlayed"] += 1
 
 							result = "L" if tds[2].find("div", class_="loss-stat") else "W"
 							if "splits" not in yearStats[year][team][player]:
@@ -767,72 +744,64 @@ def write_averages():
 								hdrOver = header+"Overs"
 								if hdrOver not in yearStats[year][team][player]["tot"]:
 									yearStats[year][team][player]["tot"][hdrOver] = {}
-								if hdrOver not in statsVsTeam[team][player][opp]:
-									statsVsTeam[team][player][opp][hdrOver] = {}
 								for i in range(1, int(val)+1):
 									if i not in yearStats[year][team][player]["tot"][hdrOver]:
 										yearStats[year][team][player]["tot"][hdrOver][i] = 0
-									if i not in statsVsTeam[team][player][opp][hdrOver]:
-										statsVsTeam[team][player][opp][hdrOver][i] = 0
 									yearStats[year][team][player]["tot"][hdrOver][i] += 1
-									statsVsTeam[team][player][opp][hdrOver][i] += 1
-
-							# statsVsTeam
-							for hdr in yearStats[year][team][player]["splits"]:
-								if hdr in ["awayHome", "opp", "winLoss"] or "Overs" in hdr:
-									continue
-								if hdr in ["dec", "rel"]:
-									val = yearStats[year][team][player]["splits"][hdr][-1]
-									if val in ["W", "L", "SV", "HLD", "BLSV"]:
-										hdr = val
-									else:
-										continue
-									if hdr not in statsVsTeam[team][player][opp]:
-										statsVsTeam[team][player][opp][hdr] = 0
-									statsVsTeam[team][player][opp][hdr] += 1
-								else:
-									if hdr not in statsVsTeam[team][player][opp]:
-										statsVsTeam[team][player][opp][hdr] = 0
-
-									#print(year,hdr, yearStats[year][team][player]["splits"][hdr])
-									statsVsTeam[team][player][opp][hdr] += yearStats[year][team][player]["splits"][hdr][-1]
-
-
 
 				for hdr in yearStats[year][team][player]["splits"]:
 					arr = ",".join([str(x) for x in yearStats[year][team][player]["splits"][hdr]][::-1])
 					yearStats[year][team][player]["splits"][hdr] = arr
-
-				#print(year, player in averages[team])
-				averages[team][player][year] = yearStats[year][team][player]["tot"].copy()
-				for hdr in averages[team][player][year]:
-					if "Overs" in hdr:
-						if hdr not in averages[team][player]["tot"]:
-							averages[team][player]["tot"][hdr] = {}
-						for val in averages[team][player][year][hdr]:
-							if val not in averages[team][player]["tot"][hdr]:
-								averages[team][player]["tot"][hdr][val] = 0
-							averages[team][player]["tot"][hdr][val] += averages[team][player][year][hdr][val]
-					else:
-						if hdr in ["rel", "dec"]:
-							continue
-						if hdr not in averages[team][player]["tot"]:
-							averages[team][player]["tot"][hdr] = 0
-						averages[team][player]["tot"][hdr] += averages[team][player][year][hdr]
 
 
 				with open(f"{prefix}static/mlbprops/stats/{year}.json", "w") as fh:
 					#print(year)
 					json.dump(yearStats[year], fh, indent=4)
 
-				with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
-					json.dump(statsVsTeam, fh)
+def writeAverages():
+	averages = {}
 
-				with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
-					json.dump(averages, fh, indent=4)
+	for year in os.listdir(f"{prefix}static/mlbprops/stats/"):
+		year = year[:4]
+
+		with open(f"static/mlbprops/stats/{year}.json") as fh:
+			yearStats = json.load(fh)
+
+		for team in yearStats:
+			if team not in averages:
+				averages[team] = {}
+			for player in yearStats[team]:
+				if player not in averages[team]:
+					averages[team][player] = {"tot": {}}
+
+				averages[team][player][year] = yearStats[team][player]["tot"].copy()
+
+				for hdr in averages[team][player][year]:
+					if hdr not in averages[team][player]["tot"]:
+						averages[team][player]["tot"][hdr] = averages[team][player][year][hdr]
+					elif hdr.endswith("Overs"):
+						for over in averages[team][player][year][hdr]:
+							if over not in averages[team][player]["tot"][hdr]:
+								averages[team][player]["tot"][hdr][over] = 0
+							averages[team][player]["tot"][hdr][over] += averages[team][player][year][hdr][over]
+					else:
+						val = averages[team][player][year][hdr]
+						try:
+							val = int(val)
+						except:
+							try:
+								val = float(val)
+							except:
+								continue
+						averages[team][player]["tot"][hdr] += val
+
+	with open(f"{prefix}static/baseballreference/averages.json", "w") as fh:
+		json.dump(averages, fh, indent=4)
 
 def writeStatsVsTeam():
 	statsVsTeam = {}
+	statsVsTeamLastYear = {}
+	lastYear = str(datetime.datetime.now().year - 1)
 	#statsVsTeam[team][player][opp][hdr]
 	for year in os.listdir(f"{prefix}static/mlbprops/stats/"):
 		year = year[:4]
@@ -844,9 +813,13 @@ def writeStatsVsTeam():
 		for team in stats:
 			if team not in statsVsTeam:
 				statsVsTeam[team] = {}
+			if team not in statsVsTeamLastYear:
+				statsVsTeamLastYear[team] = {}
 			for player in stats[team]:
 				if player not in statsVsTeam[team]:
 					statsVsTeam[team][player] = {}
+				if year == lastYear and player not in statsVsTeamLastYear[team]:
+					statsVsTeamLastYear[team][player] = {}
 				splits = stats[team][player]["splits"]
 				if not splits:
 					continue
@@ -854,7 +827,12 @@ def writeStatsVsTeam():
 				for idx, opp in enumerate(opps):
 					if opp not in statsVsTeam[team][player]:
 						statsVsTeam[team][player][opp] = {"gamesPlayed": 0}
+					if year == lastYear and opp not in statsVsTeamLastYear[team][player]:
+						statsVsTeamLastYear[team][player][opp] = {"gamesPlayed": 0}
+
 					statsVsTeam[team][player][opp]["gamesPlayed"] += 1
+					if year == lastYear:
+						statsVsTeamLastYear[team][player][opp]["gamesPlayed"] += 1
 					for stat in splits:
 						if stat in ["awayHome", "opp", "winLoss"]:
 							continue
@@ -870,12 +848,33 @@ def writeStatsVsTeam():
 
 						try:
 							statsVsTeam[team][player][opp][stat] += val
+							if year == lastYear:
+								statsVsTeamLastYear[team][player][opp][stat] += val
 						except:
 							statsVsTeam[team][player][opp][stat] = val
+							if year == lastYear:
+								statsVsTeamLastYear[team][player][opp][stat] = val
 
+						if stat in ["h", "1b", "tb", "r", "rbi", "outs", "h+r+rbi", "bb", "hr", "sb", "so", "k", "er"]:
+							if stat+"Overs" not in statsVsTeam[team][player][opp]:
+								statsVsTeam[team][player][opp][stat+"Overs"] = {}
+							if year == lastYear and stat+"Overs" not in statsVsTeamLastYear[team][player][opp]:
+								statsVsTeamLastYear[team][player][opp][stat+"Overs"] = {}
+							for i in range(1, int(val)+1):
+								if i not in statsVsTeam[team][player][opp][stat+"Overs"]:
+									statsVsTeam[team][player][opp][stat+"Overs"][i] = 0
+								if year == lastYear and i not in statsVsTeamLastYear[team][player][opp][stat+"Overs"]:
+									statsVsTeamLastYear[team][player][opp][stat+"Overs"][i] = 0
+
+								statsVsTeam[team][player][opp][stat+"Overs"][i] += 1
+								if year == lastYear:
+									statsVsTeamLastYear[team][player][opp][stat+"Overs"][i] += 1
 
 	with open(f"{prefix}static/baseballreference/statsVsTeam.json", "w") as fh:
 		json.dump(statsVsTeam, fh)
+
+	with open(f"{prefix}static/baseballreference/statsVsTeamLastYear.json", "w") as fh:
+		json.dump(statsVsTeamLastYear, fh, indent=4)
 
 
 def strip_accents(text):
@@ -1415,68 +1414,76 @@ def writeSavantExpected():
 		json.dump(expected, fh, indent=4)
 
 def writeSavantPitcherAdvanced():
-	url = "https://baseballsavant.mlb.com/leaderboard/custom?year=2023&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
+
 	advanced = {}
-	time.sleep(0.2)
-	outfile = "outmlb3"
-	call(["curl", "-k", url, "-o", outfile])
-	soup = BS(open(outfile, 'rb').read(), "lxml")
+	year = datetime.datetime.now().year
+	lastYear = year - 1
+	for yr in [year, lastYear]:
+		url = f"https://baseballsavant.mlb.com/leaderboard/custom?year={yr}&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
+		
+		time.sleep(0.2)
+		outfile = "outmlb3"
+		call(["curl", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-	data = "{}"
-	for script in soup.findAll("script"):
-		if "var data" in script.string:
-			m = re.search(r"var data = \[{(.*?)}\];", script.string)
-			if m:
-				data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
-				data = f"{{{data}}}"
-				break
+		data = "{}"
+		for script in soup.findAll("script"):
+			if "var data" in script.string:
+				m = re.search(r"var data = \[{(.*?)}\];", script.string)
+				if m:
+					data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+					data = f"{{{data}}}"
+					break
 
-	data = eval(data)
-	
-	for row in data:
-		player = strip_accents(row["player_name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
-		last, first = map(str, player.split(", "))
-		player = f"{first} {last}"
+		data = eval(data)
+		
+		for row in data:
+			player = strip_accents(row["player_name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+			last, first = map(str, player.split(", "))
+			player = f"{first} {last}"
 
-		advanced[player] = row.copy()
+			advanced[player] = row.copy()
 
-	sortedRankings = {}
-	for player in advanced:
-		for hdr in advanced[player]:
-			if "_rate" in hdr or "_percent" in hdr or "_swing" in hdr or hdr.startswith("x") or hdr in ["ba", "bacon", "babip", "obp", "slg", "iso", "woba"]:
-				if hdr not in sortedRankings:
-					sortedRankings[hdr] = []
+		sortedRankings = {}
+		for player in advanced:
+			for hdr in advanced[player]:
+				if "_rate" in hdr or "_percent" in hdr or "_swing" in hdr or hdr.startswith("x") or hdr in ["ba", "bacon", "babip", "obp", "slg", "iso", "woba"]:
+					if hdr not in sortedRankings:
+						sortedRankings[hdr] = []
 
+					try:
+						val = float(advanced[player][hdr])
+					except:
+						val = 0
+					sortedRankings[hdr].append(val)
+
+		for hdr in sortedRankings:
+			reverse = True
+			# Flip if it's better for the value to be higher
+			if hdr in ["k_percent", "p_k_percent", "in_zone_percent", "edge_percent", "z_swing_percent", "oz_swing_percent", "whiff_percent", "f_strike_percent", "swing_percent", "z_swing_miss_percent", "oz_swing_miss_percent", "popups_percent", "flyballs_percent", "linedrives_percent", "groundballs_percent"]:
+				reverse = False
+			sortedRankings[hdr] = sorted(sortedRankings[hdr], reverse=reverse)
+
+		for player in advanced:
+			newData = {}
+			for hdr in advanced[player]:
 				try:
 					val = float(advanced[player][hdr])
+					idx = sortedRankings[hdr].index(val)
+					dupes = sortedRankings[hdr].count(val)
+
+					newData[hdr] = ((idx + 0.5 * dupes) / len(sortedRankings[hdr])) * 100
 				except:
-					val = 0
-				sortedRankings[hdr].append(val)
+					pass
 
-	for hdr in sortedRankings:
-		reverse = True
-		# Flip if it's better for the value to be higher
-		if hdr in ["k_percent", "p_k_percent", "in_zone_percent", "edge_percent", "z_swing_percent", "oz_swing_percent", "whiff_percent", "f_strike_percent", "swing_percent", "z_swing_miss_percent", "oz_swing_miss_percent", "popups_percent", "flyballs_percent", "linedrives_percent", "groundballs_percent"]:
-			reverse = False
-		sortedRankings[hdr] = sorted(sortedRankings[hdr], reverse=reverse)
+			for hdr in newData:
+				advanced[player][hdr+"Percentile"] = round(newData[hdr], 2)
 
-	for player in advanced:
-		newData = {}
-		for hdr in advanced[player]:
-			try:
-				val = float(advanced[player][hdr])
-				idx = sortedRankings[hdr].index(val)
-				dupes = sortedRankings[hdr].count(val)
-
-				newData[hdr] = ((idx + 0.5 * dupes) / len(sortedRankings[hdr])) * 100
-			except:
-				pass
-
-		for hdr in newData:
-			advanced[player][hdr+"Percentile"] = round(newData[hdr], 2)
-
-	with open(f"{prefix}static/baseballreference/advanced.json", "w") as fh:
-		json.dump(advanced, fh, indent=4)
+		url = "advanced"
+		if yr == lastYear:
+			url += "LastYear"
+		with open(f"{prefix}static/baseballreference/{url}.json", "w") as fh:
+			json.dump(advanced, fh, indent=4)
 
 def writeSavantExpectedHR():
 	url = "https://baseballsavant.mlb.com/leaderboard/home-runs"
@@ -1662,8 +1669,9 @@ if __name__ == "__main__":
 		date = str(date)[:10]
 
 	if args.averages:
-		write_averages()
+		writeYears()
 		writeStatsVsTeam()
+		writeAverages()
 	elif args.bvp:
 		writeBVP(date)
 	elif args.ph:
@@ -1699,9 +1707,10 @@ if __name__ == "__main__":
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
-	writeStatsVsTeam()
+	#writeYears()
+	#writeStatsVsTeam()
+	#writeAverages()
 	#write_pitching()
-	#writeYearAverages()
 	#write_schedule(date)
 	#write_stats(date)
 	#write_totals()

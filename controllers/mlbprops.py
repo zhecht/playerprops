@@ -392,6 +392,8 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 		ballparkPalProps = json.load(fh)
 	with open(f"{prefix}static/baseballreference/advanced.json") as fh:
 		advanced = json.load(fh)
+	with open(f"{prefix}static/baseballreference/advancedLastYear.json") as fh:
+		advancedLastYear = json.load(fh)
 	with open(f"{prefix}static/baseballreference/sortedRankings.json") as fh:
 		sortedRankings = json.load(fh)
 	with open(f"{prefix}static/baseballreference/leftOrRight.json") as fh:
@@ -416,6 +418,8 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 		playerPitchingPitches = json.load(fh)
 	with open(f"{prefix}static/baseballreference/statsVsTeamCurrYear.json") as fh:
 		statsVsTeamCurrYear = json.load(fh)
+	with open(f"{prefix}static/baseballreference/statsVsTeamLastYear.json") as fh:
+		statsVsTeamLastYear = json.load(fh)
 	with open(f"{prefix}static/baseballreference/trades.json") as fh:
 		trades = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
@@ -539,14 +543,17 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				# advanced
 				era = savantId = ""
 				try:
+					p = pitcher
 					if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
-						advancedPitcher = advanced[player].copy()
-					else:
-						advancedPitcher = advanced[pitcher].copy()
+						p = player
+
+					advancedPitcher = advanced[p].copy()
+					advancedPitcherLastYear = advancedLastYear[p].copy()
 					era = advancedPitcher["p_era"]
 					savantId = advancedPitcher["player_id"]
 				except:
 					advancedPitcher = {}
+					advancedPitcherLastYear = {}
 
 				# pitches
 				try:
@@ -598,22 +605,6 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					bpDiff = round((int(overOdds) - bpOdds) / abs(int(overOdds)), 3)
 
 				lastYrGamesPlayed = 0
-				lastYr = datetime.now().year - 1
-				if team in averages and player in averages[team] and lastYr in averages[team][player]:
-					lastYrGamesPlayed = averages[team][player][lastYr].get("gamesPlayed", 0)
-					for p in prop.split("+"):
-						lastYearAvg += averages[team][player][lastYr].get(p, 0)
-
-					if lastYrGamesPlayed:
-						lastYearAvg = round(lastYearAvg / lastYrGamesPlayed, 2)
-				elif tradeFrom and tradeFrom in averages and player in averages[tradeFrom] and lastYr in averages[tradeFrom][player]:
-					lastYrGamesPlayed = averages[tradeFrom][player][lastYr].get("gamesPlayed", 0)
-					for p in prop.split("+"):
-						lastYearAvg += averages[tradeFrom][player][lastYr].get(p, 0)
-
-					if lastYrGamesPlayed:
-						lastYearAvg = round(lastYearAvg / lastYrGamesPlayed, 2)
-
 				prevMatchup = []
 				lastTotalGames = careerTotalGames = careerTotalOver = careerAvg = againstTeamTotalOver = 0
 				lastYrAwayHomeSplits = [[], []]
@@ -621,7 +612,10 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				againstTeamLastYearStats = {"ab": 0, "h": 0, "hr": 0, "rbi": 0, "bb": 0, "so": 0}
 				againstTeamStats = {}
 				if team in statsVsTeam and player in statsVsTeam[team]:
-					againstTeamStats = statsVsTeam[team][player].get(opp, {})
+					againstTeamStats = dict(statsVsTeam[team][player].get(opp, {}))
+					for hdr in againstTeamStats:
+						if type(againstTeamStats[hdr]) is dict:
+							againstTeamStats[hdr] = dict(againstTeamStats[hdr])
 
 				teams = [team]
 				if tradeFrom:
@@ -643,14 +637,14 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				except:
 					overs = 0
 				played = againstTeamStats.get("gamesPlayed", 0)
-
-				for t in teams:
-					if t in statsVsTeamCurrYear and opp in statsVsTeamCurrYear[t] and player in statsVsTeamCurrYear[t][opp]:
-						if f"{prop}Overs" in statsVsTeamCurrYear[t][opp][player]:
-							overs += statsVsTeamCurrYear[t][opp][player][prop+"Overs"].get(str(math.ceil(line)), 0)
-						played += statsVsTeamCurrYear[t][opp][player]["gamesPlayed"]
 				if played:
 					againstTeamTotalOver = round(overs * 100 / played)
+
+				if team in statsVsTeamLastYear and player in statsVsTeamLastYear[team]:
+					againstTeamLastYearStats = dict(statsVsTeamLastYear[team][player].get(opp, {}))
+					for hdr in againstTeamLastYearStats:
+						if type(againstTeamLastYearStats[hdr]) is dict:
+							againstTeamLastYearStats[hdr] = dict(againstTeamLastYearStats[hdr])
 
 				for t in teams:
 					if t in averages and player in averages[t]:
@@ -761,13 +755,16 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 						if dem:
 							hitter_babip = format((playerStats["h"] - playerStats["hr"]) / dem, '.3f')[1:]
 					
-				pitcherSummary = strikePercent = ""
+				pitcherSummary = pitcherSummaryLastYear = strikePercent = p = ""
 				if "P" in pos and ("ohtani" not in player or prop in ["w", "k", "h_allowed", "bb_allowed", "er"]):
-					if player in advanced:
-						pitcherSummary = f"{advanced[player]['batting_avg']} AVG, {advanced[player]['xba']} xAVG, {babip} BABIP, {advanced[player]['slg_percent']} SLG, {advanced[player]['xslg']} xSLG, {advanced[player]['woba']} WOBA, {advanced[player]['xwoba']} xWOBA, {advanced[player]['barrel_batted_rate']}% Barrel Batted"
+					p = player
 				else:
-					if pitcher and pitcher in advanced:
-						pitcherSummary = f"{advanced[pitcher]['p_era']} ERA, {advanced[pitcher]['batting_avg']} AVG, {advanced[pitcher]['xba']} xAVG, {babip} BABIP, {advanced[pitcher]['slg_percent']} SLG, {advanced[pitcher]['xslg']} xSLG, {advanced[pitcher]['woba']} WOBA, {advanced[pitcher]['xwoba']} xWOBA, {advanced[pitcher]['barrel_batted_rate']}% Barrel Batted"
+					p = pitcher
+
+				if p and p in advanced:
+					pitcherSummary = f"{advanced[p]['p_era']} ERA, {advanced[p]['batting_avg']} AVG, {advanced[p]['xba']} xAVG, {babip} BABIP, {advanced[p]['slg_percent']} SLG, {advanced[p]['xslg']} xSLG, {advanced[p]['woba']} WOBA, {advanced[p]['xwoba']} xWOBA, {advanced[p]['barrel_batted_rate']}% Barrel Batted"
+				if p and p in advancedLastYear:
+					pitcherSummaryLastYear = f"{advancedLastYear[p]['p_era']} ERA, {advancedLastYear[p]['batting_avg']} AVG, {advancedLastYear[p]['xba']} xAVG, {babip} BABIP, {advancedLastYear[p]['slg_percent']} SLG, {advancedLastYear[p]['xslg']} xSLG, {advancedLastYear[p]['woba']} WOBA, {advancedLastYear[p]['xwoba']} xWOBA, {advancedLastYear[p]['barrel_batted_rate']}% Barrel Batted"
 
 				over5Innings = []
 				playerSplits = {}
@@ -960,6 +957,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					"againstTeamLastYearStats": againstTeamLastYearStatsDisplay,
 					"againstTeamLastYearStatsPerAB": againstTeamLastYearStatsPerAB,
 					"pitcherSummary": pitcherSummary,
+					"pitcherSummaryLastYear": pitcherSummaryLastYear,
 					"pitcher": pitcher.split(" ")[-1].title(),
 					"era": era,
 					"pitcherThrows": pitcherThrows,

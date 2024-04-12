@@ -1362,6 +1362,9 @@ def writeFanduelManual():
 				player = parsePlayer(label.split(" -")[0]);
 				prop = "saves";
 			} else if (label.indexOf("shots on goal") >= 0) {
+				if (label.indexOf("period") >= 0) {
+					continue;
+				}
 				player = parsePlayer(label.split(" shots")[0]);
 				prop = "sog";
 			} else if (label.indexOf(awayFull+" total goals") >= 0) {
