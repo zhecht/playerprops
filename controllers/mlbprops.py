@@ -764,6 +764,8 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					oppRankVal = str(rankings[opp][rankingsProp]["season"])
 					oppRank = rankings[opp][rankingsProp]['rank']
 					oppRankLastYear = rankings[opp][rankingsProp].get('lastYearRank', 0)
+					if rankingsProp in ["so"]:
+						oppRankLastYear = 30 - oppRankLastYear
 					oppRankLast3 = rankings[opp][rankingsProp].get('last3', 0)
 					oppABRank = rankings[opp]["opp_ab"]["rank"]
 

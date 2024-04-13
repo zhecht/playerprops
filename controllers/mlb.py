@@ -51,6 +51,52 @@ def convertTeam(team):
 		t = "chw"
 	return t
 
+def getSuffix(num):
+	if num >= 11 and num <= 13:
+		return "th"
+	elif num % 10 == 1:
+		return "st"
+	elif num % 10 == 2:
+		return "nd"
+	elif num % 10 == 3:
+		return "rd"
+	return "th"
+
+def convertRankingsProp(prop):
+	if prop in ["r"]:
+		return "er"
+	elif prop == "rbi":
+		return "opp_rbi"
+	elif prop == "er":
+		return "r"
+	elif prop == "single":
+		return "opp_1b"
+	elif prop == "double":
+		return "opp_2b"
+	elif prop == "sb":
+		return "opp_sb"
+	elif prop == "tb":
+		return "opp_tb"
+	elif prop == "k":
+		return "so"
+	elif prop == "bb":
+		return "bb_allowed"
+	elif prop == "bb_allowed":
+		return "bb"
+	elif prop == "hr_allowed":
+		return "hr"
+	elif prop == "hr":
+		return "hr_allowed"
+	elif prop == "h_allowed":
+		return "h"
+	elif prop == "h":
+		return "h_allowed"
+	elif prop == "h+r+rbi_allowed":
+		return "h+r+rbi"
+	elif prop == "h+r+rbi":
+		return "h+r+rbi_allowed"
+	return prop
+
 def strip_accents(text):
 	try:
 		text = unicode(text, 'utf-8')
@@ -76,68 +122,6 @@ def convertAmericanOdds(avg):
 	else:
 		avg = -100 / (avg - 1)
 	return round(avg)
-
-
-def writeBPP(date):
-
-	if not date:
-		date = datetime.now()
-		date = str(date)[:10]
-
-	res = {}
-	books = ["bpp", "fn", "betonline", "bet365", "sugarhouse", "mgm", "espnbet"]
-	props = [(10, "hr"), (7, "single"), (8, "double"), (20, "k")]
-	#props = [(20, "k")]
-	for propIdx, prop in props:
-		for side in [1,-1]:
-			time.sleep(0.2)
-			url = f"https://www.ballparkpal.com/PlayerProps.php?book1=15&book2=8&book3=27&book4=22&book5=5&book6=14&BetSide={side}&date={date}&BetMarket={propIdx}"
-			outfile = "outmlb"
-			os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
-
-			soup = BS(open(outfile, 'rb').read(), "lxml")
-
-			for row in soup.find("table", id="table_id").findAll("tr")[1:]:
-				tds = row.findAll("td")
-				team = tds[0].text.lower().strip()
-				if team == "was":
-					team = "wsh"
-				player = parsePlayer(tds[1].text.strip())
-
-				if team not in res:
-					res[team] = {}
-				if player not in res[team]:
-					res[team][player] = {}
-				if prop not in res[team][player]:
-					res[team][player][prop] = {}
-
-				line = tds[5].text
-				if prop in ["single", "double"] and line != "0.5":
-					continue
-				for td, book in zip(tds[6:], books):
-					if not td.text:
-						continue
-					if book in res[team][player][prop]:
-						if book == "bpp":
-							continue
-						if prop == "k":
-							if line in res[team][player][prop][book]:
-								res[team][player][prop][book][line] += "/"+td.text
-							else:
-								res[team][player][prop][book][line] = td.text
-						else:
-							res[team][player][prop][book] += "/"+td.text
-					else:
-						if prop == "k":
-							if book not in res[team][player][prop]:
-								res[team][player][prop][book] = {}
-							res[team][player][prop][book][line] = td.text
-						else:
-							res[team][player][prop][book] = td.text
-
-	with open("static/mlb/bpp.json", "w") as fh:
-		json.dump(res, fh, indent=4)
-
 
 actionNetworkBookIds = {
 	1541: "draftkings",
@@ -1234,6 +1218,7 @@ def writeFanduel():
 	"""
 
 	games = [
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-cleveland-guardians-33187992",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-detroit-tigers-33186694",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-new-york-mets-33186696",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-chicago-white-sox-33186697",
@@ -2017,8 +2002,19 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	#with open(f"{prefix}static/mlb/caesars.json") as fh:
-	#	czLines = json.load(fh)
+	with open(f"{prefix}static/baseballreference/splits.json") as fh:
+		splits = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/rankings.json") as fh:
+		rankings = json.load(fh)
+
+	year = datetime.now().year
+	lastYear = year - 1
+	with open(f"{prefix}static/mlbprops/stats/{lastYear}.json") as fh:
+		lastYearStats = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -2040,7 +2036,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
-	if propArg in ["k", "single", "double", "sb"]:
+	if propArg in ["k", "single", "double", "sb", "h"]:
 		with open(f"static/mlbprops/bet365_{propArg}s.json") as fh:
 			bet365 = json.load(fh)
 		j = {}
@@ -2151,7 +2147,41 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					if len(books) < 2:
 						continue
 
-					#print(game, prop, handicap, highestOdds, books, odds)
+					splitsDisplay = []
+					team = opp = ""
+					totalOver = totalOverLastYear = 0
+					convertedProp = prop.replace("single", "1b").replace("double", "2b")
+					if player:
+						away, home = map(str, game.split(" @ "))
+						team = away
+						opp = home
+						if player in roster[home]:
+							team = home
+							opp = away
+						ou = playerHandicap
+						if not ou.strip():
+							ou = "0.5"
+						playerSplits = splits[team].get(player, {})
+
+						if convertedProp in playerSplits:
+							splitsDisplay = playerSplits[convertedProp].split(",")
+							totalOver = round(len([x for x in splitsDisplay if int(x) > float(ou)]) * 100 / len(splitsDisplay))
+						
+						if team in lastYearStats and player in lastYearStats[team] and convertedProp+"Overs" in lastYearStats[team][player]["tot"]:
+							try:
+								totalOverLastYear = round(lastYearStats[team][player]["tot"][convertedProp+"Overs"][str(int(math.ceil(float(ou))))] * 100 / lastYearStats[team][player]["tot"]["gamesPlayed"])
+							except:
+								pass
+
+					oppRank = oppRankLastYear = 0
+					rankingsProp = convertRankingsProp(prop)
+					if opp and rankingsProp in rankings[opp]:
+						oppRank = rankings[opp][rankingsProp]['rank']
+						oppRank = f"{oppRank}{getSuffix(oppRank)}"
+						oppRankLastYear = rankings[opp][rankingsProp].get('lastYearRank', 0)
+						if oppRankLastYear and "opp" in rankingsProp:
+							oppRankLastYear = 30 - oppRankLastYear
+						oppRankLastYear = f"{oppRankLastYear}{getSuffix(oppRankLastYear)}"
 
 					pn = ""
 					try:
@@ -2199,7 +2229,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						line = maxOdds
 
 					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
-					#print(maxOU in l, maxOU, l)
+
+					implied = 0
+					if line > 0:
+						implied = 100 / (line + 100)
+					else:
+						implied = -1*line / (-1*line + 100)
+					implied *= 100
+
 					l.remove(maxOU)
 					books.remove(evBook)
 					if pn:
@@ -2254,6 +2291,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						if float(evData[key]["ev"]) > 0:
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
+						evData[key]["implied"] = implied
 						evData[key]["game"] = game
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
@@ -2269,6 +2307,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
+						evData[key]["splitsDisplay"] = ",".join(splitsDisplay[-10:])
+						evData[key]["totalOver"] = totalOver
+						evData[key]["totalOverLastYear"] = totalOverLastYear
+						evData[key]["oppRank"] = oppRank
+						evData[key]["oppRankLastYear"] = oppRankLastYear
 
 	with open(f"{prefix}static/mlb/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
@@ -2286,15 +2329,16 @@ def sortEV(propArg=""):
 	for row in sorted(data):
 		print(row[:-1])
 
-	hdrs = ["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "BV"]
-	if propArg not in ["single", "double", "sb"]:
+	hdrs = ["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "BV"]
+	if propArg not in ["single", "double", "sb", "h"]:
 		hdrs.insert(1, "PN EV")
 		hdrs.extend(["PN"])
 	if propArg != "single":
 		hdrs.append("Kambi")
-	if propArg in ["k", "single", "double", "sb"]:
+	if propArg in ["k", "single", "double", "sb", "h"]:
 		hdrs.insert(hdrs.index("FD")+1, "bet365")
 	hdrs.append("CZ")
+	hdrs.extend(["SZN", "LYR", "Splits", "Opp Rank", "LYR Opp Rank"])
 	output = "\t".join(hdrs) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["book"] in ["kambi"]:
@@ -2304,8 +2348,8 @@ def sortEV(propArg=""):
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("BET365", "365"), row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
-		if propArg not in ["single", "double", "sb"]:
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("BET365", "365"), f"{round(row[-1]['implied'])}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		if propArg not in ["single", "double", "sb", "h"]:
 			arr.insert(1, row[-1].get("pn_ev", "-"))
 
 		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
@@ -2313,13 +2357,15 @@ def sortEV(propArg=""):
 				continue
 			if propArg == "single" and book in ["pn", "kambi"]:
 				continue
-			elif propArg in ["double", "sb"] and book in ["pn"]:
+			elif propArg in ["double", "sb", "h"] and book in ["pn"]:
 				continue
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
-		if propArg in ["k", "single", "double", "sb"]:
+		arr.extend([f"{row[-1]['totalOver']}%", f"{row[-1]['totalOverLastYear']}%", row[-1]["splitsDisplay"]])
+		arr.extend([row[-1]["oppRank"], row[-1]["oppRankLastYear"]])
+		if propArg in ["k", "single", "double", "sb", "h"]:
 			arr.insert(hdrs.index("FD")+1, row[-1]["bookOdds"].get("bet365", "-").replace("+", ""))
 		output += "\t".join([str(x) for x in arr])+"\n"
 
@@ -2416,9 +2462,6 @@ if __name__ == '__main__':
 
 	if args.cz:
 		writeCZ(args.date)
-
-	if args.bpp:
-		writeBPP(args.date)
 
 	if args.update:
 		writeFanduel()
