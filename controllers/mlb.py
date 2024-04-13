@@ -892,8 +892,11 @@ def writeBV():
 					else:
 						for i in range(0, len(market["outcomes"]), 1):
 							player = parsePlayer(market['outcomes'][i]["description"].split(" - ")[-1].split(" (")[0])
-							ou = f"{market['outcomes'][i]['price']['american']}"
-							res[game][prop][player] = ou.replace("EVEN", "100")
+							try:
+								ou = f"{market['outcomes'][i]['price']['american']}"
+								res[game][prop][player] = ou.replace("EVEN", "100")
+							except:
+								pass
 
 
 	with open("static/mlb/bovada.json", "w") as fh:
