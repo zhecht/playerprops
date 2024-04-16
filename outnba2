@@ -89,7 +89,28 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,600i,700,700i,800&display=swap" />
 	</noscript>
 
-	<link href="/frontend/assets/css/lineup-alerts.min.css?v=6" rel="stylesheet" type="text/css"><link href="/frontend/assets/css/nba-lineups.min.css?v=3" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"><link href="/frontend/assets/css/deposit-offers.css?v=1" rel="stylesheet" type="text/css"><link href="/frontend/assets/css/rotowire.min.css?v=164" rel="stylesheet" type="text/css">		<style name="sticky-banner-css">
+	<link href="/frontend/assets/css/lineup-alerts.min.css?v=6" rel="stylesheet" type="text/css"><link href="/frontend/assets/css/nba-lineups.min.css?v=3" rel="stylesheet" type="text/css" media="print" onload="this.media='all'"><link href="/frontend/assets/css/deposit-offers.css?v=1" rel="stylesheet" type="text/css"><link href="/frontend/assets/css/rotowire.min.css?v=164" rel="stylesheet" type="text/css">    <!-- Freestar -->
+    <link rel="stylesheet" href="https://a.pub.network/core/pubfig/cls.css">
+    <script data-cfasync="false" type="text/javascript">
+        var freestar = freestar || {};
+        window.addEventListener('load', function () {
+
+            freestar.hitTime = Date.now();
+            freestar.queue = freestar.queue || [];
+            freestar.config = freestar.config || {};
+            freestar.debug = window.location.search.indexOf('fsdebug') === -1 ? false : true;
+            freestar.config.enabled_slots = [];
+
+            
+            freestar.queue.push(function(){
+                googletag.pubads().setTargeting("Sport", "NBA").setTargeting("page", "basketball nba-lineups");            });
+
+            !function(a,b){var c=b.getElementsByTagName("script")[0],d=b.createElement("script"),e="https://a.pub.network/rotowire-com";e+=freestar.debug?"/qa/pubfig.min.js":"/pubfig.min.js",d.async=!0,d.src=e,c.parentNode.insertBefore(d,c)}(window,document);
+            freestar.initCallback = function () { (freestar.config.enabled_slots.length === 0) ? freestar.initCallbackCalled = false : freestar.newAdSlots(freestar.config.enabled_slots) }
+        });
+    </script>
+    <!-- End Freestar -->
+    		<style name="sticky-banner-css">
 			.sticky-banner {
 				background: #122335;
 				position: sticky;
@@ -444,7 +465,7 @@
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     
-    <header class="site-header" data-num-ads="0">
+    <header class="site-header" data-num-ads="3">
         
 	<div class="rwnav-top logo-bar">
         <div class="rwnav-top__left">
@@ -767,10 +788,16 @@
                     <circle cx="12" cy="12" r="10"/>
                     <path d="m12 16 4-4-4-4M8 12h8"/>
                 </svg>
-            </a></nav>            <div class="page-title">
+            </a></nav> <div class="ad ad-top"><div align="center" data-freestar-ad="__320x100 __970x90" id="rotowire_leaderboard_atf">
+                <script data-cfasync="false" type="text/javascript">
+                window.addEventListener("load", function () {
+                    freestar.config.enabled_slots.push({ placementName: "rotowire_leaderboard_atf", slotId: "rotowire_leaderboard_atf" });
+                });
+                </script>
+            </div></div>             <div class="page-title">
                 <div class="page-title__main">
                     <h1 class="page-title__primary">NBA Lineups</h1>
-                    <div class="page-title__secondary">Starting lineups for April 15, 2024</div>
+                    <div class="page-title__secondary">Starting lineups for April 16, 2024</div>
                 </div>
             </div>
                         <div class="ckeditor ck-content bg-white" style="" id="page-content-top">
@@ -780,7 +807,7 @@
 
     
     
-			<main class="page" data-sportfull="basketball" data-gamedate="2024-04-15">
+			<main class="page" data-sportfull="basketball" data-gamedate="2024-04-16">
 
                 <div id="nba-toggle-tabs" class="flex-row flex-wrap align-center mb-5">
                             <div class="filter-links-set">
@@ -795,7 +822,49 @@
         
 
 
-                    
+                                            
+	<div class="toggle-tabs-set mb-15 hide toggle-tab-to-reveal" data-name="lineups-nba-style">
+					<div class="toggle-tabs__title">Display Preference</div>
+				<div class="toggle-tabs" data-name="lineups-nba-style" data-alwaysop="1"  data-sel-bp-exists data-sel-xxs="Standard" data-sel-md="Compact">
+							<div class="toggle-tab" data-name="Standard" data-targets=".lineups" data-remove="is-compact is-simple" data-add="">
+					Standard				</div>
+								<div class="toggle-tab" data-name="Compact" data-targets=".lineups" data-remove="is-simple" data-add="is-compact">
+					Compact				</div>
+								<div class="toggle-tab" data-name="Simple" data-targets=".lineups" data-remove="is-compact" data-add="is-simple">
+					Simple				</div>
+						</div>
+	</div>
+	
+                        
+	<div class="toggle-tabs-set mb-15 hide toggle-tab-to-reveal" data-name="lineups-nba-hidestarted">
+					<div class="toggle-tabs__title">Hide Games That Started</div>
+				<div class="toggle-tabs" data-name="lineups-nba-hidestarted" data-alwaysop="1"  data-sel-bp-exists data-sel-xxs="No" data-sel-md="Yes">
+							<div class="toggle-tab" data-name="Yes" data-targets=".lineup.has-started" data-remove="" data-add="hide">
+					Yes				</div>
+								<div class="toggle-tab" data-name="No" data-targets=".lineup" data-remove="hide" data-add="">
+					No				</div>
+						</div>
+	</div>
+	
+                        
+                                            <div style="overflow:auto;">
+                            
+	<div class="toggle-tabs-set mb-15 hide toggle-tab-to-reveal" data-name="lineups-nba-oddschooser">
+					<div class="toggle-tabs__title">Sportsbook Odds</div>
+				<div class="toggle-tabs" data-name="lineups-nba-oddschooser" data-alwaysop="1"  data-sel-bp-exists data-sel-xxs="DraftKings">
+							<div class="toggle-tab" data-name="Composite" data-targets=".lineup__odds-item .composite|.lineup__odds-item .draftkings|.lineup__odds-item .fanduel|.lineup__odds-item .betmgm|.lineup__odds-item .pointsbet" data-remove="hide|is-selected|is-selected|is-selected|is-selected" data-add="is-selected|hide|hide|hide|hide">
+					Composite				</div>
+								<div class="toggle-tab" data-name="DraftKings" data-targets=".lineup__odds-item .composite|.lineup__odds-item .draftkings|.lineup__odds-item .fanduel|.lineup__odds-item .betmgm|.lineup__odds-item .pointsbet" data-remove="is-selected|hide|is-selected|is-selected|is-selected" data-add="hide|is-selected|hide|hide|hide">
+					DraftKings				</div>
+								<div class="toggle-tab" data-name="FanDuel" data-targets=".lineup__odds-item .composite|.lineup__odds-item .draftkings|.lineup__odds-item .fanduel|.lineup__odds-item .betmgm|.lineup__odds-item .pointsbet" data-remove="is-selected|is-selected|hide|is-selected|is-selected" data-add="hide|hide|is-selected|hide|hide">
+					FanDuel				</div>
+								<div class="toggle-tab" data-name="BetMGM" data-targets=".lineup__odds-item .composite|.lineup__odds-item .draftkings|.lineup__odds-item .fanduel|.lineup__odds-item .betmgm|.lineup__odds-item .pointsbet" data-remove="is-selected|is-selected|is-selected|hide|is-selected" data-add="hide|hide|hide|is-selected|hide">
+					BetMGM				</div>
+								<div class="toggle-tab" data-name="PointsBet" data-targets=".lineup__odds-item .composite|.lineup__odds-item .draftkings|.lineup__odds-item .fanduel|.lineup__odds-item .betmgm|.lineup__odds-item .pointsbet" data-remove="is-selected|is-selected|is-selected|is-selected|hide" data-add="hide|hide|hide|hide|is-selected">
+					PointsBet				</div>
+						</div>
+	</div>
+	                        </div>
                     
                     <button data-show=".toggle-tab-to-reveal" data-mode="fade" data-hide=".elements-to-hide" class="revealer btn soft size-1 pad-2" style="margin-right:20px;max-height:30px;margin-top:8px;">Show Display Settings</button>
 
@@ -807,13 +876,391 @@
                     </button>
                 </div>
 
-				                    <div class="heading has-desc size-3">
-                        There are no games on the NBA schedule today.
-                        <div class="heading__desc">Looking for help with an upcoming draft? <a href="/basketball/draft-kit.php">Check out our NBA Draft Kit</a>.</div>
-                    </div>
-                    
+				
 				<div class="lineups" data-subscribed="0">
-					                </div>
+					
+                            <div class="lineup is-nba">
+                                <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                    <div class="lineup__time">7:30 PM ET</div>
+                                                                            <a class="text-70" target="_blank" href="https://www.vividseats.com/new-orleans-pelicans-tickets-smoothie-king-center-4-17-2024--sports-nba-basketball/production/4884868?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:16px;">Tickets</a>
+                                                                                                                <a class="text-70" style="margin-left:10px;" href="/basketball/game-preview.php?id=2654252"><img src="https://content.rotowire.com/images/read-icon17.png" style="margin-right:3px;margin-top:-3px;width:16px;">Preview</a>
+                                                                            <div class="text-70 lineup-alerts-view" style="margin-left:8px;cursor:pointer;">
+                                        <img style="width:16px;margin-top:-3px;" src="/images/email.svg" alt="alert">
+                                        <a href="#">Alerts</a>
+                                    </div>
+                                </div>
+                                <div class="lineup__box">
+                                    <div class="lineup__top">
+                                        <div class="lineup__teams">
+                                            <a href="/basketball/nba-depth-charts/lakers-depth-chart-lal" class="lineup__team is-visit">
+                                                <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/basketball/100LAL.png?v=3" alt="LAL">
+                                                <div class="lineup__abbr">LAL</div>
+                                            </a>
+                                            <a href="/basketball/nba-depth-charts/pelicans-depth-chart-nop" class="lineup__team is-home">
+                                                <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/basketball/100NOP.png?v=3" alt="NOP">
+                                                <div class="lineup__abbr">NOP</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__matchup">
+                                        <a href="//basketball/nba-depth-charts/lakers-depth-chart-lal" class="lineup__mteam is-visit white">
+                                            Lakers                                            <span class="lineup__wl">(47-35)</span>
+                                        </a>
+                                        <a href="//basketball/nba-depth-charts/pelicans-depth-chart-nop" class="lineup__mteam is-home white">
+                                            Pelicans                                            <span class="lineup__wl">(49-33)</span>
+                                        </a>
+                                    </div>
+                                    <div class="lineup__main">
+                                                                                    <ul class="lineup__list is-visit">
+                                                    <li class="lineup__status is-expected">
+                    <div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected Lineup
+            </li>
+                                                    
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PG</div>
+            <a title="D'Angelo Russell" href="/basketball/player/dangelo-russell-3708">D. Russell</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">SG</div>
+            <a title="Austin Reaves" href="/basketball/player/austin-reaves-5334">Austin Reaves</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-75 has-injury-status"  title="Likely To Play">
+            <div class="lineup__pos">SF</div>
+            <a title="LeBron James" href="/basketball/player/lebron-james-2344">L. James</a>
+            <span class="lineup__inj">GTD</span>        </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PF</div>
+            <a title="Rui Hachimura" href="/basketball/player/rui-hachimura-4778">Rui Hachimura</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-50 has-injury-status"  title="Toss Up To Play">
+            <div class="lineup__pos">C</div>
+            <a title="Anthony Davis" href="/basketball/player/anthony-davis-3297">A. Davis</a>
+            <span class="lineup__inj">GTD</span>        </li>
+                                                                                                            <li><button class="see-proj-minutes" data-team="LAL" data-nickname="Lakers" data-home="0">Projected Minutes</button></li>
+                                                    <li><button class="see-court-on-off" data-lineup="3708,5334,2344,4778,3297," data-out="5897,4458,3778," data-team="LAL" data-nickname="Lakers" data-home="0">On/Off Court Stats</button></li>
+                                                                                                    <li class="lineup__title is-middle">MAY NOT PLAY</li>
+                                                
+        <li class="lineup__player is-pct-play-0 has-injury-status hide is-ofs"  title="Very Likely To Play">
+            <div class="lineup__pos" style="width:15px;">G</div>
+            <a title="Jalen Hood-Schifino" href="/basketball/player/jalen-hood-schifino-5897">J. Hood-Schifino</a>
+            <span class="lineup__inj">OFS</span>        </li>
+        
+        <li class="lineup__player is-pct-play-75 has-injury-status"  title="Likely To Play">
+            <div class="lineup__pos" style="width:15px;">F</div>
+            <a title="LeBron James" href="/basketball/player/lebron-james-2344">L. James</a>
+            <span class="lineup__inj">GTD</span>        </li>
+        
+        <li class="lineup__player is-pct-play-50 has-injury-status"  title="Toss Up To Play">
+            <div class="lineup__pos" style="width:15px;">C</div>
+            <a title="Anthony Davis" href="/basketball/player/anthony-davis-3297">A. Davis</a>
+            <span class="lineup__inj">GTD</span>        </li>
+        
+        <li class="lineup__player is-pct-play-0 has-injury-status"  title="Very Unlikely To Play">
+            <div class="lineup__pos" style="width:15px;">F</div>
+            <a title="Jarred Vanderbilt" href="/basketball/player/jarred-vanderbilt-4458">J. Vanderbilt</a>
+            <span class="lineup__inj">OUT</span>        </li>
+        
+        <li class="lineup__player is-pct-play-0 has-injury-status"  title="Very Unlikely To Play">
+            <div class="lineup__pos" style="width:15px;">C</div>
+            <a title="Christian Wood" href="/basketball/player/christian-wood-3778">C. Wood</a>
+            <span class="lineup__inj">OUT</span>        </li>
+                                                    </ul>
+                                            <ul class="lineup__list is-home">
+                                                    <li class="lineup__status is-expected">
+                    <div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected Lineup
+            </li>
+                                                    
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PG</div>
+            <a title="CJ McCollum" href="/basketball/player/cj-mccollum-3437">CJ McCollum</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">SG</div>
+            <a title="Brandon Ingram" href="/basketball/player/brandon-ingram-3861">B. Ingram</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">SF</div>
+            <a title="Herbert Jones" href="/basketball/player/herbert-jones-5414">Herbert Jones</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PF</div>
+            <a title="Zion Williamson" href="/basketball/player/zion-williamson-4777">Z. Williamson</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">C</div>
+            <a title="Jonas Valanciunas" href="/basketball/player/jonas-valanciunas-3190">J. Valanciunas</a>
+                    </li>
+                                                                                                            <li><button class="see-proj-minutes" data-team="NOP" data-nickname="Pelicans" data-home="1">Projected Minutes</button></li>
+                                                    <li><button class="see-court-on-off" data-lineup="3437,3861,5414,4777,3190," data-out="," data-team="NOP" data-nickname="Pelicans" data-home="1">On/Off Court Stats</button></li>
+                                                                                                    <li class="lineup__title is-middle">MAY NOT PLAY</li>
+                                                            <li class="lineup__no"><p>None</p></li>
+                                                        </ul>
+                                                                                </div>
+                                    <div class="lineup__bottom">
+                                        <div class="lineup__umpire">
+                                            <b>Referees:</b>&nbsp;
+                                                                                            Not announced yet
+                                                                                        </div>
+                                        <div class="lineup__extra pad-top-0">
+                                            <div class="lineup__odds is-row" style="padding-left:0 !important;">
+                                                <div class="lineup__odds-item">
+                                                    <b>LINE</b>&nbsp;
+                                                    <span class="composite hide">NOP -115</span>
+                                                    <span class="fanduel">&ndash;</span>
+                                                    <span class="draftkings hide">&ndash;</span>
+                                                    <span class="betmgm hide">NOP -115</span>
+                                                    <span class="pointsbet hide">NOP -115</span>
+                                                </div>
+                                                <div class="lineup__odds-item">
+                                                    <b>SPREAD</b>&nbsp;
+                                                    <span class="composite hide">NOP -1.0</span>
+                                                    <span class="fanduel">&ndash;</span>
+                                                    <span class="draftkings hide">&ndash;</span>
+                                                    <span class="betmgm hide">NOP -1.5</span>
+                                                    <span class="pointsbet hide">NOP -1.0</span>
+                                                </div>
+                                                <div class="lineup__odds-item">
+                                                    &nbsp;&nbsp;&nbsp;<b>&nbsp;O/U</b>&nbsp;
+                                                    <span class="composite hide">224.5 Pts</span>
+                                                    <span class="fanduel">&ndash;</span>
+                                                    <span class="draftkings hide">&ndash;</span>
+                                                    <span class="betmgm hide">224.5 Pts</span>
+                                                    <span class="pointsbet hide">223.5 Pts</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="lineup__partner">
+                                            <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy basketball to win tonight</a>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <div class="lineup is-nba">
+                                <div class="lineup__meta flex-row" style="align-items:baseline;">
+                                    <div class="lineup__time">10:00 PM ET</div>
+                                                                            <a class="text-70" target="_blank" href="https://www.vividseats.com/sacramento-kings-tickets-golden-1-center-4-17-2024--sports-nba-basketball/production/4884898?wsUser=948&wsVar="><img src="https://content.rotowire.com/images/tickets-icon.png" style="margin-right:3px;margin-top:-3px;width:16px;">Tickets</a>
+                                                                                                                <a class="text-70" style="margin-left:10px;" href="/basketball/game-preview.php?id=2654253"><img src="https://content.rotowire.com/images/read-icon17.png" style="margin-right:3px;margin-top:-3px;width:16px;">Preview</a>
+                                                                            <div class="text-70 lineup-alerts-view" style="margin-left:8px;cursor:pointer;">
+                                        <img style="width:16px;margin-top:-3px;" src="/images/email.svg" alt="alert">
+                                        <a href="#">Alerts</a>
+                                    </div>
+                                </div>
+                                <div class="lineup__box">
+                                    <div class="lineup__top">
+                                        <div class="lineup__teams">
+                                            <a href="/basketball/nba-depth-charts/warriors-depth-chart-gsw" class="lineup__team is-visit">
+                                                <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/basketball/100GSW.png?v=3" alt="GSW">
+                                                <div class="lineup__abbr">GSW</div>
+                                            </a>
+                                            <a href="/basketball/nba-depth-charts/kings-depth-chart-sac" class="lineup__team is-home">
+                                                <img class="lineup__logo" src="https://content.rotowire.com/images/teamlogo/basketball/100SAC.png?v=3" alt="SAC">
+                                                <div class="lineup__abbr">SAC</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="lineup__matchup">
+                                        <a href="//basketball/nba-depth-charts/warriors-depth-chart-gsw" class="lineup__mteam is-visit white">
+                                            Warriors                                            <span class="lineup__wl">(46-36)</span>
+                                        </a>
+                                        <a href="//basketball/nba-depth-charts/kings-depth-chart-sac" class="lineup__mteam is-home white">
+                                            Kings                                            <span class="lineup__wl">(46-36)</span>
+                                        </a>
+                                    </div>
+                                    <div class="lineup__main">
+                                                                                    <ul class="lineup__list is-visit">
+                                                    <li class="lineup__status is-expected">
+                    <div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected Lineup
+            </li>
+                                                    
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PG</div>
+            <a title="Stephen Curry" href="/basketball/player/stephen-curry-3014">Stephen Curry</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">SG</div>
+            <a title="Klay Thompson" href="/basketball/player/klay-thompson-3197">Klay Thompson</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">SF</div>
+            <a title="Andrew Wiggins" href="/basketball/player/andrew-wiggins-3571">A. Wiggins</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PF</div>
+            <a title="Draymond Green" href="/basketball/player/draymond-green-3299">D. Green</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">C</div>
+            <a title="Trayce Jackson-Davis" href="/basketball/player/trayce-jackson-davis-5944">T. Jackson-Davis</a>
+                    </li>
+                                                                                                            <li><button class="see-proj-minutes" data-team="GSW" data-nickname="Warriors" data-home="0">Projected Minutes</button></li>
+                                                    <li><button class="see-court-on-off" data-lineup="3014,3197,3571,3299,5944," data-out="3919," data-team="GSW" data-nickname="Warriors" data-home="0">On/Off Court Stats</button></li>
+                                                                                                    <li class="lineup__title is-middle">MAY NOT PLAY</li>
+                                                
+        <li class="lineup__player is-pct-play-0 has-injury-status"  title="Very Unlikely To Play">
+            <div class="lineup__pos" style="width:15px;">G</div>
+            <a title="Gary Payton" href="/basketball/player/gary-payton-3919">G. Payton</a>
+            <span class="lineup__inj">OUT</span>        </li>
+                                                    </ul>
+                                            <ul class="lineup__list is-home">
+                                                    <li class="lineup__status is-expected">
+                    <div class="dot is-medium is-yellow" style="margin-right:5px;"></div>Expected Lineup
+            </li>
+                                                    
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PG</div>
+            <a title="De'Aaron Fox" href="/basketball/player/deaaron-fox-4116">De'Aaron Fox</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">SG</div>
+            <a title="Keon Ellis" href="/basketball/player/keon-ellis-5659">Keon Ellis</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">SF</div>
+            <a title="Harrison Barnes" href="/basketball/player/harrison-barnes-3305">H. Barnes</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">PF</div>
+            <a title="Keegan Murray" href="/basketball/player/keegan-murray-5699">Keegan Murray</a>
+                    </li>
+        
+        <li class="lineup__player is-pct-play-100"  title="Very Likely To Play">
+            <div class="lineup__pos">C</div>
+            <a title="Domantas Sabonis" href="/basketball/player/domantas-sabonis-3865">D. Sabonis</a>
+                    </li>
+                                                                                                            <li><button class="see-proj-minutes" data-team="SAC" data-nickname="Kings" data-home="1">Projected Minutes</button></li>
+                                                    <li><button class="see-court-on-off" data-lineup="4116,5659,3305,5699,3865," data-out="4449,4117," data-team="SAC" data-nickname="Kings" data-home="1">On/Off Court Stats</button></li>
+                                                                                                    <li class="lineup__title is-middle">MAY NOT PLAY</li>
+                                                
+        <li class="lineup__player is-pct-play-0 has-injury-status hide is-ofs"  title="Very Likely To Play">
+            <div class="lineup__pos" style="width:15px;">G</div>
+            <a title="Kevin Huerter" href="/basketball/player/kevin-huerter-4449">K. Huerter</a>
+            <span class="lineup__inj">OFS</span>        </li>
+        
+        <li class="lineup__player is-pct-play-0 has-injury-status"  title="Very Unlikely To Play">
+            <div class="lineup__pos" style="width:15px;">G</div>
+            <a title="Malik Monk" href="/basketball/player/malik-monk-4117">Malik Monk</a>
+            <span class="lineup__inj">OUT</span>        </li>
+                                                    </ul>
+                                                                                </div>
+                                    <div class="lineup__bottom">
+                                        <div class="lineup__umpire">
+                                            <b>Referees:</b>&nbsp;
+                                                                                            Not announced yet
+                                                                                        </div>
+                                        <div class="lineup__extra pad-top-0">
+                                            <div class="lineup__odds is-row" style="padding-left:0 !important;">
+                                                <div class="lineup__odds-item">
+                                                    <b>LINE</b>&nbsp;
+                                                    <span class="composite hide">GSW -137</span>
+                                                    <span class="fanduel">&ndash;</span>
+                                                    <span class="draftkings hide">&ndash;</span>
+                                                    <span class="betmgm hide">&ndash;</span>
+                                                    <span class="pointsbet hide">GSW -140</span>
+                                                </div>
+                                                <div class="lineup__odds-item">
+                                                    <b>SPREAD</b>&nbsp;
+                                                    <span class="composite hide">GSW -2.5</span>
+                                                    <span class="fanduel">&ndash;</span>
+                                                    <span class="draftkings hide">&ndash;</span>
+                                                    <span class="betmgm hide">&ndash;</span>
+                                                    <span class="pointsbet hide">GSW -2.5</span>
+                                                </div>
+                                                <div class="lineup__odds-item">
+                                                    &nbsp;&nbsp;&nbsp;<b>&nbsp;O/U</b>&nbsp;
+                                                    <span class="composite hide">223.5 Pts</span>
+                                                    <span class="fanduel">&ndash;</span>
+                                                    <span class="draftkings hide">&ndash;</span>
+                                                    <span class="betmgm hide">&ndash;</span>
+                                                    <span class="pointsbet hide">223.5 Pts</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- <div class="lineup__partner">
+                                            <a target="_blank" rel="noopener nofollow" href="https://dkdfs.sng.link/Avkw3/bgp4?_dl=https%3A%2F%2Fwww.draftkings.com%2Fgateway%3Fs%3D321224241&pcid=106196&psn=Rotowire&pcn=Evergreen_FWFD_NFL2020"><img alt="DraftKings" src="https://content.rotowire.com/images/ads/lineups-icon-draftkings-small.png">Play 1-day fantasy basketball to win tonight</a>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            	<div class="lineup is-nba is-tools is-picks">
+		<div class="lineup__box" style="background:#f0e0ff;border-color:#e4c7ff;box-shadow: 0 4px 6px -1px rgb(128 0 255 / 20%), 0 2px 4px -2px rgb(128 0 255 / 20%);">
+            <a class="picks-logo" href="/picks/prizepicks/"><img class="lineup__logo" src="https://content.rotowire.com/images/props/prizepicks.svg"></a>
+			<a class="picks-headline" href="/picks/prizepicks/" style="color:#8000ff;">Make The Right Picks</a>
+            <a href="/picks/prizepicks/"><img class="picks-screenshot" src="https://content.rotowire.com/images/picks-promo-screen.png" style="box-shadow:0 25px 50px -12px rgb(128 0 255 / 20%)"></a>
+            <div class="picks-desc" style="color:#8000ff;">If you play on PrizePicks, you should check out the RotoWire Picks tool. Get our best picks for today's NBA games.</div>
+            <a class="picks-button" href="/picks/prizepicks/" style="background:#8000ff;box-shadow: 0 1px 3px 0 rgb(128 0 255 / 20%), 0 1px 2px -1px rgb(128 0 255 / 20%);">
+                See Our Top Picks For PrizePicks 
+            </a>
+		</div>
+    </div>
+		<div class="lineup is-nba is-tools">
+		<div class="lineup__meta">
+			<div class="lineup__time">You may also be interested in...</div>
+		</div>
+		<div class="lineup__box">
+			<div class="lineup__top"><a href="/daily/nba/">Daily Fantasy NBA Tools</a></div>
+			<div class="lineup__matchup">Build the best lineup for today's NBA games.</div>
+			<div class="lineup__main">
+									<div class="lineup__tool">
+						<a class="lineup__tool-name" href="/daily/nba/optimizer.php">Lineup Optimizer</a>
+						<div class="lineup__tool-desc">Generate the optimal NBA lineup.</div>
+					</div>
+										<div class="lineup__tool">
+						<a class="lineup__tool-name" href="/basketball/rotations.php">NBA Rotations</a>
+						<div class="lineup__tool-desc">See who's getting minutes for every team.</div>
+					</div>
+										<div class="lineup__tool">
+						<a class="lineup__tool-name" href="/basketball/projections.php?type=daily">Daily Projections</a>
+						<div class="lineup__tool-desc">Projected stats for today's NBA games.</div>
+					</div>
+										<div class="lineup__tool">
+						<a class="lineup__tool-name" href="/daily/nba/defense-vspos.php">Defense Vs. Position</a>
+						<div class="lineup__tool-desc">A useful defense vs position stats tool.</div>
+					</div>
+										<div class="lineup__tool">
+						<a class="lineup__tool-name" href="/basketball/court-on-off.php">On/Off Court Stats</a>
+						<div class="lineup__tool-desc">See stats based on who is on/off the court.</div>
+					</div>
+										<div class="lineup__tool">
+						<a class="lineup__tool-name" href="/daily/nba/nba_adv_lineups.php">Advanced Lineups</a>
+						<div class="lineup__tool-desc">Lineups with advanced stats and insights.</div>
+					</div>
+										<div class="lineup__tool">
+						<a class="lineup__tool-name" href="/basketball/game-previews.php">Game Previews</a>
+						<div class="lineup__tool-desc">Read previews for each game on the schedule.</div>
+					</div>
+								</div>
+		</div>
+	</div>
+		<div class="lineup is-nba is-tools is-deposit-offer">
+		<div class="lineup__meta">
+			<div class="lineup__time">Want to unlock more content?</div>
+		</div>
+		<div class="lineup__box">
+			<div class="lineup__main">
+				    <div class="gdcg-oplist" data-gdcg_rankid="2886"></div>
+    			</div>
+            <div class="lineup__matchup">It can take up to 24 hours for these subscriptions to activate as we need to wait for confirmation of the deposit.</div>
+		</div>
+	</div>
+	                </div>
 
                 <div class="flex-row flex-wrap" style="align-items: flex-end;margin-top:15px;">
                     <div class="nba-lineup-color-bar-indicator mb-15">
@@ -865,13 +1312,26 @@
 			</main>
 
 			    <div class="hide" style="width:1px;height:1px;">
-            </div>
+        <div align="center" data-freestar-ad="__1x1" id="rotowire_skinunit_oop">
+                <script data-cfasync="false" type="text/javascript">
+                window.addEventListener("load", function () {
+                    freestar.config.enabled_slots.push({ placementName: "rotowire_skinunit_oop", slotId: "rotowire_skinunit_oop" });
+                });
+                </script>
+            </div>    </div>
 
         <footer class="site-footer">
         <div class="ckeditor ck-content bg-white" style="padding: 18px 15px;" id="page-content-bottom">
             <h2><span style="background-color:transparent;color:#000000;"><strong>NBA Starting Lineups</strong></span></h2><p>NBA starting lineups is one of the most important factors when it comes to handicapping NBA betting markets, building NBA DFS lineups, and playing fantasy basketball. The starting lineup helps you gauge what players are in line to play the most minutes, which equates to greater production, and ending the night with a positive bankroll.&nbsp;</p><h3><span style="background-color:transparent;color:#000000;"><strong>How to Use NBA Starting Lineups for NBA Betting</strong></span></h3><p><span style="background-color:transparent;color:#000000;">NBA lineups is of utmost importance to NBA bettors. For example, if LeBron James is OUT of the starting lineup, the Lakers likely will not have as good of a chance to win and the spread and moneyline would change. In addition, all of the</span><a href="https://www.rotowire.com/betting/nba/player-props.php"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">NBA player prop</span></a><span style="background-color:transparent;color:#000000;"> lines would change too and there would be significant value available if you act quickly.&nbsp;</span></p><p><span style="background-color:transparent;color:#000000;">It is also important to line shop to get the best prices to maximize your chances of profitability. To maximize your NBA betting experience, you will want to sign up with several of the best sports betting sites for wagering on the NBA. First, start with the</span><a href="https://www.rotowire.com/betting/faq/whats-the-offer-for-betmgm-rotobonus-d9a213b8"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">BetMGM bonus code</span></a><span style="background-color:transparent;color:#000000;"> and the</span><a href="https://www.rotowire.com/betting/caesars-sportsbook-promo-code"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Caesars Sportsbook promo code</span></a><span style="background-color:transparent;color:#000000;"> to get some bonus bets. Then, you can sign up with the</span><a href="https://www.rotowire.com/betting/wynnbet-promo-code"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">WynnBET promo code</span></a><span style="background-color:transparent;color:#000000;"> for another bonus.&nbsp;</span></p><p><span style="background-color:transparent;color:#000000;">Finally, if you can find better odds using the</span><a href="https://www.rotowire.com/betting/faq/what-is-the-promo-code-for-draftkings-c0a16dbe"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">DraftKings promo code</span></a><span style="background-color:transparent;color:#000000;">, you'll have five options for getting the best price on a player prop now that you used the NBA lineups tool.</span></p><p>These are just some of the top <a href="https://www.rotowire.com/betting/best-sports-betting-sites">betting sites</a> and <a href="https://www.rotowire.com/betting/sports-betting-apps">sports betting apps</a> available. Which is important, because the more options for bettors, the better for price shopping. For each of these sites, users can sign up and deposit by using popular payment options such as <a href="https://www.rotowire.com/betting/paypal-betting-sites">PayPal</a> and various<a href="https://www.rotowire.com/betting/credit-card-betting-sites"> credit cards.</a></p><p>Be sure to get started and wager on MLB with some of the best <a href="https://www.rotowire.com/betting/sportsbook-promo-codes">sports betting promos</a> focused around baseball, available all season long.</p><h3><span style="background-color:transparent;color:#000000;"><strong>Why NBA Lineups is Important for NBA DFS</strong></span></h3><p><span style="background-color:transparent;color:#000000;">This would also affect the NBA DFS landscape too, as James' teammates become better</span><a href="https://www.rotowire.com/daily/nba/value-report.php"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">value plays</span></a><span style="background-color:transparent;color:#000000;"> for your DFS lineups and a player like Anthony Davis becomes one of the more important players on the given slate.</span></p><h3><span style="background-color:transparent;color:#000000;"><strong>Using NBA Starting Lineups for Fantasy Basketball</strong></span></h3><p><span style="background-color:transparent;color:#000000;">For those playing fantasy basketball, the effect of using the NBA lineups tool is similar to NBA DFS players. The difference, of course, is you will want to get injured players out of your lineup and players that are positively affected into your lineups.</span></p><h3><span style="background-color:transparent;color:#000000;"><strong>NBA Projected Minutes To Help You In DFS, Sports Betting, and Fantasy Basketball</strong></span></h3><p><span style="background-color:transparent;color:#000000;">At RotoWire, we have rolled out a new feature called "Projected Minutes" as you can see on this page. What this does is has our projected minutes for each player, giving you an edge on just how many minutes a player is expected to play. For projection models, DFS, player props, and other forms of NBA gaming, projected minutes is one of the key elements of understanding and predicting potential outcomes.</span></p><h3><span style="background-color:transparent;color:#000000;"><strong>What States Can I Bet On NBA Using The NBA Lineups Page</strong></span></h3><p><span style="background-color:transparent;color:#000000;">Sports bettors all over the US have a chance to wager on the NBA, but a few states have recently come into focus.</span></p><h3><span style="background-color:transparent;color:#000000;">Use The NBA Starting Lineups Page For NBA Betting in Massachusetts</span></h3><p><span style="background-color:transparent;color:#000000;">NBA bettors in Massachusetts can claim&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts-betting-promos"><span style="background-color:transparent;color:#1155cc;">Massachusetts sportsbook promo codes</span></a><span style="background-color:transparent;color:#000000;"> as of March 2023. Bettors are able to get these generous welcome promotions from various sportsbooks in many forms. The most common are bonus bets, but other bonus types are available as well.</span></p><p><span style="background-color:transparent;color:#000000;">New players who wager on the NBA can claim thousands worth of bonuses, starting with&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts/betmgm"><span style="background-color:transparent;color:#1155cc;">BetMGM Massachusetts</span></a><span style="background-color:transparent;color:#000000;">. Also, bettors in Massachusetts can claim a bonus at&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts/caesars-sportsbook-promo-code"><span style="background-color:transparent;color:#1155cc;">Caesars Sportsbook Massachusetts</span></a><span style="background-color:transparent;color:#000000;">. This promotion nets the most generous welcome offer available in Massachusetts.</span></p><p><span style="background-color:transparent;color:#000000;">These two offers combined can net new bettors with a large amount of bonus funds in the Codfish State. Add in the easy-to-use WynnBET Massachusetts app and you can add even more bonus funds to your collective bankroll. Start by claiming the&nbsp;</span><a href="https://www.rotowire.com/betting/wynnbet-promo-code"><span style="background-color:transparent;color:#1155cc;">WynnBET promo code</span></a><span style="background-color:transparent;color:#000000;"> and redeeming your bonus offer in Massachusetts.</span></p><p><span style="background-color:transparent;color:#000000;">Another popular option in Massachusetts is Barstool Sportsbook, which offers another promotion via the&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts/barstool-promo-code"><span style="background-color:transparent;color:#1155cc;">Barstool Sportsbook Massachusetts promo code</span></a><span style="background-color:transparent;color:#000000;">. Barstool Massachusetts is a popular app for NBA bettors.</span></p><p><span style="background-color:transparent;color:#000000;">Users can also sign up with the&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts/fanduel-promo-code"><span style="background-color:transparent;color:#1155cc;">FanDuel Massachusetts promo code</span></a><span style="background-color:transparent;color:#000000;"> link. This allows bettors to redeem bonus bets at the most popular sports betting app in the country. For fans of DraftKings, you can also get in on the action in Massachusetts. Start by claiming an offer using the&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts/draftkings-promo-code"><span style="background-color:transparent;color:#1155cc;">DraftKings Massachusetts promo code</span></a><span style="background-color:transparent;color:#000000;"> to earn even more bonus bets to help you wager on the NBA.</span></p><p><span style="background-color:transparent;color:#000000;">There will be more apps as&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts"><span style="background-color:transparent;color:#1155cc;">Massachusetts sports betting</span></a><span style="background-color:transparent;color:#000000;"> evolves over time. But, the first set of&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts-betting-apps"><span style="background-color:transparent;color:#1155cc;">Massachusetts betting apps</span></a><span style="background-color:transparent;color:#000000;"> will compete for market share. Eventually, users will be able to claim other offer, such as&nbsp;</span><a href="https://www.rotowire.com/betting/massachusetts/betrivers-promo-code"><span style="background-color:transparent;color:#1155cc;">BetRivers Massachusetts bonus code</span></a><span style="background-color:transparent;color:#000000;"> for more bonuses. Sign up today with any of the </span><a href="https://www.rotowire.com/betting/sportsbook-promo-codes"><span style="background-color:transparent;color:#000000;">top sportsbook promo codes</span></a><span style="background-color:transparent;color:#000000;"> mentioned above, and make your first deposit using a number of payment methods, including </span><a href="https://www.rotowire.com/betting/paypal-betting-sites"><span style="background-color:transparent;color:#000000;">PayPal</span></a><span style="background-color:transparent;color:#000000;"> or </span><a href="https://www.rotowire.com/betting/credit-card-betting-sites"><span style="background-color:transparent;color:#000000;">Credit Card</span></a><span style="background-color:transparent;color:#000000;">, then cash in on great betting bonuses for the NBA playoffs.</span></p><h3><span style="background-color:transparent;color:#000000;">Using the NBA Daily Lineups Page For NBA Betting in Ohio</span></h3><p><span style="background-color:transparent;color:#000000;">Ohio hoops fans,</span><a href="https://www.rotowire.com/betting/ohio"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Ohio sports betting</span></a><span style="background-color:transparent;color:#000000;"> launched on New Year's Day. Here is how to stay up to date.</span></p><ul><li><span style="background-color:transparent;color:#000000;">Redeem your bonus bets with the</span><a href="https://www.rotowire.com/betting/ohio/betmgm"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">BetMGM Ohio bonus code</span></a><span style="background-color:transparent;color:#000000;"> ROTOBONUS.</span></li><li><span style="background-color:transparent;color:#000000;">Claim your bonus with the</span><a href="https://www.rotowire.com/betting/ohio/caesars-sportsbook-promo-code"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Caesars Sportsbook Ohio promo code</span></a><span style="background-color:transparent;color:#000000;"> ROTOTIX.</span></li><li><span style="background-color:transparent;color:#000000;">Find out about the best</span><a href="https://www.rotowire.com/betting/ohio-betting-apps"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Ohio betting apps</span></a><span style="background-color:transparent;color:#000000;"> available in the state.</span></li><li><span style="background-color:transparent;color:#000000;">Don't wait, redeem the best</span><a href="https://www.rotowire.com/betting/ohio-betting-promos"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Ohio betting promos</span></a><span style="background-color:transparent;color:#000000;"> to claim your offers.</span></li></ul><p><span style="background-color:transparent;color:#000000;">For basketball fans in Maryland, you've always been able to use NBA starting lineups for DFS, but now you can for sports betting as well as</span><a href="https://www.rotowire.com/betting/maryland-betting-apps"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Maryland betting apps</span></a><span style="background-color:transparent;color:#000000;"> are available.</span></p><p><span style="background-color:transparent;color:#000000;">You can use these apps now, which means you are able to take advantage of the latest</span><a href="https://www.rotowire.com/betting/maryland-betting-promos"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Maryland betting promos</span></a><span style="background-color:transparent;color:#000000;"> to give your bankroll a jumpstart.</span></p><p><span style="background-color:transparent;color:#000000;">One of our favorite promos in Maryland for NBA fans are the</span><a href="https://www.rotowire.com/betting/maryland/betmgm"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">BetMGM Maryland bonus code</span></a><span style="background-color:transparent;color:#000000;">, where you can get first bet insurance worth up to $1000.</span></p><p><span style="background-color:transparent;color:#000000;">If you have a BetMGM account already, you can redeem the</span><a href="https://www.rotowire.com/betting/maryland/caesars-sportsbook-promo-code"><span style="background-color:transparent;color:#000000;">&nbsp;</span><span style="background-color:transparent;color:#1155cc;">Caesars Sportsbook Maryland promo code</span></a><span style="background-color:transparent;color:#000000;"> as well, to get a first bet on Caesars.</span></p>        </div>
                 <div class="site-footer__main">
-            
+                            <div class="ad ad-footer"><div align="center" data-freestar-ad="__336x280 __970x250" id="rotowire_leaderboard_btf">
+                <script data-cfasync="false" type="text/javascript">
+                window.addEventListener("load", function () {
+                    freestar.config.enabled_slots.push({ placementName: "rotowire_leaderboard_btf", slotId: "rotowire_leaderboard_btf" });
+                });
+                </script>
+            </div></div>
+                
             
                             <div class="flex-row">
                     <a style="padding: 10px 15px;background:#20a1f2;" class="grow-col align-c" href="https://twitter.com/rotowire" target="_blank" rel="noopener nofollow">

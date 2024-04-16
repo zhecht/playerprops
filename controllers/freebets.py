@@ -174,7 +174,7 @@ def writeLineups(plays = []):
 	for table in soup.findAll("div", class_="starting-lineups__matchup"):
 		for which in ["away", "home"]:
 			try:
-				team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari")
+				team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari").replace("cws", "chw")
 			except:
 				continue
 
@@ -1349,8 +1349,8 @@ def sortEV(dinger=False, teamSort=False):
 		lastGame = ""
 		for row in sorted(data, reverse=rev):
 			if teamSort and lastGame and lastGame != row[0]:
-				output += "\t"*len(l) + "\n"
-				output += "\t"*len(l) + "\n"
+				output += "\t".join(["-"]*len(l)) + "\n"
+				output += "\t".join(["-"]*len(l)) + "\n"
 			output += f"{row[-2]}\n"
 			lastGame = row[0]
 
@@ -1396,7 +1396,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("kyle schwarber", 220), ("trea turner", 320), ("mj melendez", 360)]
+	plays = [("mickey moniak", 750), ("jorge soler", 330), ("justin turner", 480), ("mj melendez", 330), ("will benson", 680), ("jt realmuto", 390), ("justin turner", 480), ("henry davis", 830), ("rafael devers", 350), ("jake bauers", 560), ("ronald acuna", 430)]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1479,14 +1479,13 @@ if __name__ == '__main__':
 
 			if currOdds != odds:
 				data = {}
-				expectedHR = 0.28
 
-				devig(data, player, ou, odds, avg=True)
+				devig(data, player, ou, odds, avg=True, dinger=args.dinger)
 				if data:
 					currEv = data[player]["ev"]
 				if player in bet365[team]:
 					data = {}
-					devig(data, player, bet365[team][player], odds)
+					devig(data, player, bet365[team][player], odds, dinger=args.dinger)
 					if data:
 						bet365ev = data[player].get("bet365ev", 0)
 
