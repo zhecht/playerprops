@@ -1396,7 +1396,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("kyle schwarber", 230), ("bryce harper", 340), ("trea turner", 340), ("will benson", 400), ("elly de la cruz", 460), ("kevin pillar", 560)]
+	plays = [("kyle schwarber", 220), ("trea turner", 320), ("mj melendez", 360)]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1475,7 +1475,7 @@ if __name__ == '__main__':
 			team = ev[player]["team"]
 			ou = ev[player]["ou"]
 			currEv = ev[player]["ev"]
-			bet365ev = ev[player]["bet365ev"]
+			bet365ev = ev[player].get("bet365ev", 0)
 
 			if currOdds != odds:
 				data = {}
@@ -1488,7 +1488,7 @@ if __name__ == '__main__':
 					data = {}
 					devig(data, player, bet365[team][player], odds)
 					if data:
-						bet365ev = data[player]["bet365ev"]
+						bet365ev = data[player].get("bet365ev", 0)
 
 			output.append(f"{player} taken={odds} curr={currOdds} 365={bet365ev} ev={currEv}")
 
