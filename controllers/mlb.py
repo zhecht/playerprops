@@ -1218,7 +1218,6 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-chicago-cubs-33203244",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-pittsburgh-pirates-33203258",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-philadelphia-phillies-33203259",
   "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-cincinnati-reds-33203260",
