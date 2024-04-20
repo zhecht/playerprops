@@ -1078,8 +1078,8 @@ def writeKambi(date):
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'cle @ sf': 1019277757}
-	#data['det lions @ kc chiefs'] = {}
+	#eventIds = {'tb @ nyy': 1020374387}
+	#data['tb @ nyy'] = {}
 	#print(eventIds)
 	#exit()
 	for game in eventIds:
@@ -1104,6 +1104,9 @@ def writeKambi(date):
 				prefix = "f3_"
 			elif "first 5 inn" in label:
 				prefix = "f5_"
+			elif "inning 1" in label:
+				prefix = "f1_"
+
 
 			if "handicap" in label:
 				label = "spread"
@@ -1111,17 +1114,6 @@ def writeKambi(date):
 				label = "away_total"
 			elif f"total runs by {homeFull}" in label:
 				label = "home_total"
-			elif "total runs" in label:
-				if "odd/even" in label:
-					continue
-				label = "total"
-			elif label == "match odds":
-				label = "ml"
-			elif label == "first team to score":
-				label = "first_score"
-			elif "player to hit a home run" in label:
-				label = "hr"
-				playerProp = True
 			elif "by the player" in label:
 				playerProp = True
 				label = "_".join(label.replace("total ", "").split(" by the player")[0].split(" "))
@@ -1138,6 +1130,17 @@ def writeKambi(date):
 					label = "sb"
 				elif label in ["doubles", "rbis"]:
 					label = label[:-1]
+			elif "total runs" in label:
+				if "odd/even" in label:
+					continue
+				label = "total"
+			elif label == "match odds":
+				label = "ml"
+			elif label == "first team to score":
+				label = "first_score"
+			elif "player to hit a home run" in label:
+				label = "hr"
+				playerProp = True
 			else:
 				#print(label)
 				continue
@@ -1218,10 +1221,22 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-colorado-rockies-33203265",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-san-diego-padres-33203266",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-los-angeles-dodgers-33203247",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-san-francisco-giants-33203250"
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-new-york-yankees-33206361",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-minnesota-twins-33206362",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-st.-louis-cardinals-33206356",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-chicago-cubs-33206357",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-los-angeles-dodgers-33206358",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-san-francisco-giants-33206359",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-pittsburgh-pirates-33206364",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/houston-astros-@-washington-nationals-33206365",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-philadelphia-phillies-33206366",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-cleveland-guardians-33206360",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-cincinnati-reds-33206367",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-kansas-city-royals-33206363",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-atlanta-braves-33206368",
+  #"https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-chicago-cubs-33206371",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-colorado-rockies-33206369",
+  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-san-diego-padres-33206370"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358"]
@@ -1473,7 +1488,7 @@ def writeDK(date, propArg):
 	subCats = {
 		493: [4519, 13168, 13169],
 		743: [6606, 6719, 6607, 8025, 7979, 12149, 9872, 6605, 11031, 11032, 11033, 12146],
-		729: [6720, 6731, 6729],
+		729: [6821],
 		1031: [9885, 15221, 9884, 9886, 11035, 11064],
 	}
 
@@ -1484,13 +1499,13 @@ def writeDK(date, propArg):
 	if False:
 		mainCats = {
 			"game lines": 493,
-			#"game props": 724,
+			"game props": 724,
 			#"innings": 729
 		}
 
 		subCats = {
-			493: [4519, 13168, 13169],
-			729: [6720, 6731, 6729],
+			493: [13169],
+			724: [6821],
 		}
 
 	lines = {}
@@ -1549,7 +1564,7 @@ def writeDK(date, propArg):
 				for cRow in catRow["offerSubcategoryDescriptors"]:
 					if "offerSubcategory" not in cRow:
 						continue
-					prop = cRow["name"].lower()
+					topProp = cRow["name"].lower()
 					for offerRow in cRow["offerSubcategory"]["offers"]:
 						for row in offerRow:
 							try:
@@ -1580,9 +1595,9 @@ def writeDK(date, propArg):
 									prop = "ml"
 								elif "run line" in prop:
 									prop = "spread"
-								elif prop.endswith("team total runs"):
-									team = convertTeam(prop.split(":")[0])
-									if game.startswith(team.split(" ")[0]):
+								elif topProp == "team total runs":
+									team = convertTeam(prop.replace(" total runs", "").replace("alternate ", ""))
+									if game.startswith(team):
 										prop = "away_total"
 									else:
 										prop = "home_total"
