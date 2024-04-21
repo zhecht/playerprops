@@ -1195,7 +1195,8 @@ def writeKambi():
 			elif label == "3-way":
 				data[game][label] = betOffer["outcomes"][-1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 			elif label in ["gift", "giff"]:
-				data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][-1]["oddsAmerican"]
+				if str(betOffer["outcomes"][0]["line"] / 1000) == "0.5":
+					data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][-1]["oddsAmerican"]
 			else:
 				if label not in data[game]:
 					data[game][label] = {}
@@ -1985,7 +1986,10 @@ def writeDK(date=None, propArg=""):
 							elif prop == "3-way":
 								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[-1]['oddsAmerican']}"
 							elif prop == "gift":
-								lines[game][prop] = ou
+								if outcomes[0]["line"] == 0.5:
+									lines[game][prop] = ou
+								elif len(outcomes) > 2:
+									lines[game][prop] = f"{outcomes[2]['oddsAmerican']}/{outcomes[3]['oddsAmerican']}"
 							elif "total" in prop or "spread" in prop:
 								for i in range(0, len(outcomes), 1):
 									line = str(float(outcomes[i]["line"]))
@@ -2715,7 +2719,10 @@ def sortEV(propArg):
 				arr.append("-")
 			else:
 				arr.append(f"{row[-1][h]}%")
-		arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
+		try:
+			arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
+		except:
+			arr.append("-")
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nhl/props.csv", "w") as fh:
