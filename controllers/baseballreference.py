@@ -875,6 +875,36 @@ def writeStatsVsTeam():
 	with open(f"{prefix}static/baseballreference/statsVsTeamLastYear.json", "w") as fh:
 		json.dump(statsVsTeamLastYear, fh, indent=4)
 
+def writeBirthdays():
+
+	bdays = {}
+	year = 1983
+	while year != 2005:
+		url = f"https://www.baseball-almanac.com/players/baseball_births.php?y={year}"
+		year += 1
+		time.sleep(0.3)
+		outfile = "outmlb3"
+		call(["curl", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		for row in soup.findAll("tr")[2:]:
+			tds = row.findAll("td")
+			if tds[-1].text != "Active":
+				continue
+
+			player = parsePlayer(tds[0].find("a").text.replace(" ", " "))
+			
+			m, d, y = map(str, tds[1].text.split("-"))
+			date = f"{y}-{m}-{d}"
+
+			if player not in bdays:
+				bdays[player] = date
+			else:
+				print(player)
+				bdays[tds[0].find("a").get("href").split("=")[-1]] = date
+
+	with open("static/baseballreference/birthdays.json", "w") as fh:
+		json.dump(bdays, fh, indent=4)
 
 def strip_accents(text):
 	try:
@@ -1635,6 +1665,38 @@ def writeBaseballReferencePH():
 	with open(f"{prefix}static/baseballreference/ph.json", "w") as fh:
 		json.dump(ph, fh, indent=4)
 
+def printStuff():
+
+	if True:
+		# https://www.retrosheet.org/gamelogs/glfields.txt
+		hrs = {}
+		for gamelog in glob("static/mlbprops/gamelogs/*"):
+			with open(gamelog) as fh:
+				reader = csv.reader(fh)
+				rows = [x for x in reader]
+
+			for row in rows:
+				date = row[0]
+				if date not in hrs:
+					hrs[date] = []
+
+				awayHR = int(row[25])
+				homeHR = int(row[53])
+				hrs[date].append(awayHR + homeHR)
+
+		res = {}
+		for date in hrs:
+			year = date[:4]
+			month = date[4:6]
+			if month not in ["03", "04"]:
+				continue
+			if year not in res:
+				res[year] = []
+
+			res[year].extend(hrs[date])
+
+		for year in res:
+			print(year, round(sum(res[year]) / len(res[year]), 2))
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -1643,6 +1705,7 @@ if __name__ == "__main__":
 	parser.add_argument("-d", "--date", help="Date")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
+	parser.add_argument("--birthdays", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--roster", help="Roster", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
@@ -1673,6 +1736,8 @@ if __name__ == "__main__":
 		writeAverages()
 	elif args.bvp:
 		writeBVP(date)
+	elif args.birthdays:
+		writeBirthdays()
 	elif args.ph:
 		writeBaseballReferencePH()
 	elif args.rankings:
@@ -1706,6 +1771,7 @@ if __name__ == "__main__":
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
+	printStuff()
 	#writeYears()
 	#writeStatsVsTeam()
 	#writeAverages()

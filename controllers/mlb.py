@@ -1221,16 +1221,21 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-pittsburgh-pirates-33211390",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-cincinnati-reds-33211393",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-tampa-bay-rays-33211401",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-atlanta-braves-33211395",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-kansas-city-royals-33211402",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-minnesota-twins-33211403",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-st.-louis-cardinals-33211397",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-33211398",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-los-angeles-angels-33211404",
-  "https://mi.sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-san-francisco-giants-33211399"
+    "https://sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-cleveland-guardians-33214238",
+    "https://sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-cincinnati-reds-33214229",
+    "https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-pittsburgh-pirates-33214232",
+    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-washington-nationals-33214233",
+    "https://sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-tampa-bay-rays-33214239",
+    "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-new-york-yankees-33214242",
+    "https://sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-atlanta-braves-33214234",
+    "https://sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-kansas-city-royals-33214243",
+    "https://sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-minnesota-twins-33214244",
+    "https://sportsbook.fanduel.com/baseball/mlb/houston-astros-@-chicago-cubs-33214247",
+    "https://sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-st.-louis-cardinals-33214235",
+    "https://sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-texas-rangers-33214245",
+    "https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-33214236",
+    "https://sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-los-angeles-angels-33214246",
+    "https://sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-san-francisco-giants-33214237"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358"]
@@ -2169,6 +2174,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 								totalOverLastYear = round(lastYearStats[team][player]["tot"][convertedProp+"Overs"][str(int(math.ceil(float(ou))))] * 100 / lastYearStats[team][player]["tot"]["gamesPlayed"])
 							except:
 								pass
+
+						if totalOver and i == 1:
+							totalOver = 100 - totalOver
+						if totalOverLastYear and i == 1:
+							totalOverLastYear = 100 - totalOverLastYear	
+
 
 					oppRank = oppRankLastYear = 0
 					rankingsProp = convertRankingsProp(prop)

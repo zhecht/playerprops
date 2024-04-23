@@ -1396,7 +1396,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("adolis garcia", 300), ("trevor larnach", 680), ("shohei ohtani", 250), ("trea turner", 340), ("max muncy", 330), ("parker meadows", 830), ("juan soto", 350), ("kyle schwarber", 220), ("jt realmuto", 390), ("gunnar henderson", 700), ("jazz chisholm", 420)]
+	plays = [("rafael devers", 300), ("yandy diaz", 600), ("adam duvall", 430), ("dansby swanson", 430), ("nolan arenado", 420), ("adolis garcia", 330)]
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1404,7 +1404,7 @@ if __name__ == '__main__':
 	if args.lineupsLoop:
 		while True:
 			writeLineups(plays)
-			time.sleep(60)
+			time.sleep(29)
 
 	dinger = False
 	if args.dinger:

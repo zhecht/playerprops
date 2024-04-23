@@ -1186,7 +1186,7 @@ def getSlateData(date = None, teams=""):
 		teamTotals = json.load(fh)
 	with open(f"{prefix}static/mlbprops/lineups.json") as fh:
 		lineups = json.load(fh)
-	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
+	with open(f"{prefix}static/mlb/draftkings.json") as fh:
 		gameLines = json.load(fh)
 
 	for game in schedule[date]:
