@@ -886,6 +886,99 @@ def writeBV():
 	with open("static/mlb/bovada.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
+
+def arb():
+	freebets = 100
+	res = []
+	for sport in ["nba", "nhl", "mlb"]:
+		with open(f"static/{sport}/fanduelLines.json") as fh:
+			fdLines = json.load(fh)
+
+		with open(f"static/{sport}/draftkings.json") as fh:
+			dkLines = json.load(fh)
+
+		with open(f"static/{sport}/caesars.json") as fh:
+			czLines = json.load(fh)
+
+		lines = {
+			"dk": dkLines,
+			"cz": czLines
+		}
+
+		if sport == "nhl":
+			with open("static/nhl/mgm.json") as fh:
+				lines["mgm"] = json.load(fh)
+
+
+		for game in fdLines:
+			for prop in fdLines[game]:
+				over = fdLines[game][prop]
+				keys = [over]
+
+				if type(over) is dict:
+					keys = fdLines[game][prop].keys()
+
+				for key in keys:
+					if type(fdLines[game][prop]) is str:
+						over = fdLines[game][prop]
+					else:
+						over = fdLines[game][prop][key]
+
+					if type(over) is dict:
+						continue
+					if over.startswith("-/"):
+						continue
+
+					odds = over.split("/")
+					for ouIdx, odd in enumerate(odds):
+						over = int(odd)
+
+						for book in lines:
+							if game not in lines[book]:
+								continue
+							if prop not in lines[book][game]:
+								continue
+							if key not in lines[book][game][prop]:
+								continue
+
+							if type(lines[book][game][prop]) is str:
+								under = lines[book][game][prop]
+							else:
+								under = lines[book][game][prop][key]
+
+							if "/" not in under:
+								continue
+
+							if ouIdx == 0:
+								under = int(under.split("/")[-1])
+							else:
+								under = int(under.split("/")[0])
+
+							fdValue = (over / 100) * freebets
+							if over < 0:
+								fdValue = -1*(100/over) * freebets
+
+							bookValue = under / 100
+							if under < 0:
+								bookValue = -1*(100/under)
+							
+							minIdx = hedge = 0
+							for i in range(100):
+								profit = i / 100 * freebets
+								hedge = profit / bookValue
+								diff = fdValue - hedge - hedge*bookValue
+								#print(i, diff)
+								if diff < 0:
+									minIdx = i-1
+									break
+
+							res.append((minIdx, sport, game, key, prop, over, book, under, f"hedge={round(hedge, 2)}"))
+
+	for row in sorted(res, reverse=True)[:20]:
+		print(row)
+
+
+
 def writeMGM(date=None):
 
 	res = {}
@@ -1221,21 +1314,7 @@ def writeFanduel():
 	"""
 
 	games = [
-    "https://sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-cleveland-guardians-33214238",
-    "https://sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-cincinnati-reds-33214229",
-    "https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-pittsburgh-pirates-33214232",
-    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-washington-nationals-33214233",
-    "https://sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-tampa-bay-rays-33214239",
-    "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-new-york-yankees-33214242",
-    "https://sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-atlanta-braves-33214234",
-    "https://sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-kansas-city-royals-33214243",
-    "https://sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-minnesota-twins-33214244",
-    "https://sportsbook.fanduel.com/baseball/mlb/houston-astros-@-chicago-cubs-33214247",
-    "https://sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-st.-louis-cardinals-33214235",
-    "https://sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-texas-rangers-33214245",
-    "https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-colorado-rockies-33214236",
-    "https://sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-los-angeles-angels-33214246",
-    "https://sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-san-francisco-giants-33214237"
+    "https://sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-boston-red-sox-33228657"
 ]
 
 	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358"]
@@ -2034,7 +2113,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	evData = {}
 
 	teamGame = {}
-	for game in pnLines:
+	for game in dkLines:
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
@@ -2419,6 +2498,7 @@ if __name__ == '__main__':
 	parser.add_argument("--skipdk", action="store_true")
 	parser.add_argument("--bpp", action="store_true")
 	parser.add_argument("--gamelogs", action="store_true")
+	parser.add_argument("--arb", action="store_true")
 	parser.add_argument("--writeGamelogs", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
@@ -2443,6 +2523,9 @@ if __name__ == '__main__':
 
 	if args.gamelogs:
 		readGamelogHomers()
+
+	if args.arb:
+		arb()
 
 	if args.action:
 		writeActionNetwork(args.date)

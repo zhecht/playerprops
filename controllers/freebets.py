@@ -1396,14 +1396,21 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("rafael devers", 300), ("yandy diaz", 600), ("adam duvall", 430), ("dansby swanson", 430), ("nolan arenado", 420), ("adolis garcia", 330)]
+	plays = [("christopher morel", 560), ("rafael devers", 370), ("matt olson", 340), ("kyle schwarber", 330), ("brandon nimmo", 630), ("brent rooker", 440), ("lawrence butler", 800), ("jose abreu", 300), ("alex bregman", 320), ("eugenio suarez", 560), ("aaron judge", 235), ("adolis garcia", 235), ("jarren duran", 750), ("davis wendzel", 480), ("max muncy", 450), ("sean bouchard", 500), ("jose altuve", 255)]
+	#print(len(plays))
 
 	if args.lineups:
 		writeLineups(plays)
 
 	if args.lineupsLoop:
+		with open(f"static/mlbprops/ev_hr.json") as fh:
+			ev = json.load(fh)
+		res = []
+		for player, odds in plays:
+			if player in ev:
+				res.append((player, odds, ev[player]["team"]))
 		while True:
-			writeLineups(plays)
+			writeLineups(res)
 			time.sleep(29)
 
 	dinger = False

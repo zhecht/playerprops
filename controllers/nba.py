@@ -2865,7 +2865,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
-	for game in mgmLines:
+	for game in pnLines:
 		if teamArg:
 			if game.split(" @ ")[0] not in teamArg.split(",") and game.split(" @ ")[1] not in teamArg.split(","):
 				continue
