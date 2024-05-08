@@ -875,6 +875,42 @@ def writeStatsVsTeam():
 	with open(f"{prefix}static/baseballreference/statsVsTeamLastYear.json", "w") as fh:
 		json.dump(statsVsTeamLastYear, fh, indent=4)
 
+def readBirthdays():
+	with open("static/baseballreference/birthdays.json") as fh:
+		bdays = json.load(fh)
+
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+
+	for player in bdays:
+		bday = bdays[player]
+		month = bday.split("-")[1]
+		day = bday.split("-")[2]
+
+		if int(month) < 3 or int(month) > 9:
+			continue
+
+		team = ""
+		for t in roster:
+			if player in roster[t]:
+				team = t
+				break
+
+		if not team:
+			continue
+
+		statUrl = f"static/baseballreference/{team}/2024-{month}-{day}.json"
+		if os.path.exists(statUrl):
+			with open(statUrl) as fh:
+				stats = json.load(fh)
+
+			#print(player)
+			if player in stats and "ab" in stats[player]:
+				print(player, stats[player]["hr"])
+
+
+
 def writeBirthdays():
 
 	bdays = {}
@@ -1688,15 +1724,18 @@ def printStuff():
 		for date in hrs:
 			year = date[:4]
 			month = date[4:6]
-			if month not in ["03", "04"]:
+			if month not in ["05"]:
 				continue
 			if year not in res:
-				res[year] = []
+				res[year] = {}
+			if month not in res:
+				res[year][month] = []
 
-			res[year].extend(hrs[date])
+			res[year][month].extend(hrs[date])
 
-		for year in res:
-			print(year, round(sum(res[year]) / len(res[year]), 2))
+		for year in sorted(res):
+			for month in sorted(res[year]):
+				print(year, month, round(sum(res[year][month]) / len(res[year][month]), 2))
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -1772,6 +1811,8 @@ if __name__ == "__main__":
 		writeSavantPitcherAdvanced()
 
 	printStuff()
+	#readBirthdays()
+
 	#writeYears()
 	#writeStatsVsTeam()
 	#writeAverages()
