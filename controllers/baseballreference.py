@@ -1720,6 +1720,26 @@ def printStuff():
 				homeHR = int(row[53])
 				hrs[date].append(awayHR + homeHR)
 
+		for team in glob("static/baseballreference/*"):
+			if team.endswith("json"):
+				continue
+
+			for file in glob(f"{team}/*"):
+				date = file.split("/")[-1].replace(".json", "").replace("-", "").replace(" gm2", "")
+				with open(file) as fh:
+					stats = json.load(fh)
+
+				if date not in hrs:
+					hrs[date] = []
+
+				hr = 0
+				for player in stats:
+					if "ab" not in stats[player]:
+						continue
+					hr += stats[player].get("hr", 0)
+
+				hrs[date].append(hr)
+
 		res = {}
 		for date in hrs:
 			year = date[:4]
@@ -1735,7 +1755,12 @@ def printStuff():
 
 		for year in sorted(res):
 			for month in sorted(res[year]):
-				print(year, month, round(sum(res[year][month]) / len(res[year][month]), 2))
+				hrPerGame = sum(res[year][month]) / len(res[year][month])
+				if year == "2024":
+					hrPerGame *= 2
+				print(year, month, round(hrPerGame, 2))
+
+
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -1810,8 +1835,8 @@ if __name__ == "__main__":
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
-	printStuff()
-	#readBirthdays()
+	#printStuff()
+	readBirthdays()
 
 	#writeYears()
 	#writeStatsVsTeam()

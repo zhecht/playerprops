@@ -1341,6 +1341,9 @@ def writeFanduelManual():
 			if (label.indexOf("game lines") >= 0) {
 				prop = "lines";
 			} else if (label.indexOf("any time goal scorer") >= 0) {
+				if (label.indexOf("period") >= 0) {
+					continue;
+				}
 				prop = "atgs";
 			} else if (label.indexOf("first goal scorer") >= 0) {
 				prop = "fgs";

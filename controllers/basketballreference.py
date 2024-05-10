@@ -62,7 +62,7 @@ def write_stats(date):
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		if "players" not in data["boxscore"]:
+		if "boxscore" not in data or "players" not in data["boxscore"]:
 			continue
 		
 		teamIds = {}

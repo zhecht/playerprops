@@ -3293,6 +3293,53 @@ def get_suffix(num):
 		return "rd"
 	return "th"
 
+def printHistorical():
+	with open("static/basketballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	date = "2024-05-09"
+
+	bets = [("aaron wiggins", "reb+ast", 3.5, -150), ("isaiah joe", "reb", 1.5, -160), ("jarrett allen", "pts", 13.5, -137), ("tim hardaway", "reb", 1.5, -120)]
+
+	win = loss = profit = 0
+	for player, prop, line, odds in bets:
+		team = ""
+		for t in roster:
+			if player in roster[t]:
+				team = t
+				break
+
+		if not team:
+			print(player, "no team")
+			continue
+		
+		with open(f"static/basketballreference/{team}/{date}.json") as fh:
+			stats = json.load(fh)
+
+		if player not in stats:
+			print(f"{player} not in")
+			continue
+
+		minutes = stats[player].get("min", 0)
+		if minutes == 0:
+			continue
+
+		val = 0
+		for p in prop.split("+"):
+			val += stats[player].get(p, 0)
+
+		if val > line:
+			win += 1
+			if odds > 0:
+				profit += (odds / 100)
+			else:
+				profit += (100 / (odds * -1))
+		else:
+			loss += 1
+			profit -= 1
+
+	print(f"{win}W-{loss}L profit={round(profit, 4)}")
+
 def writeMatchups():
 	url = "https://www.fantasypros.com/nba/defense-vs-position.php"
 	outfile = "outnba"
@@ -3508,6 +3555,7 @@ if __name__ == '__main__':
 	parser.add_argument("--leaders", action="store_true", help="leaders")
 	parser.add_argument("--sgp", action="store_true", help="SGP")
 	parser.add_argument("--insurance", action="store_true")
+	parser.add_argument("--historical", action="store_true")
 	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
@@ -3604,3 +3652,6 @@ if __name__ == '__main__':
 
 	if args.player:
 		writePlayer(args.player, args.prop)
+
+	if args.historical:
+		printHistorical()
