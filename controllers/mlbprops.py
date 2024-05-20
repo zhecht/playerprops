@@ -828,10 +828,6 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 				if proj:
 					projDiff = round((proj - line) / proj, 3)
 
-				hrFactor = ""
-				if team in playerHRFactors and player in playerHRFactors[team]:
-					hrFactor = playerHRFactors[team][player]
-
 				# savant
 				xHR = 0
 				try:
@@ -895,7 +891,7 @@ def getPropData(date = None, playersArg = [], teamsArg = "", pitchers=False, lin
 					#"winLossSplits": winLossSplits,
 					"bats": bats,
 					"battingNumber": battingNumber,
-					"hrFactor": hrFactor,
+					"hrFactor": stadiumHrRank,
 					"bp": bp,
 					"bpOdds": bpOdds,
 					"babip": babip,

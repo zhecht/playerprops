@@ -92,7 +92,8 @@
 			<button style="padding:5px;margin-left:1rem;" onclick="toggleBadOdds();">Toggle Bad Odds</button>
 			<button style="padding:5px;margin-left:1rem;" onclick="sortByProjDiff();">Toggle Sort By Projected Diff</button>
 			<button style="padding:5px;margin-left:1rem;" onclick="sortByBPDiff();">Toggle Sort By BP Diff</button>
-			<button style="padding:5px;" onclick="printSummary();">Print Summary</button>
+			<button style="padding:5px;margin-left:1rem;" onclick="bvpHR();">BVP HR</button>
+			<button style="padding:5px;margin-left:1rem;" onclick="printSummary();">Print Summary</button>
 		</div>
 		<div id="tableDiv">
 			<div id="propsTable">
@@ -114,6 +115,19 @@
 					out += "> ballparkpal "+row.hrFactor+" HR factor for him and "+row.bpOdds+" simulated odds, "+row.overOdds+" on draftkings. "+row.totalOver+"% hit rate on season, "+row.careerTotalOver+"% in career, "+row.lastYearTotalOver+"% last year. ["+row.pitcher+" percentiles](). vs "+row.pitcher+" he is "+row.againstPitcherStats+". "+row.opponent+" ranked "+addNumSuffix(row.oppRank)+" in HR allowed at "+row.oppRankVal+" hr/g ("+row.oppRankLast3+" in last 3). fantasypros projects "+row.proj+" today, numberfire projects "+row.numberfireProj+". HR-xHR is "+row.xHR+". In "+row.matchups+" matchups last year "+row.lastYearTeamMatchupOver+"% hit ("+row.againstTeamLastYearStats+"). In all games vs opponent "+row.againstTeamTotalOver+"% hit ("+row.againstTeamStats+").\n";
 				}
 				console.log(out);
+			}
+
+			function bvpHR() {
+				const rows = TABLE.getRows("active");
+				for (row of rows) {
+					let bvp = row.getData().againstPitcherStats;
+					if (bvp) {
+						bvp = bvp.split(", ")[1];
+						if (bvp.split(" ")[0] != "0") {
+							row.toggleSelect();
+						}
+					}
+				}
 			}
 
 			function printSelected() {
@@ -510,7 +524,7 @@
 						{title: "Numberfire Proj", field: "numberfireProj", hozAlign: "center", width: 80,  sorter: "number", formatter: colorFormatter},
 						{title: "IP Proj", field: "projIP", hozAlign: "center", width: 80,  sorter: "number", visible: false},
 						{title: "IP Numberfire Proj", field: "numberfireProjIP", hozAlign: "center", width: 80,  sorter: "number", visible: false},
-						{title: "HR Factor", field: "hrFactor", hozAlign: "center", width: 80,  sorter: "number", visible: false},
+						{title: "HR Factor", field: "hrFactor", hozAlign: "center", width: 80,  sorter: "number", visible: false, formatter: rankFormatter},
 						{title: "Proj Diff", field: "projDiff", visible: false, sorter: "number"},
 						{title: "BP Diff", field: "bpDiff", visible: false, sorter: "number"},
 						//{title: "BP Rank", field: "bp", hozAlign: "center", width: 100,  sorter: "number"},

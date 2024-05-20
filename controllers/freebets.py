@@ -783,7 +783,7 @@ def write365():
 				let line = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Handicap")[0].innerText;
 				let odds = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
 				lines.push(line);
-				if (title === "pitcher strikeouts" || title == "player hits") {
+				if (title === "pitcher strikeouts" || title == "player hits" || title == "player total bases") {
 					data[team][player] = {};
 					data[team][player][line] = odds;
 				} else {
@@ -797,7 +797,7 @@ def write365():
 				let team = playerList[idx][0];
 				let player = playerList[idx][1];
 
-				if (title === "pitcher strikeouts" || title == "player hits") {
+				if (title === "pitcher strikeouts" || title == "player hits" || title == "player total bases") {
 					let line = lines[idx];
 					data[team][player][line] += "/"+playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;;
 				} else {
@@ -1047,6 +1047,13 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evBook = "mgm"
 					line = mgm.split("/")[0]
 					l[2] = str(fdLine)
+
+					if line == "-":
+						continue
+				elif bookArg == "kambi":
+					evBook = "kambi"
+					line = kambi.split("/")[0]
+					l[5] = str(fdLine)
 
 					if line == "-":
 						continue
@@ -1396,7 +1403,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("william contreras", 430), ("aaron judge", 240), ("cal raleigh", 440), ("salvador perez", 420), ("max muncy", 470), ("jj bleday", 560), ("vinnie pasquantino", 460), ("rhys hoskins", 420)]
+	plays = [("brandon nimmo", 680), ("jeremy pena", 900), ("shohei ohtani", 320), ("salvador perez", 450), ("mark canha", 830), ("starling marte", 830), ("marcell ozuna", 330)]
 	#print(len(plays))
 
 	if args.lineups:

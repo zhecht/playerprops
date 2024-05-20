@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Julian</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/teams.css" type="text/css">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			height: 10%;
+		}
+		#header div {
+			margin-top: 0.5rem;
+		}
+		#tableDiv {
+			display: flex;
+			height: 90%;
+			justify-content: center;
+		}
+		#header input {
+			width:30px;
+			margin-right: 1rem;
+		}
+		#propsTable {
+			height:95%;
+		}
+		button.active {
+			background: green;
+		}
+	</style>
+	<body>
+		<div id="header">
+			<div>
+				<button class="active" onclick="changeYear(this)">2024</button>
+				<button onclick="changeYear(this)">2023</button>
+			</div>
+			<div style="display:none">
+				<label for="ip">IP</label>
+				<input id="ip" value="1" />
+
+				<label for="w">W</label>
+				<input id="w" value="7.5" />
+
+				<label for="l">L</label>
+				<input id="l" value="-3" />
+
+				<label for="qs">QS</label>
+				<input id="qs" value="4" />
+
+				<label for="sv">SV</label>
+				<input id="sv" value="6" />
+
+				<label for="er">ER</label>
+				<input id="er" value="-1" />
+
+				<label for="bb">BB</label>
+				<input id="bb" value="-0.25" />
+
+				<label for="k">K</label>
+				<input id="k" value="1" />
+			</div>
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable"></div>
+		</div>
+	</body>
+	<script>
+		let TABLE;
+		let posArg = "{{pos}}";
+		const teamNames = ["All", "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LAR", "LV", "MIA", "MIN", "NO", "NE", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WSH"];
+		const teamFormatter = function(cell, params, rendered) {
+			const div = document.createElement("div");
+			div.className = cell.getValue().toLowerCase();
+			div.innerText = cell.getValue().toUpperCase();
+			return div;
+		}
+
+		function changeYear(el) {
+			document.getElementsByClassName("active")[0].classList.remove("active");
+			el.classList.add("active");
+
+			let lyr = "";
+			let other = "_lyr";
+			if (el.innerText == "2023") {
+				lyr = "_lyr";
+				other = "";
+			}
+
+			let arr = ["pointsRank", "pointsRankNewModel", "warRank", "points", "pointsNewModel", "war", "ip", "w", "l", "qs", "sv", "er", "k", "bb"];
+			for (let hdr of arr) {
+				TABLE.hideColumn(hdr+other);
+				TABLE.showColumn(hdr+lyr);
+			}
+		}
+
+		const depthChartFormatter = function(cell, params, rendered) {
+			const players = cell.getValue();
+			if (cell.getField() == "qb") {
+				return players.split("\n")[0];
+			} else {
+				const div = document.createElement("div");
+				for (const player of players.split("\n")) {
+					div.appendChild(document.createTextNode(player));
+					div.appendChild(document.createElement("br"));
+				}
+				return div;
+			}
+		}
+
+		function filterPos(el) {
+			posArg = el.innerText.toLowerCase();
+			if (posArg === "all") {
+				TABLE.setFilter([{field: "pos", type:"!=", value:""}]);
+			} else if (posArg.indexOf("/") >= 0) {
+				TABLE.setFilter([{field: "pos", type:"in", value:posArg.split("/")}]);
+			} else {
+				TABLE.setFilter([{field: "pos", type:"=", value:posArg}]);
+			}
+			showHideCols();
+		}
+
+		function teamFilter(headerValue, rowValue, rowData, filterParams){
+			if (headerValue == "All") {
+				return true;
+			}
+			return rowValue.toUpperCase() == headerValue;
+		}
+
+		function renderProjections() {
+			TABLE = new Tabulator("#propsTable", {
+				tooltipsHeader: true,
+				ajaxURL: "/getPitchers",
+				//ajaxParams:{books: "{{books}}"},
+				layout: "fitData",
+				initialSort: [
+					{column: "pointsRank", dir: "asc"},
+				],
+				columns: [
+					{title: "Player", field: "player", headerFilter: "input"},
+					{title: "Rank", field: "pointsRank", sorter: "number", hozAlign: "center"},
+					{title: "New Rank", field: "pointsRankNewModel", sorter: "number", hozAlign: "center"},
+					{title: "WAR Rank", field: "warRank", sorter: "number", hozAlign: "center"},
+					{title: "Points", field: "points", sorter: "number", hozAlign: "center"},
+					{title: "New Points", field: "pointsNewModel", sorter: "number", hozAlign: "center"},
+					{title: "WAR", field: "war", hozAlign: "center", width: 70},
+					{title: "IP", field: "ip", hozAlign: "center", width: 70},
+					{title: "W", field: "w", hozAlign: "center", width: 70},
+					{title: "L", field: "l", hozAlign: "center", width: 70},
+					{title: "QS", field: "qs", hozAlign: "center", width: 70},
+					{title: "SV", field: "sv", hozAlign: "center", width: 70},
+					{title: "ER", field: "er", hozAlign: "center", width: 70},
+					{title: "K", field: "k", hozAlign: "center", width: 70},
+					{title: "BB", field: "bb", hozAlign: "center", width: 70},
+
+					{title: "Rank", field: "pointsRank_lyr", sorter: "number", hozAlign: "center", visible:false},
+					{title: "New Rank", field: "pointsRankNewModel_lyr", sorter: "number", hozAlign: "center", visible:false},
+					{title: "WAR Rank", field: "warRank_lyr", sorter: "number", hozAlign: "center", visible:false},
+					{title: "Points", field: "points_lyr", sorter: "number", hozAlign: "center", visible:false},
+					{title: "New Points", field: "pointsNewModel_lyr", sorter: "number", hozAlign: "center", visible:false},
+					{title: "WAR", field: "war_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "IP", field: "ip_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "W", field: "w_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "L", field: "l_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "QS", field: "qs_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "SV", field: "sv_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "ER", field: "er_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "K", field: "k_lyr", hozAlign: "center", width: 70, visible:false},
+					{title: "BB", field: "bb_lyr", hozAlign: "center", width: 70, visible:false},
+				]
+			});
+
+			TABLE.on("rowClick", function(e, row) {
+				row.getElement().querySelector("input").click();
+			});
+
+			setTimeout(function() {
+			}, 500);
+		}
+
+		renderProjections()
+	</script>
+</html>

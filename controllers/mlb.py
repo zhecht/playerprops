@@ -890,7 +890,7 @@ def writeBV():
 		json.dump(res, fh, indent=4)
 
 
-def arb():
+def arb(bookArg="fd"):
 	freebets = 100
 	res = []
 	for sport in ["nba", "nhl", "mlb"]:
@@ -911,7 +911,6 @@ def arb():
 		if sport == "nhl":
 			with open("static/nhl/mgm.json") as fh:
 				lines["mgm"] = json.load(fh)
-
 
 		for game in fdLines:
 			for prop in fdLines[game]:
@@ -1321,24 +1320,18 @@ def writeFanduel():
 	"""
 
 	games = [
-    "https://sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-pittsburgh-pirates-33259888",
-    "https://sportsbook.fanduel.com/baseball/mlb/houston-astros-@-detroit-tigers-33259898",
-    "https://sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-tampa-bay-rays-33259899",
-    "https://sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-baltimore-orioles-33259904",
-    "https://sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-toronto-blue-jays-33259900",
-    "https://sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-new-york-mets-33259890",
-    "https://sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-miami-marlins-33259891",
-    "https://sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-boston-red-sox-33259905",
-    "https://sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-chicago-white-sox-33259901",
-    "https://sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-milwaukee-brewers-33259893",
-    "https://sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-colorado-rockies-33259906",
-    "https://sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-los-angeles-angels-33259902",
-    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-diego-padres-33259896",
-    "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-seattle-mariners-33259903",
-    "https://sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-san-francisco-giants-33259897"
+    "https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-atlanta-braves-33288447",
+    "https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-miami-marlins-33286763",
+    "https://sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-washington-nationals-33286771",
+    "https://sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-tampa-bay-rays-33286767",
+    "https://sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-new-york-yankees-33286768",
+    "https://sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-kansas-city-royals-33286769",
+    "https://sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-st.-louis-cardinals-33286773",
+    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-houston-astros-33286765",
+    "https://sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-los-angeles-dodgers-33286764"
 ]
 
-	#games = ["https://mi.sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-cleveland-guardians-33173358"]
+	#games = ["https://sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-chicago-white-sox-33270142"]
 	lines = {}
 	for game in games:	
 		gameId = game.split("-")[-1]
@@ -2077,11 +2070,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	if not boost:
 		boost = 1
 
-	#with open(f"{prefix}static/mlb/bet365.json") as fh:
-	#	bet365Lines = json.load(fh)
+	with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
+		action = json.load(fh)
 
-	#with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
-	#	actionnetwork = json.load(fh)
+	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
+		bet365Lines = json.load(fh)
 
 	with open(f"{prefix}static/mlb/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -2138,17 +2131,45 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
-	if propArg in ["k", "single", "double", "sb", "h"]:
-		with open(f"static/mlbprops/bet365_{propArg}s.json") as fh:
+	for team in action:
+		if team not in teamGame:
+			continue
+		game = teamGame[team]
+		if game not in lines["mgm"]:
+			lines["mgm"][game] = {"hr": {}}
+		for player in action[team]:
+			if "mgm" in action[team][player]["hr"]:
+				lines["mgm"][game]["hr"][player] = action[team][player]["hr"]["mgm"]
+
+	lines["bet365"] = {}
+	for team in bet365Lines:
+		game = teamGame[team]
+		if game not in lines["bet365"]:
+			lines["bet365"][game] = {"hr": {}}
+		for player in bet365Lines[team]:
+			lines["bet365"][game]["hr"][player] = bet365Lines[team][player]
+
+	#for prop in ["k", "single", "double", "sb", "h"]:
+	for prop in ["k", "h", "tb", "r", "rbi"]:
+		with open(f"static/mlbprops/bet365_{prop}s.json") as fh:
 			bet365 = json.load(fh)
-		j = {}
 		for team in bet365:
-			game = teamGame[team]
-			if game not in j:
-				j[game] = {propArg: {}}
+			try:
+				game = teamGame[team]
+			except:
+				continue
+			if game not in lines["bet365"]:
+				lines["bet365"][game] = {prop: {}}
+			if prop not in lines["bet365"][game]:
+				lines["bet365"][game][prop] = {}
+
 			for player in bet365[team]:
-				j[game][propArg][player] = bet365[team][player]
-		lines["bet365"] = j
+				if prop in ["rbi", "r"]:
+					lines["bet365"][game][prop][player] = {
+						"0.5": bet365[team][player]
+					}
+				else:
+					lines["bet365"][game][prop][player] = bet365[team][player]
 
 	for game in fdLines:
 		if teamArg:
@@ -2166,7 +2187,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 			if propArg and prop != propArg:
 				continue
 
-			if not propArg and prop in ["triple", "single", "double", "sb", "spread", "r"]:
+			if not propArg and prop in ["triple", "single", "double", "sb", "spread"]:
 				#pass
 				continue
 
@@ -2380,7 +2401,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 					if ou.endswith("/-"):
 						ou = ou.split("/")[0]
-						
+
 					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"
 					if key in evData:
 						continue
@@ -2437,7 +2458,7 @@ def sortEV(propArg=""):
 	for row in sorted(data):
 		print(row[:-1])
 
-	hdrs = ["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "BV"]
+	hdrs = ["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "Bet365", "DK", "BV"]
 	if propArg not in ["single", "double", "sb", "h"]:
 		hdrs.insert(1, "PN EV")
 		hdrs.extend(["PN"])
@@ -2460,7 +2481,7 @@ def sortEV(propArg=""):
 		if propArg not in ["single", "double", "sb", "h"]:
 			arr.insert(1, row[-1].get("pn_ev", "-"))
 
-		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
+		for book in ["fd", "bet365", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
 			if book == "mgm":
 				continue
 			if propArg == "single" and book in ["pn", "kambi"]:

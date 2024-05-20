@@ -391,6 +391,61 @@ def writeYahoo():
     main();
 """
 
+def writeYahooPitchers():
+    url = "https://baseball.fantasysports.yahoo.com/b1/76488/players?&sort=PTS&sdir=1&status=A&pos=P&stat1=S_S_2024&jsenabled=1"
+
+    js = """
+
+    const data = {};
+
+    function loopScript() {
+        const table = document.querySelector("table");
+        const headers = ["ip", "w", "l", "sho", "sv", "er", "bb", "k", "nh", "pg", "qs", "bsv"];
+
+        let start = 0;
+        for (const th of table.querySelector("thead").querySelectorAll("tr")[1].querySelectorAll("th")) {
+            if (th.innerText === "IP") {
+                break;
+            }
+            start += 1;
+        }
+
+        for (const tr of table.querySelector("tbody").querySelectorAll("tr")) {
+            const player = tr.querySelectorAll("a")[1].innerText.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+            data[player] = {};
+            let idx = 0;
+            for (const td of tr.querySelectorAll("td:not(:nth-child(-n+"+start+")):nth-child(n)")) {
+                if (headers[idx] && headers[idx] != "pg") {
+                    data[player][headers[idx]] = parseFloat(td.innerText);
+                }
+                idx += 1;
+            }
+        }
+    }
+
+    async function main(){
+        let loop = true;
+        while (loop) {
+            loopScript();
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            let found = false;
+            for (const a of document.querySelector(".pagingnavlist").querySelectorAll("a")) {
+                if (a.innerText == "Next 25") {
+                    found = true;
+                    a.click();
+                }
+            }
+
+            if (!found) {
+                loop = false;
+            }
+        }
+    }
+
+    main();
+"""
+
 def writeFanduel():
     url = "https://mi.sportsbook.fanduel.com/navigation/nfl?tab=passing-props"
 
@@ -867,6 +922,101 @@ def depthChart_route():
 def draft_route():
     books = request.args.get("books")
     return render_template("draft.html", pos="all", books=books)
+
+def calcPoints(j, lastYear="", newModel=False):
+    val = 0
+    if newModel:
+        val += int(j.get("ip"+lastYear, 0))*1.5
+        #val += (j.get("ip", 0) % 10) * 10
+        val += (j.get("w"+lastYear, 0)*3)
+        val += (j.get("l"+lastYear, 0)*-1)
+    else:
+        val += int(j.get("ip"+lastYear, 0))
+        #val += (j.get("ip", 0) % 10) * 10
+        val += (j.get("w"+lastYear, 0)*7.5)
+        val += (j.get("l"+lastYear, 0)*-3)
+    val += (j.get("sho"+lastYear, 0)*3)
+    val += (j.get("sv"+lastYear, 0)*6)
+    val += (j.get("er"+lastYear, 0)*-1)
+    val += (j.get("bb"+lastYear, 0)*-0.25)
+    val += (j.get("k"+lastYear, 0))
+    val += (j.get("qs"+lastYear, 0)*4)
+    val += (j.get("bsv"+lastYear, 0)*-2)
+    return val
+
+@draft_blueprint.route('/getPitchers')
+def pitchers_route():
+    with open("julian.json") as fh:
+        data = json.load(fh)
+
+    csv = []
+    hdrs = ["player","ip", "w", "l", "sho", "sv", "er", "bb", "k", "nh", "qs", "bsv", "war", "points", "new_points"]
+    csv.append(",".join(hdrs))
+
+    for player in data:
+        output = [player]
+        j = {}
+        for hdr in hdrs[1:-2]:
+            if hdr in data[player]["lyr"]:
+                j[hdr] = data[player]["lyr"][hdr]
+                output.append(str(j[hdr]))
+            else:
+                output.append("0")
+
+        output.append(str(calcPoints(j)))
+        output.append(str(calcPoints(j, newModel=True)))
+
+        csv.append(",".join(output))
+
+    with open("julian.csv", "w") as fh:
+        fh.write("\n".join(csv))
+
+    res = []
+    for player in data:
+        j = {"player": player.title()}
+        for hdr in data[player]["szn"]:
+            j[hdr] = data[player]["szn"][hdr]
+
+        for hdr in data[player]["lyr"]:
+            j[hdr+"_lyr"] = data[player]["lyr"][hdr]
+
+        if "war" not in j:
+            j["war"] = 0
+
+        if "war_lyr" not in j:
+            j["war_lyr"] = 0
+
+        j["points"] = calcPoints(j)
+        j["points_lyr"] = calcPoints(j, lastYear="_lyr")
+
+        j["pointsNewModel"] = calcPoints(j, newModel=True)
+        j["points_lyrNewModel"] = calcPoints(j, lastYear="_lyr", newModel=True)
+
+        res.append(j)
+
+    for idx, row in enumerate(sorted(res, key=lambda kv: kv["points"], reverse=True)):
+        row["pointsRank"] = idx+1
+
+    for idx, row in enumerate(sorted(res, key=lambda kv: kv["points_lyr"], reverse=True)):
+        row["pointsRank_lyr"] = idx+1
+
+    for idx, row in enumerate(sorted(res, key=lambda kv: kv["pointsNewModel"], reverse=True)):
+        row["pointsRankNewModel"] = idx+1
+
+    for idx, row in enumerate(sorted(res, key=lambda kv: kv["points_lyrNewModel"], reverse=True)):
+        row["pointsRankNewModel_lyr"] = idx+1
+
+    for idx, row in enumerate(sorted(res, key=lambda kv: kv["war"], reverse=True)):
+        row["warRank"] = idx+1
+
+    for idx, row in enumerate(sorted(res, key=lambda kv: kv["war_lyr"], reverse=True)):
+        row["warRank_lyr"] = idx+1
+
+    return jsonify(res)
+
+@draft_blueprint.route('/julian')
+def julian_route():
+    return render_template("julian.html")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

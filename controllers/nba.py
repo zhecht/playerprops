@@ -3297,9 +3297,9 @@ def printHistorical():
 	with open("static/basketballreference/roster.json") as fh:
 		roster = json.load(fh)
 
-	date = "2024-05-09"
+	date = "2024-05-18"
 
-	bets = [("aaron wiggins", "reb+ast", 3.5, -150), ("isaiah joe", "reb", 1.5, -160), ("jarrett allen", "pts", 13.5, -137), ("tim hardaway", "reb", 1.5, -120)]
+	bets = [("kyrie irving", "pts", 19.5, -115), ("jaylin williams", "pts+reb", 5.5, 100)]
 
 	win = loss = profit = 0
 	for player, prop, line, odds in bets:

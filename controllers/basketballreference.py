@@ -332,6 +332,8 @@ def write_schedule(date):
 			if not tds[0].find("a"):
 				continue
 			awayTeam = tds[0].findAll("a")[-1].get("href").split("/")[-2]
+			if "TBD" in tds[1].text:
+				continue
 			homeTeam = tds[1].findAll("a")[-1].get("href").split("/")[-2]
 			score = tds[2].find("a").text.strip()
 			if "Postponed" in score:
