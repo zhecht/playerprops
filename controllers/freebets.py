@@ -815,13 +815,15 @@ def write365():
 def getFinalOdds():
 	pass
 
-def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd", nopn=False, nosh=False):
+def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameArg="", teamArg="", strikeouts=False, propArg="hr", under=False, nocz=False, nobr=False, no365=False, boost=None, bookArg="fd", nopn=False, nosh=False, add=None):
 
 	if not date:
 		date = str(datetime.now())[:10]
 
 	if not boost:
 		boost = 1
+	if not add:
+		add = 0
 
 	if propArg != "hr":
 		with open(f"{prefix}static/mlbprops/bet365_{propArg}s.json") as fh:
@@ -1111,6 +1113,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					continue
 
 				line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
+				line += add
 
 				if player in evData:
 					continue
@@ -1399,11 +1402,12 @@ if __name__ == '__main__':
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--teamSort", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
+	parser.add_argument("--add", type=float)
 	parser.add_argument("--book", help="Book")
 
 	args = parser.parse_args()
 
-	plays = [("brandon nimmo", 680), ("jeremy pena", 900), ("shohei ohtani", 320), ("salvador perez", 450), ("mark canha", 830), ("starling marte", 830), ("marcell ozuna", 330)]
+	plays = [("zach neto", 800), ("teoscar hernandez", 320), ("cal raleigh", 350), ("rafael devers", 280), ("wyatt langford", 800), ("adolis garcia", 340), ("jorge soler", 320)]
 	#print(len(plays))
 
 	if args.lineups:
@@ -1460,7 +1464,7 @@ if __name__ == '__main__':
 		sortEV(args.dinger, args.teamSort)
 
 	if args.prop:
-		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book, nopn=args.nopn, nosh=args.nosh)
+		writeEV(dinger=dinger, date=args.date, avg=True, allArg=args.all, gameArg=args.game, teamArg=args.team, propArg=args.prop, under=args.under, nocz=args.nocz, nobr=args.nobr, no365=args.no365, boost=args.boost, bookArg=args.book, nopn=args.nopn, nosh=args.nosh, add=args.add)
 		sortEV(args.dinger, args.teamSort)
 
 	data = {}
@@ -1497,7 +1501,7 @@ if __name__ == '__main__':
 				devig(data, player, ou, odds, avg=True, dinger=args.dinger)
 				if data:
 					currEv = data[player]["ev"]
-				if player in bet365[team]:
+				if team in bet365 and player in bet365[team]:
 					data = {}
 					devig(data, player, bet365[team][player], odds, dinger=args.dinger)
 					if data:

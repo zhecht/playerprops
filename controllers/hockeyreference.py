@@ -49,6 +49,9 @@ def write_stats(date):
 			with open(f"{prefix}static/hockeyreference/boxscores.json") as fh:
 				boxscores = json.load(fh)
 
+		if date not in boxscores:
+			continue
+
 		allStats = {}
 		for game in boxscores[date]:
 			away, home = map(str, game.split(" @ "))

@@ -236,7 +236,10 @@ def write_stats(date):
 		json.dump(playerIds, fh, indent=4)
 
 def parsePlayer(player):
-	return strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+	if player == "mike siani":
+		player = "michael siani"
+	return player
 
 def writeSplits():
 	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
@@ -485,12 +488,14 @@ def write_schedule(date):
 	date = ""
 
 	for table in soup.findAll("div", class_="ResponsiveTable"):
-		if table.find("div", class_="Table__Title") and "spring training" not in table.find("div", class_="Table__Title").text.lower():
+		if table.find("div", class_="Table__Title"):
+			if "spring training" in table.find("div", class_="Table__Title").text.lower():
+				continue
 			date = table.find("div", class_="Table__Title").text.strip()
 			date = str(datetime.datetime.strptime(date, "%A, %B %d, %Y"))[:10]
 			date = date.split(" ")[-1]
 		else:
-			continue
+			pass
 
 		if table.find("a", class_="Schedule__liveLink"):
 			continue
@@ -1744,7 +1749,7 @@ def printStuff():
 		for date in hrs:
 			year = date[:4]
 			month = date[4:6]
-			if month not in ["05"]:
+			if month not in ["05", "06"]:
 				continue
 			if year not in res:
 				res[year] = {}
@@ -1760,6 +1765,32 @@ def printStuff():
 					hrPerGame *= 2
 				print(year, month, round(hrPerGame, 2))
 
+def writeDailyHomers():
+	res = {}
+	for team in os.listdir("static/baseballreference/"):
+		if team.endswith("json"):
+			continue
+		for file in glob(f"static/baseballreference/{team}/*"):
+			date = file.replace(".json", "").split("/")[-1]
+			if date not in res:
+				res[date] = []
+
+			with open(file) as fh:
+				stats = json.load(fh)
+
+			for player in stats:
+				if "ab" in stats[player]:
+					if stats[player]["hr"] > 0:
+						res[date].append((team, player))
+
+	txt = ""
+	for date in sorted(res):
+		txt += f"{date}\n"
+		for team, player in res[date]:
+			txt += f"\t{team}: {player}\n"
+
+	with open("homers", "w") as fh:
+		fh.write(txt)
 
 
 if __name__ == "__main__":
@@ -1837,6 +1868,8 @@ if __name__ == "__main__":
 
 	#printStuff()
 	#readBirthdays()
+	
+	#writeDailyHomers()
 
 	#writeYears()
 	#writeStatsVsTeam()

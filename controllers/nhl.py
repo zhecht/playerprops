@@ -1345,6 +1345,11 @@ def writeFanduelManual():
 					continue;
 				}
 				prop = "atgs";
+			} else if (document.querySelector("h1").innerText.indexOf("Goal Scorer") >= 0) {
+				if (label.indexOf("total goals") >= 0) {
+					prop = "atgs";
+				}
+				player = parsePlayer(label.split(" total goals")[0]);
 			} else if (label.indexOf("first goal scorer") >= 0) {
 				prop = "fgs";
 			} else if (label.indexOf("player to record") >= 0) {
@@ -1403,6 +1408,8 @@ def writeFanduelManual():
 			if (["saves", "away_total", "home_total", "gift", "giff", "1p_total"].indexOf(prop) >= 0) {
 				skip = 2;
 			} else if (prop == "sog" && player) {
+				skip = 2;
+			} else if (prop == "atgs" && player) {
 				skip = 2;
 			}
 			let btns = Array.from(li.querySelectorAll("div[role=button]"));
@@ -1484,7 +1491,13 @@ def writeFanduelManual():
 					if (odds.indexOf("unavailable") >= 0) {
 						continue;
 					}
-					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+					if (prop == "atgs") {
+						if (line == "0.5") {
+							data[game][prop][player] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+						}
+					} else {
+						data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+					}
 				} else if (["giff", "gift"].indexOf(prop) >= 0) {
 					data[game][prop] = btns[i].getAttribute("aria-label").split(", ")[1] + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1];
 				} else if (skip == 2) {
@@ -2594,7 +2607,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 						line = maxOdds
 
+					#line = int(line) + 100
 					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
+					line += 100
 					#print(maxOU in l, maxOU, l)
 					l.remove(maxOU)
 					books.remove(evBook)
@@ -2731,17 +2746,18 @@ def sortEV(propArg):
 	with open("static/nhl/props.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "PN_EV", "EV Book", "Imp", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "L10", "SZN"]) + "\n"
+	output = "\t".join(["EV", "PN_EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "CZ", "PN", "Kambi/BR", "LYR", "L10", "SZN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "atgs":
 			continue
+		ou = ("u" if row[-1]["under"] else "o")
 		implied = 0
 		if row[-1]["line"] > 0:
 			implied = 100 / (row[-1]["line"] + 100)
 		else:
 			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
 		implied *= 100
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(implied)}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "bv", "cz", "pn", "kambi"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
