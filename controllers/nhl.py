@@ -1307,7 +1307,7 @@ def writeFanduelManual():
 			return player;
 		}
 
-		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
+		let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "").replace(" at ", " @ ");
 		let awayFull = game.split(" @ ")[0];
 		let homeFull = game.split(" @ ")[1];
 		let away = convertTeam(game.split(" @ ")[0]);
@@ -1486,20 +1486,20 @@ def writeFanduelManual():
 					if (!data[game][prop][player]) {
 						data[game][prop][player] = {};
 					}
-					line = ariaLabel.split(", ")[1];
-					odds = ariaLabel.split(", ")[2];
+					line = ariaLabel.split(", ")[2];
+					odds = ariaLabel.split(", ")[3];
 					if (odds.indexOf("unavailable") >= 0) {
 						continue;
 					}
 					if (prop == "atgs") {
 						if (line == "0.5") {
-							data[game][prop][player] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+							data[game][prop][player] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3];
 						}
 					} else {
-						data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
+						data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3];
 					}
 				} else if (["giff", "gift"].indexOf(prop) >= 0) {
-					data[game][prop] = btns[i].getAttribute("aria-label").split(", ")[1] + "/" + btns[i+1].getAttribute("aria-label").split(", ")[1];
+					data[game][prop] = btns[i].getAttribute("aria-label").split(", ")[2] + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
 				} else if (skip == 2) {
 					line = ariaLabel.split(", ")[2].split(" ")[1];
 					odds = ariaLabel.split(", ")[3].split(" ")[0];
@@ -2609,7 +2609,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					#line = int(line) + 100
 					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
-					line += 100
+					#line += 100
 					#print(maxOU in l, maxOU, l)
 					l.remove(maxOU)
 					books.remove(evBook)

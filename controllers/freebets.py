@@ -1407,7 +1407,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("zach neto", 800), ("teoscar hernandez", 320), ("cal raleigh", 350), ("rafael devers", 280), ("wyatt langford", 800), ("adolis garcia", 340), ("jorge soler", 320)]
+	plays = [("adael amador", 1300), ("elehuris montero", 870), ("adam duvall", 360), ("danny jansen", 340), ("william contreras", 470)]
 	#print(len(plays))
 
 	if args.lineups:
