@@ -1348,13 +1348,21 @@ def writeFanduel():
 	"""
 
 	games = [
-    "https://sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-tampa-bay-rays-33343468",
-    "https://sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-new-york-mets-33343458",
-    "https://sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-boston-red-sox-33343469",
-    "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-minnesota-twins-33343463",
-    "https://sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-seattle-mariners-33343464",
-    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-arizona-diamondbacks-33343465",
-    "https://sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-los-angeles-dodgers-33343470"
+    "https://sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-chicago-cubs-33345750",
+    "https://sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-boston-red-sox-33345756",
+    "https://sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-washington-nationals-33345751",
+    "https://sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-baltimore-orioles-33345760",
+    "https://sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-toronto-blue-jays-33345755",
+    "https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-new-york-mets-33345749",
+    "https://sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-atlanta-braves-33345761",
+    "https://sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-milwaukee-brewers-33345752",
+    "https://sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-houston-astros-33345754",
+    "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-minnesota-twins-33345757",
+    "https://sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-colorado-rockies-33345753",
+    "https://sportsbook.fanduel.com/baseball/mlb/chicago-white-sox-@-arizona-diamondbacks-33345759",
+    "https://sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-seattle-mariners-33345758",
+    "https://sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-los-angeles-dodgers-33345762",
+    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-angels-@-san-francisco-giants-33345763"
 ]
 
 	#games = ["https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-pittsburgh-pirates-33323266"]
