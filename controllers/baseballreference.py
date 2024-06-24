@@ -1708,7 +1708,7 @@ def writeBaseballReferencePH():
 
 def printStuff():
 
-	if True:
+	if False:
 		# https://www.retrosheet.org/gamelogs/glfields.txt
 		hrs = {}
 		for gamelog in glob("static/mlbprops/gamelogs/*"):
@@ -1746,17 +1746,24 @@ def printStuff():
 				hrs[date].append(hr)
 
 		res = {}
+		days = {}
 		for date in hrs:
 			year = date[:4]
 			month = date[4:6]
+			day = date[6:].replace("gm2", "")
 			if month not in ["05", "06"]:
 				continue
 			if year not in res:
 				res[year] = {}
-			if month not in res:
+				days[year] = {}
+			if month not in res[year]:
 				res[year][month] = []
+				days[year][month] = {}
+			if day not in days[year][month]:
+				days[year][month][day] = []
 
 			res[year][month].extend(hrs[date])
+			days[year][month][day].extend(hrs[date])
 
 		for year in sorted(res):
 			for month in sorted(res[year]):
@@ -1764,6 +1771,12 @@ def printStuff():
 				if year == "2024":
 					hrPerGame *= 2
 				print(year, month, round(hrPerGame, 2))
+
+				if year == "2024" and month == "06":
+					for day in sorted(days[year][month]):
+						hrPerGame = sum(days[year][month][day]) / len(days[year][month][day])
+						print("\t", year, month, day, round(hrPerGame, 2))
+
 
 def writeDailyHomers():
 	res = {}
@@ -1866,7 +1879,7 @@ if __name__ == "__main__":
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
-	#printStuff()
+	printStuff()
 	#readBirthdays()
 	
 	#writeDailyHomers()

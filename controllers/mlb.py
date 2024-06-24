@@ -1348,21 +1348,18 @@ def writeFanduel():
 	"""
 
 	games = [
-  "https://sportsbook.fanduel.com/baseball/mlb/st.-louis-cardinals-@-miami-marlins-33354437",
-  "https://sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-pittsburgh-pirates-33354435",
-  "https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-philadelphia-phillies-33354439",
-  "https://sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-cleveland-guardians-33354446",
-  "https://sportsbook.fanduel.com/baseball/mlb/arizona-diamondbacks-@-washington-nationals-33354441",
-  "https://sportsbook.fanduel.com/baseball/mlb/baltimore-orioles-@-new-york-yankees-33354447",
-  "https://sportsbook.fanduel.com/baseball/mlb/boston-red-sox-@-toronto-blue-jays-33354448",
-  "https://sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-atlanta-braves-33354452",
-  "https://sportsbook.fanduel.com/baseball/mlb/tampa-bay-rays-@-minnesota-twins-33354449",
-  "https://sportsbook.fanduel.com/baseball/mlb/san-francisco-giants-@-chicago-cubs-33354443",
-  "https://sportsbook.fanduel.com/baseball/mlb/new-york-mets-@-texas-rangers-33354453",
-  "https://sportsbook.fanduel.com/baseball/mlb/houston-astros-@-chicago-white-sox-33354450",
-  "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-colorado-rockies-33354445",
-  "https://sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-los-angeles-angels-33354454",
-  "https://sportsbook.fanduel.com/baseball/mlb/kansas-city-royals-@-oakland-athletics-33354451"
+    "https://sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-baltimore-orioles-33367889",
+    "https://sportsbook.fanduel.com/baseball/mlb/philadelphia-phillies-@-detroit-tigers-33367894",
+    "https://sportsbook.fanduel.com/baseball/mlb/seattle-mariners-@-tampa-bay-rays-33367890",
+    "https://sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-cincinnati-reds-33367885",
+    "https://sportsbook.fanduel.com/baseball/mlb/toronto-blue-jays-@-boston-red-sox-33367891",
+    "https://sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-st.-louis-cardinals-33367886",
+    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-chicago-white-sox-33367895",
+    "https://sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-kansas-city-royals-33367896",
+    "https://sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-milwaukee-brewers-33367897",
+    "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-los-angeles-angels-33367892",
+    "https://sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-san-diego-padres-33367887",
+    "https://sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-san-francisco-giants-33367888"
 ]
 
 	#games = ["https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-pittsburgh-pirates-33323266"]
@@ -2190,7 +2187,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 			lines["bet365"][game]["hr"][player] = bet365Lines[team][player]
 
 	#for prop in ["k", "single", "double", "sb", "h"]:
-	for prop in ["k", "h", "tb", "r", "rbi", "sb", "single"]:
+	for prop in ["k", "h", "tb", "r", "rbi", "sb", "single", "outs"]:
 		with open(f"static/mlbprops/bet365_{prop}s.json") as fh:
 			bet365 = json.load(fh)
 		for team in bet365:

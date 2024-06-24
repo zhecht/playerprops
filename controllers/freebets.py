@@ -170,9 +170,14 @@ def writeLineups(plays = []):
 
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
+	pitchers = {}
+	for table in soup.findAll("div", class_="starting-lineups__matchup"):
+		player = parsePlayer(table.find("a").text.strip())
+
+
 	data = {}
 	for table in soup.findAll("div", class_="starting-lineups__matchup"):
-		for which in ["away", "home"]:
+		for idx, which in enumerate(["away", "home"]):
 			try:
 				team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari").replace("cws", "chw")
 			except:
@@ -181,6 +186,7 @@ def writeLineups(plays = []):
 			if team in data:
 				continue
 			data[team] = []
+			pitchers[team] = parsePlayer(table.findAll("div", class_="starting-lineups__pitcher-name")[idx].text.strip())
 			for player in table.find("ol", class_=f"starting-lineups__team--{which}").findAll("li"):
 				try:
 					player = parsePlayer(player.find("a").text.strip())
@@ -191,6 +197,9 @@ def writeLineups(plays = []):
 
 	with open(f"{prefix}static/freebets/lineupsSent.json") as fh:
 		lineupsSent = json.load(fh)
+
+	with open(f"{prefix}static/freebets/pitchers.json", "w") as fh:
+		json.dump(pitchers, fh, indent=4)
 
 	date = datetime.now()
 	date = str(date)[:10]
@@ -783,7 +792,7 @@ def write365():
 				let line = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Handicap")[0].innerText;
 				let odds = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
 				lines.push(line);
-				if (title === "pitcher strikeouts" || title == "player hits" || title == "player total bases") {
+				if (title === "pitcher strikeouts" || title == "player hits" || title == "player total bases" || title == "pitcher outs") {
 					data[team][player] = {};
 					data[team][player][line] = odds;
 				} else {
@@ -797,7 +806,7 @@ def write365():
 				let team = playerList[idx][0];
 				let player = playerList[idx][1];
 
-				if (title === "pitcher strikeouts" || title == "player hits" || title == "player total bases") {
+				if (title === "pitcher strikeouts" || title == "player hits" || title == "player total bases" || title == "pitcher outs") {
 					let line = lines[idx];
 					data[team][player][line] += "/"+playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;;
 				} else {
@@ -865,6 +874,12 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 
 	with open(f"{prefix}static/mlb/bpp.json") as fh:
 		bpp = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
+		bvp = json.load(fh)
+
+	with open(f"{prefix}static/freebets/pitchers.json") as fh:
+		pitchers = json.load(fh)
 
 	evData = {}
 	if not teamArg and not gameArg:
@@ -1115,6 +1130,14 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
 				line += add
 
+				againstPitcherStats = pitcher = ""
+				try:
+					pitcher = pitchers[opp]
+					bvpStats = bvp[team][player+' v '+pitcher]
+					againstPitcherStats = f"{str(format(round(bvpStats['h']/bvpStats['ab'], 3), '.3f'))[1:]} {int(bvpStats['h'])}-{int(bvpStats['ab'])}, {int(bvpStats['hr'])} HR, {int(bvpStats['rbi'])} RBI, {int(bvpStats['bb'])} BB, {int(bvpStats['so'])} SO"
+				except:
+					pass
+
 				if player in evData:
 					continue
 				if True or dinger or prop == "k" or line > sharpUnderdog:
@@ -1153,6 +1176,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evData[player]["bet365"] = bet365ou
 					evData[player]["fanduel"] = fd
 					evData[player]["dk"] = dk
+					evData[player]["vsSP"] = againstPitcherStats
 					evData[player]["value"] = str(handicap)
 
 			with open(f"{prefix}static/mlbprops/ev_{prop}.json", "w") as fh:
@@ -1319,7 +1343,7 @@ def sortEV(dinger=False, teamSort=False):
 				l.extend([kambi, bv, sh, espn])
 			elif prop not in ["tb"]:
 				#l.extend([kambi, pn, bv, fn, sh, espn])
-				l.extend([kambi, pn, bv])
+				l.extend([kambi, pn, bv, evData[player].get("vsSP", "")])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 				l.insert(1, pnev)
@@ -1344,7 +1368,7 @@ def sortEV(dinger=False, teamSort=False):
 			l.extend(["Kambi", "BV", "SH", "ESPN"])
 		elif prop not in ["tb"]:
 			#l.extend(["Kambi", "PN", "BV", "FN", "SH", "ESPN"])
-			l.extend(["Kambi", "PN", "BV"])
+			l.extend(["Kambi", "PN", "BV", "vs SP"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 			l.insert(1, "EV (w/ PN)")
@@ -1407,7 +1431,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = []
+	plays = [("christian yelich", 800), ("adolis garcia", 440), ("tyler oneill", 300), ("alec bohm", 600), ("trea turner", 420), ("cal raleigh", 500)]
 	#print(len(plays))
 
 	if args.lineups:

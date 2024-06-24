@@ -1159,7 +1159,8 @@ def writeFanduel():
 	"""
 
 	games = [
-	"https://mi.sportsbook.fanduel.com/soccer/italian-serie-a/napoli-v-torino-33056930"
+    "https://sportsbook.fanduel.com/soccer/euro-2024/denmark-v-england-33318180",
+    "https://sportsbook.fanduel.com/soccer/euro-2024/spain-v-italy-33318182"
 ]
 
 	lines = {}
