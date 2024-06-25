@@ -716,10 +716,11 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr",
 		x = 0.2856
 		# 80% conversion * 42% (2.1 HR/game = 2.1*$5/$25)
 		x = .336
+
+		# for DK, 70% * (32 HR/tue = $32 / $20)
+		#x = 1.12
 		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
 		ev = round(ev, 1)
-		#if avg and player == "shohei ohtani":
-		#	print(player, fairVal, finalOdds, ev)
 
 
 	if player not in evData:
@@ -892,6 +893,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 		for player in evData.copy():
 			if evData[player]["game"] == gameArg:
 				del evData[player]
+
+	gameIdx = {}
+	for idx, game in enumerate(fdLines):
+		gameIdx[game] = idx
 
 	for game in fdLines:
 		if gameArg and game != gameArg:
@@ -1166,6 +1171,7 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						fd = ""
 					evData[player]["pitcher"] = strikeouts
 					evData[player]["game"] = game
+					evData[player]["gameIdx"] = gameIdx[game]
 					evData[player]["book"] = bookArg
 					evData[player]["team"] = team
 					evData[player]["opp"] = opp
@@ -1220,7 +1226,7 @@ def sortEV(dinger=False, teamSort=False):
 			evData = json.load(fh)
 
 		if False and teamSort and prop == "hr":
-			d = sorted(evData.items(), key=lambda k_v: k_v[1]["game"])
+			d = sorted(evData.items(), key=lambda k_v: k_v[1]["gameIdx"])
 			evData = {}
 			for row in d:
 				evData[row[0]] = row[1]
@@ -1243,6 +1249,7 @@ def sortEV(dinger=False, teamSort=False):
 			dk = mgm = pb = cz = kambi = ""
 			line = evData[player].get("line", 0)
 			game = evData[player]["game"]
+			gameIdx = evData[player].get("gameIdx", 0)
 			team = evData[player].get("team", "")
 			opp = evData[player].get("opp", "")
 			dk = evData[player]["dk"]
@@ -1353,7 +1360,7 @@ def sortEV(dinger=False, teamSort=False):
 			#	l.append(expectedHR)
 			tab = "\t".join([str(x) for x in l])
 			if teamSort:
-				data.append((game, ev*-1, player, tab, evData[player]))
+				data.append((gameIdx, ev*-1, player, tab, evData[player]))
 			else:
 				data.append((ev, player, tab, evData[player]))
 
@@ -1380,9 +1387,9 @@ def sortEV(dinger=False, teamSort=False):
 		bet365output = output
 		reddit = bet365reddit = ""
 		rev = False if teamSort else True
-		lastGame = ""
+		lastGame = 0
 		for row in sorted(data, reverse=rev):
-			if teamSort and lastGame and lastGame != row[0]:
+			if teamSort and lastGame != row[0]:
 				output += "\t".join(["-"]*len(l)) + "\n"
 				output += "\t".join(["-"]*len(l)) + "\n"
 			output += f"{row[-2]}\n"
@@ -1431,8 +1438,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("christian yelich", 800), ("adolis garcia", 440), ("tyler oneill", 300), ("alec bohm", 600), ("trea turner", 420), ("cal raleigh", 500)]
-	#print(len(plays))
+	plays = [("bryan reynolds", 290), ("adolis garcia", 450), ("brendan donovan", 900), ("julio rodriguez", 560)]
 
 	if args.lineups:
 		writeLineups(plays)

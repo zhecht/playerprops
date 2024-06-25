@@ -1395,7 +1395,7 @@ def writeFanduelManual():
 			if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
 				arrow.click();
 			}
-			let el = arrow.parentElement.parentElement.querySelector("div[aria-label='Show more']");
+			let el = arrow.parentElement.parentElement.parentElement.querySelector("div[aria-label='Show more']");
 			if (el) {
 				el.click();
 			}

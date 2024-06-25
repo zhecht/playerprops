@@ -1708,7 +1708,7 @@ def writeBaseballReferencePH():
 
 def printStuff():
 
-	if False:
+	if True:
 		# https://www.retrosheet.org/gamelogs/glfields.txt
 		hrs = {}
 		for gamelog in glob("static/mlbprops/gamelogs/*"):
@@ -1751,7 +1751,7 @@ def printStuff():
 			year = date[:4]
 			month = date[4:6]
 			day = date[6:].replace("gm2", "")
-			if month not in ["05", "06"]:
+			if month not in ["04", "05", "06"]:
 				continue
 			if year not in res:
 				res[year] = {}
@@ -1772,10 +1772,11 @@ def printStuff():
 					hrPerGame *= 2
 				print(year, month, round(hrPerGame, 2))
 
-				if year == "2024" and month == "06":
+				if year == "2024":
 					for day in sorted(days[year][month]):
 						hrPerGame = sum(days[year][month][day]) / len(days[year][month][day])
 						print("\t", year, month, day, round(hrPerGame, 2))
+						#print("\t", year, month, day, sum(days[year][month][day]))
 
 
 def writeDailyHomers():
