@@ -1348,21 +1348,11 @@ def writeFanduel():
 	"""
 
 	games = [
-    "https://sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-chicago-white-sox-33380752",
-    "https://sportsbook.fanduel.com/baseball/mlb/cincinnati-reds-@-st.-louis-cardinals-33380737",
-    "https://sportsbook.fanduel.com/baseball/mlb/new-york-yankees-@-toronto-blue-jays-33380745",
-    "https://sportsbook.fanduel.com/baseball/mlb/miami-marlins-@-philadelphia-phillies-33380739",
-    "https://sportsbook.fanduel.com/baseball/mlb/pittsburgh-pirates-@-atlanta-braves-33380741",
-    "https://sportsbook.fanduel.com/baseball/mlb/chicago-cubs-@-milwaukee-brewers-33380742",
-    "https://sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-kansas-city-royals-33380746",
-    "https://sportsbook.fanduel.com/baseball/mlb/houston-astros-@-new-york-mets-33380750",
-    "https://sportsbook.fanduel.com/baseball/mlb/oakland-athletics-@-arizona-diamondbacks-33380751",
-    "https://sportsbook.fanduel.com/baseball/mlb/san-diego-padres-@-boston-red-sox-33380753",
-    "https://sportsbook.fanduel.com/baseball/mlb/washington-nationals-@-tampa-bay-rays-33380754",
-    "https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-san-francisco-giants-33380744",
-    "https://sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-baltimore-orioles-33380747",
-    "https://sportsbook.fanduel.com/baseball/mlb/detroit-tigers-@-los-angeles-angels-33380748",
-    "https://sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-seattle-mariners-33380749"
+    "https://sportsbook.fanduel.com/baseball/mlb/cleveland-guardians-@-detroit-tigers-33399879",
+    "https://sportsbook.fanduel.com/baseball/mlb/colorado-rockies-@-cincinnati-reds-33399878",
+    "https://sportsbook.fanduel.com/baseball/mlb/minnesota-twins-@-chicago-white-sox-33399880",
+    "https://sportsbook.fanduel.com/baseball/mlb/texas-rangers-@-los-angeles-angels-33399881",
+    "https://sportsbook.fanduel.com/baseball/mlb/atlanta-braves-@-arizona-diamondbacks-33399870"
 ]
 
 	#games = ["https://sportsbook.fanduel.com/baseball/mlb/los-angeles-dodgers-@-pittsburgh-pirates-33323266"]

@@ -1708,7 +1708,7 @@ def writeBaseballReferencePH():
 
 def printStuff():
 
-	if False:
+	if True:
 		# https://www.retrosheet.org/gamelogs/glfields.txt
 		hrs = {}
 		for gamelog in glob("static/mlbprops/gamelogs/*"):
