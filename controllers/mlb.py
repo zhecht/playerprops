@@ -254,10 +254,12 @@ def writeCZ(date=None):
 		data = json.load(fh)
 
 	games = []
-	for event in data["competitions"][0]["events"][:20]:
+	for event in data["competitions"][0]["events"]:
+		if str(datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+			continue
 		games.append(event["id"])
 
-	#games = ["c52c3913-64be-4a57-a312-c42359df53ca"]
+	#games = ["c8704ffd-9499-47e1-b958-fe2b0e933d96"]
 
 	res = {}
 	for gameId in games:
@@ -342,6 +344,7 @@ def writeCZ(date=None):
 			elif "run line" in prop:
 				prop = "spread"
 			else:
+				#print(prop)
 				continue
 
 			prop = f"{prefix}{prop}"
@@ -1520,6 +1523,212 @@ def writeFanduel():
 	with open(f"static/mlb/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
+def writeFanduelManual():
+
+	js = """
+
+	let data = {};
+	{
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			let t = team.toLowerCase().replaceAll(".", "").replaceAll(" ", "").substring(0, 3);
+			
+			if (t == "chi") {
+				if (team.includes("sox")) {
+					return "chw";
+				}
+				return "chc";
+			} else if (t == "los") {
+				if (team.includes("angels")) {
+					return "laa";
+				}
+				return "lad";
+			} else if (t == "san") {
+				if (team.includes("padres")) {
+					return "sd";
+				}
+				return "sf";
+			} else if (t == "new") {
+				if (team.includes("mets")) {
+					return "nym";
+				}
+				return "nyy";
+			} else if (t == "was") {
+				return "wsh";
+			} else if (t == "kan") {
+				return "kc";
+			} else if (t == "tam") {
+				return "tb";
+			}
+			return t;
+		}
+
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			return player;
+		}
+
+
+		async function main() {
+			const arrows = document.querySelectorAll("div[data-test-id='ArrowAction']");
+
+			for (const arrow of arrows) {
+				let li = arrow;
+				let idx = 0;
+				while (li.nodeName != "LI") {
+					li = li.parentElement;
+					idx += 1;
+					if (idx > 10) {
+						break;
+					}
+				}
+
+				let prop = "";
+				let line = "";
+				let player = "";
+				let label = arrow.innerText.toLowerCase();
+				if (label.indexOf("game lines") >= 0) {
+					prop = "lines";
+				} else if (label === "to hit a home run parlay builder") {
+					prop = "hr";
+				} else if (label.includes("strikeouts")) {
+					prop = "k";
+				} else {
+					continue;
+				}
+
+				if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
+					arrow.click();
+				}
+
+				await new Promise(resolve => setTimeout(resolve, 50));
+
+				for (let el of document.querySelectorAll("div[aria-label='Show more']")) {
+					if (el) {
+						el.click();
+					}
+				}
+
+				await new Promise(resolve => setTimeout(resolve, 50));
+
+				if (prop != "k") {
+					let parent = arrow.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
+
+					let games = {};
+
+					for (let link of parent.querySelectorAll("span[role=link]")) {
+						if (!link.innerText.includes("More wagers")) {
+							continue;
+						}
+						let game = link.parentElement.parentElement.parentElement.getAttribute("title");
+						let away = convertTeam(game.split(" @ ")[0]);
+						let home = convertTeam(game.split(" @ ")[1]);
+						game = away+" @ "+home;
+						games[away] = game;
+						games[home] = game;
+
+						if (data[game] && data[game][prop]) {
+							game += " gm2";
+						}
+
+						if (!data[game]) {
+							data[game] = {};
+						}
+						if (!data[game][prop]) {
+							data[game][prop] = {};
+						}
+					}
+
+					for (let btn of parent.querySelectorAll("div[role=button]")) {
+						const label = btn.getAttribute("aria-label");
+						if (!label) {
+							continue;
+						}
+						let div = btn.parentElement.parentElement.parentElement;
+						let team;
+						try {
+							team = div.querySelectorAll("img")[1].src.split("/");
+						} catch (error) {
+							continue;
+						}
+						
+						team = convertTeam(team[6].split(".")[0].replaceAll("_", " "));
+						let player = parsePlayer(label.split(", ")[0]);
+
+						if (data[games[team]][prop][player]) {
+							data[games[team]+" gm2"][prop][player] = label.split(", ")[1];
+						} else {
+							data[games[team]][prop][player] = label.split(", ")[1];
+						}
+						
+					}
+				} else {
+					let li = arrow.parentElement.parentElement.parentElement.parentElement.parentElement.nextSibling.nextSibling;
+					let liList = [];
+
+					while (!li.querySelector("a")) {
+						liList.push(li);
+						li = li.nextSibling;
+					}
+					liList.push(li);
+
+					player = parsePlayer(label.split(" alt")[0].split(" strikeouts")[0]);
+					//console.log(li, player);
+					let game = li.querySelector("a").getAttribute("title");
+					let away = convertTeam(game.split(" @ ")[0]);
+					let home = convertTeam(game.split(" @ ")[1]);
+					game = away+" @ "+home;
+
+					if (!data[game]) {
+						data[game] = {};
+					}
+					if (!data[game]["k"]) {
+						data[game]["k"] = {};
+					}
+					if (!data[game]["k"][player]) {
+						data[game]["k"][player] = {};
+					}
+
+					for (li of liList) {
+
+						let btns = li.querySelectorAll("div[role=button]");
+
+						if (label.includes(" alt ")) {
+							for (let btn of btns) {
+								let ariaLabel = btn.getAttribute("aria-label").toLowerCase();
+								let idx = 0;
+								let odds = "";
+								let line = "";
+								if (ariaLabel.split(", ")[0].includes("+")) {
+									idx = ariaLabel.split(", ")[0].split(" ").indexOf("strikeouts");
+									odds = ariaLabel.split(", ")[1];
+									line = parseFloat(ariaLabel.split(" ")[idx-1].replace("+", "")) - 0.5;
+								} else {
+									idx = ariaLabel.split(", ")[1].split(" ").indexOf("strikeouts");
+									odds = ariaLabel.split(", ")[2];
+									line = parseFloat(ariaLabel.split(", ")[1].split(" ")[idx-1].replace("+", "")) - 0.5;
+								}
+								if (!data[game]["k"][player][line.toString()]) {
+									data[game]["k"][player][line.toString()] = odds;
+								}
+							}
+						} else {
+							let line = btns[0].getAttribute("aria-label").split(", ")[2];
+							let odds = btns[0].getAttribute("aria-label").split(", ")[3]; 
+							data[game]["k"][player][line] = odds+"/"+btns[1].getAttribute("aria-label").split(", ")[3];
+						}
+					}
+				}
+			}
+
+			console.log(data);
+		}
+
+		main();
+	}
+
+"""
+
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
 
 	prefix = ""
@@ -2202,6 +2411,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					lines["bet365"][game][prop][player] = bet365[team][player]
 
 	for game in fdLines:
+		if "gm2" in game:
+			continue
 		if teamArg:
 			if game.split(" @ ")[0] not in teamArg.split(",") and game.split(" @ ")[1] not in teamArg.split(","):
 				continue
@@ -2627,7 +2838,7 @@ if __name__ == '__main__':
 		writeCZ(args.date)
 
 	if args.update:
-		writeFanduel()
+		#writeFanduel()
 		print("pn")
 		writePinnacle(args.date)
 		print("kambi")
@@ -2641,8 +2852,8 @@ if __name__ == '__main__':
 		writeActionNetwork(args.date)
 		print("cz")
 		writeCZ(args.date)
-		print("bv")
-		writeBV()
+		#print("bv")
+		#writeBV()
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under)

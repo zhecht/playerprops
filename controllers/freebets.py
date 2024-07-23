@@ -963,7 +963,6 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					except:
 						pass
 				try:
-					bv = bvLines[game][prop][player]
 					if prop == "k":
 						bv = bvLines[game][prop][player][str(handicap)]
 				except:
@@ -1288,7 +1287,6 @@ def sortEV(dinger=False, teamSort=False):
 				except:
 					pass
 			try:
-				bv = bvLines[game][prop][player]
 				if prop == "k":
 					bv = bvLines[game][prop][player][value]
 			except:
@@ -1347,10 +1345,10 @@ def sortEV(dinger=False, teamSort=False):
 			l = [ev, game.upper(), player.title(), starting, evData[player]["fanduel"], avg, bet365, dk, mgm, cz]
 
 			if prop in ["single", "double"]:
-				l.extend([kambi, bv, sh, espn])
+				l.extend([kambi, sh, espn])
 			elif prop not in ["tb"]:
-				#l.extend([kambi, pn, bv, fn, sh, espn])
-				l.extend([kambi, pn, bv, evData[player].get("vsSP", "")])
+				#l.extend([kambi, pn, fn, sh, espn])
+				l.extend([kambi, pn, evData[player].get("vsSP", "")])
 			if prop == "hr":
 				l.insert(1, bet365ev)
 				l.insert(1, pnev)
@@ -1372,10 +1370,10 @@ def sortEV(dinger=False, teamSort=False):
 
 		l = ["EV (AVG)", "Game", "Player", "IN", "FD", "AVG", "bet365", "DK", "MGM", "CZ"]
 		if prop in ["single", "double"]:
-			l.extend(["Kambi", "BV", "SH", "ESPN"])
+			l.extend(["Kambi", "SH", "ESPN"])
 		elif prop not in ["tb"]:
-			#l.extend(["Kambi", "PN", "BV", "FN", "SH", "ESPN"])
-			l.extend(["Kambi", "PN", "BV", "vs SP"])
+			#l.extend(["Kambi", "PN", "FN", "SH", "ESPN"])
+			l.extend(["Kambi", "PN", "vs SP"])
 		if prop == "hr":
 			l.insert(1, "EV (365)")
 			l.insert(1, "EV (w/ PN)")
@@ -1438,7 +1436,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("ben rice", 600), ("miguel sano", 560), ("adley rutschman", 540), ("anthony santander", 420)]
+	plays = [("dylan moore", 600)]
 
 	if args.lineups:
 		writeLineups(plays)
