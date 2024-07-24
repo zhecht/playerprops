@@ -1436,7 +1436,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("dylan moore", 600)]
+	plays = [("manny machado", 330)]
 
 	if args.lineups:
 		writeLineups(plays)
