@@ -659,7 +659,6 @@ def writeFanduelManual():
 def write365():
 
 	js = """
-
 	{
 		let data = {};
 		function convertTeam(team) {
@@ -838,7 +837,6 @@ def write365():
 			console.log(data[prop]);
 		}
 	}
-
 """
 
 def writeCZ():
