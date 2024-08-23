@@ -935,6 +935,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				dkProp = prop
 				if game in dkLines and prop in dkLines[game] and player in dkLines[game][prop]:
 					dk = dkLines[game][prop][player]
+					if not dk:
+						dk = ""
 				elif useDK:
 					continue
 
@@ -1211,6 +1213,8 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 					evData[player]["team"] = team
 					evData[player]["opp"] = opp
 					evData[player]["ou"] = ou
+					evData[player]["f4_ou"] = f4_ou
+					evData[player]["pn_ou"] = pn_ou
 					evData[player]["odds"] = l
 					evData[player]["line"] = line
 					evData[player]["under"] = under
@@ -1478,7 +1482,10 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("cal raleigh", 450), ("mark vientos", 560)]
+	plays = [("pedro pages", 1400), ("matt chapman", 420), ("bryce harper", 310), ("jackson merrill", 450), ("jorge polanco", 540), ("jace jung", 900), ("trey sweeney", 900), ("keibert ruiz", 630), ("cj abrams", 390), ("travis blankenhorn", 520), ("trea turner", 420)]
+
+	if args.dinger:
+		plays = []
 
 	if args.lineups:
 		writeLineups(plays)
@@ -1562,8 +1569,12 @@ if __name__ == '__main__':
 			game = ev[player]["game"]
 			team = ev[player]["team"]
 			ou = ev[player]["ou"]
+			f4_ou = ev[player]["f4_ou"]
+			pn_ou = ev[player]["pn_ou"]
 			currEv = ev[player]["ev"]
 			bet365ev = ev[player].get("bet365ev", 0)
+			f4ev = ev[player].get("f4_ev", 0)
+			pnev = ev[player].get("pn_ev", 0)
 
 			if currOdds != odds:
 				data = {}
@@ -1576,8 +1587,13 @@ if __name__ == '__main__':
 					devig(data, player, bet365[team][player], odds, dinger=args.dinger)
 					if data:
 						bet365ev = data[player].get("bet365ev", 0)
+				devig(data, player, pn_ou, odds, dinger=dinger, pn=True)
+				devig(data, player, f4_ou, odds, dinger=dinger, f4=True)
+				f4ev = data[player].get("f4_ev", 0)
+				pnev = data[player].get("pn_ev", 0)
 
-			output.append(f"{player} taken={odds} curr={currOdds} ev={currEv} 365={bet365ev}")
+			#output.append(f"{player} taken={odds} curr={currOdds} ev={currEv} f4={f4ev} pn={pnev} 365={bet365ev}")
+			output.append(f"{player} taken={odds} curr={currOdds} [{currEv}, {f4ev}, {pnev}, {bet365ev}]")
 
 			if game not in output:
 				summaryOutput[game] = []

@@ -234,14 +234,14 @@ def writeDK():
 	}
 	
 	subCats = {
-		782: [7200, 14770, 7276, 7239, 7694, 7277, 13352, 13350, 13351],
+		782: [7200, 14770, 7276, 7239, 7694, 7277, 13405, 13352, 13350, 13351],
 		1286: [13354],
 		787: [13342, 13343, 13339, 13340, 13341, 13344, 13345],
 		529: [10500, 4652, 4651, 5629]
 	}
 
 	propIds = {
-		7200: "pass_yd", 14770: "pass_td", 7276: "rec_yd", 7239: "rec_td", 7694: "rush_td", 7277: "rush_yd", 13352: "sacks", 13350: "int", 13351: "def_int", 13354: "wins", 13342: "oroy", 13343: "droy", 13339: "mvp", 13340: "opoy", 13341: "dpoy", 13344: "coach", 13345: "comeback", 10500: "superbowl", 4652: "playoffs", 4651: "conference", 5629: "division"
+		7200: "pass_yd", 14770: "pass_td", 7276: "rec_yd", 7239: "rec_td", 7694: "rush_td", 7277: "rush_yd", 13352: "sacks", 13350: "int", 13351: "def_int", 13354: "wins", 13342: "oroy", 13343: "droy", 13339: "mvp", 13340: "opoy", 13341: "dpoy", 13344: "coach", 13345: "comeback", 10500: "superbowl", 4652: "playoffs", 4651: "conference", 5629: "division", 13405: "rec"
 	}
 
 	if False:
@@ -568,7 +568,8 @@ def writeCZ():
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/americanfootball/events/futures?competitionIds=007d7c61-07a7-4e18-bb40-15104b6eac92"
 	outfile = "outfuture"
 
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	cookie = "f8d7ca67-d3b0-450c-9577-5ef882c0b07f:EgoAm7Ffu1cmAAAA:4252dyPwpCchaIRrwl/A0WhQwnI3N5P1yxzSqDJfS58IGfAR0duamJ9HkaQNZgKyMSf52peT2NTJxDdSWUzCTg9aiPDENhrAg6gZFct62fQmGdEgbVCQgX4XqgOG/4ItFYC9Z8gnYFRclwj1FKZSgNww/NkzlXtRyxjiagL+5/nSA9l4V0u33kJRo/mtC6meDcjykhT5e955eGgaV53yO8YULiBIXgjUpvhDg3KE8hXY2AX6/A6NEuaGdzRwI4dqdqyThgD0SyZCZsYpgg=="
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -741,12 +742,15 @@ def write365():
 				prop = "leaders";
 			} else if (prop == "regular season wins") {
 				prop = "wins";
-			} else if (prop == "to make the playoffs") {
+			} else if (prop == "to make the nfl playoffs") {
 				prop = "playoffs";
+				skip = 2;
 			} else if (prop.includes("player")) {
 				prop = prop.split("player ")[1].split(" regular")[0].replace(" ", "_").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("yards", "yd").replace("touchdowns", "td").replace("receptions", "rec").replace("defensive", "def").replace("interceptions", "int");
 				if (prop == "regular_season int") {
 					prop = "int";
+				} else if (prop == "regular_season rec") {
+					prop = "rec";
 				}
 				skip = 2;
 				isPlayer = true;
@@ -756,7 +760,7 @@ def write365():
 
 			let mainProp = prop;
 
-			if (prop.includes("_yd") || prop == "wins" || prop == "playoffs") {
+			if (prop.includes("_yd") || prop == "wins") {
 				data[prop] = {};
 				let teams = [];
 				for (let div of document.querySelectorAll(".srb-ParticipantLabel_Name")) {
@@ -800,7 +804,7 @@ def write365():
 					if (row.innerText.includes("Others on Request")) {
 						continue;
 					}
-					if (prop.includes("_td") || prop == "sacks" || prop == "int") {
+					if (prop.includes("_td") || prop == "sacks" || prop == "int" || prop == "rec") {
 						player = parsePlayer(row.querySelector(".src-FixtureSubGroupButton_Text").innerText);
 					}
 
@@ -854,9 +858,12 @@ def write365():
 							if (team.indexOf("- No") >= 0) {
 								ou = btns[i+1].querySelectorAll("span")[1].innerText+"/"+odds;
 							}
-							if (prop.includes("_td") || prop == "sacks" || prop == "int") {
+							if (prop.includes("_td") || prop == "sacks" || prop == "int" || prop == "rec") {
 								data[prop][player] = {};
 								data[prop][player][team.split(" ")[1]] = ou;
+							} else if (prop == "playoffs") {
+								team = row.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().split(" to ")[0];
+								data[prop][convertTeam(team)] = ou;
 							} else {
 								data[prop][parsePlayer(team.split(" - ")[0])] = ou;
 							}

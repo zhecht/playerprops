@@ -470,10 +470,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
                 a = []
                 for book in books:
                     try:
-                        v = row[prop+"_book_"+book]
-                        if v.startswith("+"):
-                            v = f"'{v}"
-                        a.append(v)
+                        a.append(row[prop+"_book_"+book])
                     except:
                         a.append("-")
 
@@ -521,7 +518,7 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
         with open(f"{prefix}static/draft/{pos.replace('/', '_')}_all.csv", "w") as fh:
             fh.write(output)
 
-    h = ["Player"]
+    h = ["Player", "ECR / ADP"]
     h.extend([x.upper() for x in allHeaders])
     h.append("Points")
     output = "\t".join(h)+"\n"
@@ -530,6 +527,10 @@ def writeCsv(ppr=None, qbTd=None, booksOnly=False):
         for hdr in h:
             if hdr.lower() in row:
                 a.append(str(row[hdr.lower()]))
+            elif "ECR" in hdr and row["player"].lower() in ecrData:
+                ecr = ecrData[row["player"].lower()]["ecr"]
+                adp = ecrData[row["player"].lower()]["adp"]
+                a.append(f"{ecr} / {adp}")
             else:
                 a.append("-")
         output += "\t".join(a)+"\n"
@@ -744,20 +745,20 @@ if __name__ == '__main__':
 
     js = """
 
-    // Hide the bottom nightmare
+    /* Hide the bottom nightmare */
     let divs = document.querySelectorAll("#draft > div");
     divs[divs.length-1].style.display = "none";
 
-    // Expand Player List to bottom
+    /* Expand Player List to bottom */
     const playerListing = document.querySelector("#player-listing").parentElement.parentElement;
     let inset = playerListing.style.inset.split(" ");
     inset[2] = "0px";
     playerListing.style.inset = inset.join(" ");
 
-    // Expand Draft Order to bottom
+    /* Expand Draft Order to bottom */
     document.querySelector("#draft-order").parentElement.parentElement.style.bottom = "0px";
 
-    // Expand Chat to bottom
+    /* Expand Chat to bottom */
     document.querySelector("#chat").parentElement.parentElement.parentElement.style.bottom = "0px";
 
 """

@@ -248,7 +248,8 @@ def writeCZ(date=None):
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule/?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "mlboutCZ"
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	cookie = "40f08eb4-ea72-43e7-8c8b-eaf82d7141ae:EgoAaJxusy8uBAAA:FO0oif6dXT3GbbUc5wtiECBwlMCzxYFlYI0NJjSqo0YJpXdiavDFed9l4l5Si1pcBRFoD7xYVKWGW4UFSgmENQmE+sczyrBzzsb4T7iwGUouB2uhPy0al0nqe3lZsmueEwmTP1MWWZIQ1ovRcZVgCDoVDWGOEWCim6X0YR29vIEdLjUo/ecHNA26/t8NHqmt8F6QggiPIsQii0X7oHdbCl6qm0Kj2/Qw4GwDrIqKVP5G66IwC11kkEEzWZmzuneqX1yzfQz8FtTgmEmcvA=="
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -265,7 +266,7 @@ def writeCZ(date=None):
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
-		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -1825,14 +1826,14 @@ def writeDK(date, propArg):
 	
 	subCats = {
 		493: [4519, 13168, 13169],
-		743: [6606, 6719, 6607, 8025, 7979, 12149, 9872, 6605, 11031, 11032, 11033, 12146],
+		743: [6606, 6719, 6607, 8025, 7979, 12149, 9872, 6605, 11031, 11032, 11033, 12146, 15520],
 		729: [6821],
 		1024: [11024],
 		1031: [9885, 15221, 9884, 9886, 11035, 11064],
 	}
 
 	propIds = {
-		6606: "hr", 6719: "h", 6607: "tb", 8025: "rbi", 7979: "r", 12149: "h+r+rbi", 9872: "sb", 6605: "so", 11031: "single", 11032: "double", 11033: "triple", 12146: "bb", 15221: "k", 9883: "outs", 9884: "w", 9886: "h_allowed", 11035: "bb_allowed", 11064: "er", 13168: "spread", 13169: "total", 11024: "rfi"
+		6606: "hr", 6719: "h", 6607: "tb", 8025: "rbi", 7979: "r", 12149: "h+r+rbi", 9872: "sb", 6605: "so", 11031: "single", 11032: "double", 11033: "triple", 12146: "bb", 15221: "k", 9883: "outs", 9884: "w", 9886: "h_allowed", 11035: "bb_allowed", 11064: "er", 13168: "spread", 13169: "total", 11024: "rfi", 15520: "hr"
 	}
 
 	if False:
@@ -1850,7 +1851,7 @@ def writeDK(date, propArg):
 	lines = {}
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
-			if propArg and "hr" in propArg and subCat != 6606:
+			if propArg and "hr" in propArg and subCat not in [6606, 15520]:
 				continue
 			elif propArg and "k" in propArg and subCat != 15221:
 				continue
@@ -1958,7 +1959,8 @@ def writeDK(date, propArg):
 							outcomes = row["outcomes"]
 							ou = ""
 							try:
-								ou = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
+								if subCat != 15520:
+									ou = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
 							except:
 								continue
 
@@ -1996,10 +1998,20 @@ def writeDK(date, propArg):
 								if len(row["outcomes"]) > 1:
 									ou += f"/{outcomes[1]['oddsAmerican']}"
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0].strip())
+
+								if prop == "hr" and subCat == 15520:
+									if player in lines[game][prop]:
+										continue
+
 								if player not in lines[game][prop]:
 									lines[game][prop][player] = {}
 
-								if prop in ["w", "hr", "sb"]:
+								if prop == "hr" and subCat == 15520:
+									for outcome in outcomes:
+										if outcome["label"] != "1+":
+											continue
+										lines[game][prop][player] = f"{outcome['oddsAmerican']}"
+								elif prop in ["w", "hr", "sb"]:
 									lines[game][prop][player] = ou
 								elif prop in ["single", "double"]:
 									if str(outcomes[0]['line']) != "0.5":
@@ -2395,6 +2407,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 	lines["bet365"] = {}
 	for team in bet365Lines:
+		if team not in teamGame:
+			continue
 		game = teamGame[team]
 		if game not in lines["bet365"]:
 			lines["bet365"][game] = {"hr": {}}
@@ -2712,7 +2726,7 @@ def sortEV(propArg=""):
 	for row in sorted(data):
 		print(row[:-1])
 
-	hdrs = ["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "Bet365", "DK", "MGM", "BV"]
+	hdrs = ["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "Bet365", "DK", "MGM"]
 	if propArg not in ["single", "double", "sb", "h"]:
 		hdrs.insert(1, "PN EV")
 		hdrs.extend(["PN"])
@@ -2725,17 +2739,18 @@ def sortEV(propArg=""):
 	output = "\t".join(hdrs) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["book"] in ["kambi"]:
-			continue
+			#continue
+			pass
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("BET365", "365"), f"{round(row[-1]['implied'])}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("BET365", "365").replace("KAMBI", "BR"), f"{round(row[-1]['implied'])}%", row[1].upper(), row[-1]["player"].title(), row[-1]["prop"], ou]
 		if propArg not in ["single", "double", "sb", "h"]:
 			arr.insert(1, row[-1].get("pn_ev", "-"))
 
-		for book in ["fd", "bet365", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
+		for book in ["fd", "bet365", "dk", "mgm", "pn", "kambi", "cz"]:
 			if book == "mgm":
 				pass
 				#continue
