@@ -33,40 +33,6 @@
     "ten": "+15000",
     "car": "+25000"
   },
-  "playoffs": {
-    "ari": "+300/-400",
-    "atl": "-210/+165",
-    "bal": "-290/+220",
-    "buf": "-170/+140",
-    "car": "+550/-900",
-    "chi": "-115/-105",
-    "cin": "-240/+190",
-    "cle": "+145/-180",
-    "dal": "-200/+160",
-    "den": "+600/-1000",
-    "det": "-250/+200",
-    "gb": "-170/+140",
-    "hou": "-190/+155",
-    "ind": "+140/-170",
-    "jax": "+120/-150",
-    "kc": "-550/+375",
-    "lac": "+105/-135",
-    "lar": "+100/-130",
-    "lv": "+290/-390",
-    "mia": "-150/+120",
-    "min": "+300/-400",
-    "ne": "+950/-2000",
-    "no": "+170/-220",
-    "nyg": "+400/-600",
-    "nyj": "-170/+140",
-    "phi": "-270/+210",
-    "pit": "+175/-225",
-    "sea": "+175/-225",
-    "sf": "-450/+320",
-    "tb": "+150/-185",
-    "ten": "+400/-600",
-    "was": "+300/-400"
-  },
   "conference": {
     "kc": "+325",
     "bal": "+475",
@@ -74,7 +40,7 @@
     "cin": "+700",
     "hou": "+800",
     "mia": "+1000",
-    "nyj": "+1200",
+    "nyj": "+1000",
     "lac": "+1800",
     "cle": "+2000",
     "jax": "+2200",
@@ -118,10 +84,10 @@
     "lac": "+350",
     "lv": "+900",
     "den": "+1600",
-    "phi": "-125",
+    "phi": "-135",
     "dal": "+170",
     "was": "+1000",
-    "nyg": "+1200",
+    "nyg": "+1400",
     "det": "+130",
     "gb": "+200",
     "chi": "+330",
@@ -139,7 +105,7 @@
     "patrick mahomes": "+500",
     "josh allen": "+800",
     "joe burrow": "+900",
-    "cj stroud": "+1000",
+    "cj stroud": "+900",
     "lamar jackson": "+1400",
     "jordan love": "+1400",
     "jalen hurts": "+1400",
@@ -171,6 +137,7 @@
     "bo nix": "+15000",
     "will levis": "+15000",
     "bijan robinson": "+15000",
+    "derrick henry": "+15000",
     "myles garrett": "+17500",
     "jamarr chase": "+17500",
     "daniel jones": "+17500",
@@ -183,12 +150,12 @@
     "bryce young": "+20000",
     "kyren williams": "+20000",
     "saquon barkley": "+20000",
-    "derrick henry": "+20000",
     "nick chubb": "+20000",
     "puka nacua": "+20000",
     "jahmyr gibbs": "+20000",
     "jameis winston": "+20000",
     "amon ra stbrown": "+20000",
+    "gardner minshew": "+20000",
     "desmond ridder": "+25000",
     "jonathan taylor": "+25000",
     "deebo samuel": "+25000",
@@ -247,7 +214,7 @@
       "11.5": "+150/-190"
     },
     "cle": {
-      "8.5": "-135/+105",
+      "8.5": "-150/+120",
       "7.5": "-230/+180",
       "9.5": "+140/-170"
     },
@@ -257,9 +224,9 @@
       "11.5": "+290/-390"
     },
     "den": {
-      "5.5": "-110/-110",
-      "4.5": "-210/+165",
-      "6.5": "+180/-230"
+      "5.5": "-140/+110",
+      "4.5": "-250/+200",
+      "6.5": "+170/-220"
     },
     "det": {
       "10.5": "-130/+100",
@@ -277,9 +244,9 @@
       "10.5": "+125/-155"
     },
     "ind": {
-      "8.5": "-110/-110",
-      "7.5": "-210/+165",
-      "9.5": "+165/-210"
+      "8.5": "+100/-130",
+      "7.5": "-200/+160",
+      "9.5": "+175/-225"
     },
     "jax": {
       "8.5": "-115/-105",
@@ -314,7 +281,7 @@
     "min": {
       "6.5": "-160/+130",
       "5.5": "-230/+180",
-      "7.5": "+155/-190"
+      "7.5": "+135/-165"
     },
     "ne": {
       "5.5": "+170/-220",
@@ -372,9 +339,43 @@
       "7.5": "+160/-200"
     }
   },
+  "playoffs": {
+    "ari": "+300/-400",
+    "atl": "-210/+165",
+    "bal": "-290/+220",
+    "buf": "-170/+140",
+    "car": "+550/-900",
+    "chi": "-115/-105",
+    "cin": "-240/+190",
+    "cle": "+145/-180",
+    "dal": "-200/+160",
+    "den": "+600/-1000",
+    "det": "-250/+200",
+    "gb": "-170/+140",
+    "hou": "-190/+155",
+    "ind": "+140/-170",
+    "jax": "+120/-150",
+    "kc": "-550/+375",
+    "lac": "+105/-135",
+    "lar": "-115/-105",
+    "lv": "+290/-390",
+    "mia": "-150/+120",
+    "min": "+300/-400",
+    "ne": "+950/-2000",
+    "no": "+170/-220",
+    "nyg": "+400/-600",
+    "nyj": "-170/+140",
+    "phi": "-270/+210",
+    "pit": "+175/-225",
+    "sea": "+175/-225",
+    "sf": "-450/+320",
+    "tb": "+150/-185",
+    "ten": "+400/-600",
+    "was": "+300/-400"
+  },
   "pass_yd": {
     "aaron rodgers": {
-      "3650.5": "-115/-105"
+      "3650.5": "-130/+100"
     },
     "anthony richardson": {
       "3250.5": "+110/-140"
@@ -382,8 +383,11 @@
     "baker mayfield": {
       "3500.5": "-130/+100"
     },
+    "bo nix": {
+      "3050.5": "-110/-110"
+    },
     "brock purdy": {
-      "3925.5": "-110/-110"
+      "3925.5": "+110/-140"
     },
     "bryce young": {
       "3200.5": "-110/-110"
@@ -398,13 +402,16 @@
       "4150.5": "+110/-140"
     },
     "daniel jones": {
-      "2750.5": "-110/-110"
+      "2750.5": "+110/-140"
     },
     "derek carr": {
       "3400.5": "-110/-110"
     },
     "deshaun watson": {
       "3300.5": "+100/-130"
+    },
+    "gardner minshew": {
+      "2900.5": "+100/-130"
     },
     "geno smith": {
       "3450.5": "+100/-130"
@@ -416,7 +423,7 @@
       "4000.5": "-130/+100"
     },
     "jayden daniels": {
-      "3225.5": "+110/-140"
+      "3225.5": "+120/-150"
     },
     "joe burrow": {
       "4100.5": "+110/-140"
@@ -427,8 +434,11 @@
     "josh allen": {
       "3750.5": "-130/+100"
     },
+    "justin herbert": {
+      "3600.5": "-110/-110"
+    },
     "kirk cousins": {
-      "4000.5": "+100/-130"
+      "4000.5": "+130/-160"
     },
     "kyler murray": {
       "3450.5": "-130/+100"
@@ -437,13 +447,16 @@
       "3250.5": "-110/-110"
     },
     "matthew stafford": {
-      "4000.5": "+100/-130"
+      "4000.5": "+130/-160"
     },
     "patrick mahomes": {
       "4400.5": "+110/-140"
     },
+    "russell wilson": {
+      "2675.5": "+120/-150"
+    },
     "trevor lawrence": {
-      "3800.5": "-110/-110"
+      "3800.5": "+100/-130"
     },
     "tua tagovailoa": {
       "4075.5": "-110/-110"
@@ -462,6 +475,9 @@
     "baker mayfield": {
       "23.5": "+100/-130"
     },
+    "bo nix": {
+      "18.5": "+100/-130"
+    },
     "brock purdy": {
       "27.5": "-130/+100"
     },
@@ -469,7 +485,7 @@
       "18.5": "+100/-130"
     },
     "caleb williams": {
-      "23.5": "+100/-130"
+      "23.5": "-130/+100"
     },
     "cj stroud": {
       "26.5": "-130/+100"
@@ -485,6 +501,9 @@
     },
     "deshaun watson": {
       "18.5": "-110/-110"
+    },
+    "gardner minshew": {
+      "18.5": "+105/-135"
     },
     "geno smith": {
       "20.5": "-115/-105"
@@ -507,6 +526,9 @@
     "josh allen": {
       "26.5": "-130/+100"
     },
+    "justin herbert": {
+      "22.5": "+105/-135"
+    },
     "kirk cousins": {
       "27.5": "+100/-130"
     },
@@ -522,8 +544,14 @@
     "patrick mahomes": {
       "33.5": "+110/-140"
     },
+    "russell wilson": {
+      "16.5": "+100/-130"
+    },
+    "sam darnold": {
+      "20.5": "+100/-130"
+    },
     "trevor lawrence": {
-      "21.5": "-115/-105"
+      "21.5": "-110/-110"
     },
     "tua tagovailoa": {
       "24.5": "-130/+100"
@@ -533,8 +561,11 @@
     }
   },
   "rec_yd": {
+    "adonai mitchell": {
+      "575.5": "-140/+110"
+    },
     "aj brown": {
-      "1250.5": "-110/-110"
+      "1250.5": "-105/-115"
     },
     "amari cooper": {
       "975.5": "+100/-130"
@@ -684,10 +715,13 @@
       "1150.5": "-110/-110"
     },
     "rashod bateman": {
-      "625.5": "-110/-110"
+      "625.5": "+100/-130"
     },
     "rome odunze": {
       "650.5": "-115/-105"
+    },
+    "romeo doubs": {
+      "575.5": "-110/-110"
     },
     "sam laporta": {
       "875.5": "+110/-140"
@@ -868,6 +902,9 @@
     "travis kelce": {
       "7.5": "+100/-130"
     },
+    "trey mcbride": {
+      "4.5": "-130/+100"
+    },
     "tyler lockett": {
       "4.5": "+100/-130"
     },
@@ -880,7 +917,7 @@
   },
   "rush_yd": {
     "aaron jones": {
-      "750.5": "-110/-110"
+      "750.5": "-115/-105"
     },
     "alvin kamara": {
       "650.5": "-110/-110"
@@ -900,8 +937,14 @@
     "christian mccaffrey": {
       "1125.5": "-110/-110"
     },
+    "chuba hubbard": {
+      "800.5": "-110/-110"
+    },
     "dandre swift": {
-      "800.5": "+100/-130"
+      "750.5": "-130/+100"
+    },
+    "david montgomery": {
+      "825.5": "-115/-105"
     },
     "derrick henry": {
       "975.5": "-110/-110"
@@ -910,25 +953,25 @@
       "750.5": "-110/-110"
     },
     "devon achane": {
-      "750.5": "-130/+100"
+      "750.5": "+100/-130"
     },
     "ezekiel elliott": {
-      "650.5": "-110/-110"
+      "575.5": "-110/-110"
     },
     "isiah pacheco": {
       "925.5": "-110/-110"
     },
     "jalen hurts": {
-      "600.5": "+100/-130"
+      "600.5": "-130/+100"
     },
     "james conner": {
       "775.5": "-110/-110"
     },
     "james cook": {
-      "950.5": "-110/-110"
+      "950.5": "-115/-105"
     },
     "jayden daniels": {
-      "500.5": "-140/+110"
+      "500.5": "+110/-140"
     },
     "joe mixon": {
       "850.5": "-110/-110"
@@ -937,7 +980,7 @@
       "1025.5": "-110/-110"
     },
     "josh allen": {
-      "550.5": "+100/-130"
+      "550.5": "-130/+100"
     },
     "josh jacobs": {
       "925.5": "-110/-110"
@@ -955,10 +998,10 @@
       "750.5": "-110/-110"
     },
     "najee harris": {
-      "800.5": "-130/+100"
+      "850.5": "-110/-110"
     },
     "rachaad white": {
-      "825.5": "-110/-110"
+      "825.5": "-130/+100"
     },
     "raheem mostert": {
       "675.5": "-110/-110"
@@ -967,22 +1010,22 @@
       "775.5": "-110/-110"
     },
     "saquon barkley": {
-      "1025.5": "-115/-105"
+      "1025.5": "-105/-115"
     },
     "tony pollard": {
-      "750.5": "+100/-130"
+      "750.5": "-130/+100"
     },
     "travis etienne": {
       "900.5": "-110/-110"
     },
     "trey benson": {
-      "525.5": "-130/+100"
+      "525.5": "+100/-130"
     },
     "zack moss": {
-      "700.5": "-115/-105"
+      "700.5": "-105/-115"
     },
     "zamir white": {
-      "825.5": "+100/-130"
+      "825.5": "-130/+100"
     }
   },
   "rush_td": {
@@ -1020,7 +1063,7 @@
       "7.5": "+130/-160"
     },
     "ezekiel elliott": {
-      "5.5": "+100/-130"
+      "5.5": "+110/-140"
     },
     "gus edwards": {
       "4.5": "-115/-105"
@@ -1035,7 +1078,7 @@
       "6.5": "+105/-135"
     },
     "james cook": {
-      "4.5": "-105/-115"
+      "4.5": "+100/-130"
     },
     "joe mixon": {
       "7.5": "+100/-130"
@@ -1065,10 +1108,10 @@
       "5.5": "-115/-105"
     },
     "rachaad white": {
-      "5.5": "-115/-105"
+      "5.5": "+100/-130"
     },
     "raheem mostert": {
-      "8.5": "+110/-140"
+      "7.5": "+110/-140"
     },
     "rhamondre stevenson": {
       "4.5": "-130/+100"
@@ -1077,16 +1120,16 @@
       "6.5": "-140/+110"
     },
     "tony pollard": {
-      "5.5": "-130/+100"
+      "5.5": "+110/-140"
     },
     "travis etienne": {
       "6.5": "-130/+100"
     },
     "zack moss": {
-      "6.5": "+110/-140"
+      "6.5": "+130/-160"
     },
     "zamir white": {
-      "4.5": "-115/-105"
+      "4.5": "-135/+105"
     }
   },
   "sacks": {
@@ -1115,10 +1158,7 @@
       "7.5": "-110/-110"
     },
     "gregory rousseau": {
-      "5.5": "-130/+100"
-    },
-    "haason reddick": {
-      "10.5": "+100/-130"
+      "5.5": "-140/+110"
     },
     "jalen carter": {
       "6.5": "-110/-110"
@@ -1204,27 +1244,30 @@
     "jordan love": "+1400",
     "josh allen": "+1400",
     "aaron rodgers": "+1600",
-    "tua tagovailoa": "+2000",
+    "tua tagovailoa": "+1800",
     "matthew stafford": "+2500",
-    "baker mayfield": "+3000",
+    "baker mayfield": "+2800",
+    "caleb williams": "+2800",
     "derek carr": "+3000",
     "justin herbert": "+3000",
     "lamar jackson": "+3000",
-    "caleb williams": "+3500",
     "jalen hurts": "+3500",
+    "sam darnold": "+3500",
     "trevor lawrence": "+3500",
     "geno smith": "+4000",
-    "russell wilson": "+4000",
     "deshaun watson": "+5000",
     "kyler murray": "+6000",
-    "anthony richardson": "+7500",
+    "anthony richardson": "+6600",
     "jayden daniels": "+7500",
     "will levis": "+7500",
     "bo nix": "+8000",
     "bryce young": "+8000",
     "daniel jones": "+10000",
     "gardner minshew": "+10000",
-    "drake maye": "+20000"
+    "russell wilson": "+10000",
+    "jacoby brissett": "+15000",
+    "drake maye": "+20000",
+    "michael penix": "+25000"
   },
   "most_int": {
     "caleb williams": "+1000",
@@ -1257,16 +1300,19 @@
     "aaron rodgers": "+4000",
     "cj stroud": "+4000",
     "gardner minshew": "+4000",
+    "jacoby brissett": "+4000",
     "lamar jackson": "+4000",
-    "russell wilson": "+4000"
+    "russell wilson": "+4000",
+    "zach wilson": "+5000",
+    "michael penix": "+6000"
   },
   "oroy": {
-    "caleb williams": "+140",
-    "jayden daniels": "+550",
-    "marvin harrison": "+800",
-    "malik nabers": "+1000",
-    "bo nix": "+1300",
-    "xavier worthy": "+1500",
+    "caleb williams": "+120",
+    "jayden daniels": "+600",
+    "marvin harrison": "+650",
+    "bo nix": "+1000",
+    "malik nabers": "+1200",
+    "xavier worthy": "+1600",
     "ladd mcconkey": "+2500",
     "drake maye": "+2800",
     "keon coleman": "+2800",
@@ -1439,14 +1485,14 @@
     "bijan robinson": "+1600",
     "breece hall": "+1800",
     "amon ra stbrown": "+2000",
+    "jonathan taylor": "+2000",
     "saquon barkley": "+2000",
+    "aj brown": "+2500",
+    "garrett wilson": "+2500",
     "jahmyr gibbs": "+2500",
     "puka nacua": "+2500",
-    "jonathan taylor": "+2800",
-    "garrett wilson": "+3000",
-    "kyren williams": "+3000",
+    "kyren williams": "+3500",
     "lamar jackson": "+3500",
-    "aj brown": "+4000",
     "anthony richardson": "+4000",
     "davante adams": "+4000",
     "jalen hurts": "+4000",
@@ -1467,10 +1513,8 @@
     "stefon diggs": "+6000",
     "cj stroud": "+6500",
     "aaron rodgers": "+7500",
-    "raheem mostert": "+7500",
     "rashee rice": "+7500",
     "travis etienne": "+7500",
-    "travis kelce": "+7500",
     "tua tagovailoa": "+7500",
     "brock purdy": "+8000",
     "caleb williams": "+8000",
@@ -1478,11 +1522,10 @@
     "george pickens": "+8000",
     "josh jacobs": "+8000",
     "justin fields": "+8000",
-    "kenneth walker": "+8000",
     "kyler murray": "+8000",
-    "mike evans": "+8000",
     "nico collins": "+8000",
-    "tony pollard": "+8000",
+    "raheem mostert": "+8000",
+    "travis kelce": "+8000",
     "trevor lawrence": "+8000",
     "aaron jones": "+10000",
     "austin ekeler": "+10000",
@@ -1493,8 +1536,11 @@
     "isiah pacheco": "+10000",
     "james cook": "+10000",
     "joe mixon": "+10000",
+    "kenneth walker": "+10000",
     "kirk cousins": "+10000",
     "matthew stafford": "+10000",
+    "mike evans": "+10000",
+    "tony pollard": "+10000",
     "alvin kamara": "+12500",
     "calvin ridley": "+12500",
     "courtland sutton": "+12500",
@@ -1522,10 +1568,10 @@
   },
   "dpoy": {
     "micah parsons": "+450",
-    "myles garrett": "+600",
-    "tj watt": "+750",
-    "maxx crosby": "+800",
-    "nick bosa": "+800",
+    "myles garrett": "+650",
+    "tj watt": "+700",
+    "maxx crosby": "+750",
+    "nick bosa": "+850",
     "aidan hutchinson": "+1400",
     "josh hines allen": "+2000",
     "chris jones": "+2800",
@@ -1655,16 +1701,16 @@
     "patrick peterson": "+25000"
   },
   "comeback": {
-    "aaron rodgers": "+125",
-    "joe burrow": "+240",
-    "kirk cousins": "+550",
-    "anthony richardson": "+600",
+    "aaron rodgers": "+175",
+    "joe burrow": "+225",
+    "kirk cousins": "+500",
+    "anthony richardson": "+650",
     "nick chubb": "+1000",
     "sam darnold": "+1400",
     "daniel jones": "+1600",
+    "kyler murray": "+1600",
     "deshaun watson": "+2200",
     "jk dobbins": "+3000",
-    "kyler murray": "+3000",
     "tank dell": "+4000",
     "cooper kupp": "+5000",
     "gardner minshew": "+5000",
@@ -1673,6 +1719,7 @@
     "jacoby brissett": "+8000",
     "matt judon": "+8000",
     "tarik cohen": "+8000",
+    "tim patrick": "+8000",
     "bradley chubb": "+10000",
     "carson wentz": "+10000",
     "christian gonzalez": "+10000",
@@ -1764,58 +1811,58 @@
     "troy franklin": "+25000"
   },
   "most_rush_yd": {
-    "christian mccaffrey": "+300",
-    "jonathan taylor": "+600",
-    "saquon barkley": "+750",
-    "breece hall": "+800",
+    "christian mccaffrey": "+350",
+    "saquon barkley": "+600",
+    "breece hall": "+650",
+    "jonathan taylor": "+650",
+    "bijan robinson": "+1000",
     "derrick henry": "+1200",
-    "kyren williams": "+1200",
-    "bijan robinson": "+1400",
+    "kyren williams": "+1400",
+    "james cook": "+1600",
+    "isiah pacheco": "+1800",
     "josh jacobs": "+1800",
-    "devon achane": "+2000",
-    "isiah pacheco": "+2000",
+    "travis etienne": "+2000",
     "kenneth walker": "+2500",
     "nick chubb": "+2500",
     "jahmyr gibbs": "+2800",
-    "travis etienne": "+2800",
-    "joe mixon": "+3000",
-    "zamir white": "+3000",
-    "james cook": "+3500",
-    "david montgomery": "+4000",
-    "tony pollard": "+4000",
-    "aaron jones": "+4500",
-    "rachaad white": "+4500",
-    "alvin kamara": "+5000",
-    "james conner": "+5000",
+    "joe mixon": "+2800",
+    "najee harris": "+2800",
+    "rachaad white": "+3000",
+    "david montgomery": "+3300",
+    "zamir white": "+3500",
+    "devon achane": "+4000",
+    "james conner": "+4000",
+    "rhamondre stevenson": "+4000",
+    "devin singletary": "+5000",
     "jonathon brooks": "+5000",
-    "rhamondre stevenson": "+5000",
-    "zack moss": "+5000",
+    "lamar jackson": "+5000",
+    "aaron jones": "+6000",
     "dandre swift": "+6000",
     "jaylen warren": "+6000",
-    "najee harris": "+6000",
-    "raheem mostert": "+6000",
+    "tony pollard": "+6500",
     "brian robinson": "+7500",
-    "ezekiel elliott": "+7500",
     "jk dobbins": "+8000",
-    "lamar jackson": "+8000",
+    "zack moss": "+8000",
+    "raheem mostert": "+9000",
+    "alvin kamara": "+10000",
     "austin ekeler": "+10000",
-    "devin singletary": "+10000",
     "gus edwards": "+10000",
     "javonte williams": "+10000",
     "miles sanders": "+10000",
     "chase brown": "+12500",
     "chuba hubbard": "+12500",
+    "ezekiel elliott": "+12500",
     "jalen hurts": "+12500",
     "josh allen": "+12500",
     "khalil herbert": "+12500",
-    "kyler murray": "+12500",
     "zach charbonnet": "+12500",
     "blake corum": "+15000",
     "jerome ford": "+15000",
     "rico dowdie": "+15000",
     "trey benson": "+15000",
     "ty chandler": "+15000",
-    "tyler allgeier": "+15000"
+    "tyler allgeier": "+15000",
+    "kyler murray": "+20000"
   },
   "most_rec_td": {
     "tyreek hill": "+900",
@@ -1931,20 +1978,20 @@
     "ceedee lamb": "+550",
     "amon ra stbrown": "+800",
     "jamarr chase": "+1000",
-    "justin jefferson": "+1000",
     "tyreek hill": "+1000",
+    "justin jefferson": "+1200",
+    "garrett wilson": "+1600",
     "michael pittman": "+1600",
     "aj brown": "+2500",
     "puka nacua": "+2500",
     "davante adams": "+2800",
-    "devonta smith": "+3000",
-    "garrett wilson": "+3000",
+    "marvin harrison": "+3300",
     "chris olave": "+3500",
+    "devonta smith": "+3500",
     "drake london": "+3500",
     "stefon diggs": "+3500",
     "cooper kupp": "+4000",
     "keenan allen": "+4000",
-    "marvin harrison": "+4000",
     "nico collins": "+4000",
     "sam laporta": "+4000",
     "travis kelce": "+4000",
@@ -1978,122 +2025,28 @@
     "jordan addison": "+10000",
     "ladd mcconkey": "+10000"
   },
-  "most_sacks": {
-    "tj watt": "+350",
-    "micah parsons": "+400",
-    "myles garrett": "+450",
-    "maxx crosby": "+550",
-    "trey hendrickson": "+1000",
-    "nick bosa": "+1200",
-    "aidan hutchinson": "+1800",
-    "chris jones": "+1800",
-    "josh hines allen": "+1800",
-    "danielle hunter": "+2000",
-    "haason reddick": "+2000",
-    "harold landry": "+3000",
-    "kayvon thibodeaux": "+4000",
-    "khalil mack": "+4000",
-    "justin madubuike": "+5000",
-    "montez sweat": "+5000",
-    "bradley chubb": "+6000",
-    "jonathan greenard": "+6000",
-    "will anderson": "+7500",
-    "alex highsmith": "+8000",
-    "denico autry": "+8000",
-    "ed oliver": "+8000",
-    "george karlaftis": "+8000",
-    "leonard floyd": "+8000",
-    "rashan gary": "+8000",
-    "travon walker": "+8000",
-    "brian burns": "+10000",
-    "bryce huff": "+10000",
-    "dallas turner": "+10000",
-    "deforest buckner": "+10000",
-    "jadeveon clowney": "+10000",
-    "josh sweat": "+10000",
-    "laiatu latu": "+10000",
-    "matt judon": "+10000"
-  },
-  "most_tackles_and assists": {
-    "foyesade oluokun": "+750",
-    "zaire franklin": "+750",
-    "bobby wagner": "+900",
-    "roquan smith": "+1000",
-    "alex singleton": "+1200",
-    "ernest jones": "+1400",
-    "azeez al shaair": "+1500",
-    "tj edwards": "+1500",
-    "cj mosley": "+1600",
-    "nick bolton": "+1600",
-    "bobby okereke": "+2000",
-    "robert spillane": "+2500",
-    "fred warner": "+2800",
-    "patrick queen": "+3000",
-    "quincy williams": "+3000",
-    "quay walker": "+3500",
-    "terrel bernard": "+3500",
-    "alex anzalone": "+5000",
-    "kyzir white": "+5000",
-    "lavonte david": "+5000",
-    "ej speed": "+6600",
-    "jessie bates": "+6600",
-    "camryn bynum": "+7500",
-    "frankie luvu": "+7500",
-    "logan wilson": "+7500",
-    "budda baker": "+8000",
-    "derwin james": "+8000",
-    "eric kendricks": "+8000",
-    "jawhaun bentley": "+8000",
-    "jordan hicks": "+8000",
-    "julian love": "+8000",
-    "matt milano": "+8000",
-    "reed blankenship": "+8000",
-    "demario davis": "+10000",
-    "jaquan brisker": "+10000",
-    "jeremiah owusu koramoah": "+10000",
-    "josh metellus": "+10000",
-    "kyle dugger": "+10000",
-    "shaq thompson": "+10000",
-    "blake cashman": "+12500",
-    "ivan pace": "+12500",
-    "kaden elliss": "+12500",
-    "antoine winfield": "+15000",
-    "jevon holland": "+15000",
-    "kyle hamilton": "+15000",
-    "minkah fitzpatrick": "+15000"
-  },
-  "most_kicking_points": {
-    "brandon aubrey": "+600",
-    "harrison butker": "+700",
-    "justin tucker": "+800",
-    "younghoe koo": "+800",
-    "evan mcpherson": "+1200",
-    "jake elliott": "+1200",
-    "jake bates": "+1200",
-    "kaimi fairbairn": "+1200",
-    "jake moody": "+1400",
-    "jason sanders": "+1600",
-    "cameron dicker": "+2000",
-    "jason myers": "+2000",
-    "blake grupe": "+2500",
-    "tyler bass": "+2500",
-    "chris boswell": "+2800",
-    "greg zuerlein": "+2800",
-    "anders carlson": "+3300",
-    "daniel carlson": "+3300",
-    "matt gay": "+4000",
-    "chase mclaughlin": "+5000",
-    "dustin hopkins": "+5000",
-    "joshua karty": "+6000",
-    "matt prater": "+6600",
-    "will lutz": "+6600",
-    "brandon mcmanus": "+8000",
-    "eddy pineiro": "+8000",
-    "nick folk": "+8000",
-    "chad ryland": "+10000",
-    "graham gano": "+10000"
-  },
   "int": {
+    "bo nix": {
+      "12.5": "-110/-110"
+    },
+    "drake maye": {
+      "11.5": "-110/-110"
+    },
+    "gardner minshew": {
+      "9.5": "-125/-105"
+    },
+    "geno smith": {
+      "11.5": "-130/+100"
+    },
+    "justin herbert": {
+      "9.5": "-110/-110"
+    },
+    "russell wilson": {
+      "8.5": "-130/+100"
+    },
+    "sam darnold": {
+      "13.5": "-140/+110"
+    },
     "aaron rodgers": {
       "7.5": "-130/+100"
     },
@@ -2253,7 +2206,7 @@
       "82.5": "-110/-110"
     },
     "michael pittman": {
-      "87.5": "-110/-110"
+      "87.5": "-130/+100"
     },
     "mike evans": {
       "68.5": "-110/-110"

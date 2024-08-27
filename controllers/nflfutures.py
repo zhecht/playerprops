@@ -568,7 +568,7 @@ def writeCZ():
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/americanfootball/events/futures?competitionIds=007d7c61-07a7-4e18-bb40-15104b6eac92"
 	outfile = "outfuture"
 
-	cookie = "f8d7ca67-d3b0-450c-9577-5ef882c0b07f:EgoAm7Ffu1cmAAAA:4252dyPwpCchaIRrwl/A0WhQwnI3N5P1yxzSqDJfS58IGfAR0duamJ9HkaQNZgKyMSf52peT2NTJxDdSWUzCTg9aiPDENhrAg6gZFct62fQmGdEgbVCQgX4XqgOG/4ItFYC9Z8gnYFRclwj1FKZSgNww/NkzlXtRyxjiagL+5/nSA9l4V0u33kJRo/mtC6meDcjykhT5e955eGgaV53yO8YULiBIXgjUpvhDg3KE8hXY2AX6/A6NEuaGdzRwI4dqdqyThgD0SyZCZsYpgg=="
+	cookie = "93a316a7-8c35-4a76-b272-2d9ececb731e:EgoAiYNkukgIAAAA:0nI4VcVXdNNaLfMniM0QiRbDfw+WEyETOw+y944v4LkUQoh0H+AWh+9/rUHA0jb72EfDAXSsmUlLESm5pZ9LV7Sfg5FLl0VKNN+ZLmkgKrUN6WzE+0T49rr6Vl2UaOR2CCQbra6+lLhLCN/sRs/pHedoIZwFOcPuvTTgCwxqpLuLuxO8VaqJi0eiKKR/1qugerZG069bwobwoybXUarMjIN5VGVo2jaLxT5DpM5QWd3QlWzI2zmqdtOhQHK/BD1zF4R2gp+gWNnD6UmTyA=="
 	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
@@ -742,9 +742,8 @@ def write365():
 				prop = "leaders";
 			} else if (prop == "regular season wins") {
 				prop = "wins";
-			} else if (prop == "to make the nfl playoffs") {
+			} else if (prop == "to make the playoffs") {
 				prop = "playoffs";
-				skip = 2;
 			} else if (prop.includes("player")) {
 				prop = prop.split("player ")[1].split(" regular")[0].replace(" ", "_").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("yards", "yd").replace("touchdowns", "td").replace("receptions", "rec").replace("defensive", "def").replace("interceptions", "int");
 				if (prop == "regular_season int") {
@@ -760,7 +759,7 @@ def write365():
 
 			let mainProp = prop;
 
-			if (prop.includes("_yd") || prop == "wins") {
+			if (prop.includes("_yd") || prop == "wins" || prop == "playoffs") {
 				data[prop] = {};
 				let teams = [];
 				for (let div of document.querySelectorAll(".srb-ParticipantLabel_Name")) {
