@@ -564,11 +564,13 @@ def writeKambi():
 	with open("static/nflfutures/kambi.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-def writeCZ():
+def writeCZ(token=None):
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/americanfootball/events/futures?competitionIds=007d7c61-07a7-4e18-bb40-15104b6eac92"
 	outfile = "outfuture"
 
-	cookie = "93a316a7-8c35-4a76-b272-2d9ececb731e:EgoAiYNkukgIAAAA:0nI4VcVXdNNaLfMniM0QiRbDfw+WEyETOw+y944v4LkUQoh0H+AWh+9/rUHA0jb72EfDAXSsmUlLESm5pZ9LV7Sfg5FLl0VKNN+ZLmkgKrUN6WzE+0T49rr6Vl2UaOR2CCQbra6+lLhLCN/sRs/pHedoIZwFOcPuvTTgCwxqpLuLuxO8VaqJi0eiKKR/1qugerZG069bwobwoybXUarMjIN5VGVo2jaLxT5DpM5QWd3QlWzI2zmqdtOhQHK/BD1zF4R2gp+gWNnD6UmTyA=="
+	cookie = "32230cab-adaa-45a7-9ff6-92cec8cdbdb7:EgoAtCNdInoiAQAA:I812ihJau+DcZ7zy4b7gkFx86a1ELOgtApML4lOLoRgAuBtLVmi+WUq82wqYHXoQs3d2SNiw+HgOp0Db7lPTa2srcHgJeGZU4aomk21OLdcgolG+mtSAgqSPWEYhii7ZAJgNd8iAlOWM1RrpHs5S/HOuBJIApk4gx7nXSFqFONLaQYrTJEdKwtwvQn9kCMx+5R8GsAzT9nLTPamASbTFOhM119kQBBGmHgL0e6i/tMRL93eoShzHyCBxVreywaW5bEV7MAHtGmlWI49P/w=="
+	if token:
+		cookie = token
 	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
@@ -706,7 +708,11 @@ def write365():
 		}
 
 		function parsePlayer(player) {
-			return player.toLowerCase().replaceAll(". ", " ").replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			let p = player.toLowerCase().replaceAll(". ", " ").replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			if (p == "amon ra stbrown") {
+				return "amon ra st brown"
+			}
+			return p;
 		}
 
 		async function main() {
@@ -966,6 +972,9 @@ def writeFanduelManual():
 					if (prop.includes("comeback")) {
 						prop = "comeback";
 					} else if (prop.includes("coach")) {
+						if (prop.includes("assistant")) {
+							continue;
+						}
 						prop = "coach";
 					} else if (prop.includes("rookie of the year")) {
 						if (prop.includes("offensive")) {
@@ -980,6 +989,9 @@ def writeFanduelManual():
 							prop = "dpoy";
 						}
 					} else if (tab == "season awards" && prop.includes("mvp")) {
+						if (prop.includes("parlay")) {
+							continue;
+						}
 						prop = "mvp";
 					} else if (prop.includes("championship winner")) {
 						prop = "conference";
@@ -1335,6 +1347,7 @@ if __name__ == '__main__':
 	parser.add_argument("-u", "--update", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
+	parser.add_argument("--token")
 	parser.add_argument("--prop", help="Prop")
 	parser.add_argument("-t", "--team", help="Team")
 	parser.add_argument("-p", "--print", action="store_true", help="Print")
@@ -1348,7 +1361,7 @@ if __name__ == '__main__':
 		writeDK()
 
 	if args.cz:
-		writeCZ()
+		writeCZ(args.token)
 
 	if args.kambi:
 		writeKambi()
@@ -1364,7 +1377,7 @@ if __name__ == '__main__':
 	if args.update:
 		writeMGM()
 		writeDK()
-		writeCZ()
+		writeCZ(args.token)
 		writeKambi()
 		writePN(args.debug)
 

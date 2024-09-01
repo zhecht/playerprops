@@ -242,13 +242,15 @@ def writeActionNetwork(dateArg = None):
 		json.dump(odds, fh, indent=4)
 
 
-def writeCZ(date=None):
+def writeCZ(date=None, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule/?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "mlboutCZ"
-	cookie = "836fb75f-beff-4113-bc9c-19a9acd3c7b4:EgoAYv2YyCQfAAAA:NdkkOhyV4JWW4UPHo5utlOVVQ26SUFzINoeQ4XdbC8CkD9bkX6nVG4OvBbDHae9XkyB6HAojb9ArMvW3MqhBuyGmgE3KltMM4hauAR2F60FkDTm+icC0iQyuGYowe2Gqec8VrrfzYuMoDGdWmHblcz7kcOgwaPvA+iA/YLRaP04OxJRIzuwZfj57+XqpOrAEuDSfESawvO/WBkpzx/g2GtyuooAb0zlTvskRZOeB+AUo7wTgD9T/XTVbMJgeIUl7gWoeqgHQKe1CFGiDcA=="
+	cookie = "18397176-0983-4317-84cb-816fa1699cf4:EgoAmVx18MpqAAAA:NOGs0COxcxwymQzK8nbzMJScVyYZPWPYoEobvbmGogS8Wb5pk2qUA9lP9t0YtKhKPSAk99QwLbEOwIKtffPGBVHHFayZsB/qgbtvnYtI2SPIPmosSB+GdubQRQOgedBGGl6OSY5vJol2/WvpQdxVBVIxJ3487hSEBdNIhYXPM/bBotuU5glIllzgsSk6FsFyYmn+zVFXwDVHIEGtiSWrmFYjvhl/0ZwEfmQMalLCeV7t6UhAkpP4U6QLQi8LIlX5GxfQnZaSDtemNw7lGQ=="
+	if token:
+		cookie = token
 	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
@@ -1006,7 +1008,119 @@ def arb(bookArg="fd"):
 	for row in sorted(res, reverse=True)[:20]:
 		print(row)
 
+def writeMGMManual():
+	js = """
 
+	{
+
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			return player;
+		}
+
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			if (team == "angels") return "laa";
+			else if (team == "tigers") return "det";
+			else if (team == "giants") return "sf";
+			else if (team == "brewers") return "mil";
+			else if (team == "rangers") return "tex";
+			else if (team == "white sox") return "chw";
+			else if (team == "padres") return "sd";
+			else if (team == "cardinals") return "stl";
+			else if (team == "marlins") return "mia";
+			else if (team == "rockies") return "col";
+			else if (team == "mets") return "nym";
+			else if (team == "diamondbacks") return "ari";
+			else if (team == "athletics") return "oak";
+			else if (team == "reds") return "cin";
+			else if (team == "braves") return "atl";
+			else if (team == "phillies") return "phi";
+			else if (team == "blue jays") return "tor";
+			else if (team == "red sox") return "bos";
+			else if (team == "royals") return "kc";
+			else if (team == "astros") return "hou";
+			else if (team == "orioles") return "bal";
+			else if (team == "dodgers") return "lad";
+			else if (team == "yankees") return "nyy";
+			else if (team == "mariners") return "sea";
+			else if (team == "guardians") return "cle";
+			else if (team == "twins") return "min";
+			else if (team == "rays") return "tb";
+			else if (team == "cubs") return "chc";
+			else if (team == "pirates") return "pit";
+			else if (team == "blue jays") return "tor";
+			else if (team == "nationals") return "wsh";
+			return team;
+		}
+
+		const data = {};
+
+		async function main() {
+			const events = document.querySelectorAll(".event-item");
+
+			for (let event of events) {
+				if (event.innerText.includes("Futures")) {
+					break;
+				}
+				if (event.innerText.includes("Daily Props")) {
+					continue;
+				}
+				if (event.innerText.includes("Inning")) {
+					continue;
+				}
+
+				const teams = event.querySelectorAll(".participant");
+				let game = convertTeam(teams[0].innerText) + " @ " + convertTeam(teams[1].innerText);
+
+				if (data[game]) {
+					game += " gm2";
+				}
+
+				data[game] = {};
+				data[game]["hr"] = {};
+				event.querySelector("a").click();
+
+				await new Promise(resolve => setTimeout(resolve, 1000));
+
+				for (let panel of document.querySelectorAll("ms-option-panel")) {
+					if (panel.innerText.includes("Batter home runs")) {
+						const showMore = panel.querySelector(".show-more-less-button");
+						if (showMore.innerText.includes("Show")) {
+							showMore.click();
+							while (panel.querySelector(".show-more-less-button").innerText.includes("More")) {
+								await new Promise(resolve => setTimeout(resolve, 500));	
+							}
+						}
+
+						const players = panel.querySelectorAll(".player-props-player-name");
+						const odds = panel.querySelectorAll(".option");
+
+						for (i = 0; i < players.length; ++i) {
+							let over = odds[i*2].querySelector(".value");
+							let under = odds[i*2 + 1].querySelector(".value");
+							if (!over) {
+								over = "-";
+							} else {
+								over = over.innerText;
+							}
+							if (!under) {
+								data[game]["hr"][parsePlayer(players[i].innerText)] = over;
+							} else {
+								under = under.innerText;
+								data[game]["hr"][parsePlayer(players[i].innerText)] = over+"/"+under;
+							}
+						}
+					}
+				}
+			}
+
+			console.log(data);
+		}
+
+		main();
+	}
+"""
 
 def writeMGM(date=None):
 
@@ -2393,18 +2507,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
-	for team in action:
-		if team not in teamGame:
-			continue
-		game = teamGame[team]
-		if game not in lines["mgm"]:
-			lines["mgm"][game] = {}
-		if "hr" not in lines["mgm"][game]:
-			lines["mgm"][game]["hr"] = {}
-		for player in action[team]:
-			if "mgm" in action[team][player]["hr"]:
-				lines["mgm"][game]["hr"][player] = action[team][player]["hr"]["mgm"]
-
 	lines["bet365"] = {}
 	for team in bet365Lines:
 		if team not in teamGame:
@@ -2528,7 +2630,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 								o = val
 								ou = val
 
-							if not o:
+							if not o or o == "-":
 								continue
 
 							highestOdds.append(int(o))
@@ -2645,7 +2747,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					for book in l:
 						if book and book != "-":
 							avgOver.append(convertDecOdds(int(book.split("/")[0])))
-							if "/" in book:
+							if "/" in book and book.split("/")[1] != "-":
 								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
 
 					if avgOver:
@@ -2806,6 +2908,7 @@ if __name__ == '__main__':
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
+	parser.add_argument("--token", help="Token")
 	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--skipdk", action="store_true")
 	parser.add_argument("--bpp", action="store_true")
@@ -2878,9 +2981,9 @@ if __name__ == '__main__':
 			print("dk")
 			writeDK(args.date, args.prop)
 		#writeBPP(args.date)
-		writeActionNetwork(args.date)
+		#writeActionNetwork(args.date)
 		print("cz")
-		writeCZ(args.date)
+		writeCZ(args.date, args.token)
 		#print("bv")
 		#writeBV()
 

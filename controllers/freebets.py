@@ -963,14 +963,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				except:
 					pass
 				try:
-					mgm = mgmLines[game][prop][player]["0.5"]
+					mgm = mgmLines[game][prop][player]
 				except:
 					pass
-				if not mgm:
-					try:
-						mgm = actionnetwork[team][player][prop]["mgm"]
-					except:
-						pass
 				try:
 					if prop == "k":
 						bv = bvLines[game][prop][player][str(handicap)]
@@ -1162,7 +1157,10 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 				else:
 					f4_ou = f"{avgOver}/{avgUnder}"
 
-				if ou.startswith("-/") or ou.endswith("/-"):
+				if ou.endswith("/-"):
+					ou = ou.split("/")[0]
+
+				if ou.startswith("-/"):
 					continue
 
 				if not line:
@@ -1195,10 +1193,9 @@ def writeEV(dinger=False, date=None, useDK=False, avg=False, allArg=False, gameA
 						devig(evData, player, f4_ou, int(line), dinger=dinger, f4=True)
 						#devigger(evData, player, bet365ou, line, dinger)
 					devig(evData, player, ou, int(line), avg=True, prop=prop, dinger=dinger)
-					if player not in evData:
-						print(player)
+					if player not in evData or ("ev" not in evData[player] and "pn_ev" not in evData[player]):
 						continue
-					if float(evData[player]["ev"]) > 0:
+					if float(evData[player].get("ev", 0)) > 0:
 						print(player, evData[player]["ev"], int(line), ou)
 					fd = fdLines[game][prop][player]
 					try:
@@ -1276,7 +1273,7 @@ def sortEV(dinger=False, teamSort=False):
 			try:
 				ev = float(evData[player]["ev"])
 			except:
-				continue
+				ev = 0
 			if "bet365ev" not in evData[player]:
 				bet365ev = 0
 			else:
@@ -1322,14 +1319,11 @@ def sortEV(dinger=False, teamSort=False):
 				pass
 
 			try:
-				mgm = mgmLines[game][prop][player]["0.5"]
+				mgm = mgmLines[game][prop][player]
+				if mgm.startswith("+"):
+					mgm = mgm[1:]
 			except:
 				pass
-			if not mgm:
-				try:
-					mgm = actionnetwork[team][player][prop]["mgm"]
-				except:
-					pass
 			try:
 				if prop == "k":
 					bv = bvLines[game][prop][player][value]
@@ -1482,7 +1476,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("cal raleigh", 470), ("connor joe", 870), ("trey sweeney", 800)]
+	plays = [("jp crawford", 600), ("mj melendez", 520)]
 
 	if args.dinger:
 		plays = []
