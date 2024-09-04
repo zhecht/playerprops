@@ -499,6 +499,49 @@ def writeTrends():
 		with open(f"static/nfl/{pos.replace('/', '')}Trends.reddit", "w") as fh:
 			fh.write(reddit)
 
+def writeRosters():
+	outfile = "out"
+
+	teams = []
+	path = "static/nfl/espnTeams.json"
+	if os.path.exists(path):
+		with open(path) as fh:
+			teams = json.load(fh)
+	else:
+		url = "https://www.espn.com/nfl/teams"
+		os.system(f"curl {url} -o {outfile}")
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		for div in soup.findAll("div", class_="TeamLinks__Links"):
+			team = div.findAll("a")[2].get("href").split("/")[-2]
+			teams.append(team)
+
+		with open(path, "w") as fh:
+			json.dump(teams, fh, indent=4)
+
+	roster = {}
+	playerIds = {}
+	for team in teams:
+		url = f"https://www.espn.com/nfl/team/roster/_/name/{team}/"
+		time.sleep(0.2)
+		os.system(f"curl {url} -o {outfile}")
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+		roster[team] = {}
+		playerIds[team] = {}
+
+		for table in soup.findAll("table"):
+			for row in table.findAll("tr")[1:]:
+				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
+				fullName = nameLink[-1].replace("-", " ")
+				playerId = int(nameLink[-2])
+				playerIds[team][fullName] = playerId
+				roster[team][fullName] = row.findAll("td")[2].text.strip()
+
+	with open(f"static/nfl/roster.json", "w") as fh:
+		json.dump(roster, fh, indent=4)
+
+	with open(f"static/nfl/playerIds.json", "w") as fh:
+		json.dump(playerIds, fh, indent=4)
 
 def writeSchedule(week):
 	url = f"https://www.espn.com/nfl/schedule/_/week/{week}/year/2023/seasontype/2"
@@ -562,6 +605,7 @@ if __name__ == "__main__":
 	parser.add_argument("--totals", action="store_true", help="Totals")
 	parser.add_argument("--redzone", action="store_true", help="Redzone")
 	parser.add_argument("--trends", action="store_true", help="Trends")
+	parser.add_argument("--roster", action="store_true")
 	parser.add_argument("-s", "--stats", action="store_true", help="Stats")
 	parser.add_argument("-w", "--week", help="Week")
 
@@ -575,6 +619,9 @@ if __name__ == "__main__":
 
 	if args.trends:
 		writeTrends()
+
+	if args.roster:
+		writeRosters()
 
 	if not args.week:
 		print("need week")

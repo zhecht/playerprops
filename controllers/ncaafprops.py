@@ -326,7 +326,7 @@ def writeCZ(date=None, token=None):
 		if game in res:
 			continue
 		res[game] = {}
-
+		mainLine = ""
 		for market in data["markets"]:
 			if "name" not in market:
 				continue
@@ -340,6 +340,8 @@ def writeCZ(date=None, token=None):
 				prefix = "1h_"
 			elif "1st quarter" in prop:
 				prefix = "1q_"
+			elif "2nd half" in prop:
+				prefix = "2h_"
 
 			if prop in ["money line"]:
 				prop = "ml"
@@ -350,6 +352,10 @@ def writeCZ(date=None, token=None):
 				prop = market["name"].lower().split("|")[-2].replace("total ", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("interceptions", "int").replace("touchdowns", "td").replace("yards", "yd").replace(" ", "_")
 			elif "total points" in prop:
 				prop = "total"
+				if market["templateName"] == "|Total Away Points|":
+					prop = "away_total"
+				elif market["templateName"] == "|Total Home Points|":
+					prop = "home_total"
 			elif "spread" in prop:
 				prop = "spread"
 			else:
@@ -363,7 +369,6 @@ def writeCZ(date=None, token=None):
 
 			selections = market["selections"]
 			skip = 1 if prop in ["attd"] else 2
-			mainLine = ""
 			for i in range(0, len(selections), skip):
 				try:
 					ou = str(selections[i]["price"]["a"])
@@ -381,7 +386,8 @@ def writeCZ(date=None, token=None):
 					res[game][prop][player] = ou
 				elif "spread" in prop:
 					line = str(float(market["line"]) * -1)
-					mainLine = line
+					if not mainLine:
+						mainLine = line
 					res[game][prop][line] = ou
 				elif "total" in prop:
 					if "line" in market:
@@ -422,7 +428,7 @@ def writeCZ(date=None, token=None):
 				for prices in linePrices:
 					selections = prices["selections"]
 					if prop == "spread":
-						line = float(prices["line"])
+						line = float(prices["line"]) * -1
 						ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
 						if selections[0]["selectionType"] == "home":
 							line *= -1
@@ -625,7 +631,12 @@ def writeESPN():
 						await new Promise(resolve => setTimeout(resolve, 2000));
 					}
 
-					document.querySelector("a[aria-labelledby=NCAAF-8]").click();
+					for (a of document.querySelectorAll("a[data-testid=button-or-link]")) {
+						if (a.innerText == "NCAAF") {
+							a.click();
+							break;
+						}
+					}
 
 					/*
 					while (window.location.href.includes("event")) {
@@ -1816,10 +1827,16 @@ def writeFanduelGame():
 				} else if (prop == "1st half total") {
 					prop = "1h_total";
 				} else if (prop.includes("total points")) {
-					if (prop.includes("parlay") || prop.includes("alternate")) {
+					if (prop.includes("parlay")) {
 						continue;
 					}
-					prop = "team_total";
+					if (prop == "alternate total points") {
+						prop = "total";
+					} else {
+						prop = "team_total";
+					}
+				} else if (prop == "alternate spread") {
+					prop = "spread";
 				} else {
 					continue;
 				}
@@ -1832,9 +1849,14 @@ def writeFanduelGame():
 				}
 
 				let el = div.querySelector("div[aria-label='Show more']");
+				let l = "Show less";
+				if (prop == "spread") {
+					el = div.querySelector("div[aria-label='Show more correct score options']");
+					l = "Show less correct score options";
+				}
 				if (el) {
 					el.click();
-					while (!div.querySelector("div[aria-label='Show less']")) {
+					while (!div.querySelector("div[aria-label='"+l+"']")) {
 						await new Promise(resolve => setTimeout(resolve, 1000));	
 					}
 				}
@@ -1880,7 +1902,7 @@ def writeFanduelGame():
 					if (!label) {
 						continue;
 					}
-					if (label == "Show more" || label == "Show less") {
+					if (label.includes("Show more") || label.includes("Show less")) {
 						continue;
 					}
 					const fields = label.split(", ");
@@ -1908,6 +1930,13 @@ def writeFanduelGame():
 						}
 						data[game][p] = {};
 						data[game][p][fields[2]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3];
+					} else if (prop == "spread") {
+						line = btns[i+1].getAttribute("aria-label").split(", ")[0].split(" ");
+						line = line[line.length - 1].replace("+", "");
+						data[game][prop][line] = btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+odds;
+					} else if (prop == "total") {
+						line = fields[1].split(" ")[0];
+						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
 					} else {
 						const player = parsePlayer(fields[0].split(" (")[0]);
 						if (!data[game][prop][player]) {

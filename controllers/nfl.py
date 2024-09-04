@@ -185,29 +185,42 @@ def writeActionNetwork(dateArg = None):
 					odds[game][prop][player] = {}
 
 				if book not in odds[game][prop][player]:
-					v = ""
 					if prop not in ["attd", "ftd"]:
-						v = value+" "
-					odds[game][prop][player][book] = f"{v}{oddData['money']}"
+						odds[game][prop][player][book] = {
+							value: f"{oddData['money']}"
+						}
+					else:
+						odds[game][prop][player][book] = f"{oddData['money']}"
 				elif overUnder == "over":
-					v = ""
 					if prop not in ["attd", "ftd"]:
-						v = value+" "
-					odds[game][prop][player][book] = f"{v}{oddData['money']}/{odds[game][prop][player][book].replace(v, '')}"
+						try:
+							odds[game][prop][player][book] = {
+								value: f"{oddData['money']}/{odds[game][prop][player][book][value]}"
+							}
+						except:
+							continue
+					else:
+						odds[game][prop][player][book] = f"{oddData['money']}/{odds[game][prop][player][book]}"
 				else:
-					odds[game][prop][player][book] += f"/{oddData['money']}"
-				sp = odds[game][prop][player][book].split("/")
-				if odds[game][prop][player][book].count("/") == 3:
-					odds[game][prop][player][book] = sp[1]+"/"+sp[2]
+					odds[game][prop][player][book][value] += f"/{oddData['money']}"
+				"""
+				sp = odds[game][prop][player][book][value].split("/")
+				if odds[game][prop][player][book][value].count("/") == 3:
+					odds[game][prop][player][book][value] = sp[1]+"/"+sp[2]
+				"""
 
 	with open(f"{prefix}static/nfl/actionnetwork.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
 
 
-def writeCZ():
+def writeCZ(token=None):
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/americanfootball/events/schedule/?competitionIds=007d7c61-07a7-4e18-bb40-15104b6eac92"
 	outfile = "outCZ"
-	os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+	cookie = "18397176-0983-4317-84cb-816fa1699cf4:EgoAu4pmpDdmAQAA:jtQ2KxjmXN9kQhHqkpnHqzd1zBoF3DKDubbI4xuyAZCbIyOgei4n4qJJ+W7Qpf+elQyz5v0SEMUmgoxuS+ZRqG+GAINIGUpIrP8V/DnMAuId9K/0PGwOdTKmavypIq+/+IM4KOgo42W+OKlj8D35WYeu0FiGuYzfrbP7UiF6FhgJzi4wadr4Z/15gL6fyKMdMWokPTa++BCLUHiNo2LWnoXt/Qf5EoK7b/yYbGVYElxJa3HOaWzu/JK7UX0PjznHkdGm9XIhUCLRjg=="
+	if token:
+		cookie = token
+	
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -222,7 +235,7 @@ def writeCZ():
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
-		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -235,6 +248,8 @@ def writeCZ():
 
 		for market in data["markets"]:
 			if "name" not in market:
+				continue
+			if market["active"] == False:
 				continue
 			prop = market["name"].lower().replace("|", "").split(" (")[0]
 			name = market["templateName"].lower().replace("|", "")
@@ -311,7 +326,9 @@ def writeCZ():
 				else:
 					try:
 						line = str(float(market["line"]))
-						res[game][prop][player] = f"{line} {ou}"
+						res[game][prop][player] = {
+							line: ou
+						}
 					except:
 						continue
 
@@ -505,6 +522,8 @@ def parsePinnacle(res, games, gameId, retry, debug):
 				prop = "kicking_pts"
 			elif prop == "completions":
 				prop = "pass_cmp"
+			elif prop == "passatt":
+				prop = "pass_att"
 			elif prop == "tackles + assists":
 				prop = "tackles+ast"
 
@@ -597,7 +616,9 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 			if "points" in prices[0] and prop not in ["ftd", "attd", "last touchdown"]:
 				handicap = str(prices[switched]["points"])
-				res[game][prop][player] = handicap+" "+ou
+				res[game][prop][player] = {
+					handicap: ou
+				}
 			else:
 				res[game][prop][player] = ou
 		else:
@@ -615,8 +636,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 			else:
 				res[game][prop] = ou
 
-def writePinnacle(date):
-	debug = True
+def writePinnacle(date, debug=None):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -640,7 +660,7 @@ def writePinnacle(date):
 			games[str(row["id"])] = f"{player2} @ {player1}"
 
 	res = {}
-	games = {'1584933027': 'sf @ kc'}
+	games = {'1591540526': 'bal @ kc'}
 	retry = []
 	for gameId in games:
 		parsePinnacle(res, games, gameId, retry, debug)
@@ -887,7 +907,7 @@ def writeMGM():
 			continue
 		ids.append(row["id"])
 
-	#ids = ["14873974"]
+	#ids = ["15817162"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
@@ -931,9 +951,9 @@ def writeMGM():
 				prop = "total"
 			elif "spread" in prop:
 				prop = "spread"
-			elif prop == "anytime touchdown scorer":
+			elif prop == "anytime td scorer":
 				prop = "attd"
-			elif prop == "first touchdown scorer":
+			elif prop == "first td scorer":
 				prop = "ftd"
 			elif "): " in prop:
 				if "odd" in prop or "o/u" in prop:
@@ -1036,7 +1056,9 @@ def writeMGM():
 						player = parsePlayer(player)
 						if prop not in res[game]:
 							res[game][prop] = {}
-						res[game][prop][player] = val+" "+ou
+						res[game][prop][player] = {
+							val: ou
+						}
 					else:
 						if prop not in res[game]:
 							res[game][prop] = {}
@@ -1225,6 +1247,226 @@ def parsePlayer(player):
 		player = "chigoziem okonkwo"
 	return player
 
+def writeESPN():
+	js = """
+
+	{
+		function convertTeam(team) {
+			team = team.toLowerCase().split(" ")[0];
+			return team;
+		}
+
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			if (player == "joquavious marks") {
+				return "woody marks";
+			}
+			return player;
+		}
+
+		let status = "";
+
+		async function readPage(game) {
+
+			//for (tab of ["lines", "player props", "td scorers"]) {
+			for (tab of ["td scorers"]) {
+				if (tab != "lines") {
+					for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
+						if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
+							t.click();
+							break;
+						}
+					}
+					while (!window.location.href.includes(tab.replace(" ", "_"))) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+					await new Promise(resolve => setTimeout(resolve, 3000));
+				}
+
+				for (detail of document.querySelectorAll("details")) {
+					let prop = detail.querySelector("h2").innerText.toLowerCase();
+
+					let skip = 2;
+					let player = "";
+					if (prop == "moneyline") {
+						prop = "ml";
+					} else if (prop == "match spread") {
+						prop = "spread";
+					} else if (prop == "total points") {
+						prop = "total";
+					} else if (prop == "first touchdown scorer") {
+						prop = "ftd";
+						skip = 1;
+					} else if (prop.includes("(")) {
+						if (prop.includes("1st half") || prop.includes("1st quarter")) {
+							continue;
+						}
+						player = parsePlayer(prop.split("(")[1].split(")")[0]);
+						let last = player.split(" ");
+						player = player.split(" ")[0][0]+" "+last[last.length - 1];
+						prop = prop.split(" (")[0].replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("completions", "cmp").replace("completion", "cmp").replace("completed passes", "pass_cmp").replace("yards", "yd").replace("touchdown scorer", "attd").replace("touchdowns", "td").replaceAll(" ", "_");
+						if (prop.includes("+")) {
+							prop = prop.split("_")[0];
+						}
+						skip = 1;
+					} else if (prop.indexOf("player") == 0) {
+						prop = prop.replace("player total ", "").replace("player ", "").replace(" + ", "+").replace("points", "pts").replace("field goals made", "fgm").replace("extra pts made", "xp").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("completions", "cmp").replace("completion", "cmp").replace("yards", "yd").replace("touchdowns", "td").replace("assists", "ast").replaceAll(" ", "_");
+						if (prop == "defensive_tackles+ast") {
+							prop = "tackles+ast";
+						} else if (prop.includes("+")) {
+							prop = prop.split("_")[0];
+						} else if (prop == "longest_pass_cmp") {
+							prop = "longest_pass";
+						}
+					} else {
+						continue;
+					}
+
+					let open = detail.getAttribute("open");
+					if (open == null) {
+						detail.querySelector("summary").click();
+						while (detail.querySelectorAll("button").length == 0) {
+							await new Promise(resolve => setTimeout(resolve, 500));
+						}
+					}
+
+					if (!data[game][prop]) {
+						data[game][prop] = {};
+					}
+
+					let sections = [detail];
+					if (prop == "tackles+ast") {
+						sections = detail.querySelectorAll("div[aria-label='']");
+					}
+
+					for (section of sections) {
+						let btns = section.querySelectorAll("button");
+						let seeAll = false;
+						if (btns[btns.length - 1].innerText == "See All Lines") {
+							seeAll = true;
+							btns[btns.length - 1].click();
+						}
+
+						if (seeAll) {
+							let modal = document.querySelector(".modal--see-all-lines");
+							while (!modal) {
+								await new Promise(resolve => setTimeout(resolve, 700));
+								modal = document.querySelector(".modal--see-all-lines");
+							}
+
+							while (modal.querySelectorAll("button").length == 0) {
+								await new Promise(resolve => setTimeout(resolve, 700));
+							}
+
+							let btns = Array.from(modal.querySelectorAll("button"));
+							btns.shift();
+
+							if (prop == "tackles+ast") {
+								player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+							}
+
+							for (i = 0; i < btns.length; i += skip) {
+								if (["spread", "total"].includes(prop)) {
+									let line = btns[i].querySelector("span").innerText.split(" ");
+									if (line.includes("pk")) {
+										continue;
+									}
+									line = parseFloat(line[line.length - 1]).toFixed(1);
+									let ou = btns[i].querySelectorAll("span")[1].innerText+"/"+btns[i+1].querySelectorAll("span")[1].innerText;
+									data[game][prop][line] = ou.replace("Even", "+100");
+								} else if (prop == "tackles+ast") {
+									let ou = btns[i].querySelectorAll("span")[1].innerText+"/"+btns[i+1].querySelectorAll("span")[1].innerText;
+									let line = btns[i].querySelector("span").innerText.split(" ");
+									line = parseFloat(line[line.length - 1]).toFixed(1);
+									if (!data[game][prop][player]) {
+										data[game][prop][player] = {}
+									}
+									data[game][prop][player][line] = ou.replace("Even", "+100");
+								} else {
+									let ou = btns[i+1].querySelectorAll("span")[1].innerText+"/"+btns[i+2].querySelectorAll("span")[1].innerText;
+									let player = parsePlayer(btns[i].innerText.toLowerCase().split(" to score ")[0].split(" first ")[0]);
+									let last = player.split(" ");
+									last.shift();
+									last = last.join(" ");
+									player = player.split(" ")[0][0]+" "+last;
+									data[game][prop][player] = ou.replace("Even", "+100");
+								}
+							}
+							modal.querySelector("button").click();
+							while (document.querySelector(".modal--see-all-lines")) {
+								await new Promise(resolve => setTimeout(resolve, 500));
+							}
+						} else {
+							if (prop == "tackles+ast") {
+								player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+							}
+							for (i = 0; i < btns.length; i += skip) {
+								if (btns[i].innerText == "See All Lines") {
+									continue;
+								}
+								if (btns[i].getAttribute("disabled") != null) {
+									continue;
+								}
+								let ou = btns[i].querySelectorAll("span")[1].innerText;
+								if (skip != 1) {
+									ou += "/"+btns[i+1].querySelectorAll("span")[1].innerText;
+								}
+
+								if (prop == "ml") {
+									data[game][prop] = ou.replace("Even", "+100");
+								} else if (prop == "ftd") {
+									player = parsePlayer(btns[i].querySelector("span").innerText);
+									let last = player.split(" ");
+									player = player.split(" ")[0][0]+" "+last[last.length - 1];
+									data[game][prop][player] = ou;
+								} else {
+									let line = btns[i].querySelector("span").innerText;
+									if (line.includes("+")) {
+										line = (parseFloat(line.replace("+", "")) - 0.5).toFixed(1);
+									} else {
+										line = line.split(" ")[1];
+									}
+
+									if (skip == 2 && prop != "tackles+ast") {
+										player = parsePlayer(btns[i].parentElement.parentElement.previousSibling.innerText);
+										let last = player.split(" ");
+										player = player.split(" ")[0][0]+" "+last[last.length - 1];
+									}
+									if (!data[game][prop][player]) {
+										data[game][prop][player] = {};
+									}
+									data[game][prop][player][line] = ou.replace("Even", "+100");
+								}
+							}
+						}
+					}
+				}
+			}
+			status = "done";
+		}
+
+		async function main() {
+
+			let awayTeam = convertTeam(document.querySelector("div[data-testid=away-team-card] h2").innerText);
+			let homeTeam = convertTeam(document.querySelector("div[data-testid=home-team-card] h2").innerText);
+			let game = awayTeam + " @ " + homeTeam;
+			
+			data[game] = {};
+
+			status = "";
+			readPage(game);
+
+			while (status != "done") {
+				await new Promise(resolve => setTimeout(resolve, 2000));
+			}
+
+			console.log(data);
+		}
+
+		main();
+	}
+"""
+
 def writeFanduelManual():
 	js = """
 
@@ -1265,280 +1507,206 @@ def writeFanduelManual():
 			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
 		}
 
-		let game = document.querySelector("h1").innerText.toLowerCase().replace(" 1st half odds", "").replace(" 2nd half odds", "").replace(" 1st quarter odds", "").replace(" odds", "");
-		let awayFull = game.split(" @ ")[0];
-		let awayName = awayFull.split(" ")[awayFull.split(" ").length - 1];
-		let homeFull = game.split(" @ ")[1];
-		let homeName = homeFull.split(" ")[homeFull.split(" ").length - 1];
-		let away = convertTeam(game.split(" @ ")[0]);
-		let home = convertTeam(game.split(" @ ")[1]);
-		game = away+" @ "+home;
-		if (!data[game]) {
-			data[game] = {};
-		}
-
-		const arrows = document.querySelectorAll("div[data-test-id='ArrowAction']");
-
-		for (const arrow of arrows) {
-			let li = arrow;
-			let idx = 0;
-			while (li.nodeName != "LI") {
-				li = li.parentElement;
-				idx += 1;
-				if (idx > 10) {
-					break;
-				}
+		async function main() {
+			let game = document.querySelector("h1").innerText.toLowerCase().replace(" 1st half odds", "").replace(" 2nd half odds", "").replace(" 1st quarter odds", "").replace(" odds", "");
+			let awayFull = game.split(" @ ")[0];
+			let awayName = awayFull.split(" ")[awayFull.split(" ").length - 1];
+			let homeFull = game.split(" @ ")[1];
+			let homeName = homeFull.split(" ")[homeFull.split(" ").length - 1];
+			let away = convertTeam(game.split(" @ ")[0]);
+			let home = convertTeam(game.split(" @ ")[1]);
+			game = away+" @ "+home;
+			if (!data[game]) {
+				data[game] = {};
 			}
 
-			if (idx > 10) {
-				break;
-			}
+			const arrows = document.querySelectorAll("div[data-test-id='ArrowAction']");
 
-			let prop = "";
-			let line = "";
-			let player = "";
-			let label = arrow.innerText.toLowerCase();
+			for (const arrow of arrows) {
+				let prop = "";
+				let line = "";
+				let player = "";
+				let label = arrow.innerText.toLowerCase();
+				let div = arrow.parentElement.parentElement.parentElement;
+				let skip = 2;
 
-			let prefix = "";
-			if (label.indexOf("1st half") >= 0 || label.indexOf("first half") >= 0) {
-				prefix = "1h_";
-			} else if (label.indexOf("2nd half") >= 0 || label.indexOf("second half") >= 0) {
-				prefix = "2h_";
-			} else if (label.indexOf("1st quarter") >= 0) {
-				prefix = "1q_";
-			}
-
-			if (label.indexOf("game lines") >= 0) {
-				prop = "lines";
-			} else if (label == "touchdown scorers") {
-				prop = "attd";
-			} else if (label.indexOf("kicking points") >= 0) {
-				player = true;
-				prop = "kicking_pts";
-			} else if (label.indexOf("player") >= 0) {
-				player = true;
-
-				if (label.indexOf("most") >= 0 || label.indexOf("of the game") >= 0 || label.indexOf("first") >= 0 || label.indexOf("1st") >= 0) {
-					continue
+				let prefix = "";
+				if (label.indexOf("1st half") >= 0 || label.indexOf("first half") >= 0) {
+					prefix = "1h_";
+				} else if (label.indexOf("2nd half") >= 0 || label.indexOf("second half") >= 0) {
+					prefix = "2h_";
+				} else if (label.indexOf("1st quarter") >= 0) {
+					prefix = "1q_";
 				}
 
-				if (label.indexOf("player to record a ") >= 0) {
-					continue;
+				if (label.indexOf("game lines") >= 0) {
+					prop = "lines";
+				} else if (label == "touchdown scorers") {
+					prop = "attd";
+					data[game]["ftd"] = {};
+					skip = 3;
+				} else if (label.indexOf("kicking points") >= 0) {
+					player = true;
+					prop = "kicking_pts";
+				} else if (label.indexOf("player") == 0) {
+					if (label.includes("to record")) {
+						continue;
+					}
+					prop = label.replace("player ", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("reception", "rec").replace("completions", "cmp").replace("attempts", "att").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
+				} else if (label.includes(" - alt")) {
+					skip = 1;
+					player = parsePlayer(label.split(" -")[0]);
+					prop = label.split("alt ")[1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
+				} else if (label.indexOf("spread") >= 0) {
+					if (label.indexOf("/") >= 0) {
+						continue;
+					}
+					prop = "spread";
+				} else if (label.includes("winner")) {
+					if (label.includes("3-way") || label.includes("/")) {
+						continue;
+					}
+					prop = "ml";
+				} else if (label.includes("total points") || label.includes("half total")) {
+					if (label.includes("odd/even") || label.includes("exact") || label.includes("parlay")) {
+						continue;
+					}
+					if (label == "alternate total points" || prefix) {
+						prop = "total";
+					} else {
+						prop = "team_total";
+					}
 				}
 
-				if (label.indexOf("passing + rushing") >= 0) {
-					prop = "pass+rush";
-				} else if (label.indexOf("rushing + receiving") >= 0) {
+				if (prop == "rush+rec_yd") {
 					prop = "rush+rec";
-				} else if (label.indexOf("longest pass") >= 0) {
-					prop = "longest_pass";
-				} else if (label.indexOf("longest rush") >= 0) {
-					prop = "longest_rush";
-				} else if (label.indexOf("longest rec") >= 0) {
-					prop = "longest_rec";
-				} else if (label.indexOf("pass") >= 0) {
-					prop = "pass";
-				} else if (label.indexOf("rush") >= 0) {
-					prop = "rush";
-				} else if (label.indexOf("receiving") >= 0 || label.indexOf("receptions") >= 0) {
-					prop = "rec";
 				}
 
-				if (label.indexOf("yds") >= 0) {
-					prop += "_yd";
-				} else if (label.indexOf("tds") >= 0) {
-					prop += "_td";
-				} else if (label.indexOf("completions") >= 0) {
-					prop += "_cmp";
-				} else if (label.indexOf("attempts") >= 0) {
-					prop += "_att";
-				}
-			} else if (label.indexOf("spread") >= 0) {
-				if (label.indexOf("/") >= 0) {
+				if (!prop) {
 					continue;
 				}
-				prop = "spread";
-			} else if (label.indexOf("winner") >= 0) {
-				if (label.indexOf("3-way") >= 0) {
-					continue;
+
+				prop = prefix+prop;
+
+				if (prop != "lines" && arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
+					arrow.click();
+					while (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
 				}
-				prop = "ml";
-			} else if (label.indexOf("alternate total points") >= 0 || label.indexOf("first half total") >= 0 || label.indexOf("second half total") >= 0 || label.indexOf("1st quarter total") >= 0) {
-				if (label.indexOf("odd/even") >= 0 || label.indexOf("exact") >= 0) {
-					continue;
+
+				let el = div.querySelector("div[aria-label='Show more']");
+				let l = "Show less";
+				if (prop == "spread") {
+					el = div.querySelector("div[aria-label='Show more correct score options']");
+					l = "Show less correct score options";
 				}
-				prop = "total";
-			} else if (label.indexOf(awayName+" total points") >= 0) {
-				prop = "away_total";
-			} else if (label.indexOf(homeName+" total points") >= 0) {
-				prop = "home_total";
-			}
-
-			if (!prop) {
-				continue;
-			}
-
-			prop = prefix+prop;
-
-			if (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
-				arrow.click();
-			}
-			let el = arrow.parentElement.parentElement.querySelector("div[aria-label='Show more']");
-			if (el) {
-				el.click();
-			}
-			el = arrow.parentElement.parentElement.querySelector("div[aria-label='Show more correct score options']");
-			if (el) {
-				el.click();
-			}
-
-			if (prop != "lines" && !data[game][prop]) {
-				data[game][prop] = {};
-			}
-
-			let skip = 1;
-			if (["attd", "away_total", "home_total", "spread"].indexOf(prop) >= 0 || prefix || player) {
-				skip = 2;
-			}
-			if (prop == "attd") {
-				skip = 3;
-			}
-			let btns = Array.from(li.querySelectorAll("div[role=button]"));
-			btns.shift();
-
-			if (prop == "attd") {
-				btns.shift();
-			}
-
-			if (prop == "lines") {
-				data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[1].split(" ")[0];
-				line = btns[0].getAttribute("aria-label").split(", ")[1];
-				data[game]["spread"] = {};
-				data[game]["spread"][line.replace("+", "")] = btns[0].getAttribute("aria-label").split(", ")[2].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[2].split(" ")[0];
-				line = btns[2].getAttribute("aria-label").split(", ")[2].split(" ")[1];
-				data[game]["total"] = {};
-				data[game]["total"][line] = btns[2].getAttribute("aria-label").split(", ")[3].split(" ")[0] + "/" + btns[5].getAttribute("aria-label").split(", ")[3].split(" ")[0];
-			}
-
-			for (let i = 0; i < btns.length; i += skip) {
-				const btn = btns[i];
-				if (btn.getAttribute("data-test-id")) {
-					continue;
+				if (el) {
+					el.click();
+					while (!div.querySelector("div[aria-label='"+l+"']")) {
+						await new Promise(resolve => setTimeout(resolve, 500));	
+					}
 				}
-				const ariaLabel = btn.getAttribute("aria-label");
-				if (!ariaLabel || ariaLabel.indexOf("Show more") >= 0 || ariaLabel.indexOf("Show less") >= 0 || ariaLabel.indexOf("unavailable") >= 0) {
-					continue;
-				}
-				let odds = ariaLabel.split(", ")[1];
 
-				//console.log(btn, odds);
-
-				if (odds.indexOf("unavailable") >= 0) {
-					continue;
-				}
-				if (prop == "lines") {
-
-				} else if (prefix) {
-					line = ariaLabel.split(", ")[1];
-					odds = ariaLabel.split(", ")[2];
-					if (prop.indexOf("ml") >= 0) {
-						odds = ariaLabel.split(", ")[1];
-						data[game][prop] = odds;
-						if (btns[i+1].getAttribute("aria-label").split(", ")[1]) {
-							data[game][prop] += "/"+btns[i+1].getAttribute("aria-label").split(", ")[1];
-						}
-					} else if (prop.indexOf("spread") >= 0) {
-						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2];
-					} else if (prop.indexOf("total") >= 0) {
-						line = ariaLabel.split(", ")[2].split(" ")[1];
-						odds = ariaLabel.split(", ")[3].split(" ")[0];
-						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
-					}
-				} else if (["spread"].indexOf(prop) >= 0) {
-					let arr = ariaLabel.split(", ")[0].split(" ");
-					line = arr[arr.length - 1];
-					arr.pop();
-					let team = convertTeam(arr.join(" "));
-
-					let isAway = true;
-					if (team == game.split(" @ ")[1]) {
-						line = (parseFloat(line) * -1).toString();
-						isAway = false;
-					}
-
-					odds = ariaLabel.split(", ")[1].split(" ")[0];
-					line = line.replace("+", "");
-
-					if (btns[i+1].getAttribute("aria-label").split(", ")[1] === undefined) {
-						continue;
-					}
-
-					if (isAway) {
-						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0];
-					} else {
-						data[game][prop][line] = btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+odds;
-					}
-				} else if (["total"].indexOf(prop) >= 0) {
-					let odds = ariaLabel.split(", ")[2].split(" ")[0];
-					let line = ariaLabel.split(", ")[1].split(" ")[0];
-
-					let isAway = true;
-					if (ariaLabel.split(", ")[1].indexOf("Under") >= 0) {
-						isAway = false;
-					}
-
-
-					line = line.replace("+", "");
-
-					if (isAway) {
-						data[game][prop][line] = odds;
-					} else if (!data[game][prop][line]) {
-						data[game][prop][line] = "-/"+odds;
-					} else {
-						data[game][prop][line] += "/"+odds;
-					}
-				} else if (prop == "kicking_pts") {
-					player = parsePlayer(arrow.innerText.toLowerCase().split(" - ")[0]);
-					line = ariaLabel.split(", ")[1];
-					odds = ariaLabel.split(", ")[2];
-					data[game][prop][player] = {};
-					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
-				} else if (skip == 2 && player && prop != "attd") {
-					// 2 sides
-					player = parsePlayer(ariaLabel.split(", ")[0]);
-					if (!data[game][prop][player]) {
-						data[game][prop][player] = {};
-					}
-					line = ariaLabel.split(", ")[1].split(" ")[1];
-					odds = ariaLabel.split(", ")[2].split(" ")[0];
-					if (odds.indexOf("unavailable") >= 0) {
-						continue;
-					}
-					data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
-				} else if (skip == 2 && prop != "attd") {
-					line = ariaLabel.split(", ")[1];
-					odds = ariaLabel.split(", ")[2];
-					if (odds.indexOf("unavailable") >= 0) {
-						continue;
-					}
+				if (prop != "lines" && prop != "team_total" && !data[game][prop]) {
 					data[game][prop] = {};
-					data[game][prop][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2];
-				} else {
-					player = parsePlayer(ariaLabel.split(",")[0]);
-					if (!data[game][prop][player]) {
-						data[game][prop][player] = {};
-					}
+				}
 
-					if (["attd"].indexOf(prop) >= 0) {
+				let btns = Array.from(div.querySelectorAll("div[role=button]"));
+				btns.shift();
+
+				if (btns[0].innerText.includes("Read more")) {
+					btns.shift();
+				}
+
+				if (prop == "lines") {
+					if (!btns[1].getAttribute("aria-label").includes("unavailable")) {
+						data[game]["ml"] = btns[1].getAttribute("aria-label").split(", ")[2].split(" ")[0]+"/"+btns[4].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+					}
+					if (!btns[0].getAttribute("aria-label").includes("unavailable")) {
+						line = btns[0].getAttribute("aria-label").split(", ")[2];
+						data[game]["spread"] = {};
+						data[game]["spread"][parseFloat(line.replace("+", "")).toFixed(1)] = btns[0].getAttribute("aria-label").split(", ")[3].split(" ")[0] + "/" + btns[3].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+					}
+					line = btns[2].getAttribute("aria-label").split(", ")[3].split(" ")[1];
+					data[game]["total"] = {};
+					data[game]["total"][line] = btns[2].getAttribute("aria-label").split(", ")[4].split(" ")[0] + "/" + btns[5].getAttribute("aria-label").split(", ")[4].split(" ")[0];
+					continue;
+				}
+
+				for (let i = 0; i < btns.length; i += skip) {
+					const btn = btns[i];
+					if (btn.getAttribute("data-test-id")) {
+						continue;
+					}
+					const label = btn.getAttribute("aria-label");
+					if (!label || label.indexOf("Show more") >= 0 || label.indexOf("Show less") >= 0 || label.indexOf("unavailable") >= 0) {
+						continue;
+					}
+					const fields = label.split(", ");
+					let line = fields[1].split(" ")[1];
+					let odds = fields[fields.length - 1].split(" ")[0];
+
+					if (prefix) {
+						if (prop.indexOf("ml") >= 0) {
+							data[game][prop] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2];
+						} else if (prop.indexOf("spread") >= 0) {
+							data[game][prop][fields[2]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3];;
+						} else if (prop.indexOf("total") >= 0) {
+							data[game][prop][fields[2].split(" ")[1]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
+						}
+					} else if (prop == "spread") {
+						line = btns[i+1].getAttribute("aria-label").split(", ")[0].split(" ");
+						line = line[line.length - 1].replace("+", "");
+						data[game][prop][line] = btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+odds;
+					} else if (prop == "total") {
+						line = fields[1].split(" ")[0];
+						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+					} else if (prop == "team_total") {
+						let p = "home_total";
+						if (data[game][p]) {
+							p = "away_total";
+						}
+						data[game][p] = {};
+						data[game][p][fields[2]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3];
+					} else if (prop == "kicking_pts") {
+						player = parsePlayer(arrow.innerText.toLowerCase().split(" - ")[0]);
+						data[game][prop][player] = {};
+						data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+					} else if (prop == "attd") {
+						const player = parsePlayer(fields[1].split(" (")[0]);
 						data[game][prop][player] = odds;
-					} else {
+						data[game]["ftd"][player] = btns[i+1].getAttribute("aria-label").split(", ")[2];
+					} else if (skip == 1) {
+						// alts
+						let i = 0;
+						if (["pass_td", "rec"].includes(prop)) {
+							i = 1;
+						}
+						line = fields[i].toLowerCase().replace(player+" ", "").split(" ")[0].replace("+", "");
+						line = (parseFloat(line) - 0.5).toString();
+						if (!data[game][prop][player]) {
+							data[game][prop][player] = {};
+						}
+						if (data[game][prop][player][line]) {
+							continue;
+						}
 						data[game][prop][player][line] = odds;
+					} else {
+						player = parsePlayer(fields[0].split(" (")[0]);
+						if (!data[game][prop][player]) {
+							data[game][prop][player] = {};
+						}
+
+						data[game][prop][player][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];;
 					}
 				}
 			}
+
+			console.log(data);
 		}
 
-		console.log(data);
+		main();
 	}
 
 """
@@ -1797,20 +1965,26 @@ def writeDK():
 	
 	subCats = {
 		492: [4518, 13195, 13196, 9712],
-		1000: [9525, 9524, 9522, 9517, 9516, 9526],
-		1001: [9514, 9512, 9519, 9518, 9533, 9527, 9523, 12096],
-		1002: [11812, 9521, 9529, 9520],
+		1000: [9525, 9524, 9522, 9517, 9516, 9526, 15968, 15937, 9532, 12093],
+		1001: [9514, 12094, 9512, 9519, 9518, 9533, 9527, 9523],
+		1002: [11812, 9521, 9529, 9520, 14113, 14115],
 		530: [4653, 10514],
 		526: [4631, 13582, 13584]
 	}
 
 	if False:
 		mainCats = {
-			"team": 530
+			"rush/rec": 1001
 		}
 		subCats = {
-			530: [10514],
+			1001: [9514, 12094],
 		}
+
+	propIds = {
+		13195: "spread", 13196: "total", 9525: "pass_td", 9524: "pass_yd", 9522: "pass_cmp", 9517: "pass_att", 9514: "rush_yd", 9518: "rush_att", 9533: "longest_rush", 9523: "rush+rec", 12096: "rush+rec", 11812: "sacks", 9521: "tackles+ast", 9529: "fgm", 9520: "kicking_pts", 13582: "1h_spread", 13584: "1h_total", 15968: "longest_pass", 15937: "int", 9532: "pass+rush", 12093: "pass_yd", 12094: "rush_yd", 14113: "rec_yd", 14115: "rec"
+	}
+
+	cookie = "-H 'Cookie: hgg=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiIxODU4ODA5NTUwIiwiZGtzLTYwIjoiMjg1IiwiZGtlLTEyNiI6IjM3NCIsImRrcy0xNzkiOiI1NjkiLCJka2UtMjA0IjoiNzA5IiwiZGtlLTI4OCI6IjExMjgiLCJka2UtMzE4IjoiMTI2MSIsImRrZS0zNDUiOiIxMzUzIiwiZGtlLTM0NiI6IjEzNTYiLCJka2UtNDI5IjoiMTcwNSIsImRrZS03MDAiOiIyOTkyIiwiZGtlLTczOSI6IjMxNDAiLCJka2UtNzU3IjoiMzIxMiIsImRraC03NjgiOiJxU2NDRWNxaSIsImRrZS03NjgiOiIwIiwiZGtlLTgwNiI6IjM0MjYiLCJka2UtODA3IjoiMzQzNyIsImRrZS04MjQiOiIzNTExIiwiZGtlLTgyNSI6IjM1MTQiLCJka3MtODM0IjoiMzU1NyIsImRrZS04MzYiOiIzNTcwIiwiZGtoLTg5NSI6IjhlU3ZaRG8wIiwiZGtlLTg5NSI6IjAiLCJka2UtOTAzIjoiMzg0OCIsImRrZS05MTciOiIzOTEzIiwiZGtlLTk0NyI6IjQwNDIiLCJka2UtOTc2IjoiNDE3MSIsImRrcy0xMTcyIjoiNDk2NCIsImRrcy0xMTc0IjoiNDk3MCIsImRrcy0xMjU1IjoiNTMyNiIsImRrcy0xMjU5IjoiNTMzOSIsImRrZS0xMjc3IjoiNTQxMSIsImRrZS0xMzI4IjoiNTY1MyIsImRraC0xNDYxIjoiTjZYQmZ6S1EiLCJka3MtMTQ2MSI6IjAiLCJka2UtMTU2MSI6IjY3MzMiLCJka2UtMTY1MyI6IjcxMzEiLCJka2UtMTY1NiI6IjcxNTEiLCJka2UtMTY4NiI6IjcyNzEiLCJka2UtMTcwOSI6IjczODMiLCJka3MtMTcxMSI6IjczOTUiLCJka2UtMTc0MCI6Ijc1MjciLCJka2UtMTc1NCI6Ijc2MDUiLCJka3MtMTc1NiI6Ijc2MTkiLCJka3MtMTc1OSI6Ijc2MzYiLCJka2UtMTc2MCI6Ijc2NDkiLCJka2UtMTc2NiI6Ijc2NzUiLCJka2gtMTc3NCI6IjJTY3BrTWF1IiwiZGtlLTE3NzQiOiIwIiwiZGtlLTE3NzAiOiI3NjkyIiwiZGtlLTE3ODAiOiI3NzMxIiwiZGtlLTE2ODkiOiI3Mjg3IiwiZGtlLTE2OTUiOiI3MzI5IiwiZGtlLTE3OTQiOiI3ODAxIiwiZGtlLTE4MDEiOiI3ODM4IiwiZGtoLTE4MDUiOiJPR2tibGtIeCIsImRrZS0xODA1IjoiMCIsImRrcy0xODE0IjoiNzkwMSIsImRraC0xNjQxIjoiUjBrX2xta0ciLCJka2UtMTY0MSI6IjAiLCJka2UtMTgyOCI6Ijc5NTYiLCJka2gtMTgzMiI6ImFfdEFzODZmIiwiZGtlLTE4MzIiOiIwIiwiZGtzLTE4NDciOiI4MDU0IiwiZGtzLTE3ODYiOiI3NzU4IiwiZGtlLTE4NTEiOiI4MDk3IiwiZGtlLTE4NTgiOiI4MTQ3IiwiZGtlLTE4NjEiOiI4MTU3IiwiZGtlLTE4NjAiOiI4MTUyIiwiZGtlLTE4NjgiOiI4MTg4IiwiZGtoLTE4NzUiOiJZRFJaX3NoSiIsImRrcy0xODc1IjoiMCIsImRrcy0xODc2IjoiODIxMSIsImRraC0xODc5IjoidmI5WWl6bE4iLCJka2UtMTg3OSI6IjAiLCJka2UtMTg0MSI6IjgwMjQiLCJka3MtMTg4MiI6IjgyMzkiLCJka2UtMTg4MSI6IjgyMzYiLCJka2UtMTg4MyI6IjgyNDMiLCJka2UtMTg4MCI6IjgyMzIiLCJka2UtMTg4NyI6IjgyNjQiLCJka2UtMTg5MCI6IjgyNzYiLCJka2UtMTkwMSI6IjgzMjYiLCJka2UtMTg5NSI6IjgzMDAiLCJka2gtMTg2NCI6IlNWbjFNRjc5IiwiZGtlLTE4NjQiOiIwIiwibmJmIjoxNzIyNDQyMjc0LCJleHAiOjE3MjI0NDI1NzQsImlhdCI6MTcyMjQ0MjI3NCwiaXNzIjoiZGsifQ.jA0OxjKzxkyuAktWmqFbJHkI6SWik-T-DyZuLjL9ZKM; STE=\"2024-07-31T16:43:12.166175Z\"; STIDN=eyJDIjoxMjIzNTQ4NTIzLCJTIjo3MTU0NjgxMTM5NCwiU1MiOjc1Mjc3OTAxMDAyLCJWIjoxODU4ODA5NTUwLCJMIjoxLCJFIjoiMjAyNC0wNy0zMVQxNjo0MToxNC42ODc5Mzk4WiIsIlNFIjoiVVMtREsiLCJVQSI6IngxcVNUYXJVNVFRRlo3TDNxcUlCbWpxWFozazhKVmt2OGFvaCttT1ZpWFE9IiwiREsiOiIzMTQyYjRkMy0yNjU2LTRhNDMtYTBjNi00MTEyM2Y5OTEyNmUiLCJESSI6IjEzNTBmMGM0LWQ3MDItNDUwZC1hOWVmLTJlZjRjZjcxOTY3NyIsIkREIjo0NDg3NTQ0MDk4OH0=; STH=3a3368e54afc8e4c0a5c91094077f5cd1ce31d692aaaf5432b67972b5c3eb6fc; _abck=56D0C7A07377CFD1419CD432549CD1DB~0~YAAQJdbOF6Bzr+SQAQAAsmCPCQykOCRLV67pZ3Dd/613rD8UDsL5x/r+Q6G6jXCECjlRwzW7ESOMYaoy0fhStB3jiEPLialxs/UD9kkWAWPhuOq/RRxzYkX+QY0wZ/Uf8WSSap57OIQdRC3k3jlI6z2G8PKs4IyyQ/bRZfS2Wo6yO0x/icRKUAUeESKrgv6XrNaZCr14SjDVxBBt3Qk4aqJPKbWIbaj+1PewAcP+y/bFEVCmbcrAruJ4TiyqMTEHbRtM9y2O0WsTg79IZu52bpOI2jFjEUXZNRlz2WVhxbApaKY09QQbbZ3euFMffJ25/bXgiFpt7YFwfYh1v+4jrIvbwBwoCDiHn+xy17v6CXq5hIEyO4Bra6QT1sDzil+lQZPgqrPBE0xwoHxSWnhVr60EK1X5IVfypMHUcTvLKFcEP2eqwSZ67Luc/ompWuxooaOVNYrgvH/Vvs5UbyVOEsDcAXoyGt0BW3ZVMVPHXS/30dP3Rw==~-1~-1~1722445877; PRV=3P=0&V=1858809550&E=1720639388; ss-pid=4CNl0TGg6ki1ygGONs5g; ab.storage.deviceId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%22fe7382ec-2564-85bf-d7c4-3eea92cb7c3e%22%2C%22c%22%3A1709950180242%2C%22l%22%3A1709950180242%7D; ab.storage.userId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%2228afffab-27db-4805-85ca-bc8af84ecb98%22%2C%22c%22%3A1712278087074%2C%22l%22%3A1712278087074%7D; ab.storage.sessionId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%223eff9525-6179-dc9c-ce88-9e51fca24c58%22%2C%22e%22%3A1722444192818%2C%22c%22%3A1722442278923%2C%22l%22%3A1722442392818%7D; _gcl_au=1.1.386764008.1720096930; _ga_QG8WHJSQMJ=GS1.1.1722442278.7.1.1722442393.19.0.0; _ga=GA1.2.2079166597.1720096930; _dpm_id.16f4=b3163c2a-8640-4fb7-8d66-2162123e163e.1720096930.7.1722442393.1722178863.1f3bf842-66c7-446c-95e3-d3d5049471a9; _tgpc=78b6db99-db5f-5ce5-848f-0d7e4938d8f2; _tglksd=eyJzIjoiYjRkNjE4MWYtMTJjZS01ZDJkLTgwNTYtZWQ2NzIxM2MzMzM2Iiwic3QiOjE3MjI0NDIyNzgyNzEsInNvZCI6IihkaXJlY3QpIiwic29kdCI6MTcyMTg3ODUxOTY5OCwic29kcyI6Im8iLCJzb2RzdCI6MTcyMTg3ODUxOTY5OH0=; _sp_srt_id.16f4=55c32e85-f32f-42ac-a0e8-b1e37c9d3bc6.1720096930.6.1722442279.1722178650.6d45df5a-aea8-4a66-a4ba-0ef841197d1d.cdc2d898-fa3f-4430-a4e4-b34e1909bb05...0; _scid=e6437688-491e-4800-b4b2-e46e81b2816c; _ga_M8T3LWXCC5=GS1.2.1722442279.7.1.1722442288.51.0.0; _svsid=9d0929120b67695ad6ee074ccfd583b7; _sctr=1%7C1722398400000; _hjSessionUser_2150570=eyJpZCI6ImNmMDA3YTA2LTFiNmMtNTFkYS05Y2M4LWNmNTAyY2RjMWM0ZCIsImNyZWF0ZWQiOjE3MjA1NTMwMDE4OTMsImV4aXN0aW5nIjp0cnVlfQ==; _csrf=ba945d1a-57c4-4b50-a4b2-1edea5014b72; ss-id=x8zwcqe0hExjZeHXAKPK; ak_bmsc=F8F9B7ED0366DC4EB63B2DD6D078134C~000000000000000000000000000000~YAAQJdbOF3hzr+SQAQAAp1uPCRjLBiubHwSBX74Dd/8hmIdve4Tnb++KpwPtaGp+NN2ZcEf+LtxC0PWwzhZQ1one2MxGFFw1J6BXg+qiFAoQ6+I3JExoHz4r+gqodWq7y5Iri7+3aBFQRDtn17JMd1PTEEuN8EckzKIidL3ggrEPS+h1qtof3aHJUdx/jkCUjkaN/phWSvohlUGscny8dJvRz76e3F20koI5UsjJ/rQV7dUn6HNw1b5H1tDeL7UR1mbBrCLz6YPDx4XCjybvteRQpyLGI0o9L6xhXqv12exVAbZ15vpuNJalhR6eB4/PVwCmfVniFcr/xc8hivkuBBMOj1lN7ADykNA60jFaIRAY2BD2yj27Aedr7ETAFnvac0L0ITfH20LkA2cFhGUxmzOJN0JQ6iTU7VGgk19FzV+oeUxNmMPX; bm_sz=D7ABF43D4A5671594F842F6C403AB281~YAAQJdbOF3lzr+SQAQAAp1uPCRgFgps3gN3zvxvZ+vbm5t9IRWYlb7as+myjQOyHzYhriG6n+oxyoRdQbE6wLz996sfM/6r99tfwOLP2K8ULgA2nXfOPvqk6BwofdTsUd7KP7EnKhcCjhADO18uKB/QvIJgyS3IFBROxP2XFzS15m/DrRbF7lQDRscWtVo8oOITxNTBlwg0g4fI3gzjG6A4uHYxjeCegxSrHFHGFr4KZXgOnsJhmZe0lqIRWUFcIKC/gfsDd+jfyUnprMso1Flsv9blGlvycOoWTHPdEQvUudpOZlZ3JYz9H5y+dU94wBD9ejxIlRKP26giQISjun829Kt7CuKxJXYAcSJeiomZFh5Abj+Mkv0wi6ZcRcmOVFt49eywPazFHpGM8DVcUkVEFMcpNCeiJ/CtC60U9SoJy+ermF1hTqiAq~3622209~4408134; bm_sv=6618DE86472CB31D7B7F16DAE6689651~YAAQJdbOF96Lr+SQAQAA4iSRCRjfwGUmEhVBbE3y/2VDAAvuPyI2gX7io7CQCPfcdMOnBnNhxHIKYt9PFr7Y1TADQHFUC9kqXu7Nbj9d1BrLlfi1rPbv/YKPqhqSTLkbNSWbeKhKM4HfOu7C+RLV383VzGeyDhc2zOuBKBVNivHMTF9njS3vK6RKeSPFCfxOJdDHgNlIYykf0Ke2WJvflHflTUykwWUaYIlqoB52Ixb9opHQVTptWjetGdYjuOO2S2ZPkw==~1; _dpm_ses.16f4=*; _tgidts=eyJzaCI6ImQ0MWQ4Y2Q5OGYwMGIyMDRlOTgwMDk5OGVjZjg0MjdlIiwiY2kiOiIxZDMxOGRlZC0yOWYwLTUzYjItYjFkNy0yMDlmODEwNDdlZGYiLCJzaSI6ImI0ZDYxODFmLTEyY2UtNWQyZC04MDU2LWVkNjcyMTNjMzMzNiJ9; _tguatd=eyJzYyI6IihkaXJlY3QpIn0=; _tgsid=eyJscGQiOiJ7XCJscHVcIjpcImh0dHBzOi8vc3BvcnRzYm9vay5kcmFmdGtpbmdzLmNvbSUyRmxlYWd1ZXMlMkZiYXNlYmFsbCUyRm1sYlwiLFwibHB0XCI6XCJNTEIlMjBCZXR0aW5nJTIwT2RkcyUyMCUyNiUyMExpbmVzJTIwJTdDJTIwRHJhZnRLaW5ncyUyMFNwb3J0c2Jvb2tcIixcImxwclwiOlwiXCJ9IiwicHMiOiJkOTY4OTkxNy03ZTAxLTQ2NTktYmUyOS1mZThlNmI4ODY3MzgiLCJwdmMiOiIxIiwic2MiOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6LTEiLCJlYyI6IjUiLCJwdiI6IjEiLCJ0aW0iOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6MTcyMjQ0MjI4MjA3NDotMSJ9; _sp_srt_ses.16f4=*; _gid=GA1.2.150403708.1722442279; _scid_r=e6437688-491e-4800-b4b2-e46e81b2816c; _uetsid=85e6d8504f5711efbe6337917e0e834a; _uetvid=d50156603a0211efbb275bc348d5d48b; _hjSession_2150570=eyJpZCI6ImQxMTAyZTZjLTkyYzItNGMwNy1hNzMzLTcxNDhiODBhOTI4MyIsImMiOjE3MjI0NDIyODE2NDUsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MH0=; _rdt_uuid=1720096930967.9d40f035-a394-4136-b9ce-2cf3bb298115'"
 
 	lines = {}
 	for mainCat in mainCats:
@@ -1821,7 +1995,7 @@ def writeDK():
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
 			outfile = "outnfl"
-			call(["curl", "-k", url, "-o", outfile])
+			os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' {cookie} -o {outfile}")
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -1869,75 +2043,67 @@ def writeDK():
 							except:
 								continue
 
-							#if game != "texas a&m @ miami fl":
-							#	continue
-
 							if "label" not in row:
 								continue
 
-							label = row["label"].lower().split(" [")[0]
-							
-							prefix = ""
-							if "1st half" in label:
-								prefix = "1h_"
-							elif "2nd half" in label:
-								prefix = "2h_"
-							elif "1st quarter" in label:
-								prefix = "1q_"
-
-							if "moneyline" in label:
-								label = "ml"
-							elif "spread" in label:
-								label = "spread"
-							elif "team total points" in label:
-								team = label.split(":")[0]
-								t = team.split(" ")[0].replace("jax", "jac")
-								if "giants" in team:
-									t += "g"
-								elif "jets" in team:
-									t += "j"
-								elif "rams" in team:
-									t += "r"
-								elif "chargers" in team:
-									t += "c"
-								if game.startswith(t):
-									label = "away_total"
-								else:
-									label = "home_total"
-							elif "total" in label:
-								if "field goals" in label or "touchdown" in label:
-									continue
-								if "sacks" in label:
-									label = "sacks"
-									# uses o0.75, o0.25
-									#continue
-								else:
-									label = "total"
-							elif label == "first td scorer":
-								label = "ftd"
-							elif label == "anytime td scorer":
-								label = "attd"
-							elif label == "receptions":
-								label = "rec"
-							elif label.endswith("field goal made"):
-								label = "fgm"
-							elif label.endswith("kicking points"):
-								label = "kicking_pts"
-							elif label.endswith("tackles + assists"):
-								label = "tackles+ast"
-							elif label.endswith("total sacks"):
-								label = "sacks"
-							elif prop in ["pass tds", "pass yds", "rec tds", "rec yds", "rush tds", "rush yds", "interceptions", "longest pass", "longest rush", "longest reception", "pass attempts", "pass completions"]:
-								label = prop.replace(" ", "_").replace("tds", "td").replace("yds", "yd").replace("interceptions", "int").replace("reception", "rec").replace("attempts", "att").replace("completions", "cmp")
+							if subCat in propIds:
+								prop = propIds[subCat]
+								label = prop
 							else:
-								continue
+								label = row["label"].lower().split(" [")[0]
+
+								#print(subCat, prop, "|", label)
+								
+								prefix = ""
+								if "1st half" in label:
+									prefix = "1h_"
+								elif "2nd half" in label:
+									prefix = "2h_"
+								elif "1st quarter" in label:
+									prefix = "1q_"
+
+								if "moneyline" in label:
+									label = "ml"
+								elif "spread" in label:
+									label = "spread"
+								elif "team total points" in label:
+									team = label.split(":")[0]
+									t = team.split(" ")[0].replace("jax", "jac")
+									if "giants" in team:
+										t += "g"
+									elif "jets" in team:
+										t += "j"
+									elif "rams" in team:
+										t += "r"
+									elif "chargers" in team:
+										t += "c"
+									if game.startswith(t):
+										label = "away_total"
+									else:
+										label = "home_total"
+								elif "total" in label:
+									if "field goals" in label or "touchdown" in label:
+										continue
+									if "sacks" in label:
+										label = "sacks"
+										# uses o0.75, o0.25
+										#continue
+									else:
+										label = "total"
+								elif label == "first td scorer":
+									label = "ftd"
+								elif label == "anytime td scorer":
+									label = "attd"
+								else:
+									#print(prop, label)
+									continue
 
 
-							label = label.replace(" alternate", "")
-							label = f"{prefix}{label}"
+								label = label.replace(" alternate", "")
+								label = f"{prefix}{label}"
 
-							if label == "halftime/fulltime":
-								continue
+								if label == "halftime/fulltime":
+									continue
 
 							if "ml" not in label:
 								if label not in lines[game]:
@@ -1969,10 +2135,14 @@ def writeDK():
 									except:
 										continue
 							else:
-								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
-								lines[game][label][player] = f"{outcomes[0]['line']} {outcomes[0]['oddsAmerican']}"
-								if len(row["outcomes"]) > 1:
-									lines[game][label][player] += f"/{outcomes[1]['oddsAmerican']}"
+								for i in range(0, len(outcomes), 2):
+									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
+
+									if player not in lines[game][label]:
+										lines[game][label][player] = {}
+									if "line" not in outcomes[0]:
+										continue
+									lines[game][label][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
 
 	with open("static/nfl/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -1983,215 +2153,202 @@ def write365():
 	props = "https://www.oh.bet365.com/?_h=MHxK6gn5idsD_JJ0gjhGEQ%3D%3D#/AC/B18/C20902960/D43/E181378/F43/"
 
 	js = """
-	const data = {};
 
 	{
-		const main = document.querySelector(".gl-MarketGroupContainer");
-		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
-		let prefix = "";
-		if (title.indexOf("1st half") >= 0) {
-			prefix = "1h_";
-		} else if (title.indexOf("1st quarter") >= 0) {
-			prefix = "1q_";
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			t = team.split(" ")[0];
+			if (t == "arz") {
+				return "ari";
+			} else if (t == "ny") {
+				if (team.includes("giants")) {
+					return "nyg";
+				}
+				return "nyj";
+			} else if (t == "la") {
+				if (team.includes("rams")) {
+					return "lar";
+				}
+				return "lac";
+			}
+			return t;
 		}
 
-		if (title == "game lines" || title == "1st half" || title == "1st quarter") {
-			title = "lines";
-		} else if (title == "player assists") {
-			title = "ast";
-		} else if (title === "player points") {
-			title = "pts";
-		} else if (title === "player rebounds") {
-			title = "reb";
-		} else if (title === "player steals") {
-			title = "stl";
-		} else if (title === "player turnovers") {
-			title = "to";
-		} else if (title === "player blocks") {
-			title = "blk";
-		} else if (title === "player threes made") {
-			title = "3ptm";
-		} else if (title === "alternative point spread" || title == "alternative spread" || title == "alternative 1st quarter point spread") {
-			title = prefix+"spread";
-		} else if (title === "alternative game total") {
-			title = prefix+"total";
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			return player;
 		}
 
-		if (title.indexOf("spread") >= 0 || title.indexOf("total") >= 0) {
-			for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
-				const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" v ", " @ ");
-				if (div.classList.contains("src-FixtureSubGroup_Closed")) {
-					div.click();
-				}
-
-				let lines = [];
-				for (const lineOdds of div.querySelectorAll(".gl-Market_General")[0].querySelectorAll(".gl-Market_General-cn1")) {
-					let line = "";
-
-					if (title == "total") {
-						line = lineOdds.innerText;
-					} else {
-						line = lineOdds.querySelector(".gl-ParticipantCentered_Name").innerText;
-					}
-
-					lines.push(line);
-					if (!data[game]) {
-						data[game] = {};
-					}
-					if (!data[game][title]) {
-						data[game][title] = {};
-					}
-					data[game][title][line] = "";
-
-					if (title != "total") {
-						const odds = lineOdds.querySelector(".gl-ParticipantCentered_Odds").innerText;
-						data[game][title][line] = odds;
-					}
-				}
-
-				let idx = 0;
-				for (const lineOdds of div.querySelectorAll(".gl-Market_General")[1].querySelectorAll(".gl-Participant_General")) {
-					let odds = "";
-					if (title == "total") {
-						odds = lineOdds.innerText;
-					} else {
-						odds = lineOdds.querySelector(".gl-ParticipantCentered_Odds").innerText;
-					}
-
-					if (title != "total") {
-						data[game][title][lines[idx++]] += "/"+odds;
-					} else {
-						data[game][title][lines[idx++]] = odds;
-					}
-				}
-
-				if (title == "total") {
-					idx = 0;
-					for (const lineOdds of div.querySelectorAll(".gl-Market_General")[2].querySelectorAll(".gl-Participant_General")) {
-						let odds = lineOdds.innerText;
-						let line = lines[idx++];
-						data[game][title][line] += "/"+odds;
-					}
-
-					lines = [];
-					for (const lineOdds of div.querySelectorAll(".gl-Market_General")[3].querySelectorAll(".gl-Market_General-cn1")) {
-						const line = lineOdds.innerText;
-						lines.push(line);
-					}
-
-					idx = 0;
-					for (const lineOdds of div.querySelectorAll(".gl-Market_General")[4].querySelectorAll(".gl-Participant_General")) {
-						const odds = lineOdds.innerText;
-						data[game][title][lines[idx++]] = odds;
-					}
-
-					idx = 0;
-					for (const lineOdds of div.querySelectorAll(".gl-Market_General")[5].querySelectorAll(".gl-Participant_General")) {
-						const odds = lineOdds.innerText;
-						data[game][title][lines[idx++]] += "/"+odds;
-					}
-				}
+		async function main() {
+			const main = document.querySelector(".gl-MarketGroupContainer");
+			let prop = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
+			let prefix = "";
+			if (prop.includes("1st half")) {
+				prefix = "1h_";
+			} else if (prop.includes("1st quarter")) {
+				prefix = "1q_";
 			}
-		} else if (title != "lines") {
-			for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
-				const game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" v ", " @ ");
-				if (div.classList.contains("src-FixtureSubGroup_Closed")) {
-					div.click();
-				}
-				let playerList = [];
-				for (playerDiv of div.getElementsByClassName("srb-ParticipantLabelWithTeam")) {
-					let player = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Name")[0].innerText.toLowerCase().replaceAll(". ", "").replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" ii", "");
-					let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" - ")[0];
-					
-					if (!data[game]) {
-						data[game] = {};
-					}
-					if (!data[game][title]) {
-						data[game][title] = {};
-					}
-					data[game][title][player] = "";
-					playerList.push([game, player]);
-				}
 
-				let idx = 0;
-				for (playerDiv of div.getElementsByClassName("gl-Market")[1].getElementsByClassName("gl-ParticipantCenteredStacked")) {
-					let team = playerList[idx][0];
-					let player = playerList[idx][1];
-
-					let line = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Handicap")[0].innerText;
-					let odds = playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
-					data[team][title][player] = line+" "+odds;
-					idx += 1;
+			if (prop == "touchdown scorers") {
+				prop = "attd";
+			} else if (prop.indexOf("player") == 0) {
+				prop = prop.replace("player ", "").replace(" and ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("points", "pts").replace("assists", "ast").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace("yards", "yd").replace("touchdowns", "td").replace(" + ", "+").replaceAll(" ", "_");
+				if (prop == "longest_pass_completion") {
+					prop = "longest_pass";
+				} else if (prop == "longest_rush_attempt") {
+					prop = "longest_rush";
+				} else if (prop == "rush+rec_yd") {
+					prop = "rush+rec";
 				}
-
-				idx = 0;
-				for (playerDiv of div.getElementsByClassName("gl-Market")[2].getElementsByClassName("gl-ParticipantCenteredStacked")) {
-					let team = playerList[idx][0];
-					let player = playerList[idx][1];
-
-					data[team][title][player] += "/" + playerDiv.getElementsByClassName("gl-ParticipantCenteredStacked_Odds")[0].innerText;
-					idx += 1;
-				}
-				
+			} else if (prop.includes("spread")) {
+				prop = "spread";
+			} else if (prop.includes("total")) {
+				prop = "total";
 			}
-		} else {
-			let games = [];
-			let idx = 0;
-			for (div of main.querySelector(".gl-Market_General").children) {
-				if (idx === 0 || div.classList.contains("Hidden")) {
-					idx += 1;
-					continue;
-				}
-				if (div.classList.contains("rcl-MarketHeaderLabel-isdate")) {
+
+			prop = prefix+prop;
+
+			let gameIdx = 0;
+			for (div of document.querySelectorAll(".gl-MarketGroupPod")) {
+				if (gameIdx >= 16) {
 					break;
 				}
-				const away = div.querySelectorAll(".scb-ParticipantFixtureDetailsHigherBasketball_Team")[0].innerText.toLowerCase();
-				const home = div.querySelectorAll(".scb-ParticipantFixtureDetailsHigherBasketball_Team")[1].innerText.toLowerCase();
-				const game = away+" @ "+home;
-				games.push(game);
+				gameIdx += 1;
+				const classes = Array.from(div.classList);
+				if (classes.includes("src-FixtureSubGroupWithShowMore_Closed") || classes.includes("src-FixtureSubGroup_Closed")) {
+					div.click();
+					await new Promise(resolve => setTimeout(resolve, 200));
+				}
+			}
 
+			gameIdx = 0;
+			for (div of document.querySelectorAll(".gl-MarketGroupPod")) {
+				if (gameIdx >= 16) {
+					break;
+				}
+				gameIdx += 1;
+				const classes = Array.from(div.classList);
+				if (classes.includes("src-FixtureSubGroupWithShowMore")) {
+					if (!div.querySelector(".msl-ShowMore_Open")) {
+						div.querySelector(".msl-ShowMore").click();
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				}
+			}
+
+			gameIdx = 0;
+			for (div of document.querySelectorAll(".gl-MarketGroupPod")) {
+
+				if (gameIdx >= 16) {
+					break;
+				}
+				gameIdx += 1;
+				let game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText;
+				game = convertTeam(game.split(" @ ")[0]) + " @ " + convertTeam(game.split(" @ ")[1]);
 				if (!data[game]) {
 					data[game] = {};
 				}
-			}
+				if (!data[game][prop]) {
+					data[game][prop] = {};
+				}
 
-			const props = ["spread", "total", "ml"];
-			let p = 0;
-			for (const prop of props) {
-				idx = 0;
-				let divs = main.querySelectorAll(".gl-Market_General")[p+1].querySelectorAll(".gl-Participant_General");
-				p += 1;
-				for (let i = 0; i < divs.length; i += 2) {
-					let game = games[idx];
+				if (prop == "total") {
+					parseTotal(div, game, prop);
+					continue;
+				}
 
-					if (!game) {
-						break;
+				const players = [];
+				for (el of div.querySelectorAll(".srb-ParticipantLabelWithTeam_Name")) {
+					players.push(parsePlayer(el.innerText));
+				}
+
+				if (prop == "1h_total") {
+					for (el of div.querySelectorAll(".srb-ParticipantLabelCentered_Name")) {
+						players.push(el.innerText);
 					}
+				}
 
-					let over = divs[i].innerText;
-					let under = divs[i+1].innerText;
-
-					if (prop == "ml") {
-						if (over !== "" && under !== "") {
-							data[game][prefix+prop] = over+"/"+under;
-						}
+				const arr = [];
+				const markets = div.querySelectorAll(".gl-Market");
+				let marketIdx = 1;
+				if (markets.length <= 2) {
+					marketIdx = 0;
+				}
+				for (el of markets[marketIdx].querySelectorAll(".gl-Participant_General")) {
+					let odds = el.querySelector("span");
+					if (!odds) {
+						arr.push("");
 					} else {
-						let over = divs[i].querySelector(".sac-ParticipantCenteredStacked50OTB_Odds").innerText;
-						let under = divs[i+1].querySelector(".sac-ParticipantCenteredStacked50OTB_Odds").innerText;
-						let line = divs[i].querySelector(".sac-ParticipantCenteredStacked50OTB_Handicap").innerText.replace("O ", "");
-						if (!data[game][prefix+prop]) {
-							data[game][prefix+prop] = {};
+						let spans = el.querySelectorAll("span");
+						arr.push(spans[spans.length-1].innerText);
+					}
+				}
+
+				let idx = 0;
+				for (el of markets[markets.length-1].querySelectorAll(".gl-Participant_General")) {
+					let odds = el.querySelector("span");
+					if (prop == "attd") {
+						if (!data[game]["ftd"]) {
+							data[game]["ftd"] = {};
 						}
-						data[game][prefix+prop][line] = over+"/"+under;
+						data[game]["ftd"][players[idx]] = arr[idx];
+						if (!odds) {
+							continue;
+						}
+						data[game][prop][players[idx]] = odds.innerText;
+					} else if (prop.includes("total")) {
+						odds = el.querySelector("span").innerText;
+						data[game][prop][players[idx]] = arr[idx]+"/"+odds;
+					} else if (prop.includes("spread")) {
+						let line = (parseFloat(odds.innerText.replace("+", "")) * -1).toFixed(1);
+						odds = el.querySelectorAll("span")[1].innerText;
+						data[game][prop][line] = arr[idx]+"/"+odds;
+					} else {
+						odds = el.querySelectorAll("span")[2];
+						let line = el.querySelector(".gl-ParticipantCenteredStacked_Handicap").innerText;
+						data[game][prop][players[idx]] = {};
+						data[game][prop][players[idx]][line] = arr[idx]+"/"+odds.innerText;
 					}
 					idx += 1;
 				}
 			}
+
+			console.log(data);
 		}
 
-		console.log(data);
-	}
 
+		function parseTotal(div, game, prop) {
+			let line = parseFloat(div.querySelectorAll(".gl-Market_General")[0].querySelector(".srb-ParticipantLabelCentered_Name").innerText).toFixed(1);
+			let over = div.querySelectorAll(".gl-Market_General")[1].querySelector("span").innerText;
+			let under = div.querySelectorAll(".gl-Market_General")[2].querySelector("span").innerText;
+			data[game][prop][line] = over+"/"+under;
+
+			let idx = 3;
+
+			while (idx < 7) {
+				let lines = [];
+				for (el of div.querySelectorAll(".gl-Market_General")[idx].querySelectorAll(".srb-ParticipantLabelCentered_Name")) {
+					lines.push(parseFloat(el.innerText).toFixed(1));
+				}
+
+				let overs = [];
+				for (el of div.querySelectorAll(".gl-Market_General")[idx+1].querySelectorAll(".gl-ParticipantOddsOnly_Odds")) {
+					overs.push(el.innerText);
+				}
+
+				let i = 0;
+				for (el of div.querySelectorAll(".gl-Market_General")[idx+2].querySelectorAll(".gl-ParticipantOddsOnly_Odds")) {
+					data[game][prop][lines[i]] = overs[i]+"/"+el.innerText;
+					i += 1;
+				}
+
+				idx += 3;
+			}
+		}
+
+
+		main();
+	}
 	"""
 	pass
 
@@ -2342,7 +2499,7 @@ def bvParlay():
 		fh.write(output)
 
 
-def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
+def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg=None):
 
 	if not boost:
 		boost = 1
@@ -2365,6 +2522,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nfl/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
+	with open(f"{prefix}static/nfl/bet365.json") as fh:
+		bet365 = json.load(fh)
+
+	with open(f"{prefix}static/nfl/espn.json") as fh:
+		espn = json.load(fh)
+
 	with open(f"{prefix}static/nfl/pointsbet.json") as fh:
 		pbLines = json.load(fh)
 
@@ -2377,25 +2540,49 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nfl/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	# temp fix with FD locking us out
-	if False:
-		fdLines = {}
-		for game in actionnetwork:
-			fdLines[game] = {}
+	with open(f"{prefix}static/nfl/roster.json") as fh:
+		roster = json.load(fh)
 
-			for prop in actionnetwork[game]:
-				fdLines[game][prop] = {}
-				for player in actionnetwork[game][prop]:
-					if "fanduel" in actionnetwork[game][prop][player]:
-						fdLines[game][prop][player] = actionnetwork[game][prop][player]["fanduel"]
+	players = {}
+	for team in roster:
+		players[team] = {}
+		for player in roster[team]:
+			first = player.split(" ")[0][0]
+			last = player.split(" ")[-1]
+			players[team][f"{first} {last}"] = player
+
+	espnLines = {}
+	for game in espn:
+		espnLines[game] = {}
+		for prop in espn[game]:
+			if prop == "ml":
+				espnLines[game][prop] = espn[game][prop]
+			elif prop in ["total", "spread"]:
+				espnLines[game][prop] = espn[game][prop].copy()
+			else:
+				espnLines[game][prop] = {}
+				away, home = map(str, game.split(" @ "))
+				for p in espn[game][prop]:
+					if p not in players[away] and p not in players[home]:
+						continue
+					if p in players[away]:
+						player = players[away][p]
+					else:
+						player = players[home][p]
+					if prop == "attd":
+						espnLines[game][prop][player] = espn[game][prop][p]["0.5"]
+					elif prop == "ftd":
+						espnLines[game][prop][player] = espn[game][prop][p]
+					else:
+						espnLines[game][prop][player] = espn[game][prop][p].copy()
 
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
-		"bv": bvLines,
+		"espn": espnLines,
+		"bet365": bet365,
 		"dk": dkLines,
 		"cz": czLines
 	}
@@ -2411,6 +2598,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		teamGame[away] = teamGame[home] = game
 
 	for game in mgmLines:
+		if gameArg and game != gameArg:
+			continue
 		if teamArg:
 			if game.split(" @ ")[0] not in teamArg.split(",") and game.split(" @ ")[1] not in teamArg.split(","):
 				continue
@@ -2430,6 +2619,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			
 			if prop in ["sacks", "spread", "1h_ml"]:
 				continue
+				pass
 
 			handicaps = {}
 			for book in lines:
@@ -2443,12 +2633,19 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						try:
 							player = float(handicap)
 							player = ""
+							handicaps[(handicap, playerHandicap)] = player
 						except:
 							player = handicap
 							playerHandicap = ""
 							if " " in lineData[game][prop][player]:
 								playerHandicap = lineData[game][prop][player].split(" ")[0]
-						handicaps[(handicap, playerHandicap)] = player
+								handicaps[(handicap, playerHandicap)] = player
+							elif type(lineData[game][prop][player]) is dict:
+								for h in lineData[game][prop][player]:
+									handicaps[(handicap, h)] = player
+							else:
+								for h in lineData[game][prop][player]:
+									handicaps[(handicap, " ")] = player
 
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
@@ -2461,7 +2658,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					for book in lines:
 						lineData = lines[book]
 						if game in lineData and prop in lineData[game]:
-
 							if type(lineData[game][prop]) is str:
 								val = lineData[game][prop]
 							else:
@@ -2475,9 +2671,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 										continue
 									val = lineData[game][prop][handicap][playerHandicap]
 								else:
-									if prop not in ["attd", "sacks", "ftd"] and playerHandicap != val.split(" ")[0]:
+									if " " in val and playerHandicap != val.split(" ")[0]:
 										continue
 									val = lineData[game][prop][handicap].split(" ")[-1]
+
 
 							try:
 								o = val.split(" ")[-1].split("/")[i]
@@ -2488,8 +2685,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								o = val
 								ou = val
 
-							if not o or o == "-":
+							if not o or o == ".":
 								continue
+
 							highestOdds.append(int(o))
 							odds.append(ou)
 							books.append(book)
@@ -2602,7 +2800,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							pass
 						evData[key]["game"] = game
 						evData[key]["prop"] = prop
-						evData[key]["book"] = evBook
+						evData[key]["book"] = evBook.replace("kambi", "br").replace("bet365", "365")
 						evData[key]["books"] = books
 						evData[key]["ou"] = ou
 						evData[key]["under"] = i == 1
@@ -2635,43 +2833,45 @@ def sortEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "Bet365", "ESPN", "PN", "Kambi", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "attd":
 			continue
-		arr = [row[0], row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		for book in ["fd", "dk", "mgm", "bet365", "espn", "pn", "kambi", "cz"]:
 			arr.append(row[-1]["bookOdds"].get(book, "-"))
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nfl/attd.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "Bet365", "ESPN", "PN", "Kambi", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] != "ftd":
 			continue
-		arr = [row[0], row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		for book in ["fd", "dk", "mgm", "bet365", "espn", "pn", "kambi", "cz"]:
 			arr.append(row[-1]["bookOdds"].get(book, "-"))
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nfl/ftd.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi", "CZ", "AVG", "% Over", "Splits"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "ESPN", "PN", "Kambi", "CZ", "AVG", "% Over", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
 		if row[-1]["prop"] in ["attd", "ftd"]:
+			continue
+		if not player:
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if player:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), player.title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi", "cz"]:
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[2].upper(), player.title(), row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "bet365", "espn", "pn", "kambi", "cz"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -2713,6 +2913,36 @@ def sortEV():
 	with open("static/nfl/props.csv", "w") as fh:
 		fh.write(output)
 
+	output = "\t".join(["EV", "EV Book", "Game", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "ESPN", "PN", "Kambi", "CZ", "AVG", "% Over", "Splits"]) + "\n"
+	for row in sorted(data, reverse=True):
+		player = row[-1]["player"]
+		prop = row[-1]["prop"]
+		if row[-1]["prop"] in ["attd", "ftd"] or player:
+			continue
+		ou = ("u" if row[-1]["under"] else "o")+" "
+		if player:
+			ou += row[-1]["playerHandicap"]
+		else:
+			ou += row[-1]["handicap"]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[2].upper(), row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "bet365", "espn", "pn", "kambi", "cz"]:
+			o = str(row[-1]["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		avg = over = 0
+		splits = ""
+		if "total" in prop:
+			team = ""
+			if "away" in prop:
+				team = row[2].split(" @ ")[0]
+			elif "home" in prop:
+				team = row[2].split(" @ ")[1]
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/nfl/lines.csv", "w") as fh:
+		fh.write(output)
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-d", "--date", help="date")
@@ -2749,7 +2979,9 @@ if __name__ == '__main__':
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
+	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
+	parser.add_argument("--token")
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Book")
 
@@ -2787,7 +3019,7 @@ if __name__ == '__main__':
 		writeKambi()
 
 	if args.pn:
-		writePinnacle(args.date)
+		writePinnacle(args.date, args.debug)
 
 	if args.bv:
 		writeBV()
@@ -2796,47 +3028,44 @@ if __name__ == '__main__':
 		bvParlay()
 
 	if args.cz:
-		writeCZ()
+		writeCZ(args.token)
 
 	if args.update:
 		#writeFanduel()
 		print("pn")
-		writePinnacle(args.date)
+		writePinnacle(args.date, args.debug)
 		print("kambi")
 		writeKambi()
 		print("mgm")
 		writeMGM()
-		print("pb")
-		writePointsbet()
-		print("bv")
-		writeBV()
+		#print("pb")
+		#writePointsbet()
+		#print("bv")
+		##writeBV()
 		print("dk")
 		writeDK()
 		print("cz")
-		writeCZ()
+		writeCZ(args.token)
 		writeActionNetwork()
 
-	print(convertAmericanOdds(1 + (convertDecOdds(int(140)) - 1) * 1.5))
-	print(convertAmericanOdds(1 + (convertDecOdds(int(-180)) - 1) * 1.5))
+	#print(convertAmericanOdds(1 + (convertDecOdds(int(140)) - 1) * 1.5))
+	#print(convertAmericanOdds(1 + (convertDecOdds(int(-180)) - 1) * 1.5))
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
+		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, gameArg=args.game)
 
 	if args.print:
 		sortEV()
 
 	if args.player:
-		#with open(f"{prefix}static/nfl/draftkings.json") as fh:
-		#	dkLines = json.load(fh)
+		with open(f"{prefix}static/nfl/draftkings.json") as fh:
+			dkLines = json.load(fh)
 
-		#with open(f"{prefix}static/nfl/bet365.json") as fh:
-		#	bet365Lines = json.load(fh)
+		with open(f"{prefix}static/nfl/bet365.json") as fh:
+			bet365Lines = json.load(fh)
 
 		with open(f"{prefix}static/nfl/fanduelLines.json") as fh:
 			fdLines = json.load(fh)
-
-		#with open(f"{prefix}static/nfl/bovada.json") as fh:
-		#	bvLines = json.load(fh)
 
 		with open(f"{prefix}static/nfl/kambi.json") as fh:
 			kambiLines = json.load(fh)
@@ -2846,6 +3075,12 @@ if __name__ == '__main__':
 
 		with open(f"{prefix}static/nfl/pinnacle.json") as fh:
 			pnLines = json.load(fh)
+
+		with open(f"{prefix}static/nfl/caesars.json") as fh:
+			czLines = json.load(fh)
+
+		with open(f"{prefix}static/nfl/espn.json") as fh:
+			espnLines = json.load(fh)
 	
 		player = args.player
 
@@ -2854,11 +3089,11 @@ if __name__ == '__main__':
 				if args.prop and args.prop != prop:
 					continue
 
-				if player not in mgmLines[game][prop]:
-					continue
-
-				mgm = mgmLines[game][prop][player]
-				dk = fd = bet365 = kambi = bv = mgm = pn = ""
+				dk = fd = bet365 = kambi = espn = cz = mgm = pn = ""
+				try:
+					mgm = mgmLines[game][prop][player]
+				except:
+					pass
 				try:
 					fd = fdLines[game][prop][player]
 				except:
@@ -2872,12 +3107,19 @@ if __name__ == '__main__':
 				except:
 					pass
 				try:
-					bv = bvLines[game][prop][player]
-				except:
-					pass
-				try:
 					pn = pnLines[game][prop][player]
 				except:
 					pass
+				try:
+					espn = espnLines[game][prop][player]
+				except:
+					pass
+				try:
+					cz = czLines[game][prop][player]
+				except:
+					pass
 
-				print(f"{prop} fd='{fd}'\ndk='{dk}'\n365='{bet365}'\nkambi='{kambi}'\nbv='{bv}'\npn={pn}\nmgm={mgm}")
+				if not mgm and not fd and not bet365 and not kambi and not pn and not espn and not cz:
+					continue
+
+				print(f"{prop} fd='{fd}'\ndk='{dk}'\n365='{bet365}'\nkambi='{kambi}'\ncz='{cz}'\nespn='{espn}'\npn={pn}\nmgm={mgm}")

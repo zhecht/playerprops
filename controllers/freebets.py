@@ -1476,7 +1476,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("jp crawford", 600), ("mj melendez", 520)]
+	plays = [("jeff mcneil", 900), ("andres chaparro", 800), ("cal raleigh", 340), ("mickey moniak", 520), ("gary sanchez", 470)]
 
 	if args.dinger:
 		plays = []
@@ -1565,7 +1565,7 @@ if __name__ == '__main__':
 			ou = ev[player]["ou"]
 			f4_ou = ev[player]["f4_ou"]
 			pn_ou = ev[player]["pn_ou"]
-			currEv = ev[player]["ev"]
+			currEv = ev[player].get("ev", 0)
 			bet365ev = ev[player].get("bet365ev", 0)
 			f4ev = ev[player].get("f4_ev", 0)
 			pnev = ev[player].get("pn_ev", 0)

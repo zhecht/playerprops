@@ -759,6 +759,15 @@ if __name__ == '__main__':
     document.querySelector("#draft-order").parentElement.parentElement.style.bottom = "0px";
 
     /* Expand Chat to bottom */
-    document.querySelector("#chat").parentElement.parentElement.parentElement.style.bottom = "0px";
-
+    if (document.querySelector("#chat")) {
+        document.querySelector("#chat").parentElement.parentElement.parentElement.style.bottom = "0px";
+    } else {
+        document.querySelector("#sendbirdchat").parentElement.parentElement.parentElement.style.bottom = "0px";
+    }
 """
+
+    # NFL
+    js = """
+    document.querySelector("#bling-2").parentElement.remove() 
+"""
+

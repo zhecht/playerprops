@@ -123,6 +123,137 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
+def writeESPN():
+	js = """
+
+	{
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			return team;
+		}
+
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			if (player == "joquavious marks") {
+				return "woody marks";
+			}
+			return player;
+		}
+
+		const data = {};
+		let status = "";
+
+		async function readPage(game) {
+			for (tab of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
+				if (tab.innerText == "Player Props") {
+					tab.click();
+					break;
+				}
+			}
+			while (!window.location.href.includes("player_props")) {
+				await new Promise(resolve => setTimeout(resolve, 500));
+			}
+
+			await new Promise(resolve => setTimeout(resolve, 3000));
+
+			let players = {};
+			for (detail of document.querySelectorAll("details")) {
+				let prop = detail.querySelector("h2").innerText.toLowerCase();
+
+				if (prop == "player total home runs hit") {
+					prop = "hr";
+				} else if (prop == "first batter to record a hit") {
+					prop = "";
+				} else {
+					continue;
+				}
+
+				let open = detail.getAttribute("open");
+				if (open == null) {
+					detail.querySelector("summary").click();
+					while (detail.querySelectorAll("button").length == 0) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				}
+
+				data[game]["hr"] = {};
+
+				let btns = detail.querySelectorAll("button");
+				if (prop == "hr") {
+					for (i = 0; i < btns.length; i += 2) {
+						let player = parsePlayer(btns[i].parentElement.parentElement.previousSibling.innerText.toLowerCase());
+						let sp = player.split(" ");
+						player = sp[0][0];
+						sp.shift();
+						player += " "+sp.join(" ");
+						let ou = btns[i].querySelectorAll("span")[1].innerText+"/"+btns[i+1].querySelectorAll("span")[1].innerText;
+						players[player] = ou;
+					}
+				} else {
+					for (btn of btns) {
+						let player = parsePlayer(btn.querySelector("span").innerText);
+						let sp = player.split(" ");
+						let p = sp[0][0];
+						sp.shift();
+						p += " "+sp.join(" ");
+						if (players[p]) {
+							data[game]["hr"][player] = players[p];
+						}
+					}
+				}
+			}
+			status = "done";
+		}
+
+		async function main() {
+			while (true) {
+				for (div of document.querySelector("section").querySelectorAll("article")) {
+					if (!div.innerText.includes("Today")) {
+						continue;
+					}
+					let btns = div.querySelectorAll("button[data-testid=team-name]");
+					let awayTeam = convertTeam(btns[0].querySelector(".text-primary").innerText.split(" ")[0]);
+					let homeTeam = convertTeam(btns[1].querySelector(".text-primary").innerText.split(" ")[0]);
+					let game = awayTeam + " @ " + homeTeam;
+
+					if (data[game]) {
+						continue;
+					}
+					
+					data[game] = {};
+
+					btns[0].click();
+
+					while (!window.location.href.includes("event")) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+
+					await new Promise(resolve => setTimeout(resolve, 5000));
+
+					status = "";
+					readPage(game);
+
+					while (status != "done") {
+						await new Promise(resolve => setTimeout(resolve, 2000));
+					}
+
+					document.querySelector("a[aria-labelledby=MLB-9]").click();
+
+					await new Promise(resolve => setTimeout(resolve, 5000));
+
+					console.log(data);
+					//testing
+					//break;
+				}
+				break;
+			}
+			console.log(data);
+		}
+
+		main();
+	}
+"""
+
 actionNetworkBookIds = {
 	1541: "draftkings",
 	69: "fanduel",
@@ -1014,7 +1145,12 @@ def writeMGMManual():
 	{
 
 		function parsePlayer(player) {
-			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll("é", "e");
+			if (player == "n kavadas") {
+				return "niko kavadas";
+			} else if (player == "josh h smith") {
+				return "josh smith";
+			}
 			return player;
 		}
 
@@ -1070,6 +1206,10 @@ def writeMGMManual():
 					continue;
 				}
 
+				if (event.innerText.includes("Tomorrow")) {
+					continue;
+				}
+
 				const teams = event.querySelectorAll(".participant");
 				let game = convertTeam(teams[0].innerText) + " @ " + convertTeam(teams[1].innerText);
 
@@ -1081,7 +1221,11 @@ def writeMGMManual():
 				data[game]["hr"] = {};
 				event.querySelector("a").click();
 
-				await new Promise(resolve => setTimeout(resolve, 1000));
+				while (!window.location.href.includes(teams[0].innerText.toLowerCase().replace(" ", "-"))) {
+					await new Promise(resolve => setTimeout(resolve, 500));	
+				}
+
+				await new Promise(resolve => setTimeout(resolve, 1500));
 
 				for (let panel of document.querySelectorAll("ms-option-panel")) {
 					if (panel.innerText.includes("Batter home runs")) {
@@ -2967,7 +3111,7 @@ if __name__ == '__main__':
 		writeBV()
 
 	if args.cz:
-		writeCZ(args.date)
+		writeCZ(args.date, args.token)
 
 	if args.update:
 		#writeFanduel()
