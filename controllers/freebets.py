@@ -746,7 +746,8 @@ def write365():
 	js = """
 	{
 		let data = {};
-		let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
+		//let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
+		let title = "";
 		for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
 			if (div.classList.contains("src-FixtureSubGroup_Closed")) {
 				div.click();
@@ -1476,7 +1477,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("jeff mcneil", 900), ("andres chaparro", 800), ("cal raleigh", 340), ("mickey moniak", 520), ("gary sanchez", 470)]
+	plays = [("julio rodriguez", 540), ("matt wallner", 320)]
 
 	if args.dinger:
 		plays = []

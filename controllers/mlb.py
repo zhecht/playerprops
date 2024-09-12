@@ -379,7 +379,7 @@ def writeCZ(date=None, token=None):
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule/?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "mlboutCZ"
-	cookie = "18397176-0983-4317-84cb-816fa1699cf4:EgoAmVx18MpqAAAA:NOGs0COxcxwymQzK8nbzMJScVyYZPWPYoEobvbmGogS8Wb5pk2qUA9lP9t0YtKhKPSAk99QwLbEOwIKtffPGBVHHFayZsB/qgbtvnYtI2SPIPmosSB+GdubQRQOgedBGGl6OSY5vJol2/WvpQdxVBVIxJ3487hSEBdNIhYXPM/bBotuU5glIllzgsSk6FsFyYmn+zVFXwDVHIEGtiSWrmFYjvhl/0ZwEfmQMalLCeV7t6UhAkpP4U6QLQi8LIlX5GxfQnZaSDtemNw7lGQ=="
+	cookie = "57d82a48-216c-4ca5-a09a-586984694d53:EgoAq+9Z3ILEAAAA:/pCHTYJhQm4ghyZoK+ZFCFkm2UdjD2TbrfZdKH83lAtCmb+z6YSY3osWVfy9S0TqhKsN6Mi/FwuALsd4bZjN8bAT47M1n2KjkrugZOxbpSwC/z4bZ37VRu2hzMxYwg4Emb29nGUV/b/9fe+X7okU9BfoB15WWRxnHbd/i65j2S8kmCfPycMFOGXcpeoaU/BI2JSeOpBo3KcjB/P2xloERwV/fk+clzEDUGEihtRM9/hMpKzmCqIeI+edZxbrMqmAnzwKwCFKkVoubSlkuw=="
 	if token:
 		cookie = token
 	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
@@ -1210,7 +1210,11 @@ def writeMGMManual():
 					continue;
 				}
 
-				const teams = event.querySelectorAll(".participant");
+				event.querySelector("a").click();
+
+				await new Promise(resolve => setTimeout(resolve, 2500));
+
+				const teams = document.querySelectorAll(".participant-name");
 				let game = convertTeam(teams[0].innerText) + " @ " + convertTeam(teams[1].innerText);
 
 				if (data[game]) {
@@ -1219,21 +1223,19 @@ def writeMGMManual():
 
 				data[game] = {};
 				data[game]["hr"] = {};
-				event.querySelector("a").click();
-
-				while (!window.location.href.includes(teams[0].innerText.toLowerCase().replace(" ", "-"))) {
-					await new Promise(resolve => setTimeout(resolve, 500));	
-				}
-
-				await new Promise(resolve => setTimeout(resolve, 1500));
 
 				for (let panel of document.querySelectorAll("ms-option-panel")) {
 					if (panel.innerText.includes("Batter home runs")) {
+						if (panel.querySelector(".theme-down")) {
+							panel.querySelector("div").click();
+							await new Promise(resolve => setTimeout(resolve, 500));
+						}
+
 						const showMore = panel.querySelector(".show-more-less-button");
 						if (showMore.innerText.includes("Show")) {
 							showMore.click();
 							while (panel.querySelector(".show-more-less-button").innerText.includes("More")) {
-								await new Promise(resolve => setTimeout(resolve, 500));	
+								await new Promise(resolve => setTimeout(resolve, 500));
 							}
 						}
 
@@ -2777,7 +2779,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							if not o or o == "-":
 								continue
 
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 

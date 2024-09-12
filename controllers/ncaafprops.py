@@ -300,6 +300,9 @@ def writeCZ(date=None, token=None):
 	with open(outfile) as fh:
 		data = json.load(fh)
 
+	if "competitions" not in data:
+		return
+
 	games = []
 	for event in data["competitions"][0]["events"]:
 		if str(datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
@@ -457,6 +460,9 @@ def writeESPN():
 			if (team[0] == "(") {
 				team = team.split(") ")[1];
 			}
+			if (team == "north carolina state") {
+				return "nc state";
+			}
 			return team;
 		}
 
@@ -468,7 +474,6 @@ def writeESPN():
 			return player;
 		}
 
-		const data = {};
 		let status = "";
 
 		async function readPage(game) {
@@ -556,13 +561,16 @@ def writeESPN():
 					let btns = Array.from(modal.querySelectorAll("button"));
 					btns.shift();
 					for (i = 0; i < btns.length; i += 3) {
+						if (!btns[i+1].querySelectorAll("span")[1]) {
+							continue;
+						}
 						let ou = btns[i+1].querySelectorAll("span")[1].innerText+"/"+btns[i+2].querySelectorAll("span")[1].innerText;
 						let player = parsePlayer(btns[i].innerText.toLowerCase().split(" to score ")[0].split(" first ")[0]);
 						let last = player.split(" ");
 						last.shift();
 						last = last.join(" ");
 						players[player.split(" ")[0][0]+" "+last] = player;
-						data[game][prop][player] = ou;
+						data[game][prop][player] = ou.replace("Even", "+100");
 					}
 					modal.querySelector("button").click();
 					while (document.querySelector(".modal--see-all-lines")) {
@@ -577,7 +585,7 @@ def writeESPN():
 						last.shift();
 						last = last.join(" ");
 						players[player.split(" ")[0][0]+" "+last] = player;
-						data[game][prop][player] = ou;
+						data[game][prop][player] = ou.replace("Even", "+100");
 					}
 				} else {
 					let btns = detail.querySelectorAll("button");
@@ -590,7 +598,7 @@ def writeESPN():
 						let line = btns[i].querySelector("span").innerText.split(" ");
 						line = line[line.length - 1];
 						data[game][prop][player] = {};
-						data[game][prop][player][line] = ou;
+						data[game][prop][player][line] = ou.replace("Even", "+100");
 					}
 				}
 
@@ -599,59 +607,19 @@ def writeESPN():
 		}
 
 		async function main() {
-			while (true) {
-				for (div of document.querySelector("section").querySelectorAll("article")) {
-					if (!div.innerText.includes("Today")) {
-						continue;
-					}
-					let btns = div.querySelectorAll("button[data-testid=team-name]");
-					let awayTeam = convertTeam(btns[0].querySelector(".text-primary").innerText);
-					let homeTeam = convertTeam(btns[1].querySelector(".text-primary").innerText);
-					let game = awayTeam + " @ " + homeTeam;
+			let awayTeam = convertTeam(document.querySelector("div[data-testid=away-team-card] h2").innerText);
+			let homeTeam = convertTeam(document.querySelector("div[data-testid=home-team-card] h2").innerText);
+			let game = awayTeam + " @ " + homeTeam;
+			
+			data[game] = {};
 
-					if (data[game]) {
-						continue;
-					}
-					
-					console.log(game);
-					data[game] = {};
+			status = "";
+			readPage(game);
 
-					btns[0].click();
-
-					while (!window.location.href.includes("event")) {
-						await new Promise(resolve => setTimeout(resolve, 500));
-					}
-
-					await new Promise(resolve => setTimeout(resolve, 2000));
-
-					status = "";
-					readPage(game);
-
-					while (status != "done") {
-						await new Promise(resolve => setTimeout(resolve, 2000));
-					}
-
-					for (a of document.querySelectorAll("a[data-testid=button-or-link]")) {
-						if (a.innerText == "NCAAF") {
-							a.click();
-							break;
-						}
-					}
-
-					/*
-					while (window.location.href.includes("event")) {
-						await new Promise(resolve => setTimeout(resolve, 1000));
-					}
-					*/
-
-					await new Promise(resolve => setTimeout(resolve, 5000));
-
-					//testing
-					//break;
-					console.log(data);
-				}
-				break;
+			while (status != "done") {
+				await new Promise(resolve => setTimeout(resolve, 2000));
 			}
+
 			console.log(data);
 		}
 
@@ -1170,21 +1138,61 @@ def writeMGM():
 		const ids = [];
 		for (const a of document.querySelectorAll("a.grid-info-wrapper")) {
 			const href = a.href.split("-");
-			//console.log(a.parentElement.parentElement.innerText.includes("Today"), a.parentElement.parentElement, );
+			//console.log(a.parentElement.parentElement.innerText.includes("Tomorrow"), a.parentElement.parentElement.innerText, );
 			if (a.parentElement.parentElement.querySelector("ms-prematch-timer") && a.parentElement.parentElement.querySelector("ms-prematch-timer").innerText.includes("Today")) {
-				ids.push(href[href.length - 1]);
+				
 			}
+			ids.push(href[href.length - 1]);
 		}
 		console.log(ids);
 	}
 """
 
 	ids = [
-    "15860764"
+  "16265867",
+  "16266071",
+  "16257523",
+  "16257524",
+  "16257525",
+  "16257526",
+  "16257527",
+  "16257528",
+  "16266074",
+  "16257580",
+  "16257529",
+  "16266073",
+  "16257585",
+  "16257582",
+  "16257581",
+  "16266249",
+  "16257584",
+  "16257583",
+  "16266075",
+  "16266079",
+  "16266080",
+  "16266078",
+  "16266076",
+  "16257586",
+  "15860769",
+  "15860768",
+  "16257587",
+  "16257588",
+  "16266082",
+  "16257589",
+  "16257590",
+  "16257591",
+  "16257593",
+  "16257592",
+  "16257594",
+  "16279234",
+  "16279237",
+  "16279233",
+  "16279312",
+  "16279236"
 ]
 
 
-	#ids = ["14682653"]
+	#ids = ["15860766"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
@@ -1192,6 +1200,9 @@ def writeMGM():
 
 		with open(outfile) as fh:
 			data = json.load(fh)
+
+		#with open("out", "w") as fh:
+		#	json.dump(data, fh, indent=4)
 
 		if "fixture" not in data:
 			continue
@@ -1222,8 +1233,26 @@ def writeMGM():
 				prop = "total"
 			elif "spread" in prop:
 				prop = "spread"
-			elif prop == "which player will score a touchdown in the game?":
+			elif prop == "anytime td scorer":
 				prop = "attd"
+			elif prop == "player to score 2+ tds":
+				prop = "2+td"
+			elif prop == "first td scorer":
+				prop = "ftd"
+			elif "first touchdown scorer" in prop:
+				prop = "team_ftd"
+			elif "): " in prop:
+				if "odd" in prop or "o/u" in prop:
+					continue
+				player = prop.split(" (")[0]
+				prop = prop.split("): ")[-1]
+				prop = prop.replace("receiving", "rec").replace("rushing", "rush").replace("passing", "pass").replace("yards", "yd").replace("receptions made", "rec").replace("reception", "rec").replace("field goals made", "fgm").replace("points", "pts").replace("longest pass completion", "longest_pass").replace("completions", "cmp").replace("completion", "cmp").replace("attempts", "att").replace("touchdowns", "td").replace("assists", "ast").replace("defensive interceptions", "int").replace("interceptions thrown", "int").replace(" ", "_")
+				if prop == "total_pass_and_rush_yd":
+					prop = "pass+rush"
+				elif prop == "total_rush_and_rec_yd":
+					prop = "pass+rush"
+				elif "and_ast" in prop:
+					prop = "tackles+ast"
 			elif prop.startswith("how many ") or "over/under" in prop:
 				if prop.startswith("how many points will be scored in the game") or "field goals" in prop or "kicking" in prop or "extra points" in prop:
 					continue
@@ -1272,20 +1301,20 @@ def writeMGM():
 			if "ml" in prop:
 				res[game][prop] = ou
 			elif len(results) >= 2:
-				skip = 1 if prop == "attd" else 2
+				skip = 1 if prop in ["attd", "ftd", "2+td", "team_ftd"] else 2
 				for idx in range(0, len(results), skip):
 					val = results[idx]["name"]["value"].lower()
-					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["attd"]:
+					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["attd", "ftd", "2+td", "team_ftd"]:
 						continue
 					else:
 						val = val.split(" ")[-1]
 					#print(game, prop, player)
-					if prop == "attd":
+					if prop in ["attd", "ftd", "2+td", "team_ftd"]:
 						ou = str(results[idx]['americanOdds'])
 					else:
 						ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
 
-					if prop == "attd":
+					if prop in ["attd", "ftd", "2+td", "team_ftd"]:
 						player = results[idx]["name"]["value"].lower()
 						player = parsePlayer(player)
 						if prop not in res[game]:
@@ -1295,7 +1324,9 @@ def writeMGM():
 						player = parsePlayer(player)
 						if prop not in res[game]:
 							res[game][prop] = {}
-						res[game][prop][player] = val+" "+ou
+						res[game][prop][player] = {
+							val: ou
+						}
 					else:
 						if prop not in res[game]:
 							res[game][prop] = {}
@@ -1803,7 +1834,6 @@ def writeFanduelGame():
 			return player;
 		}
 		
-		const data = {};
 		let status = "";
 
 		async function readPage(game) {
@@ -1812,14 +1842,40 @@ def writeFanduelGame():
 				let div = arrow.parentElement.parentElement.parentElement;
 				let prop = arrow.getAttribute("aria-label").toLowerCase();
 
+				let prefix = "";
+				if (prop.includes("1st half") || prop.includes("first half")) {
+					prefix = "1h_";
+				} else if (prop.includes("2nd half") || prop.includes("second half")) {
+					prefix = "2h_";
+				}
+
 				let skip = 2;
 				if (prop == "game lines") {
 					prop = "lines";
 				} else if (prop == "touchdown scorers") {
 					prop = "attd";
-					data[game]["ftd"] = {};
+					skip = 1;
+				} else if (prop == "1st team touchdown scorer") {
+					prop = "team_ftd";
+					skip = 1;
+				} else if (prop == "to score 2+ touchdowns") {
+					prop = "2+td";
+					skip = 1;
+				} else if (prop == "anytime 1st half td scorer") {
+					prop = "1h_attd";
+					skip = 1;
 				} else if (prop.indexOf("player") == 0) {
-					prop = prop.replace("player ", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("yds", "yd").replace("tds", "td").replace(" ", "_");
+					if (prop == "player specials") {
+						continue;
+					}
+					prop = prop.replace("player ", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
+					if (prop == "rush+rec_yd") {
+						prop = "rush+rec";
+					}
+				} else if (prop.includes(" - alt")) {
+					skip = 1;
+					player = parsePlayer(prop.split(" -")[0].split(" (")[0]);
+					prop = prop.split("alt ")[1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
 				} else if (prop == "1st half winner") {
 					prop = "1h_ml";
 				} else if (prop == "1st half spread") {
@@ -1833,7 +1889,7 @@ def writeFanduelGame():
 					if (prop == "alternate total points") {
 						prop = "total";
 					} else {
-						prop = "team_total";
+						prop = prefix+"team_total";
 					}
 				} else if (prop == "alternate spread") {
 					prop = "spread";
@@ -1844,7 +1900,7 @@ def writeFanduelGame():
 				if (prop != "lines" && arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
 					arrow.click();
 					while (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
-						await new Promise(resolve => setTimeout(resolve, 1000));
+						await new Promise(resolve => setTimeout(resolve, 200));
 					}
 				}
 
@@ -1857,13 +1913,11 @@ def writeFanduelGame():
 				if (el) {
 					el.click();
 					while (!div.querySelector("div[aria-label='"+l+"']")) {
-						await new Promise(resolve => setTimeout(resolve, 1000));	
+						await new Promise(resolve => setTimeout(resolve, 200));	
 					}
 				}
 
-				await new Promise(resolve => setTimeout(resolve, 500));
-
-				if (prop != "lines" && prop != "team_total" && !data[game][prop]) {
+				if (prop != "lines" && !prop.includes("team_total") && !data[game][prop]) {
 					data[game][prop] = {};
 				}
 
@@ -1902,17 +1956,28 @@ def writeFanduelGame():
 					if (!label) {
 						continue;
 					}
-					if (label.includes("Show more") || label.includes("Show less")) {
+					if (label.includes("Show more") || label.includes("Show less") || label.includes("unavailable")) {
 						continue;
 					}
 					const fields = label.split(", ");
 					let line = fields[1].split(" ")[1];
 					let odds = fields[fields.length - 1].split(" ")[0];
 
-					if (prop == "attd") {
+					 if (["2+td", "team_ftd", "1h_attd", "2h_attd"].includes(prop)) {
+						let player = parsePlayer(fields[0].split(" (")[0]);
+						if (player) {
+							data[game][prop][player] = odds;
+						}
+					} else if (prop == "attd") {
 						const player = parsePlayer(fields[1].split(" (")[0]);
 						data[game][prop][player] = odds;
-						data[game]["ftd"][player] = btns[i+1].getAttribute("aria-label").split(", ")[2];
+						if (div.querySelector("div[role=heading]").innerText.includes("FIRST")) {
+							skip = 2;
+							if (!data[game]["ftd"]) {
+								data[game]["ftd"] = {};
+							}
+							data[game]["ftd"][player] = btns[i+1].getAttribute("aria-label").split(", ")[2];
+						}
 					} else if (prop == "1h_ml") {
 						if (label.includes("unavailable")) {
 							delete data[game][prop];
@@ -1923,13 +1988,13 @@ def writeFanduelGame():
 						data[game][prop][fields[2]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3];
 					} else if (prop == "1h_total") {
 						data[game][prop][fields[2].split(" ")[1]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
-					} else if (prop == "team_total") {
-						let p = "home_total";
+					} else if (prop.includes("team_total")) {
+						let p = prefix+"home_total";
 						if (data[game][p]) {
-							p = "away_total";
+							p = prefix+"away_total";
 						}
 						data[game][p] = {};
-						data[game][p][fields[2]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3];
+						data[game][p][fields[2].replace("Over ", "")] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3].replace(" Odds", "");
 					} else if (prop == "spread") {
 						line = btns[i+1].getAttribute("aria-label").split(", ")[0].split(" ");
 						line = line[line.length - 1].replace("+", "");
@@ -1937,6 +2002,32 @@ def writeFanduelGame():
 					} else if (prop == "total") {
 						line = fields[1].split(" ")[0];
 						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+					} else if (skip == 1) {
+						// alts
+						let i = 0;
+						if (["pass_td", "rec"].includes(prop) || prop.includes("+")) {
+							i = 1;
+						} else if (!fields[i].includes("+")) {
+							i = 1;
+						}
+						if (prop == "sacks") {
+							player = parsePlayer(fields[1]);
+							line = "0.5";
+						} else {
+							line = fields[i].toLowerCase().replace(player+" ", "");
+							if (line.includes(")")) {
+								line = line.split(") ")[1];
+							}
+							line = line.split(" ")[0].replace("+", "");
+							line = (parseFloat(line) - 0.5).toString();
+						}
+						if (!data[game][prop][player]) {
+							data[game][prop][player] = {};
+						}
+						if (data[game][prop][player][line]) {
+							continue;
+						}
+						data[game][prop][player][line] = odds;
 					} else {
 						const player = parsePlayer(fields[0].split(" (")[0]);
 						if (!data[game][prop][player]) {
@@ -1950,9 +2041,11 @@ def writeFanduelGame():
 		}
 
 		async function main() {
-			let game = document.querySelector("h1").innerText.toLowerCase().replace(" odds", "");
+			let game = document.querySelector("h1").parentElement.previousSibling.innerText.replaceAll("\n", " ").toLowerCase().split(" / ")[2].replace(" odds", "");
 
-			data[game] = {};
+			if (!data[game]) {
+				data[game] = {};
+			}
 			readPage(game);
 			while (status != "done") {
 				await new Promise(resolve => setTimeout(resolve, 1000));
@@ -2321,7 +2414,7 @@ def writeEV(date=None, gameArg="", teamArg="", propArg="attd", bookArg="", boost
 								o = val
 								ou = val
 
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 
@@ -2358,7 +2451,7 @@ def writeEV(date=None, gameArg="", teamArg="", propArg="attd", bookArg="", boost
 							if not o or o == ".":
 								continue
 
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 
@@ -2504,6 +2597,8 @@ def printEV():
 	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "ESPN", "MGM", "Kambi", "PN", "CZ", "BV"]) + "\n"
 	for row in sorted(data, reverse=True):
 		d = evData[row[-1]]
+		if "attd" in d["prop"] or "ftd" in d["prop"] or "2+" in d["prop"]:
+			continue
 		ou = ("u" if d["under"] else "o")+" "
 		if d["player"]:
 			ou += d["playerHandicap"]
@@ -2518,6 +2613,27 @@ def printEV():
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open(f"static/ncaafprops/ev.csv","w") as fh:
+		fh.write(output)
+
+	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "ESPN", "MGM", "Kambi", "PN", "CZ", "BV"]) + "\n"
+	for row in sorted(data, reverse=True):
+		d = evData[row[-1]]
+		if "attd" not in d["prop"] and "ftd" not in d["prop"] and "2+" not in d["prop"]:
+			continue
+		ou = ("u" if d["under"] else "o")+" "
+		if d["player"]:
+			ou += d["playerHandicap"]
+		else:
+			ou += d["handicap"]
+		arr = [row[0], str(d["line"])+" "+d["book"].upper(), d["game"], d["player"].title(), d["prop"], ou]
+		for book in ["fd", "dk", "espn", "mgm", "kambi", "pn", "cz", "bv"]:
+			o = str(d["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open(f"static/ncaafprops/attd.csv","w") as fh:
 		fh.write(output)
 
 if __name__ == '__main__':

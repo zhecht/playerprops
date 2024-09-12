@@ -2553,7 +2553,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 							if book == "cz" and prop in ["pp_pts", "pts", "ast", "fgs"]:
 								continue
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 

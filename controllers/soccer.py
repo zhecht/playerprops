@@ -2892,7 +2892,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 
 							if not o:
 								continue
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 

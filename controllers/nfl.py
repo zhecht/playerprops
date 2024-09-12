@@ -25,7 +25,7 @@ def convertNFLTeam(team):
 		return "gb"
 	elif team.endswith("49ers"):
 		return "sf"
-	elif team.endswith("patriots"):
+	elif "patriots" in team:
 		return "ne"
 	elif team.endswith("giants"):
 		return "nyg"
@@ -44,7 +44,7 @@ def convertNFLTeam(team):
 	elif team.endswith("buccaneers"):
 		return "tb"
 	elif team.endswith("jaguars"):
-		return "jac"
+		return "jax"
 	return team[:3]
 
 def strip_accents(text):
@@ -216,7 +216,7 @@ def writeActionNetwork(dateArg = None):
 def writeCZ(token=None):
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/americanfootball/events/schedule/?competitionIds=007d7c61-07a7-4e18-bb40-15104b6eac92"
 	outfile = "outCZ"
-	cookie = "18397176-0983-4317-84cb-816fa1699cf4:EgoAu4pmpDdmAQAA:jtQ2KxjmXN9kQhHqkpnHqzd1zBoF3DKDubbI4xuyAZCbIyOgei4n4qJJ+W7Qpf+elQyz5v0SEMUmgoxuS+ZRqG+GAINIGUpIrP8V/DnMAuId9K/0PGwOdTKmavypIq+/+IM4KOgo42W+OKlj8D35WYeu0FiGuYzfrbP7UiF6FhgJzi4wadr4Z/15gL6fyKMdMWokPTa++BCLUHiNo2LWnoXt/Qf5EoK7b/yYbGVYElxJa3HOaWzu/JK7UX0PjznHkdGm9XIhUCLRjg=="
+	cookie = "57d82a48-216c-4ca5-a09a-586984694d53:EgoAq+9Z3ILEAAAA:/pCHTYJhQm4ghyZoK+ZFCFkm2UdjD2TbrfZdKH83lAtCmb+z6YSY3osWVfy9S0TqhKsN6Mi/FwuALsd4bZjN8bAT47M1n2KjkrugZOxbpSwC/z4bZ37VRu2hzMxYwg4Emb29nGUV/b/9fe+X7okU9BfoB15WWRxnHbd/i65j2S8kmCfPycMFOGXcpeoaU/BI2JSeOpBo3KcjB/P2xloERwV/fk+clzEDUGEihtRM9/hMpKzmCqIeI+edZxbrMqmAnzwKwCFKkVoubSlkuw=="
 	if token:
 		cookie = token
 	
@@ -230,7 +230,8 @@ def writeCZ(token=None):
 		games.append(event["id"])
 
 
-	#games = ["9d0e039c-1764-4be4-aa38-161e41a61260"]
+	#games = ["c2356615-f545-4688-9af2-5bce75f8f17c"]
+
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
@@ -240,7 +241,10 @@ def writeCZ(token=None):
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		game = data["name"].lower().replace("|", "").replace("at", "@")
+		#with open('out', 'w') as fh:
+		#	json.dump(data, fh, indent=4)
+
+		game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
 		away = convertNFLTeam(game.split(' @ ')[0])
 		home = convertNFLTeam(game.split(' @ ')[1])
 		game = f"{away} @ {home}"
@@ -255,6 +259,7 @@ def writeCZ(token=None):
 			name = market["templateName"].lower().replace("|", "")
 
 			prefix = player = ""
+			alt = False
 			if "1st half" in prop:
 				prefix = "1h_"
 			elif "1st quarter" in prop:
@@ -277,18 +282,26 @@ def writeCZ(token=None):
 				prop = "attd"
 			elif prop == "first touchdown scorer":
 				prop = "ftd"
-			elif "total passing" in prop or "total rushing" in prop or "total receiving" in prop or "total receptions" in prop or "longest" in prop or "total defensive tackles" in prop or "total made field" in prop or "total kicking points" in prop:
-				p = prop.split(" total")[0].split(" longest")[0]
+			elif prop == "player to score 2 or more touchdowns":
+				prop = "2+td"
+			elif "total passing" in prop or "total rushing" in prop or "total receiving" in prop or "total receptions" in prop or "longest" in prop or "total defensive tackles" in prop or "total made field" in prop or "total kicking points" in prop or "total interceptions" in prop or "tackles + assists" in prop:
+				p = prop.split(" total")[0].split(" longest")[0].split(" - ")[0]
 				player = parsePlayer(p)
-				prop = prop.split(p+" ")[-1].replace("total ", "").replace(" ", "_").replace("passing", "pass").replace("rushing", "rush").replace("touchdowns", "td").replace("yards", "yd").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("completions", "cmp").replace("attempts", "att").replace("interceptions", "int").replace("made_field_goals", "fgm").replace("points", "pts")
-				if prop == "longest_pass_completion":
-					prop = "longest_pass"
-				elif prop == "defensive_tackles_+_assists":
-					prop = "tackles+ast"
-				elif "rush_+_rec" in prop:
-					prop = "rush+rec"
+				prop = prop.split(p+" ")[-1].replace("- ", "").replace("total ", "").replace(" + ", "+").replace(" ", "_").replace("passing", "pass").replace("rushing", "rush").replace("touchdowns", "td").replace("yards", "yd").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("completions", "cmp").replace("attempts", "att").replace("interceptions", "int").replace("made_field_goals", "fgm").replace("points", "pts").replace("assists", "ast")
+			elif " - alt " in prop:
+				player = parsePlayer(prop.split(" - ")[0])
+				prop = prop.split(" alt ")[-1].replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("completions", "cmp").replace("attempts", "att").replace("receptions", "rec").replace("touchdowns", "td").replace("yards", "yd").replace("interceptions thrown", "int").replace(" ", "_")
+				alt = True
 			else:
+				#print(prop)
 				continue
+
+			if prop == "longest_pass_completion":
+				prop = "longest_pass"
+			elif prop == "pass+rush_yd":
+				prop = "pass+rush"
+			elif prop == "rush+rec_yd":
+				prop = "rush+rec"
 
 			prop = f"{prefix}{prop}"
 
@@ -296,7 +309,7 @@ def writeCZ(token=None):
 				res[game][prop] = {}
 
 			selections = market["selections"]
-			skip = 1 if prop in ["attd", "ftd"] else 2
+			skip = 1 if prop in ["attd", "ftd", "2+td"] or alt else 2
 			for i in range(0, len(selections), skip):
 				try:
 					ou = str(selections[i]["price"]["a"])
@@ -320,15 +333,24 @@ def writeCZ(token=None):
 						continue
 					line = str(float(market["line"]))
 					res[game][prop][line] = ou
-				elif prop in ["attd", "ftd"]:
+				elif prop in ["attd", "ftd", "2+td"]:
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
 					res[game][prop][player] = ou
+				elif alt:
+					try:
+						line = str(float(selections[i]["name"].replace("+", "").replace("|", "")) - 0.5)
+						if player not in res[game][prop]:
+							res[game][prop][player] = {}
+						if line not in res[game][prop][player]:
+							res[game][prop][player][line] = ou
+					except:
+						continue
 				else:
 					try:
 						line = str(float(market["line"]))
-						res[game][prop][player] = {
-							line: ou
-						}
+						if player not in res[game][prop]:
+							res[game][prop][player] = {}
+						res[game][prop][player][line] = ou
 					except:
 						continue
 
@@ -660,7 +682,7 @@ def writePinnacle(date, debug=None):
 			games[str(row["id"])] = f"{player2} @ {player1}"
 
 	res = {}
-	games = {'1591540526': 'bal @ kc'}
+	#games = {'1591540526': 'bal @ kc'}
 	retry = []
 	for gameId in games:
 		parsePinnacle(res, games, gameId, retry, debug)
@@ -953,8 +975,12 @@ def writeMGM():
 				prop = "spread"
 			elif prop == "anytime td scorer":
 				prop = "attd"
+			elif prop == "player to score 2+ tds":
+				prop = "2+td"
 			elif prop == "first td scorer":
 				prop = "ftd"
+			elif "first touchdown scorer" in prop:
+				prop = "team_ftd"
 			elif "): " in prop:
 				if "odd" in prop or "o/u" in prop:
 					continue
@@ -1009,6 +1035,7 @@ def writeMGM():
 						p = "fgm"
 					prop = p
 			else:
+				#print(prop)
 				continue
 
 			if prop in ["touchdowns"]:
@@ -1030,15 +1057,15 @@ def writeMGM():
 			if "ml" in prop:
 				res[game][prop] = ou
 			elif len(results) >= 2:
-				skip = 1 if prop in ["attd", "ftd"] else 2
+				skip = 1 if prop in ["attd", "ftd", "2+td", "team_ftd"] else 2
 				for idx in range(0, len(results), skip):
 					val = results[idx]["name"]["value"].lower()
-					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["attd", "ftd"]:
+					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["attd", "ftd", "2+td", "team_ftd"]:
 						continue
 					else:
 						val = val.split(" ")[-1]
 					#print(game, prop, player)
-					if prop in ["attd", "ftd"]:
+					if prop in ["attd", "ftd", "2+td", "team_ftd"]:
 						try:
 							ou = str(results[idx].get('americanOdds', results[idx]['price']['americanOdds']))
 						except:
@@ -1046,9 +1073,11 @@ def writeMGM():
 					else:
 						ou = f"{results[idx].get('americanOdds', results[idx]['price']['americanOdds'])}/{results[idx+1].get('americanOdds', results[idx+1]['price']['americanOdds'])}"
 
-					if prop in ["attd", "ftd"]:
+					if prop in ["attd", "ftd", "2+td", "team_ftd"]:
 						player = results[idx]["name"]["value"].lower()
 						player = parsePlayer(player)
+						if "defense" in player:
+							player = player.split(" ")[0]
 						if prop not in res[game]:
 							res[game][prop] = {}
 						res[game][prop][player] = ou
@@ -1101,8 +1130,9 @@ def writeKambi():
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'min @ phi': 1019646714}
-	#data['det lions @ kc chiefs'] = {}
+	#eventIds = {'bal @ kc': 1020815207}
+	#data[list(eventIds.keys())[0]] = {}
+
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
 		awayFull, homeFull = fullTeam[away], fullTeam[home]
@@ -1143,12 +1173,24 @@ def writeKambi():
 					label = "home_total"
 			elif label == "including overtime" or label.split(" -")[0] == "draw no bet":
 				label = "ml"
-			elif label == "touchdown scorer - including overtime":
+			elif label.startswith("next") and "touchdown scorer" in label:
+				playerProp = True
+				label = "team_ftd"
+			elif label == "td scorer - inc. ot":
 				playerProp = True
 				label = "attd"
-			elif label == "first touchdown scorer - including overtime":
+			elif label == "player to score a touchdown in the 1st half":
+				playerProp = True
+				label = "attd"
+			elif label == "player to score at least 2 touchdowns - including overtime":
+				playerProp = True
+				label = "2+td"
+			elif label == "first td scorer - inc. ot":
 				playerProp = True
 				label = "ftd"
+			elif label == "player to make an interception - including overtime":
+				playerProp = True
+				label = "def_int"
 			elif (label.endswith("by the player - including overtime") or label.endswith("by the player")) and label.startswith("total"):
 				playerProp = True
 				label = "_".join(label[6:].replace(" - including overtime", "").split(" by the player")[0].split(" "))
@@ -1209,9 +1251,9 @@ def writeKambi():
 						line = str(betOffer["outcomes"][1]["line"] / 1000)
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 					data[game][label][line] = ou
-				elif label in ["attd"]:
+				elif "attd" in label:
 					data[game][label][player] = ou
-				elif label == "ftd":
+				elif "ftd" in label:
 					for outcome in betOffer["outcomes"]:
 						try:
 							player = parsePlayer(outcome["participant"])
@@ -1220,6 +1262,8 @@ def writeKambi():
 							data[game][label][player] = f"{outcome['oddsAmerican']}"
 						except:
 							continue
+				elif label == "2+td":
+					data[game][label][player] = ou
 				else:
 					if "line" not in betOffer["outcomes"][0]:
 						continue
@@ -1227,6 +1271,8 @@ def writeKambi():
 					if betOffer["outcomes"][0]["label"] == "Under":
 						line = betOffer["outcomes"][1]["line"] / 1000
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+					if label == "def_int":
+						line = "0.5"
 					if player not in data[game][label]:
 						data[game][label][player] = {}
 					data[game][label][player][line] = ou
@@ -1252,15 +1298,26 @@ def writeESPN():
 
 	{
 		function convertTeam(team) {
-			team = team.toLowerCase().split(" ")[0];
-			return team;
+			team = team.toLowerCase();
+			let t = team.split(" ")[0];
+			if (t == "ny") {
+				if (team.includes("giants")) {
+					return "nyg";
+				}
+				return "nyj";
+			} else if (t == "la") {
+				if (team.includes("rams")) {
+					return "lar";
+				}
+				return "lac";
+			} else if (t == "wsh") {
+				return "was";
+			}
+			return t;
 		}
 
 		function parsePlayer(player) {
 			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
-			if (player == "joquavious marks") {
-				return "woody marks";
-			}
 			return player;
 		}
 
@@ -1268,20 +1325,20 @@ def writeESPN():
 
 		async function readPage(game) {
 
-			//for (tab of ["lines", "player props", "td scorers"]) {
-			for (tab of ["td scorers"]) {
-				if (tab != "lines") {
-					for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
-						if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
-							t.click();
-							break;
-						}
+			for (tab of ["lines", "player props", "td scorers"]) {
+			//for (tab of ["player props"]) {
+				for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
+					if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
+						t.click();
+						break;
 					}
+				}
+				if (tab != "lines") {
 					while (!window.location.href.includes(tab.replace(" ", "_"))) {
 						await new Promise(resolve => setTimeout(resolve, 500));
 					}
-					await new Promise(resolve => setTimeout(resolve, 3000));
 				}
+				await new Promise(resolve => setTimeout(resolve, 3000));
 
 				for (detail of document.querySelectorAll("details")) {
 					let prop = detail.querySelector("h2").innerText.toLowerCase();
@@ -1294,29 +1351,50 @@ def writeESPN():
 						prop = "spread";
 					} else if (prop == "total points") {
 						prop = "total";
-					} else if (prop == "first touchdown scorer") {
-						prop = "ftd";
+					} else if (prop.includes("first touchdown scorer")) {
+						if (prop.includes("power hour")) {
+							continue;
+						}
+						if (prop != "first touchdown scorer") {
+							prop = "team_ftd";
+						} else {
+							prop = "ftd";
+						}
 						skip = 1;
-					} else if (prop.includes("(")) {
+					} else if (prop.indexOf("1st half touchdown scorer") == 0) {
+						player = parsePlayer(prop.split("(")[1].split(")")[0]);
+						let last = player.split(" ");
+						player = player.split(" ")[0][0]+" "+last[last.length - 1];
+						prop = "1h_attd";
+						skip = 1;
+					} else if (prop.includes("(") && !prop.includes("(o/u)")) {
 						if (prop.includes("1st half") || prop.includes("1st quarter")) {
 							continue;
 						}
 						player = parsePlayer(prop.split("(")[1].split(")")[0]);
 						let last = player.split(" ");
 						player = player.split(" ")[0][0]+" "+last[last.length - 1];
-						prop = prop.split(" (")[0].replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("completions", "cmp").replace("completion", "cmp").replace("completed passes", "pass_cmp").replace("yards", "yd").replace("touchdown scorer", "attd").replace("touchdowns", "td").replaceAll(" ", "_");
+						prop = prop.split(" (")[0].replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("completions", "cmp").replace("completion", "cmp").replace("completed passes", "pass_cmp").replace("yards", "yd").replace("touchdown scorer", "attd").replace("touchdowns", "td").replaceAll(" ", "_");
 						if (prop.includes("+")) {
 							prop = prop.split("_")[0];
 						}
 						skip = 1;
+						if (prop == "int") {
+							skip = 3;
+						}
 					} else if (prop.indexOf("player") == 0) {
-						prop = prop.replace("player total ", "").replace("player ", "").replace(" + ", "+").replace("points", "pts").replace("field goals made", "fgm").replace("extra pts made", "xp").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("completions", "cmp").replace("completion", "cmp").replace("yards", "yd").replace("touchdowns", "td").replace("assists", "ast").replaceAll(" ", "_");
-						if (prop == "defensive_tackles+ast") {
+						if (prop == "player total sacks") {
+							continue;
+						}
+						prop = prop.replace("player total ", "").replace("player ", "").replace(" + ", "+").replace(" (o/u)", "").replace("points", "pts").replace("field goals made", "fgm").replace("extra pts made", "xp").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("interceptions", "int").replace("completions", "cmp").replace("completion", "cmp").replace("yards", "yd").replace("touchdowns", "td").replace("assists", "ast").replace("defensive", "def").replaceAll(" ", "_");
+						if (prop == "def_tackles+ast") {
 							prop = "tackles+ast";
 						} else if (prop.includes("+")) {
 							prop = prop.split("_")[0];
 						} else if (prop == "longest_pass_cmp") {
 							prop = "longest_pass";
+						} else if (prop == "def_int") {
+							skip = 1;
 						}
 					} else {
 						continue;
@@ -1404,21 +1482,40 @@ def writeESPN():
 								if (btns[i].innerText == "See All Lines") {
 									continue;
 								}
-								if (btns[i].getAttribute("disabled") != null) {
+								if (prop != "int" && btns[i].getAttribute("disabled") != null) {
 									continue;
 								}
-								let ou = btns[i].querySelectorAll("span")[1].innerText;
-								if (skip != 1) {
-									ou += "/"+btns[i+1].querySelectorAll("span")[1].innerText;
+								let ou = "";
+								if (prop != "int") {
+									ou = btns[i].querySelectorAll("span")[1].innerText;
+									if (skip != 1) {
+										ou += "/"+btns[i+1].querySelectorAll("span")[1].innerText;
+									}
 								}
 
 								if (prop == "ml") {
 									data[game][prop] = ou.replace("Even", "+100");
-								} else if (prop == "ftd") {
+								} else if (prop.includes("ftd")) {
 									player = parsePlayer(btns[i].querySelector("span").innerText);
 									let last = player.split(" ");
 									player = player.split(" ")[0][0]+" "+last[last.length - 1];
 									data[game][prop][player] = ou;
+								} else if (prop == "def_int") {
+									let player = parsePlayer(btns[i].querySelector("span").innerText);
+									let last = player.split(" ");
+									player = player.split(" ")[0][0]+" "+last[last.length - 1];
+									data[game][prop][player] = {};
+									data[game][prop][player]["0.5"] = ou;
+								} else if (prop == "int") {
+									let j = i + 1;
+									if (btns.length <= 4) {
+										skip = 2;
+										j = i;
+									}
+									let line = btns[j].querySelector("span").innerText.split(" ")[1];
+									ou = btns[j].querySelectorAll("span")[1].innerText+"/"+btns[j+1].querySelectorAll("span")[1].innerText;
+									data[game][prop][player] = {};
+									data[game][prop][player][line] = ou.replace("Even", "+100");
 								} else {
 									let line = btns[i].querySelector("span").innerText;
 									if (line.includes("+")) {
@@ -1490,6 +1587,8 @@ def writeFanduelManual():
 				t = "tb";
 			} else if (t == "las") {
 				t = "lv";
+			} else if (t == "jac") {
+				t = "jax";
 			} else if (t == "new") {
 				t = "ne";
 				if (team.indexOf("giants") > 0) {
@@ -1497,7 +1596,7 @@ def writeFanduelManual():
 				} else if (team.indexOf("jets") > 0) {
 					t = "nyj";
 				} else if (team.indexOf("saints") >= 0) {
-					t = "nor";
+					t = "no";
 				}
 			}
 			return t;
@@ -1545,18 +1644,35 @@ def writeFanduelManual():
 					prop = "attd";
 					data[game]["ftd"] = {};
 					skip = 3;
+				} else if (label == "1st team touchdown scorer") {
+					prop = "team_ftd";
+					skip = 1;
+				} else if (label == "to score 2+ touchdowns") {
+					prop = "2+td";
+					skip = 1;
+				} else if (label == "anytime 1st half td scorer" || label == "anytime 2nd half td scorer") {
+					prop = "attd";
+					skip = 1;
 				} else if (label.indexOf("kicking points") >= 0) {
 					player = true;
 					prop = "kicking_pts";
+				} else if (label == "player to record a sack") {
+					prop = "sacks";
+					skip = 1;
+				} else if (label == "player to record an interception") {
+					prop = "def_int";
+					skip = 1;
 				} else if (label.indexOf("player") == 0) {
 					if (label.includes("to record")) {
 						continue;
 					}
-					prop = label.replace("player ", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("reception", "rec").replace("completions", "cmp").replace("attempts", "att").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
+					prop = label.replace("player total ", "").replace("player ", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("completions", "cmp").replace("attempts", "att").replace("assists", "ast").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
 				} else if (label.includes(" - alt")) {
 					skip = 1;
 					player = parsePlayer(label.split(" -")[0]);
 					prop = label.split("alt ")[1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
+				} else if (label.includes(" - passing + rushing yds")) {
+					prop = "pass+rush";
 				} else if (label.indexOf("spread") >= 0) {
 					if (label.indexOf("/") >= 0) {
 						continue;
@@ -1572,6 +1688,9 @@ def writeFanduelManual():
 						continue;
 					}
 					if (label == "alternate total points" || prefix) {
+						if (prefix && label != "1st half total") {
+							continue;
+						}
 						prop = "total";
 					} else {
 						prop = "team_total";
@@ -1580,6 +1699,8 @@ def writeFanduelManual():
 
 				if (prop == "rush+rec_yd") {
 					prop = "rush+rec";
+				} else if (prop == "pass+rush_yd") {
+					prop = "pass+rush";
 				}
 
 				if (!prop) {
@@ -1591,7 +1712,7 @@ def writeFanduelManual():
 				if (prop != "lines" && arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
 					arrow.click();
 					while (arrow.querySelector("svg[data-test-id=ArrowActionIcon]").querySelector("path").getAttribute("d").split(" ")[0] != "M.147") {
-						await new Promise(resolve => setTimeout(resolve, 500));
+						await new Promise(resolve => setTimeout(resolve, 200));
 					}
 				}
 
@@ -1604,7 +1725,7 @@ def writeFanduelManual():
 				if (el) {
 					el.click();
 					while (!div.querySelector("div[aria-label='"+l+"']")) {
-						await new Promise(resolve => setTimeout(resolve, 500));	
+						await new Promise(resolve => setTimeout(resolve, 200));	
 					}
 				}
 
@@ -1647,7 +1768,7 @@ def writeFanduelManual():
 					let line = fields[1].split(" ")[1];
 					let odds = fields[fields.length - 1].split(" ")[0];
 
-					if (prefix) {
+					if (prefix && !prop.includes("attd")) {
 						if (prop.indexOf("ml") >= 0) {
 							data[game][prop] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2];
 						} else if (prop.indexOf("spread") >= 0) {
@@ -1661,7 +1782,11 @@ def writeFanduelManual():
 						data[game][prop][line] = btns[i+1].getAttribute("aria-label").split(", ")[1].split(" ")[0]+"/"+odds;
 					} else if (prop == "total") {
 						line = fields[1].split(" ")[0];
-						data[game][prop][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+						data[game][prop][line] = odds;
+						if (btns[i+1].getAttribute("aria-label").includes("unavailable")) {
+							continue;
+						}
+						data[game][prop][line] += "/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
 					} else if (prop == "team_total") {
 						let p = "home_total";
 						if (data[game][p]) {
@@ -1670,21 +1795,39 @@ def writeFanduelManual():
 						data[game][p] = {};
 						data[game][p][fields[2]] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3];
 					} else if (prop == "kicking_pts") {
-						player = parsePlayer(arrow.innerText.toLowerCase().split(" - ")[0]);
+						player = parsePlayer(arrow.innerText.toLowerCase().split(" total ")[0]);
 						data[game][prop][player] = {};
-						data[game][prop][player][line] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
+						data[game][prop][player][fields[2]] = odds + "/" + btns[i+1].getAttribute("aria-label").split(", ")[3];
+					} else if (["2+td", "team_ftd", "1h_attd", "2h_attd"].includes(prop)) {
+						let player = parsePlayer(fields[0].split(" (")[0]);
+						if (player.includes("defense")) {
+							player = convertTeam(player);
+						}
+						if (player) {
+							data[game][prop][player] = odds;
+						}
 					} else if (prop == "attd") {
-						const player = parsePlayer(fields[1].split(" (")[0]);
+						let player = parsePlayer(fields[1].split(" (")[0]);
+						if (player.includes("defense")) {
+							player = convertTeam(player);
+						}
 						data[game][prop][player] = odds;
 						data[game]["ftd"][player] = btns[i+1].getAttribute("aria-label").split(", ")[2];
 					} else if (skip == 1) {
 						// alts
 						let i = 0;
-						if (["pass_td", "rec"].includes(prop)) {
+						if (["pass_td", "rec"].includes(prop) || prop.includes("+")) {
+							i = 1;
+						} else if (!fields[i].includes("+")) {
 							i = 1;
 						}
-						line = fields[i].toLowerCase().replace(player+" ", "").split(" ")[0].replace("+", "");
-						line = (parseFloat(line) - 0.5).toString();
+						if (prop == "sacks" || prop == "def_int") {
+							player = parsePlayer(fields[1].split(" to Record")[0]);
+							line = "0.5";
+						} else {
+							line = fields[i].toLowerCase().replace(player+" ", "").split(" ")[0].replace("+", "");
+							line = (parseFloat(line) - 0.5).toString();
+						}
 						if (!data[game][prop][player]) {
 							data[game][prop][player] = {};
 						}
@@ -1692,13 +1835,21 @@ def writeFanduelManual():
 							continue;
 						}
 						data[game][prop][player][line] = odds;
+					} else if (prop == "pass+rush") {
+						player = parsePlayer(fields[0].split(" (")[0].split(" - ")[0]);
+						if (!data[game][prop][player]) {
+							data[game][prop][player] = {};
+						}
+
+						line = fields[2];
+						data[game][prop][player][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[3].split(" ")[0];
 					} else {
 						player = parsePlayer(fields[0].split(" (")[0]);
 						if (!data[game][prop][player]) {
 							data[game][prop][player] = {};
 						}
 
-						data[game][prop][player][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];;
+						data[game][prop][player][line] = odds+"/"+btns[i+1].getAttribute("aria-label").split(", ")[2].split(" ")[0];
 					}
 				}
 			}
@@ -1879,6 +2030,74 @@ def writeFanduel():
 	with open(f"static/nfl/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
+def averageOdds(odds):
+	avgOver = []
+	avgUnder = []
+	for o in odds:
+		if o and o != "-" and o.split("/")[0] != "-":
+			avgOver.append(convertDecOdds(int(o.split("/")[0])))
+			if "/" in o:
+				avgUnder.append(convertDecOdds(int(o.split("/")[1])))
+
+	if avgOver:
+		avgOver = float(sum(avgOver) / len(avgOver))
+		avgOver = convertAmericanOdds(avgOver)
+	else:
+		avgOver = "-"
+	if avgUnder:
+		avgUnder = float(sum(avgUnder) / len(avgUnder))
+		avgUnder = convertAmericanOdds(avgUnder)
+	else:
+		avgUnder = "-"
+
+	ou = f"{avgOver}/{avgUnder}"
+	if ou.endswith("/-"):
+		ou = ou.split("/")[0]
+	return ou
+
+def getFairValue(ou, method=None):
+	over = int(ou.split("/")[0])
+	if over > 0:
+		impliedOver = 100 / (over+100)
+	else:
+		impliedOver = -1*over / (-1*over+100)
+
+	# assume 7.1% vig if no under
+	if "/" not in ou:
+		u = 1.071 - impliedOver
+		if u > 1:
+			return
+		if over > 0:
+			under = int((100*u) / (-1+u))
+		else:
+			under = int((100 - 100*u) / u)
+	else:
+		under = int(ou.split("/")[1])
+
+	if under > 0:
+		impliedUnder = 100 / (under+100)
+	else:
+		impliedUnder = -1*under / (-1*under+100)
+
+	# power method
+	x = impliedOver
+	y = impliedUnder
+	while round(x+y, 8) != 1.0:
+		k = math.log(2) / math.log(2 / (x+y))
+		x = x**k
+		y = y**k
+
+	mult = impliedOver / (impliedOver + impliedUnder)
+	add = impliedOver - (impliedOver+impliedUnder-1) / 2
+	implied = min(x,mult,add)
+	if method == "mult":
+		return mult
+	elif method == "add":
+		return add
+	elif method == "power":
+		return x
+	return implied
+
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
 
 	prefix = ""
@@ -1956,7 +2175,8 @@ def writeDK():
 		"game lines": 492,
 		"attd": 1003,
 		"passing": 1000,
-		"rush/rec": 1001,
+		"rush": 1001,
+		"rec": 1342,
 		"defense": 1002,
 		"quarters": 527,
 		"halves": 526,
@@ -1966,22 +2186,24 @@ def writeDK():
 	subCats = {
 		492: [4518, 13195, 13196, 9712],
 		1000: [9525, 9524, 9522, 9517, 9516, 9526, 15968, 15937, 9532, 12093],
-		1001: [9514, 12094, 9512, 9519, 9518, 9533, 9527, 9523],
-		1002: [11812, 9521, 9529, 9520, 14113, 14115],
+		1001: [9514, 12094, 9523, 9518, 9533, 9527],
+		1342: [14113, 14114, 14115, 15948],
+		1002: [11812, 9521, 9529, 9520],
+		1003: [12438, 15964, 12451, 12423, 10336],
 		530: [4653, 10514],
 		526: [4631, 13582, 13584]
 	}
 
 	if False:
 		mainCats = {
-			"rush/rec": 1001
+			"rush/rec": 1003
 		}
 		subCats = {
-			1001: [9514, 12094],
+			1003: [12438, 15964, 12451, 12423, 10336],
 		}
 
 	propIds = {
-		13195: "spread", 13196: "total", 9525: "pass_td", 9524: "pass_yd", 9522: "pass_cmp", 9517: "pass_att", 9514: "rush_yd", 9518: "rush_att", 9533: "longest_rush", 9523: "rush+rec", 12096: "rush+rec", 11812: "sacks", 9521: "tackles+ast", 9529: "fgm", 9520: "kicking_pts", 13582: "1h_spread", 13584: "1h_total", 15968: "longest_pass", 15937: "int", 9532: "pass+rush", 12093: "pass_yd", 12094: "rush_yd", 14113: "rec_yd", 14115: "rec"
+		13195: "spread", 13196: "total", 9525: "pass_td", 9524: "pass_yd", 9522: "pass_cmp", 9517: "pass_att", 9514: "rush_yd", 9518: "rush_att", 9533: "longest_rush", 9523: "rush+rec", 12096: "rush+rec", 11812: "sacks", 9521: "tackles+ast", 9529: "fgm", 9520: "kicking_pts", 13582: "1h_spread", 13584: "1h_total", 15968: "longest_pass", 15937: "int", 9532: "pass+rush", 12093: "pass_yd", 12094: "rush_yd", 14113: "rec_yd", 14114: "rec_yd", 14115: "rec", 15948: "longest_rec"
 	}
 
 	cookie = "-H 'Cookie: hgg=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiIxODU4ODA5NTUwIiwiZGtzLTYwIjoiMjg1IiwiZGtlLTEyNiI6IjM3NCIsImRrcy0xNzkiOiI1NjkiLCJka2UtMjA0IjoiNzA5IiwiZGtlLTI4OCI6IjExMjgiLCJka2UtMzE4IjoiMTI2MSIsImRrZS0zNDUiOiIxMzUzIiwiZGtlLTM0NiI6IjEzNTYiLCJka2UtNDI5IjoiMTcwNSIsImRrZS03MDAiOiIyOTkyIiwiZGtlLTczOSI6IjMxNDAiLCJka2UtNzU3IjoiMzIxMiIsImRraC03NjgiOiJxU2NDRWNxaSIsImRrZS03NjgiOiIwIiwiZGtlLTgwNiI6IjM0MjYiLCJka2UtODA3IjoiMzQzNyIsImRrZS04MjQiOiIzNTExIiwiZGtlLTgyNSI6IjM1MTQiLCJka3MtODM0IjoiMzU1NyIsImRrZS04MzYiOiIzNTcwIiwiZGtoLTg5NSI6IjhlU3ZaRG8wIiwiZGtlLTg5NSI6IjAiLCJka2UtOTAzIjoiMzg0OCIsImRrZS05MTciOiIzOTEzIiwiZGtlLTk0NyI6IjQwNDIiLCJka2UtOTc2IjoiNDE3MSIsImRrcy0xMTcyIjoiNDk2NCIsImRrcy0xMTc0IjoiNDk3MCIsImRrcy0xMjU1IjoiNTMyNiIsImRrcy0xMjU5IjoiNTMzOSIsImRrZS0xMjc3IjoiNTQxMSIsImRrZS0xMzI4IjoiNTY1MyIsImRraC0xNDYxIjoiTjZYQmZ6S1EiLCJka3MtMTQ2MSI6IjAiLCJka2UtMTU2MSI6IjY3MzMiLCJka2UtMTY1MyI6IjcxMzEiLCJka2UtMTY1NiI6IjcxNTEiLCJka2UtMTY4NiI6IjcyNzEiLCJka2UtMTcwOSI6IjczODMiLCJka3MtMTcxMSI6IjczOTUiLCJka2UtMTc0MCI6Ijc1MjciLCJka2UtMTc1NCI6Ijc2MDUiLCJka3MtMTc1NiI6Ijc2MTkiLCJka3MtMTc1OSI6Ijc2MzYiLCJka2UtMTc2MCI6Ijc2NDkiLCJka2UtMTc2NiI6Ijc2NzUiLCJka2gtMTc3NCI6IjJTY3BrTWF1IiwiZGtlLTE3NzQiOiIwIiwiZGtlLTE3NzAiOiI3NjkyIiwiZGtlLTE3ODAiOiI3NzMxIiwiZGtlLTE2ODkiOiI3Mjg3IiwiZGtlLTE2OTUiOiI3MzI5IiwiZGtlLTE3OTQiOiI3ODAxIiwiZGtlLTE4MDEiOiI3ODM4IiwiZGtoLTE4MDUiOiJPR2tibGtIeCIsImRrZS0xODA1IjoiMCIsImRrcy0xODE0IjoiNzkwMSIsImRraC0xNjQxIjoiUjBrX2xta0ciLCJka2UtMTY0MSI6IjAiLCJka2UtMTgyOCI6Ijc5NTYiLCJka2gtMTgzMiI6ImFfdEFzODZmIiwiZGtlLTE4MzIiOiIwIiwiZGtzLTE4NDciOiI4MDU0IiwiZGtzLTE3ODYiOiI3NzU4IiwiZGtlLTE4NTEiOiI4MDk3IiwiZGtlLTE4NTgiOiI4MTQ3IiwiZGtlLTE4NjEiOiI4MTU3IiwiZGtlLTE4NjAiOiI4MTUyIiwiZGtlLTE4NjgiOiI4MTg4IiwiZGtoLTE4NzUiOiJZRFJaX3NoSiIsImRrcy0xODc1IjoiMCIsImRrcy0xODc2IjoiODIxMSIsImRraC0xODc5IjoidmI5WWl6bE4iLCJka2UtMTg3OSI6IjAiLCJka2UtMTg0MSI6IjgwMjQiLCJka3MtMTg4MiI6IjgyMzkiLCJka2UtMTg4MSI6IjgyMzYiLCJka2UtMTg4MyI6IjgyNDMiLCJka2UtMTg4MCI6IjgyMzIiLCJka2UtMTg4NyI6IjgyNjQiLCJka2UtMTg5MCI6IjgyNzYiLCJka2UtMTkwMSI6IjgzMjYiLCJka2UtMTg5NSI6IjgzMDAiLCJka2gtMTg2NCI6IlNWbjFNRjc5IiwiZGtlLTE4NjQiOiIwIiwibmJmIjoxNzIyNDQyMjc0LCJleHAiOjE3MjI0NDI1NzQsImlhdCI6MTcyMjQ0MjI3NCwiaXNzIjoiZGsifQ.jA0OxjKzxkyuAktWmqFbJHkI6SWik-T-DyZuLjL9ZKM; STE=\"2024-07-31T16:43:12.166175Z\"; STIDN=eyJDIjoxMjIzNTQ4NTIzLCJTIjo3MTU0NjgxMTM5NCwiU1MiOjc1Mjc3OTAxMDAyLCJWIjoxODU4ODA5NTUwLCJMIjoxLCJFIjoiMjAyNC0wNy0zMVQxNjo0MToxNC42ODc5Mzk4WiIsIlNFIjoiVVMtREsiLCJVQSI6IngxcVNUYXJVNVFRRlo3TDNxcUlCbWpxWFozazhKVmt2OGFvaCttT1ZpWFE9IiwiREsiOiIzMTQyYjRkMy0yNjU2LTRhNDMtYTBjNi00MTEyM2Y5OTEyNmUiLCJESSI6IjEzNTBmMGM0LWQ3MDItNDUwZC1hOWVmLTJlZjRjZjcxOTY3NyIsIkREIjo0NDg3NTQ0MDk4OH0=; STH=3a3368e54afc8e4c0a5c91094077f5cd1ce31d692aaaf5432b67972b5c3eb6fc; _abck=56D0C7A07377CFD1419CD432549CD1DB~0~YAAQJdbOF6Bzr+SQAQAAsmCPCQykOCRLV67pZ3Dd/613rD8UDsL5x/r+Q6G6jXCECjlRwzW7ESOMYaoy0fhStB3jiEPLialxs/UD9kkWAWPhuOq/RRxzYkX+QY0wZ/Uf8WSSap57OIQdRC3k3jlI6z2G8PKs4IyyQ/bRZfS2Wo6yO0x/icRKUAUeESKrgv6XrNaZCr14SjDVxBBt3Qk4aqJPKbWIbaj+1PewAcP+y/bFEVCmbcrAruJ4TiyqMTEHbRtM9y2O0WsTg79IZu52bpOI2jFjEUXZNRlz2WVhxbApaKY09QQbbZ3euFMffJ25/bXgiFpt7YFwfYh1v+4jrIvbwBwoCDiHn+xy17v6CXq5hIEyO4Bra6QT1sDzil+lQZPgqrPBE0xwoHxSWnhVr60EK1X5IVfypMHUcTvLKFcEP2eqwSZ67Luc/ompWuxooaOVNYrgvH/Vvs5UbyVOEsDcAXoyGt0BW3ZVMVPHXS/30dP3Rw==~-1~-1~1722445877; PRV=3P=0&V=1858809550&E=1720639388; ss-pid=4CNl0TGg6ki1ygGONs5g; ab.storage.deviceId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%22fe7382ec-2564-85bf-d7c4-3eea92cb7c3e%22%2C%22c%22%3A1709950180242%2C%22l%22%3A1709950180242%7D; ab.storage.userId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%2228afffab-27db-4805-85ca-bc8af84ecb98%22%2C%22c%22%3A1712278087074%2C%22l%22%3A1712278087074%7D; ab.storage.sessionId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%223eff9525-6179-dc9c-ce88-9e51fca24c58%22%2C%22e%22%3A1722444192818%2C%22c%22%3A1722442278923%2C%22l%22%3A1722442392818%7D; _gcl_au=1.1.386764008.1720096930; _ga_QG8WHJSQMJ=GS1.1.1722442278.7.1.1722442393.19.0.0; _ga=GA1.2.2079166597.1720096930; _dpm_id.16f4=b3163c2a-8640-4fb7-8d66-2162123e163e.1720096930.7.1722442393.1722178863.1f3bf842-66c7-446c-95e3-d3d5049471a9; _tgpc=78b6db99-db5f-5ce5-848f-0d7e4938d8f2; _tglksd=eyJzIjoiYjRkNjE4MWYtMTJjZS01ZDJkLTgwNTYtZWQ2NzIxM2MzMzM2Iiwic3QiOjE3MjI0NDIyNzgyNzEsInNvZCI6IihkaXJlY3QpIiwic29kdCI6MTcyMTg3ODUxOTY5OCwic29kcyI6Im8iLCJzb2RzdCI6MTcyMTg3ODUxOTY5OH0=; _sp_srt_id.16f4=55c32e85-f32f-42ac-a0e8-b1e37c9d3bc6.1720096930.6.1722442279.1722178650.6d45df5a-aea8-4a66-a4ba-0ef841197d1d.cdc2d898-fa3f-4430-a4e4-b34e1909bb05...0; _scid=e6437688-491e-4800-b4b2-e46e81b2816c; _ga_M8T3LWXCC5=GS1.2.1722442279.7.1.1722442288.51.0.0; _svsid=9d0929120b67695ad6ee074ccfd583b7; _sctr=1%7C1722398400000; _hjSessionUser_2150570=eyJpZCI6ImNmMDA3YTA2LTFiNmMtNTFkYS05Y2M4LWNmNTAyY2RjMWM0ZCIsImNyZWF0ZWQiOjE3MjA1NTMwMDE4OTMsImV4aXN0aW5nIjp0cnVlfQ==; _csrf=ba945d1a-57c4-4b50-a4b2-1edea5014b72; ss-id=x8zwcqe0hExjZeHXAKPK; ak_bmsc=F8F9B7ED0366DC4EB63B2DD6D078134C~000000000000000000000000000000~YAAQJdbOF3hzr+SQAQAAp1uPCRjLBiubHwSBX74Dd/8hmIdve4Tnb++KpwPtaGp+NN2ZcEf+LtxC0PWwzhZQ1one2MxGFFw1J6BXg+qiFAoQ6+I3JExoHz4r+gqodWq7y5Iri7+3aBFQRDtn17JMd1PTEEuN8EckzKIidL3ggrEPS+h1qtof3aHJUdx/jkCUjkaN/phWSvohlUGscny8dJvRz76e3F20koI5UsjJ/rQV7dUn6HNw1b5H1tDeL7UR1mbBrCLz6YPDx4XCjybvteRQpyLGI0o9L6xhXqv12exVAbZ15vpuNJalhR6eB4/PVwCmfVniFcr/xc8hivkuBBMOj1lN7ADykNA60jFaIRAY2BD2yj27Aedr7ETAFnvac0L0ITfH20LkA2cFhGUxmzOJN0JQ6iTU7VGgk19FzV+oeUxNmMPX; bm_sz=D7ABF43D4A5671594F842F6C403AB281~YAAQJdbOF3lzr+SQAQAAp1uPCRgFgps3gN3zvxvZ+vbm5t9IRWYlb7as+myjQOyHzYhriG6n+oxyoRdQbE6wLz996sfM/6r99tfwOLP2K8ULgA2nXfOPvqk6BwofdTsUd7KP7EnKhcCjhADO18uKB/QvIJgyS3IFBROxP2XFzS15m/DrRbF7lQDRscWtVo8oOITxNTBlwg0g4fI3gzjG6A4uHYxjeCegxSrHFHGFr4KZXgOnsJhmZe0lqIRWUFcIKC/gfsDd+jfyUnprMso1Flsv9blGlvycOoWTHPdEQvUudpOZlZ3JYz9H5y+dU94wBD9ejxIlRKP26giQISjun829Kt7CuKxJXYAcSJeiomZFh5Abj+Mkv0wi6ZcRcmOVFt49eywPazFHpGM8DVcUkVEFMcpNCeiJ/CtC60U9SoJy+ermF1hTqiAq~3622209~4408134; bm_sv=6618DE86472CB31D7B7F16DAE6689651~YAAQJdbOF96Lr+SQAQAA4iSRCRjfwGUmEhVBbE3y/2VDAAvuPyI2gX7io7CQCPfcdMOnBnNhxHIKYt9PFr7Y1TADQHFUC9kqXu7Nbj9d1BrLlfi1rPbv/YKPqhqSTLkbNSWbeKhKM4HfOu7C+RLV383VzGeyDhc2zOuBKBVNivHMTF9njS3vK6RKeSPFCfxOJdDHgNlIYykf0Ke2WJvflHflTUykwWUaYIlqoB52Ixb9opHQVTptWjetGdYjuOO2S2ZPkw==~1; _dpm_ses.16f4=*; _tgidts=eyJzaCI6ImQ0MWQ4Y2Q5OGYwMGIyMDRlOTgwMDk5OGVjZjg0MjdlIiwiY2kiOiIxZDMxOGRlZC0yOWYwLTUzYjItYjFkNy0yMDlmODEwNDdlZGYiLCJzaSI6ImI0ZDYxODFmLTEyY2UtNWQyZC04MDU2LWVkNjcyMTNjMzMzNiJ9; _tguatd=eyJzYyI6IihkaXJlY3QpIn0=; _tgsid=eyJscGQiOiJ7XCJscHVcIjpcImh0dHBzOi8vc3BvcnRzYm9vay5kcmFmdGtpbmdzLmNvbSUyRmxlYWd1ZXMlMkZiYXNlYmFsbCUyRm1sYlwiLFwibHB0XCI6XCJNTEIlMjBCZXR0aW5nJTIwT2RkcyUyMCUyNiUyMExpbmVzJTIwJTdDJTIwRHJhZnRLaW5ncyUyMFNwb3J0c2Jvb2tcIixcImxwclwiOlwiXCJ9IiwicHMiOiJkOTY4OTkxNy03ZTAxLTQ2NTktYmUyOS1mZThlNmI4ODY3MzgiLCJwdmMiOiIxIiwic2MiOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6LTEiLCJlYyI6IjUiLCJwdiI6IjEiLCJ0aW0iOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6MTcyMjQ0MjI4MjA3NDotMSJ9; _sp_srt_ses.16f4=*; _gid=GA1.2.150403708.1722442279; _scid_r=e6437688-491e-4800-b4b2-e46e81b2816c; _uetsid=85e6d8504f5711efbe6337917e0e834a; _uetvid=d50156603a0211efbb275bc348d5d48b; _hjSession_2150570=eyJpZCI6ImQxMTAyZTZjLTkyYzItNGMwNy1hNzMzLTcxNDhiODBhOTI4MyIsImMiOjE3MjI0NDIyODE2NDUsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MH0=; _rdt_uuid=1720096930967.9d40f035-a394-4136-b9ce-2cf3bb298115'"
@@ -2008,7 +2230,7 @@ def writeDK():
 				game = event["name"].lower()
 				games = []
 				for team in game.split(" @ "):
-					t = team.split(" ")[0].replace("jax", "jac")
+					t = team.split(" ")[0]
 					if "giants" in team:
 						t += "g"
 					elif "jets" in team:
@@ -2068,7 +2290,7 @@ def writeDK():
 									label = "spread"
 								elif "team total points" in label:
 									team = label.split(":")[0]
-									t = team.split(" ")[0].replace("jax", "jac")
+									t = team.split(" ")[0]
 									if "giants" in team:
 										t += "g"
 									elif "jets" in team:
@@ -2092,8 +2314,14 @@ def writeDK():
 										label = "total"
 								elif label == "first td scorer":
 									label = "ftd"
-								elif label == "anytime td scorer":
+								elif "anytime td scorer" in label:
 									label = "attd"
+								elif label == "2+ tds":
+									label = "2+td"
+								elif subCat == 12451:
+									label = "team_ftd"
+								elif label == "player not to score a touchdown":
+									label = "notd"
 								else:
 									#print(prop, label)
 									continue
@@ -2105,7 +2333,7 @@ def writeDK():
 								if label == "halftime/fulltime":
 									continue
 
-							if "ml" not in label:
+							if "ml" not in label and label != "notd":
 								if label not in lines[game]:
 									lines[game][label] = {}
 
@@ -2127,13 +2355,19 @@ def writeDK():
 									except:
 										pass
 									lines[game][label][line] = ou
-							elif label in ["ftd", "attd"]:
+							elif label in ["ftd", "notd", "2+td", "team_ftd"] or "attd" in label:
 								for outcome in outcomes:
-									player = parsePlayer(outcome["participant"].split(" (")[0])
-									try:
-										lines[game][label][player] = f"{outcome['oddsAmerican']}"
-									except:
-										continue
+									if label == "notd":
+										player = parsePlayer(outcome["label"].split(" (")[0])
+										lines[game]["attd"][player] += f"/{outcome['oddsAmerican']}"
+									else:
+										player = parsePlayer(outcome["participant"].split(" (")[0])
+										if "d/st" in player:
+											player = convertNFLTeam(player.replace(" d/st", ""))
+										try:
+											lines[game][label][player] = f"{outcome['oddsAmerican']}"
+										except:
+											pass
 							else:
 								for i in range(0, len(outcomes), 2):
 									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
@@ -2141,6 +2375,8 @@ def writeDK():
 									if player not in lines[game][label]:
 										lines[game][label][player] = {}
 									if "line" not in outcomes[0]:
+										continue
+									if i+1 >= len(outcomes):
 										continue
 									lines[game][label][player][outcomes[i]['line']] = f"{outcomes[i]['oddsAmerican']}/{outcomes[i+1]['oddsAmerican']}"
 
@@ -2180,8 +2416,7 @@ def write365():
 		}
 
 		async function main() {
-			const main = document.querySelector(".gl-MarketGroupContainer");
-			let prop = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
+			let prop = document.querySelector("div.srb-MarketSelectionButton-selected").innerText.toLowerCase();
 			let prefix = "";
 			if (prop.includes("1st half")) {
 				prefix = "1h_";
@@ -2189,10 +2424,16 @@ def write365():
 				prefix = "1q_";
 			}
 
+			let alt = false;
 			if (prop == "touchdown scorers") {
 				prop = "attd";
+			} else if (prop == "multi touchdown scorers") {
+				prop = "2+td";
 			} else if (prop.indexOf("player") == 0) {
-				prop = prop.replace("player ", "").replace(" and ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("points", "pts").replace("assists", "ast").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace("yards", "yd").replace("touchdowns", "td").replace(" + ", "+").replaceAll(" ", "_");
+				if (prop.includes("milestones")) {
+					alt = true;
+				}
+				prop = prop.replace("player ", "").replace(" and ", "+").replace(" milestones", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("points", "pts").replace("assists", "ast").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace("yards", "yd").replace("touchdowns", "td").replace(" + ", "+").replaceAll(" ", "_");
 				if (prop == "longest_pass_completion") {
 					prop = "longest_pass";
 				} else if (prop == "longest_rush_attempt") {
@@ -2215,7 +2456,7 @@ def write365():
 				}
 				gameIdx += 1;
 				const classes = Array.from(div.classList);
-				if (classes.includes("src-FixtureSubGroupWithShowMore_Closed") || classes.includes("src-FixtureSubGroup_Closed")) {
+				if (classes.includes("src-FixtureSubGroupWithShowMore_Closed") || classes.includes("src-FixtureSubGroup_Closed") || classes.includes("src-HScrollFixtureSubGroupWithBottomBorder_Closed")) {
 					div.click();
 					await new Promise(resolve => setTimeout(resolve, 200));
 				}
@@ -2269,11 +2510,30 @@ def write365():
 				}
 
 				const arr = [];
-				const markets = div.querySelectorAll(".gl-Market");
+				const markets = Array.from(div.querySelectorAll(".gl-Market"));
 				let marketIdx = 1;
 				if (markets.length <= 2) {
 					marketIdx = 0;
 				}
+
+				if (alt) {
+					markets.shift();
+					for (mkt of markets) {
+						let i = 0;
+						let line = (parseFloat(mkt.querySelector("div").innerText) - 0.5).toString();
+						for (player of players) {
+							if (!data[game][prop][player]) {
+								data[game][prop][player] = {};
+							}
+							if (!data[game][prop][player][line]) {
+								data[game][prop][player][line] = mkt.querySelectorAll("span")[i].innerText;
+							}
+							i += 1;
+						}
+					}	
+					continue;
+				}
+
 				for (el of markets[marketIdx].querySelectorAll(".gl-Participant_General")) {
 					let odds = el.querySelector("span");
 					if (!odds) {
@@ -2296,6 +2556,10 @@ def write365():
 							continue;
 						}
 						data[game][prop][players[idx]] = odds.innerText;
+					} else if (prop == "2+td") {
+						if (arr[idx]) {
+							data[game][prop][players[idx]] = arr[idx];
+						}
 					} else if (prop.includes("total")) {
 						odds = el.querySelector("span").innerText;
 						data[game][prop][players[idx]] = arr[idx]+"/"+odds;
@@ -2498,23 +2762,52 @@ def bvParlay():
 	with open("static/nfl/bvParlays.csv", "w") as fh:
 		fh.write(output)
 
+def parseESPN(espnLines, noespn=None):
+	with open("static/nfl/roster.json") as fh:
+		roster = json.load(fh)
 
-def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg=None):
+	with open(f"{prefix}static/nfl/espn.json") as fh:
+		espn = json.load(fh)
 
-	if not boost:
-		boost = 1
+	players = {}
+	for team in roster:
+		players[team] = {}
+		for player in roster[team]:
+			first = player.split(" ")[0][0]
+			last = player.split(" ")[-1]
+			players[team][f"{first} {last}"] = player
 
-	#with open(f"{prefix}static/nfl/bet365.json") as fh:
-	#	bet365Lines = json.load(fh)
+	if not noespn:
+		for game in espn:
+			espnLines[game] = {}
+			for prop in espn[game]:
+				if prop == "ml":
+					espnLines[game][prop] = espn[game][prop]
+				elif prop in ["total", "spread"]:
+					espnLines[game][prop] = espn[game][prop].copy()
+				else:
+					espnLines[game][prop] = {}
+					away, home = map(str, game.split(" @ "))
+					for p in espn[game][prop]:
+						if p not in players[away] and p not in players[home]:
+							continue
+						if p in players[away]:
+							player = players[away][p]
+						else:
+							player = players[home][p]
+						if "attd" in prop:
+							espnLines[game][prop][player] = espn[game][prop][p]["0.5"]
+						elif type(espn[game][prop][p]) is str:
+							espnLines[game][prop][player] = espn[game][prop][p]
+						else:
+							espnLines[game][prop][player] = espn[game][prop][p].copy()
 
-	with open(f"{prefix}static/nfl/actionnetwork.json") as fh:
-		actionnetwork = json.load(fh)
+def writeRanks(teamArg=None):
+	with open("static/nfl/roster.json") as fh:
+		roster = json.load(fh)
 
 	with open(f"{prefix}static/nfl/kambi.json") as fh:
 		kambiLines = json.load(fh)
-
-	with open(f"{prefix}static/nfl/bovada.json") as fh:
-		bvLines = json.load(fh)
 
 	with open(f"{prefix}static/nfl/pinnacle.json") as fh:
 		pnLines = json.load(fh)
@@ -2528,8 +2821,223 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg
 	with open(f"{prefix}static/nfl/espn.json") as fh:
 		espn = json.load(fh)
 
-	with open(f"{prefix}static/nfl/pointsbet.json") as fh:
-		pbLines = json.load(fh)
+	with open(f"{prefix}static/nfl/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	espnLines = {}
+	parseESPN(espnLines)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"espn": espnLines,
+		"bet365": bet365,
+		"dk": dkLines,
+		"cz": czLines
+	}
+
+	data = {}
+	for book in lines:
+		for game in lines[book]:
+			if teamArg and teamArg not in game.split(" @ "):
+				continue
+			for prop in lines[book][game]:
+				if "_yd" not in prop and "_td" not in prop and prop not in ["rec", "attd", "2+td"]:
+					continue
+				for player in lines[book][game][prop]:
+					away, home = map(str, game.split(" @ "))
+					if player in roster[away]:
+						t = away
+					elif player in roster[home]:
+						t = home
+					else:
+						continue
+					pos = roster[t][player]
+					if pos not in ["QB", "RB", "WR", "TE"]:
+						continue
+
+					if t not in data:
+						data[t] = {}
+					if player not in data[t]:
+						data[t][player] = {}
+					if prop not in data[t][player]:
+						data[t][player][prop] = {}
+
+					ou = ""
+					ous = []
+					if prop in ["attd", "2+td"]:
+						odds = lines[book][game][prop][player]
+						implied = getFairValue(odds)
+						if not implied:
+							continue
+						#ous.append((0, odds, "", implied))
+						if "0.5" not in data[t][player][prop]:
+							data[t][player][prop]["0.5"] = []
+						data[t][player][prop]["0.5"].append(odds)
+					else:
+						for line in lines[book][game][prop][player]:
+							odds = lines[book][game][prop][player][line]
+							if not odds:
+								continue
+							implied = getFairValue(odds)
+							if not implied:
+								continue
+							#ous.append((abs(.5-implied), odds, line, math.ceil(float(line)) * implied))
+							if line not in data[t][player][prop]:
+								data[t][player][prop][line] = []
+							data[t][player][prop][line].append(odds)
+
+					# find line closest to 50%
+					#ous = sorted(ous)
+					#rank = ous[0][-1]
+					#if "aiyuk" in player and book == "fd":
+					#data[t][player][prop][book] = rank
+
+	sortedOutputs = {"ALL": []}
+	for team in data:
+		for player in data[team]:
+			pos = roster[team][player]
+			if pos not in sortedOutputs:
+				sortedOutputs[pos] = []
+			j = {}
+			for prop in data[team][player]:
+				arr = []
+				for line in data[team][player][prop]:
+					odds = data[team][player][prop][line]
+					l = []
+					for o in odds:
+						implied = getFairValue(o)
+						l.append(implied)
+					l = sorted(l)
+					avgOdds = averageOdds(odds)
+					avgImplied = sum(l) / len(l)
+
+					if player == "josh allen" and prop == "pass_td":
+						print(line, avgOdds)
+					
+					arr.append((abs(0.5-avgImplied), len(odds), line, avgOdds, avgImplied))
+
+				if not arr:
+					continue
+
+				arr = sorted(arr)
+				totBooks = arr[0][1]
+				r = arr[0]
+				idx = 0
+				for row in arr[1:5]:
+					if totBooks + 3 < row[1]:
+						r = row
+						break
+
+				j[prop] = {
+					"line": r[-3],
+					"imp": r[-1],
+					"avg": r[-2]
+				}
+
+			pts = 0
+			for prop in j:
+				line = j[prop]["line"]
+				#pts += calcPoints(prop, math.ceil(float(line))) * j[prop]["imp"]
+				if True:
+					p = calcPoints(prop, math.ceil(float(line)))
+					if prop in ["attd", "2+td"]:
+						pts += p * j[prop]["imp"]
+					else:
+						pts += p
+			sortedOutputs[pos].append((pts, player, pos, j))
+			sortedOutputs["ALL"].append((pts, player, pos, j))
+
+	reddit = ""
+	for pos in ["ALL", "QB", "RB", "WR", "TE"]:
+		output = "VAL\tPLAYER"
+		reddit += "VAL|PLAYER"
+		props = ["attd", "rec", "rec_yd"]
+		if pos == "QB":
+			props = ["attd", "pass_td", "pass_yd", "rush_yd"]
+		elif pos == "RB":
+			props = ["attd", "rush_yd", "rec", "rec_yd"]
+		elif pos == "ALL":
+			props = ["attd", "pass_td", "pass_yd", "rush_yd", "rec", "rec_yd"]
+
+		for prop in props:
+			output += f"\t{prop.upper()} O/U\tIMPLIED"
+			reddit += f"|{prop.upper()} O/U|IMPLIED"
+		output += "\n"
+		reddit += "\n"
+
+		for pts, player, p, j in sorted(sortedOutputs[pos], reverse=True):
+			output += f"{round(pts, 1)}\t{player.title()}"
+			for prop in props:
+				avg = line = imp = 0
+				if prop in j:
+					avg = j[prop]["avg"]
+					line = j[prop]["line"]
+					imp = j[prop]["imp"]
+
+				if prop == "attd":
+					output += f"\t{avg or '-'}"
+				else:
+					out = f"o{line} {avg}"
+					if not line:
+						out = "-"
+					output += f"\t{out}"
+				out = f"{int(imp * 100)}%"
+				if not imp:
+					out = "-"
+				output += f"\t{out}"
+			output += "\n"
+
+		with open(f"static/nfl/{pos}_rank.csv", "w") as fh:
+			fh.write(output)
+
+def calcPoints(prop, val):
+	pts = 0
+	if prop == "rec":
+		pts += val * 0.5
+	elif prop in ["rec_yd", "rush_yd"]:
+		pts += val * 0.1
+	elif prop == "pass_yd":
+		pts += val * 0.04
+	elif prop == "pass_td":
+		pts += val * 4
+	elif prop in ["attd", "2+td"]:
+		pts += val * 6
+	return pts
+
+def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg=None, noespn=None):
+
+	if not boost:
+		boost = 1
+
+	#with open(f"{prefix}static/nfl/bet365.json") as fh:
+	#	bet365Lines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/actionnetwork.json") as fh:
+		actionnetwork = json.load(fh)
+
+	with open(f"{prefix}static/nfl/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/bet365.json") as fh:
+		bet365 = json.load(fh)
+
+	with open(f"{prefix}static/nfl/espn.json") as fh:
+		espn = json.load(fh)
 
 	with open(f"{prefix}static/nfl/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
@@ -2543,38 +3051,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg
 	with open(f"{prefix}static/nfl/roster.json") as fh:
 		roster = json.load(fh)
 
-	players = {}
-	for team in roster:
-		players[team] = {}
-		for player in roster[team]:
-			first = player.split(" ")[0][0]
-			last = player.split(" ")[-1]
-			players[team][f"{first} {last}"] = player
-
 	espnLines = {}
-	for game in espn:
-		espnLines[game] = {}
-		for prop in espn[game]:
-			if prop == "ml":
-				espnLines[game][prop] = espn[game][prop]
-			elif prop in ["total", "spread"]:
-				espnLines[game][prop] = espn[game][prop].copy()
-			else:
-				espnLines[game][prop] = {}
-				away, home = map(str, game.split(" @ "))
-				for p in espn[game][prop]:
-					if p not in players[away] and p not in players[home]:
-						continue
-					if p in players[away]:
-						player = players[away][p]
-					else:
-						player = players[home][p]
-					if prop == "attd":
-						espnLines[game][prop][player] = espn[game][prop][p]["0.5"]
-					elif prop == "ftd":
-						espnLines[game][prop][player] = espn[game][prop][p]
-					else:
-						espnLines[game][prop][player] = espn[game][prop][p].copy()
+	parseESPN(espnLines, noespn)
 
 	lines = {
 		"pn": pnLines,
@@ -2681,6 +3159,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg
 								ou = val.split(" ")[-1]
 							except:
 								if i == 1:
+									books.append(book)
+									odds.append(val)
 									continue
 								o = val
 								ou = val
@@ -2688,7 +3168,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg
 							if not o or o == ".":
 								continue
 
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 
@@ -2744,8 +3224,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg
 
 					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
 					#print(maxOU in l, maxOU, l)
-					l.remove(maxOU)
-					books.remove(evBook)
+					if maxOU:
+						idx = books.index(evBook)
+						#l.remove(maxOU)
+						del l[idx]
+						books.remove(evBook)
 					if pn:
 						books.append("pn")
 						l.append(pn)
@@ -2780,7 +3263,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg
 					if ou.endswith("/-"):
 						ou = ou.split("/")[0]
 						
-					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"
+					key = f"{game} {handicap} {prop} {playerHandicap} {'over' if i == 0 else 'under'}"
 					if key in evData:
 						continue
 					if True:
@@ -2835,33 +3318,24 @@ def sortEV():
 
 	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "Bet365", "ESPN", "PN", "Kambi", "CZ"]) + "\n"
 	for row in sorted(data, reverse=True):
-		if row[-1]["prop"] != "attd":
+		if row[-1]["prop"] not in ["attd", "ftd", "2+td", "team_ftd", "1h_attd", "2h_attd"]:
 			continue
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
+		prop = row[-1]["prop"]
+		if row[-1]["under"]:
+			prop = "no td"
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[2].upper(), row[-1]["player"].title(), prop]
 		for book in ["fd", "dk", "mgm", "bet365", "espn", "pn", "kambi", "cz"]:
-			arr.append(row[-1]["bookOdds"].get(book, "-"))
+			arr.append(row[-1]["bookOdds"].get(book, "-").replace("+", ""))
 		output += "\t".join([str(x) for x in arr])+"\n"
 
 	with open("static/nfl/attd.csv", "w") as fh:
-		fh.write(output)
-
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "FD", "DK", "MGM", "Bet365", "ESPN", "PN", "Kambi", "CZ"]) + "\n"
-	for row in sorted(data, reverse=True):
-		if row[-1]["prop"] != "ftd":
-			continue
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[2].upper(), row[-1]["player"].title(), row[-1]["prop"]]
-		for book in ["fd", "dk", "mgm", "bet365", "espn", "pn", "kambi", "cz"]:
-			arr.append(row[-1]["bookOdds"].get(book, "-"))
-		output += "\t".join([str(x) for x in arr])+"\n"
-
-	with open("static/nfl/ftd.csv", "w") as fh:
 		fh.write(output)
 
 	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "ESPN", "PN", "Kambi", "CZ", "AVG", "% Over", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
-		if row[-1]["prop"] in ["attd", "ftd"]:
+		if row[-1]["prop"] in ["attd", "ftd", "2+td", "team_ftd", "1h_attd", "2h_attd"]:
 			continue
 		if not player:
 			continue
@@ -2894,17 +3368,20 @@ def sortEV():
 			splits = ",".join([str(int(x)) for x in totals[player][prop+"Splits"]])
 			arr.extend([avg, f"{int(over)}", splits])
 		elif player and player in totals and prop == "rush+rec":
-			num = totals[player].get("rush_yd", 0) + totals[player]["rec_yd"]
+			num = totals[player].get("rush_yd", 0) + totals[player].get("rec_yd", 0)
 			avg = round(num / totals[player]["gamesPlayed"], 1)
 			a = []
-			rushArr = totals[player].get("rush_ydSplits", [0]*len(totals[player]["rec_ydSplits"]))
-			for rush, rec in zip(rushArr, totals[player]["rec_ydSplits"]):
+			rushArr = totals[player].get("rush_ydSplits", [0]*len(totals[player].get("rec_ydSplits", []	)))
+			for rush, rec in zip(rushArr, totals[player].get("rec_ydSplits", [])):
 				if not row[-1]["under"] and rush + rec > float(row[-1]["playerHandicap"]):
 					a.append(rush+rec)
 				elif row[-1]["under"] and rush + rec < float(row[-1]["playerHandicap"]):
 					a.append(rush+rec)
-			over = len(a) / len(totals[player]["rec_ydSplits"]) * 100
-			splits = ",".join([str(int(x) + int(y)) for x, y in zip(rushArr, totals[player]["rec_ydSplits"])])
+			if "rec_ydSplits" in totals[player]:
+				over = len(a) / len(totals[player]["rec_ydSplits"]) * 100
+			else:
+				over = 0
+			splits = ",".join([str(int(x) + int(y)) for x, y in zip(rushArr, totals[player].get("rec_ydSplits", []))])
 			arr.extend([avg, f"{int(over)}", splits])
 		else:
 			arr.extend(["-", "-", "-"])
@@ -2972,6 +3449,7 @@ if __name__ == '__main__':
 	parser.add_argument("--nocz", action="store_true", help="No CZ Lines")
 	parser.add_argument("--no365", action="store_true", help="No 365 Devig")
 	parser.add_argument("--nobr", action="store_true", help="No BR/Kambi lines")
+	parser.add_argument("--noespn", action="store_true")
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
 	parser.add_argument("--summary", action="store_true", help="Summary")
@@ -2980,6 +3458,7 @@ if __name__ == '__main__':
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
 	parser.add_argument("--debug", action="store_true")
+	parser.add_argument("--ranks", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--token")
 	parser.add_argument("--book", help="Book")
@@ -2999,6 +3478,9 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
+
+	if args.ranks:
+		writeRanks(args.team)
 
 	if args.action:
 		writeActionNetwork(args.date)
@@ -3046,13 +3528,13 @@ if __name__ == '__main__':
 		writeDK()
 		print("cz")
 		writeCZ(args.token)
-		writeActionNetwork()
+		#writeActionNetwork()
 
 	#print(convertAmericanOdds(1 + (convertDecOdds(int(140)) - 1) * 1.5))
 	#print(convertAmericanOdds(1 + (convertDecOdds(int(-180)) - 1) * 1.5))
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, gameArg=args.game)
+		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, gameArg=args.game, noespn=args.noespn)
 
 	if args.print:
 		sortEV()
@@ -3083,6 +3565,7 @@ if __name__ == '__main__':
 			espnLines = json.load(fh)
 	
 		player = args.player
+		parseESPN(espnLines)
 
 		for game in mgmLines:
 			for prop in mgmLines[game]:
@@ -3092,6 +3575,10 @@ if __name__ == '__main__':
 				dk = fd = bet365 = kambi = espn = cz = mgm = pn = ""
 				try:
 					mgm = mgmLines[game][prop][player]
+				except:
+					pass
+				try:
+					dk = dkLines[game][prop][player]
 				except:
 					pass
 				try:
@@ -3123,3 +3610,103 @@ if __name__ == '__main__':
 					continue
 
 				print(f"{prop} fd='{fd}'\ndk='{dk}'\n365='{bet365}'\nkambi='{kambi}'\ncz='{cz}'\nespn='{espn}'\npn={pn}\nmgm={mgm}")
+
+	if args.plays:
+		plays = [
+			("lenoir", 100, "dk", "tackles+ast", 4.5, ""),
+			("cj mosley", 110, "dk", "tackles+ast", 7.5, ""),
+			("quincy williams", -115, "dk", "tackles+ast", 7.5, "")
+		]
+
+		plays.extend([
+			("christian mccaffrey", 340, "fd", "2+td", "", ""),
+			("deebo samuel", 170, "fd", "attd", "", ""),
+			("breece hall", 135, "fd", "attd", "", "")
+		])
+
+		with open(f"static/nfl/ev.json") as fh:
+			ev = json.load(fh)
+
+		with open(f"static/nfl/kambi.json") as fh:
+			kambi = json.load(fh)
+
+		with open(f"static/nfl/fanduelLines.json") as fh:
+			fdLines = json.load(fh)
+
+		printed = False
+		output = []
+		for player, odds, book, prop, line, over in plays:
+			game = ""
+			for g in kambi:
+				if prop in kambi[g] and player in kambi[g][prop]:
+					game = g
+					break
+
+			if not game:
+				for g in fdLines:
+					if prop in fdLines[g] and player in fdLines[g][prop]:
+						game = g
+						break
+
+			if not game:
+				continue
+
+			if not line:
+				line = " "
+			key = f"{game} {player} {prop} {line}"
+			if over == "under":
+				key += f" under"
+			else:
+				key += f" over"
+			if key not in ev:
+				output.append(f"{player} taken={odds}")
+				continue
+
+			avgOver = []
+			avgUnder = []
+			curr = ""
+			for b in ev[key]["bookOdds"]:
+				if b == book:
+					curr = ev[key]["bookOdds"][b]
+					continue
+				o = ev[key]["bookOdds"][b]
+				if o:
+					avgOver.append(convertDecOdds(int(o.split("/")[0])))
+					if "/" in o:
+						avgUnder.append(convertDecOdds(int(o.split("/")[1])))
+			if avgOver:
+				avgOver = float(sum(avgOver) / len(avgOver))
+				avgOver = convertAmericanOdds(avgOver)
+			else:
+				avgOver = "-"
+			if avgUnder:
+				avgUnder = float(sum(avgUnder) / len(avgUnder))
+				avgUnder = convertAmericanOdds(avgUnder)
+			else:
+				avgUnder = "-"
+
+			ou = f"{avgOver}/{avgUnder}"
+			if over == "under":
+				ou = f"{avgUnder}/{avgOver}"
+
+			if ou.endswith("/-"):
+				ou = ou.split("/")[0]
+			data = {}
+			devig(data, player, ou, odds)
+			if data:
+				if prop == "attd" and not printed:
+					print("\n")
+					printed = True
+				print(f"{player} {book.upper()} taken={odds} curr={curr} ou={ou} ev={data[player]['ev']}")
+
+	"""
+	x1 = getFairValue("1300", method="power")
+	x2 = getFairValue("286/-715", method="power")
+	x3 = getFairValue("-108/-121", method="power")
+	x4 = getFairValue("-621/390", method="power")
+
+	print(f"4={x1*100}")
+	print(f"3={(x2-x1)*100}")
+	print(f"2={(x3-x2)*100}")
+	print(f"1={(x4-x3)*100}")
+	"""

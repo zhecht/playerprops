@@ -1161,7 +1161,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 							continue
 
 						try:
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 						except:
 							continue
 						odds.append(ou)

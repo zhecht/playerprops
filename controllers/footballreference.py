@@ -44,9 +44,15 @@ def strip_accents(text):
 	return str(text)
 
 def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
-	if player == "gabe davis":
+	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iii", "").replace(" ii", "")
+	if player == "josh palmer":
+		player = "joshua palmer"
+	elif player == "gabe davis":
 		player = "gabriel davis"
+	elif player == "trevon moehrig woodard":
+		player = "trevon moehrig"
+	elif player == "chig okonkwo":
+		player = "chigoziem okonkwo"
 	return player
 
 def writeStats(week):
@@ -363,12 +369,6 @@ def writeTrends():
 		data = []
 		for team in snaps:
 			for player in snaps[team]:
-				
-				if player in ["jk dobbins", "nick chubb"]:
-					continue
-
-				if player == "cam akers" and team == "lar":
-					continue
 
 				if pos == "rb" and snaps[team][player]["pos"] != "rb":
 					continue
@@ -514,6 +514,8 @@ def writeRosters():
 
 		for div in soup.findAll("div", class_="TeamLinks__Links"):
 			team = div.findAll("a")[2].get("href").split("/")[-2]
+			if team == "wsh":
+				team = "was"
 			teams.append(team)
 
 		with open(path, "w") as fh:
@@ -523,6 +525,8 @@ def writeRosters():
 	playerIds = {}
 	for team in teams:
 		url = f"https://www.espn.com/nfl/team/roster/_/name/{team}/"
+		if team == "wsh":
+			team = "was"
 		time.sleep(0.2)
 		os.system(f"curl {url} -o {outfile}")
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -532,7 +536,7 @@ def writeRosters():
 		for table in soup.findAll("table"):
 			for row in table.findAll("tr")[1:]:
 				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
-				fullName = nameLink[-1].replace("-", " ")
+				fullName = parsePlayer(nameLink[-1].replace("-", " "))
 				playerId = int(nameLink[-2])
 				playerIds[team][fullName] = playerId
 				roster[team][fullName] = row.findAll("td")[2].text.strip()
@@ -544,7 +548,7 @@ def writeRosters():
 		json.dump(playerIds, fh, indent=4)
 
 def writeSchedule(week):
-	url = f"https://www.espn.com/nfl/schedule/_/week/{week}/year/2023/seasontype/2"
+	url = f"https://www.espn.com/nfl/schedule/_/week/{week}/year/2024/seasontype/2"
 	outfile = "outnfl"
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -574,7 +578,7 @@ def writeSchedule(week):
 			except:
 				continue
 
-			boxscore = tds[2].find("a").get("href").split("=")[1].split("&")[0]
+			boxscore = tds[2].find("a").get("href").split("/")[-2]
 			score = tds[2].find("a").text.strip()
 
 			if ", " in score:

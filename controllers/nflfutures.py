@@ -143,6 +143,100 @@ def convertTeam(team):
 		return "ne"
 	return t
 
+def writeESPN():
+	js = """
+
+	{
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			t = team.split(" ")[0];
+			if (t == "ny") {
+				if (team.includes("giants")) {
+					return "nyg";
+				}
+				return "nyj";
+			} else if (t == "la") {
+				if (team.includes("rams")) {
+					return "lar";
+				}
+				return "lac";
+			}
+			return t;
+		}
+
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			return player;
+		}
+
+		let status = "";
+
+		async function readPage() {
+			for (detail of document.querySelectorAll("details")) {
+				let prop = detail.querySelector("h2").innerText.toLowerCase();
+
+				let skip = 2;
+				let player = "";
+				if (prop.indexOf("player") == 0) {
+					prop = prop.replace("player total ", "").replace("player ", "").replace(" + ", "+").replace("points", "pts").replace("field goals made", "fgm").replace("extra pts made", "xp").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("completions", "cmp").replace("completion", "cmp").replace("yards", "yd").replace("touchdowns", "td").replace("assists", "ast").replaceAll(" ", "_");
+				} else {
+					continue;
+				}
+
+				let open = detail.getAttribute("open");
+				if (open == null) {
+					detail.querySelector("summary").click();
+					while (detail.querySelectorAll("button").length == 0) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				}
+
+				if (!data[prop]) {
+					data[prop] = {};
+				}
+
+				let btns = detail.querySelectorAll("button");
+				let seeAll = false;
+				if (btns[btns.length - 1].innerText == "See All Lines") {
+					seeAll = true;
+					btns[btns.length - 1].click();
+				}
+
+				if (seeAll) {
+					let modal = document.querySelector(".modal--see-all-lines");
+					while (!modal) {
+						await new Promise(resolve => setTimeout(resolve, 700));
+						modal = document.querySelector(".modal--see-all-lines");
+					}
+
+					while (modal.querySelectorAll("button").length == 0) {
+						await new Promise(resolve => setTimeout(resolve, 700));
+					}
+
+					let btns = Array.from(modal.querySelectorAll("button"));
+					btns.shift();
+
+					for (i = 0; i < btns.length; i += 3) {
+						let ou = btns[i+1].querySelectorAll("span")[1].innerText+"/"+btns[i+2].querySelectorAll("span")[1].innerText;
+						let player = parsePlayer(btns[i].innerText.toLowerCase().split(" total ")[0]);
+						let line = btns[i+1].querySelector("span").innerText.split(" ")[1];
+						data[prop][player] = {};
+						data[prop][player][line] = ou.replace("Even", "+100");
+					}
+					modal.querySelector("button").click();
+					while (document.querySelector(".modal--see-all-lines")) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				}
+			}
+			console.log(data);
+		}
+
+		readPage();
+	}
+
+"""
+
 def writeMGM():
 	url = "https://sports.mi.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35"
 
@@ -568,7 +662,7 @@ def writeCZ(token=None):
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/americanfootball/events/futures?competitionIds=007d7c61-07a7-4e18-bb40-15104b6eac92"
 	outfile = "outfuture"
 
-	cookie = "32230cab-adaa-45a7-9ff6-92cec8cdbdb7:EgoAtCNdInoiAQAA:I812ihJau+DcZ7zy4b7gkFx86a1ELOgtApML4lOLoRgAuBtLVmi+WUq82wqYHXoQs3d2SNiw+HgOp0Db7lPTa2srcHgJeGZU4aomk21OLdcgolG+mtSAgqSPWEYhii7ZAJgNd8iAlOWM1RrpHs5S/HOuBJIApk4gx7nXSFqFONLaQYrTJEdKwtwvQn9kCMx+5R8GsAzT9nLTPamASbTFOhM119kQBBGmHgL0e6i/tMRL93eoShzHyCBxVreywaW5bEV7MAHtGmlWI49P/w=="
+	cookie = "3d6dfd09-53ab-4872-89e0-136b34b8ceb8:EgoAqiZbtq4OAQAA:gAM/7bhmyH8VcVkjz2ZWivdEKdsePcPuklrVAFVUoK8xD9sbFmdqGXTBGJd7n7ScwgMv/p44y86rmUJLTtPpWGheExuRGUQRIpwswg4kXE5BqMwL4JNWA6JYzeHCzJPNYA07+83ejN5SK0iqZicpevcePdfZobPWBFYye1sO2rtCJpDhNYTMUZrI9na7y9tSp8t+prK1H0wEpe1iJ9AUWZ7F4nxmw+k4ZKi88Zy/Fyzeh9u4H83e3WvbVLh12uoA7PZIllih21QcYy6lUQ=="
 	if token:
 		cookie = token
 	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
@@ -996,7 +1090,7 @@ def writeFanduelManual():
 					} else if (prop.includes("championship winner")) {
 						prop = "conference";
 					} else if (tab == "divisions" && prop.includes("winner")) {
-						prop = "divison";
+						prop = "division";
 					} else if (prop.includes("most regular season sacks")) {
 						prop = "most_sacks";
 					} else if (tab == "super bowl" && prop.includes("outright")) {
@@ -1053,6 +1147,9 @@ def writeFanduelManual():
 				} else if (prop == "superbowl") {
 					team = convertTeam(label.split(", ")[0]);
 					data[prop][team] = label.split(", ")[1];
+				} else if (["conference", "division"].includes(prop)) {
+					player = convertTeam(label.split(", ")[0]);
+					data[prop][player] = label.split(", ")[1];
 				} else {
 					player = parsePlayer(label.split(", ")[0]);
 					data[prop][player] = label.split(", ")[1];
@@ -1092,6 +1189,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 	with open(f"static/nflfutures/bet365.json") as fh:
 		bet365Lines = json.load(fh)
 
+	with open(f"static/nflfutures/espn.json") as fh:
+		espnLines = json.load(fh)
+
 	lines = {
 		"kambi": kambiLines,
 		"mgm": mgmLines,
@@ -1099,7 +1199,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 		"dk": dkLines,
 		"pn": pnLines,
 		"cz": czLines,
-		"bet365": bet365Lines
+		"bet365": bet365Lines,
+		"espn": espnLines
 	}
 
 	with open("static/nflfutures/ev.json") as fh:
@@ -1142,7 +1243,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 
 		for handicap, playerHandicap in handicaps:
 			player = handicaps[(handicap, playerHandicap)]
-
 			for i in range(2):
 				highestOdds = []
 				books = []
@@ -1181,9 +1281,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 							continue
 
 						try:
-							highestOdds.append(int(o))
+							highestOdds.append(int(o.replace("+", "")))
 						except:
 							continue
+
 						odds.append(ou)
 						books.append(book)
 
@@ -1310,7 +1411,7 @@ def printEV():
 	for row in sorted(data):
 		print(row[:-1])
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "CZ", "Kambi/BR", "PN", "bet365"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Player", "Prop", "O/U", "FD", "DK", "MGM", "CZ", "Kambi/BR", "PN", "Bet365", "ESPN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"].title()
 		if len(player) < 4:
@@ -1323,7 +1424,7 @@ def printEV():
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR").replace("BET", ""), f"{round(row[-1]['imp'])}%", player, row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "cz", "kambi", "pn", "bet365"]:
+		for book in ["fd", "dk", "mgm", "cz", "kambi", "pn", "bet365", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o

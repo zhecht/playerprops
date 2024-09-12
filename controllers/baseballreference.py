@@ -1178,7 +1178,7 @@ def write_rankings():
 
 
 def write_batting_pitches():
-	url = "https://www.baseball-reference.com/leagues/majors/2023-pitches-batting.shtml"
+	url = "https://www.baseball-reference.com/leagues/majors/2024-pitches-batting.shtml"
 	time.sleep(0.2)
 	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
@@ -1238,7 +1238,7 @@ def write_batting_pitches():
 
 
 def write_pitching_pitches():
-	url = "https://www.baseball-reference.com/leagues/majors/2023-pitches-pitching.shtml"
+	url = "https://www.baseball-reference.com/leagues/majors/2024-pitches-pitching.shtml"
 	time.sleep(0.2)
 	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
@@ -1558,7 +1558,7 @@ def writeSavantPitcherAdvanced():
 def writeSavantExpectedHR():
 	url = "https://baseballsavant.mlb.com/leaderboard/home-runs"
 	expected = {}
-	for t in ["", "?year=2023&team=&player_type=Pitcher&min=0"]:
+	for t in ["", "?year=2024&team=&player_type=Pitcher&min=0"]:
 		time.sleep(0.2)
 		outfile = "outmlb3"
 		call(["curl", "-k", url+t, "-o", outfile])
