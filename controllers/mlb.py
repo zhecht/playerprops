@@ -1921,10 +1921,9 @@ def writeFanduelManual():
 						team = convertTeam(team[6].split(".")[0].replaceAll("_", " "));
 						let player = parsePlayer(label.split(", ")[0]);
 
-						if (player == "dillon dingler") {
-							team = "det";
+						if (player == "to hit a home run") {
+							continue;
 						}
-
 						//console.log(player);
 						if (data[games[team]][prop][player]) {
 							data[games[team]+" gm2"][prop][player] = label.split(", ")[1];

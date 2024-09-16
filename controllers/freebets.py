@@ -745,6 +745,72 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, avg=False, prop="hr",
 def write365():
 	js = """
 	{
+
+		function convertTeam(team) {
+			if (team.includes("mlb-MLBLogo-4")) {
+				return "bal";
+			} else if (team.includes("mlb-MLBLogo-11")) {
+				return "det";
+			} else if (team.includes("mlb-MLBLogo-14")) {
+				return "kc";
+			} else if (team.includes("mlb-MLBLogo-23")) {
+				return "pit";
+			} else if (team.includes("mlb-MLBLogo-19")) {
+				return "nym";
+			} else if (team.includes("mlb-MLBLogo-22")) {
+				return "phi";
+			} else if (team.includes("mlb-MLBLogo-680")) {
+				return "mia";
+			} else if (team.includes("mlb-MLBLogo-265")) {
+				return "wsh";
+			} else if (team.includes("mlb-MLBLogo-5")) {
+				return "bos";
+			} else if (team.includes("mlb-MLBLogo-20")) {
+				return "nyy";
+			} else if (team.includes("mlb-MLBLogo-27")) {
+				return "stl";
+			} else if (team.includes("mlb-MLBLogo-30")) {
+				return "tor";
+			} else if (team.includes("mlb-MLBLogo-471")) {
+				return "tb";
+			} else if (team.includes("mlb-MLBLogo-1899")) {
+				return "cle";
+			} else if (team.includes("mlb-MLBLogo-15")) {
+				return "lad";
+			} else if (team.includes("mlb-MLBLogo-3")) {
+				return "atl";
+			} else if (team.includes("mlb-MLBLogo-21")) {
+				return "oak";
+			} else if (team.includes("mlb-MLBLogo-7")) {
+				return "chw";
+			} else if (team.includes("mlb-MLBLogo-8")) {
+				return "cin";
+			} else if (team.includes("mlb-MLBLogo-17")) {
+				return "min";
+			} else if (team.includes("mlb-MLBLogo-6")) {
+				return "chc";
+			} else if (team.includes("mlb-MLBLogo-10")) {
+				return "col";
+			} else if (team.includes("mlb-MLBLogo-13")) {
+				return "hou";
+			} else if (team.includes("mlb-MLBLogo-266")) {
+				return "laa";
+			} else if (team.includes("mlb-MLBLogo-16")) {
+				return "mil";
+			} else if (team.includes("mlb-MLBLogo-2")) {
+				return "ari";
+			} else if (team.includes("mlb-MLBLogo-29")) {
+				return "tex";
+			} else if (team.includes("mlb-MLBLogo-25")) {
+				return "sea";
+			} else if (team.includes("mlb-MLBLogo-24")) {
+				return "sd";
+			} else if (team.includes("mlb-MLBLogo-26")) {
+				return "sf";
+			}
+			return team;
+		}
+
 		let data = {};
 		//let title = document.getElementsByClassName("rcl-MarketGroupButton_MarketTitle")[0].innerText.toLowerCase();
 		let title = "";
@@ -765,25 +831,8 @@ def write365():
 				} else if (player == "mitchell haniger") {
 					player = "mitch haniger";
 				}
-				let team = playerDiv.getElementsByClassName("srb-ParticipantLabelWithTeam_Team")[0].innerText.toLowerCase().split(" - ")[0];
-
-				if (team === "la angels") {
-					team = "laa";
-				} else if (team === "la dodgers") {
-					team = "lad";
-				} else if (team === "chi white sox") {
-					team = "chw";
-				} else if (team === "chi cubs") {
-					team = "chc";
-				} else if (team === "was nationals") {
-					team = "wsh";
-				} else if (team === "ny mets") {
-					team = "nym";
-				} else if (team === "ny yankees") {
-					team = "nyy";
-				} else {
-					team = team.split(" ")[0];
-				}
+				let team = Array.from(playerDiv.querySelector(".srb-ParticipantLabelWithTeam_Asset").classList);
+				team = convertTeam(team);
 				
 				if (data[team] === undefined) {
 					data[team] = {};

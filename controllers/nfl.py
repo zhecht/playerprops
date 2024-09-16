@@ -2359,7 +2359,10 @@ def writeDK():
 								for outcome in outcomes:
 									if label == "notd":
 										player = parsePlayer(outcome["label"].split(" (")[0])
-										lines[game]["attd"][player] += f"/{outcome['oddsAmerican']}"
+										try:
+											lines[game]["attd"][player] += f"/{outcome['oddsAmerican']}"
+										except:
+											continue
 									else:
 										player = parsePlayer(outcome["participant"].split(" (")[0])
 										if "d/st" in player:
@@ -2870,6 +2873,8 @@ def writeRanks(teamArg=None):
 						data[t][player] = {}
 					if prop not in data[t][player]:
 						data[t][player][prop] = {}
+					if prop == "2+td" and "attd" not in data[t][player]:
+						data[t][player]["attd"] = {}
 
 					ou = ""
 					ous = []
@@ -2879,11 +2884,16 @@ def writeRanks(teamArg=None):
 						if not implied:
 							continue
 						#ous.append((0, odds, "", implied))
-						if "0.5" not in data[t][player][prop]:
-							data[t][player][prop]["0.5"] = []
-						data[t][player][prop]["0.5"].append(odds)
+						line = "0.5"
+						if prop == "2+td":
+							line = "1.5"
+						if line not in data[t][player]["attd"]:
+							data[t][player]["attd"][line] = []
+						data[t][player]["attd"][line].append(odds)
 					else:
 						for line in lines[book][game][prop][player]:
+							if line == "NaN":
+								continue
 							odds = lines[book][game][prop][player][line]
 							if not odds:
 								continue
@@ -2918,47 +2928,49 @@ def writeRanks(teamArg=None):
 						l.append(implied)
 					l = sorted(l)
 					avgOdds = averageOdds(odds)
-					avgImplied = sum(l) / len(l)
+					#avgImplied = sum(l) / len(l)
 
-					if player == "josh allen" and prop == "pass_td":
-						print(line, avgOdds)
+					if player == "josh allen" and prop == "attd":
+						print(line, avgOdds, getFairValue(avgOdds, method="power"))
 					
-					arr.append((abs(0.5-avgImplied), len(odds), line, avgOdds, avgImplied))
+					#print(player, prop, line)
+					arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power")))
+					#arr.append((abs(0.5-avgImplied), len(odds), line, avgOdds, avgImplied))
 
 				if not arr:
 					continue
 
-				arr = sorted(arr)
-				totBooks = arr[0][1]
-				r = arr[0]
-				idx = 0
-				for row in arr[1:5]:
-					if totBooks + 3 < row[1]:
-						r = row
-						break
+				arr = sorted(arr, reverse=True)
 
-				j[prop] = {
-					"line": r[-3],
-					"imp": r[-1],
-					"avg": r[-2]
-				}
+				j[prop] = {}
+				tot = last = 0
+				for line, implied in arr:
+					if not implied:
+						implied = .002
+					tot += (implied - last)
+					j[prop][line] = implied - last
+					last = implied
+
+				j[prop][0] = 1 - tot
 
 			pts = 0
+			propPts = {}
 			for prop in j:
-				line = j[prop]["line"]
-				#pts += calcPoints(prop, math.ceil(float(line))) * j[prop]["imp"]
-				if True:
-					p = calcPoints(prop, math.ceil(float(line)))
-					if prop in ["attd", "2+td"]:
-						pts += p * j[prop]["imp"]
-					else:
-						pts += p
-			sortedOutputs[pos].append((pts, player, pos, j))
-			sortedOutputs["ALL"].append((pts, player, pos, j))
+				propPts[prop] = 0
+				for line in j[prop]:
+					p = calcPoints(prop, line * j[prop][line])
+					propPts[prop] += p
+				pts += propPts[prop]
+
+			#if player == "josh allen":
+			#	print(pts, propPts)
+
+			sortedOutputs[pos].append((pts, player, pos, propPts, j))
+			sortedOutputs["ALL"].append((pts, player, pos, propPts, j))
 
 	reddit = ""
 	for pos in ["ALL", "QB", "RB", "WR", "TE"]:
-		output = "VAL\tPLAYER"
+		output = "\tVAL\tPLAYER"
 		reddit += "VAL|PLAYER"
 		props = ["attd", "rec", "rec_yd"]
 		if pos == "QB":
@@ -2969,32 +2981,24 @@ def writeRanks(teamArg=None):
 			props = ["attd", "pass_td", "pass_yd", "rush_yd", "rec", "rec_yd"]
 
 		for prop in props:
-			output += f"\t{prop.upper()} O/U\tIMPLIED"
+			output += f"\t{prop.upper()} PTS"
 			reddit += f"|{prop.upper()} O/U|IMPLIED"
 		output += "\n"
 		reddit += "\n"
 
-		for pts, player, p, j in sorted(sortedOutputs[pos], reverse=True):
-			output += f"{round(pts, 1)}\t{player.title()}"
+		posIdx = {}
+		for pts, player, p, propPts, j in sorted(sortedOutputs[pos], reverse=True):
+			if p not in posIdx:
+				posIdx[p] = 1
+			x = f"{p}{posIdx[p]}"
+			output += f"{x}\t{round(pts, 1)}\t{player.title()}"
 			for prop in props:
-				avg = line = imp = 0
-				if prop in j:
-					avg = j[prop]["avg"]
-					line = j[prop]["line"]
-					imp = j[prop]["imp"]
-
-				if prop == "attd":
-					output += f"\t{avg or '-'}"
-				else:
-					out = f"o{line} {avg}"
-					if not line:
-						out = "-"
-					output += f"\t{out}"
-				out = f"{int(imp * 100)}%"
-				if not imp:
-					out = "-"
-				output += f"\t{out}"
+				x = 0
+				if prop in propPts:
+					x = round(propPts[prop], 2)
+				output += f"\t{x or '-'}"
 			output += "\n"
+			posIdx[p] += 1
 
 		with open(f"static/nfl/{pos}_rank.csv", "w") as fh:
 			fh.write(output)
@@ -3699,14 +3703,17 @@ if __name__ == '__main__':
 					printed = True
 				print(f"{player} {book.upper()} taken={odds} curr={curr} ou={ou} ev={data[player]['ev']}")
 
-	"""
-	x1 = getFairValue("1300", method="power")
-	x2 = getFairValue("286/-715", method="power")
-	x3 = getFairValue("-108/-121", method="power")
-	x4 = getFairValue("-621/390", method="power")
+	
+	if False:
+		x1 = getFairValue("1300", method="power")
+		x2 = getFairValue("396/-715", method="power")
+		x3 = getFairValue("-110/-118", method="power")
+		x4 = getFairValue("-605/380", method="power")
 
-	print(f"4={x1*100}")
-	print(f"3={(x2-x1)*100}")
-	print(f"2={(x3-x2)*100}")
-	print(f"1={(x4-x3)*100}")
-	"""
+		print(x1, x2, x3, x4)
+
+		print(f"4={x1*100}")
+		print(f"3={(x2-x1)*100}")
+		print(f"2={(x3-x2)*100}")
+		print(f"1={(x4-x3)*100}")
+	
