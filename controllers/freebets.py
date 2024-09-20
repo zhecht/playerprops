@@ -1526,7 +1526,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	plays = [("julio rodriguez", 540), ("matt wallner", 320)]
+	plays = [("giancarlo stanton", 500), ("jd martinez", 500), ("wyatt langford", 520), ("mark vientos", 390), ("bryan de la cruz", 750), ("adolis garcia", 440), ("jorge polanco", 800), ("randy arozarena", 800), ("cal raleigh", 450)]
 
 	if args.dinger:
 		plays = []

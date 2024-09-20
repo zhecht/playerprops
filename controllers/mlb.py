@@ -1225,7 +1225,7 @@ def writeMGMManual():
 				data[game]["hr"] = {};
 
 				for (let panel of document.querySelectorAll("ms-option-panel")) {
-					if (panel.innerText.includes("Batter home runs")) {
+					if (panel.innerText.includes("Batter home runs") || panel.innerText.includes("TabBatterHRs")) {
 						if (panel.querySelector(".theme-down")) {
 							panel.querySelector("div").click();
 							await new Promise(resolve => setTimeout(resolve, 500));
