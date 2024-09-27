@@ -27,49 +27,54 @@ draft_blueprint = Blueprint('draft', __name__, template_folder='views')
 def writeBoris():
     url = f"http://www.borischen.co/p/half-ppr-draft-tiers.html"
     outfile = "outnfl"
-    #call(["curl", "-k", url, "-o", outfile])
-    soup = BS(open(outfile, 'rb').read(), "lxml")
 
-    tiers = {}
-    base = "https://s3-us-west-1.amazonaws.com/fftiers/out/text_ALL-HALF-PPR-adjust"
-    for i in range(3):
-        url = f"{base}{i}.txt"
+    ranks = {}
+    for fmt in ["std", "ppr", "half"]:
+        for pos in ["RB", "TE", "WR"]:
+            url = f"https://s3-us-west-1.amazonaws.com/fftiers/out/text_{pos}"
+            if fmt != "std":
+                url += "-"+fmt.upper()
+            url += ".txt"
+            time.sleep(0.2)
+            os.system(f"curl \"{url}\" -o {outfile}")
+
+            if pos not in ranks:
+                ranks[pos] = {}
+            
+            with open(outfile) as fh:
+                rows = [row.strip() for row in fh.readlines()]
+
+            idx = 1
+            for row in rows:
+                for player in row.split(": ")[1].split(", "):
+                    player = parsePlayer(player)
+                    if player not in ranks[pos]:
+                        ranks[pos][player] = {}
+                    ranks[pos][player][fmt] = idx
+                    idx += 1
+
+    for pos in ["QB"]:
+        url = f"https://s3-us-west-1.amazonaws.com/fftiers/out/text_{pos}.txt"
         time.sleep(0.2)
         call(["curl", "-k", url, "-o", outfile])
+
+        if pos not in ranks:
+            ranks[pos] = {}
         
         with open(outfile) as fh:
             rows = [row.strip() for row in fh.readlines()]
 
+        idx = 1
         for row in rows:
-            tier = row.split(": ")[0].split(" ")[-1]
             for player in row.split(": ")[1].split(", "):
                 player = parsePlayer(player)
-                tiers[player] = tier
+                if player not in ranks[pos]:
+                    ranks[pos][player] = {}
+                ranks[pos][player] = idx
+                idx += 1
 
-    posTiers = {}
-    base = "https://s3-us-west-1.amazonaws.com/fftiers/out/text_"
-    for pos in ["qb", "rb", "wr", "te"]:
-        if pos == "qb":
-            url = f"{base}{pos.upper()}.txt"
-        else:
-            url = f"{base}{pos.upper()}-HALF.txt"
-        time.sleep(0.2)
-        call(["curl", "-k", url, "-o", outfile])
-        
-        with open(outfile) as fh:
-            rows = [row.strip() for row in fh.readlines()]
-
-        for row in rows:
-            tier = row.split(": ")[0].split(" ")[-1]
-            for player in row.split(": ")[1].split(", "):
-                player = parsePlayer(player)
-                posTiers[player] = tier
-
-    with open(f"{prefix}static/draft/tiers.json", "w") as fh:
-        json.dump(tiers, fh, indent=4)
-
-    with open(f"{prefix}static/draft/posTiers.json", "w") as fh:
-        json.dump(posTiers, fh, indent=4)
+    with open(f"{prefix}static/nfl/borischenRanks.json", "w") as fh:
+        json.dump(ranks, fh, indent=4)
 
 def writeDepthCharts():
     data = {}

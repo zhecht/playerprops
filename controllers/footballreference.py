@@ -81,6 +81,7 @@ def writeStats(week):
 
 		stats[week][game]["scoring"] = {}
 		score = [0,0]
+		twoPt = {}
 		for scoring in data["scoringPlays"]:
 			q = str(scoring["period"]["number"])
 			if q not in stats[week][game]["scoring"]:
@@ -90,6 +91,25 @@ def writeStats(week):
 				stats[week][game]["scoring"][q] = [stats[week][game]["scoring"][q][0] + scoring["awayScore"] - score[0], stats[week][game]["scoring"][q][1] + scoring["homeScore"] - score[1]]
 			#print(q, score, scoring["awayScore"], scoring["homeScore"])
 			score = [scoring["awayScore"], scoring["homeScore"]]
+			if "Two-Point Conversion" in scoring["text"]:
+				txt = scoring["text"].lower()
+				if "failed" in txt:
+					continue
+				if " run " in txt:
+					player = parsePlayer(txt.split("(")[-1].split(" run ")[0])
+					if player not in twoPt:
+						twoPt[player] = 0
+					twoPt[player] += 1
+				else:
+					player = parsePlayer(txt.split("(")[-1].split(" pass ")[0])
+					if player not in twoPt:
+						twoPt[player] = 0
+					twoPt[player] += 1
+
+					player = parsePlayer(txt.split("(")[-1].split(" pass to ")[-1].split(" for two")[0])
+					if player not in twoPt:
+						twoPt[player] = 0
+					twoPt[player] += 1
 
 		for i in range(1, 5):
 			if str(i) not in stats[week][game]["scoring"]:
@@ -131,7 +151,10 @@ def writeStats(week):
 				for playerRow in statRow["athletes"]:
 					player = parsePlayer(playerRow["athlete"]["displayName"])
 					if player not in stats[week][game]:
-						stats[week][game][player] = {}
+						stats[week][game][player] = {"2pt": 0}
+					if player in twoPt:
+						stats[week][game][player]["2pt"] += twoPt[player]
+						del twoPt[player]
 					for stat, hdr in zip(playerRow["stats"], headers):
 						if "/" in hdr:
 							s1,s2 = map(str, stat.split("/"))
@@ -139,6 +162,12 @@ def writeStats(week):
 							stats[week][game][player]["pass_"+hdr.split("/")[1]] = s2
 						else:
 							stats[week][game][player][hdr] = stat
+
+					if "rec_yd" in stats[week][game][player]:
+						if "fumbles_lost" not in stats[week][game][player]:
+							stats[week][game][player]["fumbles_lost"] = 0.0
+							stats[week][game][player]["fumbles_fum"] = 0.0
+							stats[week][game][player]["fumbles_rec"] = 0.0
 
 	with open(f"static/nfl/stats.json", "w") as fh:
 		json.dump(stats, fh, indent=4)
@@ -367,6 +396,7 @@ def writeTrends():
 	week = max(len(redzoneTotals["ari"]["rb"]), len(redzoneTotals["atl"]["rb"]))
 	for pos in ["rb", "wr/te"]:
 		data = []
+		table = []
 		for team in snaps:
 			for player in snaps[team]:
 
@@ -540,6 +570,8 @@ def writeRosters():
 				playerId = int(nameLink[-2])
 				playerIds[team][fullName] = playerId
 				roster[team][fullName] = row.findAll("td")[2].text.strip()
+				if fullName == "taysom hill":
+					roster[team][fullName] = "TE"
 
 	with open(f"static/nfl/roster.json", "w") as fh:
 		json.dump(roster, fh, indent=4)

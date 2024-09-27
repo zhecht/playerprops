@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NFL Vegas Ranks</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<script type="text/javascript" src="/static/js/shared.js"></script>
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			height: 80%;
+			margin-top: 5%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 100vh;
+		}
+		table {
+			display: flex;
+			justify-content: center;
+			border-collapse: collapse;
+		}
+		tr {
+			border: 1px solid;
+		}
+		td, th {
+			text-align: center;
+			padding: 10px;
+		}
+		h4 {
+			text-align: center;
+			margin: 0;
+			margin-bottom: 5px;
+			width: 60%;
+			margin-left: 20%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#header {
+			height: 10%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+		}
+		button {
+			padding:5px;
+		}
+		button:hover {
+			cursor: pointer;
+		}
+		a.active {
+			font-weight: bold;
+			text-decoration: underline;
+		}
+		button.active {
+			background: green;
+		}
+
+		#bestTable, #worstTable {
+			height: 300px;
+		}
+		a {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+			text-decoration: none;
+			color: #3391ff;
+		}
+		.tabulator-cell a {
+			color: inherit;
+		}
+		#bestWorst {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-evenly;
+		}
+		.mean, .percErr {
+			display: none;
+		}
+		.negative { color: red; }
+		.positive { color: green; font-weight:bold; }
+
+		@media (max-width: 450px) {
+			body {
+				height:100%;
+			}
+			#tableDiv {
+				align-items: center;
+				flex-direction: column;
+				height: 100%;
+			}
+			#propsTable {
+				height:300px;
+				width: 100%;
+			}
+			#bestWorst, #bestTable, #worstTable {
+				width: 100%;
+			}
+
+			h4 {
+				margin-top: 10px;
+			}
+		}
+	</style>
+	<body>
+		<div id="tableDiv">
+			<div id="propsTable"></div>
+			<div style="display: flex; flex-direction: column; justify-content: space-evenly;">
+				<div>
+					<div style="text-align: center; margin-bottom: 10px;">
+						<input type="radio" name="stat" id="median" checked onChange="changeStat(this)" />
+						<label for="median">Median</label>
+						<input type="radio" name="stat" id="mean" onChange="changeStat(this)" />
+						<label for="mean">Mean</label>
+						<input type="radio" name="stat" id="percErr" onChange="changeStat(this)" />
+						<label for="percErr">% Err</label>
+					</div>
+					<h4><span>Median</span> Difference btwn Actual ranks</h4>
+					<table>
+						<tr>
+							<th></th>
+							<th>Vegas</th>
+							<th>ECR</th>
+						</tr>
+						{% for pos in posStatistics %}
+							<tr>
+								<td>{{pos}}</td>
+								<td class="stat median">{{posStatistics[pos]["vegasMedian"]}}</td>
+								<td class="stat median">{{posStatistics[pos]["ecrMedian"]}}</td>
+								<td class="stat mean">{{posStatistics[pos]["vegasMean"]}}</td>
+								<td class="stat mean">{{posStatistics[pos]["ecrMean"]}}</td>
+								<td class="stat percErr">{{posStatistics[pos]["vegasPercErr"]}}</td>
+								<td class="stat percErr">{{posStatistics[pos]["ecrPercErr"]}}</td>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+
+				<div>
+					<h4><span>Median</span> Difference btwn Actual ranks when Vegas/ECR differ by ±3</h4>
+					<table>
+						<tr>
+							<th></th>
+							<th>Vegas</th>
+							<th>ECR</th>
+						</tr>
+						{% for pos in posStatistics %}
+							<tr>
+								<td>{{pos}}</td>
+								<td class="stat median">{{posStatistics[pos]["vegasMedianPlusMinus"]}}</td>
+								<td class="stat median">{{posStatistics[pos]["ecrMedianPlusMinus"]}}</td>
+								<td class="stat mean">{{posStatistics[pos]["vegasMeanPlusMinus"]}}</td>
+								<td class="stat mean">{{posStatistics[pos]["ecrMeanPlusMinus"]}}</td>
+								<td class="stat percErr">{{posStatistics[pos]["vegasMeanPlusMinusPercErr"]}}</td>
+								<td class="stat percErr">{{posStatistics[pos]["ecrMeanPlusMinusPercErr"]}}</td>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+			<div id="bestWorst">
+				<div>
+					<div style="text-align: center; margin-bottom: 5px;">Best Vegas Projections</div>
+					<div id="bestTable"></div>
+				</div>
+
+				<div>
+					<div style="text-align: center; margin-bottom: 5px;">Worst Vegas Projections</div>
+					<div id="worstTable"></div>
+				</div>
+			</div>
+		</div>
+		<script>
+			let TABLE;
+			const propArg = "{{prop}}";
+
+			function changePos(el) {
+				let pos = el.innerText.toLowerCase();
+				TABLE.clearFilter();
+				if (pos != "all") {
+					TABLE.setFilter([{field:"pos", type:"=", value:pos.toUpperCase()}]);
+				}
+
+				if (["all", "qb"].includes(pos)) {
+					TABLE.showColumn("pass_td");
+					TABLE.showColumn("pass_yd");
+					TABLE.showColumn("int");
+				} else {
+					TABLE.hideColumn("pass_td");
+					TABLE.hideColumn("pass_yd");
+					TABLE.hideColumn("int");
+				}
+
+				document.querySelector(".pos.active").classList.remove("active");
+				el.classList.add("active");
+			}
+
+			function changeFormat(el) {
+				let format = el.innerText.toLowerCase();
+				document.querySelector(".format.active").classList.remove("active");
+				el.classList.add("active");
+
+				renderTable("all", format);
+
+				setTimeout(function() {
+					let pos = document.querySelector(".pos.active").innerText.toLowerCase();
+					if (pos != "all") {
+						TABLE.setFilter([{field:"pos", type:"=", value:pos.toUpperCase()}]);
+					}
+					if (["all", "qb"].includes(pos)) {
+						TABLE.showColumn("pass_td");
+						TABLE.showColumn("pass_yd");
+						TABLE.showColumn("int");
+					} else {
+						TABLE.hideColumn("pass_td");
+						TABLE.hideColumn("pass_yd");
+						TABLE.hideColumn("int");
+					}
+				}, 500);
+			}
+
+			function groupBy() {
+				if (TABLE.options.groupBy === undefined || TABLE.options.groupBy === false) {
+					TABLE.setGroupBy("game");
+				} else {
+					TABLE.setGroupBy();
+				}
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const diffFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() > 0) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				} else if (cell.getValue() < 0) {
+					return "<div class='negative'>"+cell.getValue()+"</div>";	
+				}
+				return "<div>"+cell.getValue()+"</div>";
+			}
+
+			function posFilter(headerValue, rowValue, rowData, filterParams){
+				return headerValue == rowData["pos"];
+			}
+
+			function renderTable(prop="all", format="half") {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					layout: "fitColumns",
+					data: {{tableData|safe}},
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					
+					initialSort: [
+						{column: "rank", dir: "asc"},
+					],
+					initialHeaderFilter: [
+						{field: "posRank", value: "RB"}
+					],
+					columns: [
+						//{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){ 	cell.getRow().toggleSelect(); }},
+						{title: "Pos", field: "pos", visible: false},
+						{title: "WK3 Rank", field: "posRank", hozAlign: "center", headerFilter: "select", headerFilterPlaceholder: "RB", headerFilterFunc: posFilter, headerFilterParams:{values:{"QB":"QB", "RB":"RB", "WR":"WR", "TE":"TE"}}},
+						{title: "Player", field: "player", headerFilter: "input", width: 125},
+						{title: "Vegas", field: "vegas", hozAlign: "center"},
+						{title: "ECR", field: "ecr", hozAlign: "center"},
+					]
+				})
+
+				TABLE.on("rowClick", function(e, row) {
+					for (r of TABLE.getSelectedRows()) {
+						r.toggleSelect();
+					}
+					row.toggleSelect()
+				});
+			}
+
+			function renderBestTable() {
+				TABLE = new Tabulator("#bestTable", {
+					tooltipsHeader: true,
+					layout: "fitColumns",
+					data: {{best|safe}},
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					
+					initialSort: [
+						{column: "actualDiff", dir: "desc"},
+					],
+					columns: [
+						{title: "WK3 Rank", field: "posRank", hozAlign: "center"},
+						{title: "Player", field: "player", width: 125},
+						{title: "Vegas", field: "vegas", hozAlign: "center"},
+						{title: "ECR", field: "ecr", hozAlign: "center"},
+					]
+				})
+			}
+
+			function renderWorstTable() {
+				TABLE = new Tabulator("#worstTable", {
+					tooltipsHeader: true,
+					layout: "fitColumns",
+					data: {{worst|safe}},
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					
+					initialSort: [
+						{column: "actualDiff", dir: "desc"},
+					],
+					columns: [
+						{title: "WK3 Rank", field: "posRank", hozAlign: "center"},
+						{title: "Player", field: "player", width: 125},
+						{title: "Vegas", field: "vegas", hozAlign: "center"},
+						{title: "ECR", field: "ecr", hozAlign: "center"},
+					]
+				})
+			}
+
+			renderTable();
+			renderBestTable();
+			renderWorstTable();
+
+			function highlight(stat="") {
+				if (!stat) {
+					stat = document.querySelector("input[checked]").id;
+				}
+				for (let row of document.querySelectorAll("tr")) {
+					if (row.querySelectorAll("th").length > 0) {
+						continue;
+					}
+					let v1 = parseFloat(row.querySelectorAll("td."+stat)[0].innerText);
+					let v2 = parseFloat(row.querySelectorAll("td."+stat)[1].innerText);
+					if (v1 > v2) {
+						row.querySelectorAll("td."+stat)[1].classList.add("positive");
+					} else if (v1 < v2) {
+						row.querySelectorAll("td."+stat)[0].classList.add("positive");
+					} else {
+						row.querySelectorAll("td."+stat)[0].classList.add("positive");
+						row.querySelectorAll("td."+stat)[1].classList.add("positive");
+					}
+				}
+			}
+
+			function changeStat(el) {
+				for (e of document.querySelectorAll(".stat")) {
+					if (Array.from(e.classList).includes(el.id)) {
+						e.style.display = "table-cell";
+					} else {
+						e.style.display = "none";
+					}
+				}
+				highlight(el.id);
+				for (e of document.querySelectorAll("h4 span")) {
+					e.innerText = el.id[0].toUpperCase()+el.id.substr(1);
+				}
+			}
+
+			document.querySelector("#median").checked = true;
+			highlight();
+
+		</script>
+		{% if prop != "" %}
+			<script>
+				//TABLE.setFilter([{field:"prop", type:"=", value:"{{prop}}"}]);
+			</script>
+		{% endif %}
+	</body>
+
+</html>

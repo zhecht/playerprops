@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NFL Vegas Ranks</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<script type="text/javascript" src="/static/js/shared.js"></script>
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+			//width: 100%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#header {
+			height: 8%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+		}
+		button {
+			padding:5px;
+		}
+		button:hover {
+			cursor: pointer;
+		}
+		a.active {
+			font-weight: bold;
+			text-decoration: underline;
+		}
+		button.active {
+			background: green;
+		}
+		a {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+			text-decoration: none;
+			color: #3391ff;
+		}
+		.tabulator-cell a {
+			color: inherit;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+		.yellow { background-color:yellow; }
+	</style>
+	<body>
+		<div id="header">
+			<button class="pos active" onclick="changePos(this)">ALL</button>
+			<button class="pos" onclick="changePos(this)">QB</button>
+			<button class="pos" onclick="changePos(this)">RB</button>
+			<button class="pos" onclick="changePos(this)">WR</button>
+			<button class="pos" onclick="changePos(this)">TE</button>
+
+
+			<button class="format" onclick="changeFormat(this)" style="margin-left: 2%">STD</button>
+			<button class="format active" onclick="changeFormat(this)">HALF</button>
+			<button class="format" onclick="changeFormat(this)">PPR</button>
+		</div>
+		<div style="text-align: center; margin-bottom: 2%">
+			Highlighted cells do not have a Vegas projection and use FPros projections instead
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable">
+				<!-- {{table|safe}} -->
+			</div>
+		</div>
+		<script>
+			let TABLE;
+			const propArg = "{{prop}}";
+
+			function changePos(el) {
+				let pos = el.innerText.toLowerCase();
+				TABLE.clearFilter();
+				if (pos != "all") {
+					TABLE.setFilter([{field:"pos", type:"=", value:pos.toUpperCase()}]);
+				}
+
+				if (["all", "qb"].includes(pos)) {
+					TABLE.showColumn("pass_td");
+					TABLE.showColumn("pass_yd");
+					TABLE.showColumn("int");
+				} else {
+					TABLE.hideColumn("pass_td");
+					TABLE.hideColumn("pass_yd");
+					TABLE.hideColumn("int");
+				}
+
+				document.querySelector(".pos.active").classList.remove("active");
+				el.classList.add("active");
+			}
+
+			function changeFormat(el) {
+				let format = el.innerText.toLowerCase();
+				document.querySelector(".format.active").classList.remove("active");
+				el.classList.add("active");
+
+				renderTable("all", format);
+
+				setTimeout(function() {
+					let pos = document.querySelector(".pos.active").innerText.toLowerCase();
+					if (pos != "all") {
+						TABLE.setFilter([{field:"pos", type:"=", value:pos.toUpperCase()}]);
+					}
+					if (["all", "qb"].includes(pos)) {
+						TABLE.showColumn("pass_td");
+						TABLE.showColumn("pass_yd");
+						TABLE.showColumn("int");
+					} else {
+						TABLE.hideColumn("pass_td");
+						TABLE.hideColumn("pass_yd");
+						TABLE.hideColumn("int");
+					}
+				}, 500);
+			}
+
+			function groupBy() {
+				if (TABLE.options.groupBy === undefined || TABLE.options.groupBy === false) {
+					TABLE.setGroupBy("game");
+				} else {
+					TABLE.setGroupBy();
+				}
+			}
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const diffFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() > 0) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				} else if (cell.getValue() < 0) {
+					return "<div class='negative'>"+cell.getValue()+"</div>";	
+				}
+				return "<div>"+cell.getValue()+"</div>";
+			}
+
+			const incFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (data.inc.split(",").includes(cell.getField())) {
+					return "<div class='yellow'>"+cell.getValue()+"</div>";	
+				}
+				return "<div>"+cell.getValue()+"</div>";
+			}
+
+			function renderTable(prop="all", format="half") {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getVegasRanks",
+					ajaxParams:{prop: prop, format: format},
+					layout: "fitData",
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					
+					initialSort: [
+						{column: "pts", dir: "desc"},
+					],
+					columns: [
+						//{formatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){ 	cell.getRow().toggleSelect(); }},
+						{title: "Pos", field: "pos", visible: false},
+						{title: "Rank", field: "rank", hozAlign: "center"},
+						{title: "vs ECR", field: "fpDiff", hozAlign: "center", formatter: diffFormatter},
+						//{title: "vs Boris", field: "borisDiff", hozAlign: "center", formatter: diffFormatter},
+						{title: "FPts", field: "pts", sorter: "number", hozAlign: "center"},
+						{title: "Player", field: "player", headerFilter: "input"},
+						{title: "ATTD", field: "attd", hozAlign: "center"},
+						{title: "Pass TDs", field: "pass_td", hozAlign: "center", formatter: incFormatter},
+						{title: "Pass YDs", field: "pass_yd", hozAlign: "center", formatter: incFormatter},
+						{title: "Int", field: "int", hozAlign: "center", formatter: incFormatter},
+						{title: "Rush YDs", field: "rush_yd", hozAlign: "center", formatter: incFormatter},
+						{title: "Rec", field: "rec", hozAlign: "center", formatter: incFormatter},
+						{title: "Rec YDs", field: "rec_yd", hozAlign: "center", formatter: incFormatter},
+					]
+				})
+			}
+
+			renderTable();
+
+		</script>
+		{% if prop != "" %}
+			<script>
+				//TABLE.setFilter([{field:"prop", type:"=", value:"{{prop}}"}]);
+			</script>
+		{% endif %}
+	</body>
+
+</html>

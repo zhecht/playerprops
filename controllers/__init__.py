@@ -13,3 +13,4 @@ from controllers.ravendawn import *
 from controllers.profootballreference import *
 from controllers.mlbdraft import *
 from controllers.ncaab import *
+from controllers.nfl import *

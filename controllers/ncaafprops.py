@@ -462,6 +462,8 @@ def writeESPN():
 			}
 			if (team == "north carolina state") {
 				return "nc state";
+			} else if (team == "miami (oh)") {
+				return "miami ohio";
 			}
 			return team;
 		}
@@ -1149,50 +1151,61 @@ def writeMGM():
 """
 
 	ids = [
-  "16265867",
-  "16266071",
-  "16257523",
-  "16257524",
-  "16257525",
-  "16257526",
-  "16257527",
-  "16257528",
-  "16266074",
-  "16257580",
-  "16257529",
-  "16266073",
-  "16257585",
-  "16257582",
-  "16257581",
-  "16266249",
-  "16257584",
-  "16257583",
-  "16266075",
-  "16266079",
-  "16266080",
-  "16266078",
-  "16266076",
-  "16257586",
-  "15860769",
-  "15860768",
-  "16257587",
-  "16257588",
-  "16266082",
-  "16257589",
-  "16257590",
-  "16257591",
-  "16257593",
-  "16257592",
-  "16257594",
-  "16279234",
-  "16279237",
-  "16279233",
-  "16279312",
-  "16279236"
+  "16319218",
+  "15860730",
+  "16319289",
+  "16319226",
+  "16319221",
+  "16319278",
+  "16319234",
+  "16319285",
+  "16319291",
+  "16341634",
+  "16341633",
+  "16341632",
+  "16319287",
+  "15860728",
+  "16319295",
+  "16319286",
+  "16319280",
+  "16319273",
+  "16319292",
+  "16319227",
+  "16319282",
+  "16319229",
+  "16319293",
+  "16319294",
+  "16319296",
+  "16319297",
+  "16319284",
+  "15860729",
+  "16319290",
+  "16319228",
+  "16319222",
+  "16319279",
+  "16319281",
+  "16319220",
+  "16319274",
+  "16319277",
+  "16319235",
+  "16319236",
+  "16343272",
+  "16343273",
+  "16341691",
+  "16341692",
+  "16341693",
+  "16341631",
+  "16341694",
+  "16341634",
+  "16341632",
+  "16341633",
+  "16341695",
+  "16341697",
+  "16341696"
 ]
 
 
-	#ids = ["15860766"]
+	#ids = ["15860730"]
 	for mgmid in ids:
 		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
 		time.sleep(0.3)
@@ -1218,7 +1231,10 @@ def writeMGM():
 		game = f"{fullTeam1} @ {fullTeam2}"
 
 		res[game] = {}
-		for row in data["games"]:
+		d = data["games"]
+		if not d:
+			d = data["optionMarkets"]
+		for row in d:
 			prop = row["name"]["value"].lower()
 
 			prefix = player = ""
@@ -1296,10 +1312,16 @@ def writeMGM():
 
 			prop = prefix+prop
 
-			results = row['results']
-			ou = f"{results[0]['americanOdds']}/{results[1]['americanOdds']}"
+			try:
+				results = row.get('results', row['options'])
+			except:
+				continue
+
+			price = results[0]
+			if "price" in price:
+				price = price["price"]
 			if "ml" in prop:
-				res[game][prop] = ou
+				res[game][prop] = f"{price['americanOdds']}/{results[1]['price']['americanOdds']}"
 			elif len(results) >= 2:
 				skip = 1 if prop in ["attd", "ftd", "2+td", "team_ftd"] else 2
 				for idx in range(0, len(results), skip):
@@ -1309,10 +1331,12 @@ def writeMGM():
 					else:
 						val = val.split(" ")[-1]
 					#print(game, prop, player)
-					if prop in ["attd", "ftd", "2+td", "team_ftd"]:
-						ou = str(results[idx]['americanOdds'])
-					else:
-						ou = f"{results[idx]['americanOdds']}/{results[idx+1]['americanOdds']}"
+					ou = f"{results[idx].get('americanOdds', results[idx]['price']['americanOdds'])}"
+					try:
+						if prop not in ["attd", "ftd", "2+td", "team_ftd"]:
+							ou += f"/{results[idx+1].get('americanOdds', results[idx+1]['price']['americanOdds'])}"
+					except:
+						pass
 
 					if prop in ["attd", "ftd", "2+td", "team_ftd"]:
 						player = results[idx]["name"]["value"].lower()

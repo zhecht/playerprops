@@ -1,4 +1,4 @@
-
+from flask import *
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
@@ -10,6 +10,8 @@ import argparse
 import unicodedata
 import time
 from twilio.rest import Client
+
+nfl_blueprint = Blueprint('nfl', __name__, template_folder='views')
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -72,6 +74,16 @@ def convertAmericanOdds(avg):
 	else:
 		avg = -100 / (avg - 1)
 	return round(avg)
+
+def avg(a):
+	return sum(a) / len(a)
+
+def median(a):
+	a = sorted(a)
+	if len(a) % 2 != 0:
+		return float(a[len(a) // 2])
+	else:
+		return (a[(len(a) // 2) - 1] + a[len(a) // 2]) / 2
 
 actionNetworkBookIds = {
 	1541: "draftkings",
@@ -1634,6 +1646,7 @@ def writeFanduelManual():
 				let prop = "";
 				let line = "";
 				let player = "";
+				let fullPlayer = "";
 				let label = arrow.innerText.toLowerCase();
 				let div = arrow.parentElement.parentElement.parentElement;
 				let skip = 2;
@@ -1681,6 +1694,7 @@ def writeFanduelManual():
 					prop = label.replace("player total ", "").replace("player ", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("completions", "cmp").replace("attempts", "att").replace("assists", "ast").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
 				} else if (label.includes(" - alt")) {
 					skip = 1;
+					fullPlayer = label.split(" -")[0];
 					player = parsePlayer(label.split(" -")[0]);
 					prop = label.split("alt ")[1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replaceAll(" ", "_");
 				} else if (label.includes(" - passing + rushing yds")) {
@@ -1837,7 +1851,7 @@ def writeFanduelManual():
 							player = parsePlayer(fields[1].split(" to Record")[0]);
 							line = "0.5";
 						} else {
-							line = fields[i].toLowerCase().replace(player+" ", "").split(" ")[0].replace("+", "");
+							line = fields[i].toLowerCase().replace(fullPlayer+" ", "").split(" ")[0].replace("+", "");
 							line = (parseFloat(line) - 0.5).toString();
 						}
 						if (!data[game][prop][player]) {
@@ -2583,6 +2597,9 @@ def write365():
 						odds = el.querySelector("span").innerText;
 						data[game][prop][players[idx]] = arr[idx]+"/"+odds;
 					} else if (prop.includes("spread")) {
+						if (odds == null) {
+							continue;
+						}
 						let line = (parseFloat(odds.innerText.replace("+", "")) * -1).toFixed(1);
 						odds = el.querySelectorAll("span")[1].innerText;
 						data[game][prop][line] = arr[idx]+"/"+odds;
@@ -2796,6 +2813,18 @@ def parseESPN(espnLines, noespn=None):
 			last = player.split(" ")[-1]
 			if team == "car" and player == "dillon johnson":
 				continue
+			elif team == "jax" and player == "josh hines allen":
+				continue
+			elif team == "car" and player == "dj johnson":
+				continue
+			elif team == "ari" and player == "mack wilson":
+				continue
+			elif team == "gb" and player == "eric wilson":
+				continue
+			elif team == "cle" and player == "danthony bell":
+				continue
+			elif team == "kc" and player == "jaylen watson":
+				continue
 			players[team][f"{first} {last}"] = player
 
 	if not noespn:
@@ -2823,11 +2852,12 @@ def parseESPN(espnLines, noespn=None):
 						else:
 							espnLines[game][prop][player] = espn[game][prop][p].copy()
 
-def writeFantasyPros():
+def writeFantasyProsProjections():
 
 	# avg between numberfire, nfl.com, fantasypros, cbs, fftoday, espn
 	data = {}
 	for pos in ["qb", "rb", "wr", "te", "k", "dst"]:
+	#for pos in ["te"]:
 		url = f"https://www.fantasypros.com/nfl/projections/{pos}.php?scoring=HALF"
 		outfile = "outnfl"
 		time.sleep(0.3)
@@ -2850,15 +2880,87 @@ def writeFantasyPros():
 				hdr = mainHeader[idx]+"_"+hdr
 			headers.append(hdr.replace("_yds", "_yd").replace("_tds", "_td").replace("rec_rec", "rec").replace("pass_ints", "int"))
 
-		for idx, row in enumerate(table.findAll("tr")[2:]):
-			p = row.find("td").find("a").text
-			player = parsePlayer(p)
-			team = row.find("td").text.replace(p+" ", "").lower().replace("wsh", "was").replace("jac", "jax")
+		for row in table.findAll("tr")[2:]:
+			player = parsePlayer(row.find("td").find("a").text)
+			if player not in data:
+				data[player] = {
+					"pos": pos
+				}
+			for col, hdr in zip(row.findAll("td")[1:], headers):
+				data[player][hdr] = float(col.text.strip().replace(",", ""))
 
-			if team not in data:
-				data[team] = {}
+	with open(f"{prefix}static/nfl/fprosProjections.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 
-			data[team][player] = f"{pos.upper()}{idx+1} {row.findAll('td')[-1].text}"
+def writeFantasyPros():
+
+	# avg between numberfire, nfl.com, fantasypros, cbs, fftoday, espn
+	data = {}
+
+	for fmt in ["std", "half", "ppr"]:
+		for pos in ["rb", "wr", "te"]:
+			url = f"https://www.fantasypros.com/nfl/rankings/"
+			if fmt == "std":
+				url += pos
+			elif fmt == "half":
+				url += f"half-point-ppr-{pos}"
+			else:
+				url += f"ppr-{pos}"
+			url += ".php"
+
+			outfile = "outnfl"
+			time.sleep(0.3)
+			call(["curl", "-k", url, "-o", outfile])
+			soup = BS(open(outfile, 'rb').read(), "lxml")
+
+			js = "{}"
+			for script in soup.findAll("script"):
+				if "var ecrData" in script.text:
+					m = re.search(r"var ecrData = {(.*?)};", script.text)
+					if m:
+						js = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+						js = f"{{{js}}}"
+						break
+
+			js = eval(js)
+			
+			for idx, playerRow in enumerate(js["players"]):
+				team = playerRow["player_team_id"].lower().replace("wsh", "was").replace("jac", "jax")
+				player = parsePlayer(playerRow["player_name"])
+
+				if pos.upper() not in data:
+					data[pos.upper()] = {}
+				if player not in data[pos.upper()]:
+					data[pos.upper()][player] = {}
+
+				data[pos.upper()][player][fmt] = idx + 1
+
+	for pos in ["qb", "k", "dst"]:
+		url = f"https://www.fantasypros.com/nfl/rankings/{pos}.php"
+		outfile = "outnfl"
+		time.sleep(0.3)
+		call(["curl", "-k", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		js = "{}"
+		for script in soup.findAll("script"):
+			if "var ecrData" in script.text:
+				m = re.search(r"var ecrData = {(.*?)};", script.text)
+				if m:
+					js = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+					js = f"{{{js}}}"
+					break
+
+		js = eval(js)
+
+		for idx, playerRow in enumerate(js["players"]):
+			team = playerRow["player_team_id"].lower().replace("wsh", "was").replace("jac", "jax")
+			player = parsePlayer(playerRow["player_name"])
+
+			if pos.upper() not in data:
+				data[pos.upper()] = {}
+
+			data[pos.upper()][player] = idx + 1
 
 	with open(f"{prefix}static/nfl/fpros.json", "w") as fh:
 		json.dump(data, fh, indent=4)
@@ -2893,6 +2995,9 @@ def writeRanks(teamArg=None):
 
 	with open(f"{prefix}static/nfl/fpros.json") as fh:
 		fpros = json.load(fh)
+
+	with open(f"{prefix}static/nfl/fprosProjections.json") as fh:
+		fprosProj = json.load(fh)
 
 	with open(f"{prefix}static/nfl/schedule.json") as fh:
 		schedule = json.load(fh)
@@ -2995,6 +3100,393 @@ def writeRanks(teamArg=None):
 	with open("static/nfl/ranksData.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
+	for formatArg in ["std", "half", "ppr"]:
+		sortedOutputs = {"ALL": []}
+		for team in data:
+			for player in data[team]:
+				pos = roster[team][player]
+				if pos not in sortedOutputs:
+					sortedOutputs[pos] = []
+				j = {}
+				inc = {}
+				for prop in data[team][player]:
+					arr = []
+					for line in data[team][player][prop]:
+						odds = data[team][player][prop][line]
+						l = []
+						for o in odds:
+							implied = getFairValue(o)
+							l.append(implied)
+						l = sorted(l)
+						avgOdds = averageOdds(odds)
+						#avgImplied = sum(l) / len(l)
+
+						#if player == "jalen hurts" and prop == "pass_td":
+						#	print(line, avgOdds)
+						
+						#print(player, prop, line)
+						arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power"), avgOdds))
+						#arr.append((abs(0.5-avgImplied), len(odds), line, avgOdds, avgImplied))
+
+					if not arr:
+						continue
+
+					arr = sorted(arr, reverse=True)
+
+					j[prop] = {}
+					tot = last = 0
+					for line, implied, avg in arr:
+						if not implied:
+							implied = .002
+						tot += (implied - last)
+						j[prop][line] = implied - last
+						if player == "breece hall" and prop == "attd" and formatArg == "half":
+							print(line, implied, implied-last, avg)
+						last = implied
+
+					j[prop][0] = 1 - tot
+
+				pts = 0
+				propPts = {}
+				for prop in j:
+					propPts[prop] = 0
+					for line in j[prop]:
+						p = calcPoints(prop, line * j[prop][line], formatArg)
+						propPts[prop] += p
+					pts += propPts[prop]
+
+				# use fpros to fill in blanks from vegas
+				props = ["rush_yd", "rec", "rec_yd"]
+				if pos == "WR" or pos == "TE":
+					props = ["rec", "rec_yd"]
+				elif pos == "QB":
+					props = ["pass_td", "pass_yd", "int", "rush_yd"]
+
+				for prop in props:
+					if prop not in propPts and player in fprosProj:
+						inc[prop] = True
+						p = calcPoints(prop, fprosProj[player][prop], formatArg)
+						propPts[prop] = p
+						pts += p
+				#if player == "josh allen":
+				#	print(pts, propPts)
+
+				sortedOutputs[pos].append((pts, player, pos, team, propPts, inc, j))
+				sortedOutputs["ALL"].append((pts, player, pos, team, propPts, inc, j))
+
+		reddit = ""
+		table = []
+		for pos in ["ALL", "QB", "RB", "WR", "TE"]:
+			output = "\tvs ECR\tPTS\tPLAYER"
+			reddit += "PTS|PLAYER"
+			props = ["attd", "rec", "rec_yd"]
+			if pos == "QB":
+				props = ["attd", "pass_td", "pass_yd", "int", "rush_yd"]
+			elif pos == "RB":
+				props = ["attd", "rush_yd", "rec", "rec_yd"]
+			elif pos == "ALL":
+				props = ["attd", "pass_td", "pass_yd", "int", "rush_yd", "rec", "rec_yd"]
+
+			for prop in props:
+				output += f"\t{prop.upper()}"
+			output += "\tINC"
+			output += "\n"
+			reddit += "\n"
+
+			posIdx = {}
+			for pts, player, p, team, propPts, inc, j in sorted(sortedOutputs[pos], reverse=True):
+				if p not in posIdx:
+					posIdx[p] = 1
+				x = f"{p}{posIdx[p]}"
+				if pos == "RB" and player == "breece hall" and formatArg == "half":
+					print(player, propPts["attd"], j["attd"])
+				output += f"{x}"
+				fpDiff = "-"
+				if player in fpros[p] and (p == "QB" or formatArg in fpros[p][player]):
+					if p == "QB":
+						fpDiff = fpros[p][player] - posIdx[p]
+					else:
+						fpDiff = fpros[p][player][formatArg] - posIdx[p]
+					if fpDiff > 0:
+						fpDiff = f"'+{fpDiff}"
+					else:
+						fpDiff = str(fpDiff)
+
+				j = {
+					"player": player.title(),
+					"pos": p,
+					"rank": x,
+					"pts": round(pts, 1),
+					"fpDiff": fpDiff.replace("'", ""),
+				}
+
+				output += f"\t{fpDiff}\t{round(pts, 1)}\t{player.title()}"
+				#if team in opps:
+				#	output += f"\t{opps[team].upper()}"
+				#else:
+				#	output += f"\t-"
+				for prop in props:
+					x = 0
+					if prop in propPts:
+						x = round(propPts[prop], 2)
+					output += f"\t{x or '-'}"
+					j[prop] = x
+
+				j["inc"] = ",".join(inc.keys())
+
+				# incomplete highlight
+				output += "\t,"+",".join(inc.keys())+","
+				output += "\n"
+				if pos == "ALL":
+					table.append(j)
+				posIdx[p] += 1
+
+			if formatArg == "half":
+				with open(f"static/nfl/{pos}_rank.csv", "w") as fh:
+					fh.write(output)
+
+		with open(f"static/nfl/ranks_{formatArg}.json", "w") as fh:
+			json.dump(table, fh, indent=4)
+
+@nfl_blueprint.route('/getVegasRanks')
+def getVegasRanks_route():
+	propArg = request.args.get("prop")
+	formatArg = request.args.get("format")
+
+	res = []
+
+	with open(f"{prefix}static/nfl/ranks_{formatArg}.json") as fh:
+		res = json.load(fh)
+
+	return jsonify(res)
+
+@nfl_blueprint.route('/ranks')
+def ranks_route():
+	return render_template("ranks.html")
+
+@nfl_blueprint.route('/analyze')
+def analyze_route():
+	week = "3"
+
+	with open(f"{prefix}static/nfl/stats.json") as fh:
+		stats = json.load(fh)
+
+	with open(f"{prefix}static/nfl/roster.json") as fh:
+		roster = json.load(fh)
+
+	ecr = getECR(week)
+	vegas = getVegas(week)
+
+	right = []
+	posStatistics = {}
+	ecrDiffAll = []
+	vegasDiffAll = []
+	ecrDiffAllPercErr = []
+	vegasDiffAllPercErr = []
+	ecrDiffAllPlusMinus = []
+	vegasDiffAllPlusMinus = []
+	ecrDiffAllPlusMinusPercErr = []
+	vegasDiffAllPlusMinusPercErr = []
+	table = []
+	for pos in ["QB", "RB", "WR", "TE"]:
+		posStatistics[pos] = {}
+
+		actual = []
+		for game in stats[week]:
+			for player in stats[week][game]:
+				away, home = map(str, game.split(" @ "))
+				if player in roster[away]:
+					p = roster[away][player]
+				elif player in roster[home]:
+					p = roster[home][player]
+				else:
+					continue
+
+				if p != pos:
+					continue
+
+				pts = simpleCalcPoints(stats[week][game][player])
+				actual.append((pts, player))
+		
+		ecrDiff = []
+		vegasDiff = []
+		ecrDiffPercErr = []
+		vegasDiffPercErr = []
+		ecrDiffPlusMinus = []
+		vegasDiffPlusMinus = []
+		ecrDiffPlusMinusPercErr = []
+		vegasDiffPlusMinusPercErr = []
+		ecrDiffOutliers = []
+		vegasDiffOutliers = []
+		topCount = {}
+		cutoff = 48 # RB1->RB4
+		if pos == "WR":
+			cutoff = 72
+		elif pos in ["QB", "TE"]:
+			cutoff = 36
+		for rank, row in enumerate(sorted(actual, reverse=True)):
+			player = row[1]
+			e = ecr[pos].get(player, '-')
+			v = vegas[pos].get(player, '-')
+			if e == "-" or v == "-":
+				#print(f"{pos}{rank+1} {player.title()} vegas = {v}, ecr = {e}")
+				table.append({
+					"pos": pos,
+					"rank": rank+1,
+					"posRank": f"{pos}{rank+1}",
+					"player": player.title(),
+					"vegas": v,
+					"ecr": e
+				})
+				continue
+
+			# any difference, no outliers
+			if abs(v-e) >= 0 and abs(rank+1-v) <= cutoff - 12 and abs(rank+1-e) <= cutoff - 12:
+				vegasDiffOutliers.append(abs(rank+1 - v))
+				ecrDiffOutliers.append(abs(rank+1 - e))	
+			
+			if abs(v-e) >= 3:
+				vegasDiffPlusMinus.append(abs(rank+1 - v))
+				ecrDiffPlusMinus.append(abs(rank+1 - e))
+				vegasDiffAllPlusMinus.append(abs(rank+1 - v))
+				ecrDiffAllPlusMinus.append(abs(rank+1 - e))
+				vegasDiffPlusMinusPercErr.append(abs(rank+1 - v) / (rank+1))
+				ecrDiffPlusMinusPercErr.append(abs(rank+1 - e) / (rank+1))
+				vegasDiffAllPlusMinusPercErr.append(abs(rank+1 - v) / (rank+1))
+				ecrDiffAllPlusMinusPercErr.append(abs(rank+1 - e) / (rank+1))
+
+			vegasDiff.append(abs(rank+1 - v))
+			ecrDiff.append(abs(rank+1 - e))
+			vegasDiffPercErr.append(abs(rank+1 - v) / (rank+1))
+			ecrDiffPercErr.append(abs(rank+1 - e) / (rank+1))
+			vegasDiffAll.append(abs(rank+1 - v))
+			ecrDiffAll.append(abs(rank+1 - e))
+			vegasDiffAllPercErr.append(abs(rank+1 - v) / (rank+1))
+			ecrDiffAllPercErr.append(abs(rank+1 - e) / (rank+1))
+			right.append((abs(v-e), abs(rank+1 - v), abs(rank+1 - e), v, e, pos, player, rank))
+				
+				# percErr
+				#vegasDiff.append(abs(rank+1 - v) / (rank+1))
+				#ecrDiff.append(abs(rank+1 - e) / (rank+1))
+
+			#print(f"{pos}{rank+1} {player.title()} vegas = {v}, ecr = {e}")
+			table.append({
+				"pos": pos,
+				"rank": rank+1,
+				"posRank": f"{pos}{rank+1}",
+				"player": player.title(),
+				"vegas": v,
+				"ecr": e
+			})
+
+			if rank >= cutoff-1:
+			#if rank >= 11:
+				break
+
+		#print(" ")
+		#print(vegasDiff)
+		#print(f"median={median(vegasDiff)}, mean={round(avg(vegasDiff), 2)}, stdev={round(statistics.stdev(vegasDiff), 2)}")
+		#print(ecrDiff)
+		#print(f"median={median(ecrDiff)}, mean={round(avg(ecrDiff), 2)}, stdev={round(statistics.stdev(ecrDiff), 2)}\n")
+
+		posStatistics[pos] = {
+			"vegasMedian": median(vegasDiff),
+			"vegasMean": round(avg(vegasDiff), 2),
+			"vegasPercErr": round(avg(vegasDiffPercErr), 2),
+			"ecrMedian": median(ecrDiff),
+			"ecrMean": round(avg(ecrDiff), 2),
+			"ecrPercErr": round(avg(ecrDiffPercErr), 2),
+			"vegasMedianPlusMinus": median(vegasDiffPlusMinus),
+			"vegasMeanPlusMinus": round(avg(vegasDiffPlusMinus), 2),
+			"vegasMeanPlusMinusPercErr": round(avg(vegasDiffPlusMinusPercErr), 2),
+			"ecrMedianPlusMinus": median(ecrDiffPlusMinus),
+			"ecrMeanPlusMinus": round(avg(ecrDiffPlusMinus), 2),
+			"ecrMeanPlusMinusPercErr": round(avg(ecrDiffPlusMinusPercErr), 2),
+		}
+
+	posStatistics["ALL"] = {
+		"vegasMedian": median(vegasDiffAll),
+		"vegasMean": round(avg(vegasDiffAll), 2),
+		"vegasPercErr": round(avg(vegasDiffAllPercErr), 2),
+		"ecrMedian": median(ecrDiffAll),
+		"ecrMean": round(avg(ecrDiffAll), 2),
+		"ecrPercErr": round(avg(ecrDiffAllPercErr), 2),
+		"vegasMedianPlusMinus": median(vegasDiffAllPlusMinus),
+		"vegasMeanPlusMinus": round(avg(vegasDiffAllPlusMinus), 2),
+		"vegasMeanPlusMinusPercErr": round(avg(vegasDiffAllPlusMinusPercErr), 2),
+		"ecrMedianPlusMinus": median(ecrDiffAllPlusMinus),
+		"ecrMeanPlusMinus": round(avg(ecrDiffAllPlusMinus), 2),
+		"ecrMeanPlusMinusPercErr": round(avg(ecrDiffAllPlusMinusPercErr), 2),
+	}
+
+	best = []
+	worst = []
+	for projDiff, actualDiff, actualDiffECR, v, e, pos, player, rank in sorted(right, reverse=True):
+		j = {
+			"pos": pos,
+			"rank": rank+1,
+			"posRank": f"{pos}{rank+1}",
+			"player": player.title(),
+			"vegas": v,
+			"ecr": e,
+			"diff": projDiff,
+			"actualDiff": actualDiff
+		}
+		if actualDiff < actualDiffECR:
+			best.append(j)
+		else:
+			worst.append(j)
+
+
+	if True:
+
+		for stat in ["Median", "Mean", "PercErr"]:
+			output = f"##{stat} difference  \n"
+			output += "Pos|Vegas|ECR  \n"
+			output += ":--|:--|:--  \n"
+			for pos in posStatistics:
+				v = posStatistics[pos][f'vegas{stat}']
+				e = posStatistics[pos][f'ecr{stat}']
+				if float(v) < float(e):
+					v = f"**{v}**"
+				elif float(v) > float(e):
+					e = f"**{e}**"
+				else:
+					v = f"**{v}**"
+					e = f"**{e}**"
+				output += f"{pos}|{v}|{e}  \n"
+
+			print(output)
+
+	return render_template("analyze.html", posStatistics=posStatistics, tableData=table, best=best, worst=worst)
+
+def getECR(week):
+	with open(f"{prefix}static/nfl/historical/wk{week}/fpros.json") as fh:
+		fpros = json.load(fh)
+
+	ecr = {}
+	for pos in fpros:
+		ecr[pos] = {}
+		for player in fpros[pos]:
+			try:
+				if pos == "QB":
+					ecr[pos][player] = fpros[pos][player]
+				else:
+					ecr[pos][player] = fpros[pos][player]["half"]
+			except:
+				continue
+	return ecr
+
+def getVegas(week):
+	with open(f"{prefix}static/nfl/historical/wk{week}/ranksData.json") as fh:
+		data = json.load(fh)
+
+	with open(f"static/nfl/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"{prefix}static/nfl/historical/wk{week}/fpros.json") as fh:
+		fpros = json.load(fh)
+
 	sortedOutputs = {"ALL": []}
 	for team in data:
 		for player in data[team]:
@@ -3033,8 +3525,6 @@ def writeRanks(teamArg=None):
 						implied = .002
 					tot += (implied - last)
 					j[prop][line] = implied - last
-					if player == "breece hall" and prop == "attd":
-						print(line, implied, implied-last, avg)
 					last = implied
 
 				j[prop][0] = 1 - tot
@@ -3044,7 +3534,7 @@ def writeRanks(teamArg=None):
 			for prop in j:
 				propPts[prop] = 0
 				for line in j[prop]:
-					p = calcPoints(prop, line * j[prop][line])
+					p = calcPoints(prop, line * j[prop][line], "half")
 					propPts[prop] += p
 				pts += propPts[prop]
 
@@ -3055,9 +3545,9 @@ def writeRanks(teamArg=None):
 			sortedOutputs["ALL"].append((pts, player, pos, team, propPts, j))
 
 	reddit = ""
-	for pos in ["ALL", "QB", "RB", "WR", "TE"]:
-		output = "\tPTS\tFPros\tPLAYER\tOPP"
-		reddit += "PTS|PLAYER"
+	ranksTable = {}
+	vegas = {}
+	for pos in ["QB", "RB", "WR", "TE"]:
 		props = ["attd", "rec", "rec_yd"]
 		if pos == "QB":
 			props = ["attd", "pass_td", "pass_yd", "int", "rush_yd"]
@@ -3066,44 +3556,46 @@ def writeRanks(teamArg=None):
 		elif pos == "ALL":
 			props = ["attd", "pass_td", "pass_yd", "int", "rush_yd", "rec", "rec_yd"]
 
-		for prop in props:
-			output += f"\t{prop.upper()}"
-		output += "\n"
-		reddit += "\n"
-
 		posIdx = {}
+		vegas[pos] = {}
 		for pts, player, p, team, propPts, j in sorted(sortedOutputs[pos], reverse=True):
 			if p not in posIdx:
 				posIdx[p] = 1
-			x = f"{p}{posIdx[p]}"
-			if pos == "RB" and player == "breece hall":
-				print(player, propPts["attd"], j["attd"])
-			output += f"{x}\t{round(pts, 1)}"
-			if player in fpros[team]:
-				output += f"\t{fpros[team][player]}"
-			else:
-				output += f"\t-"
-			output += f"\t{player.title()}"
-			if team in opps:
-				output += f"\t{opps[team].upper()}"
-			else:
-				output += f"\t-"
-			for prop in props:
-				x = 0
-				if prop in propPts:
-					x = round(propPts[prop], 2)
-				output += f"\t{x or '-'}"
 
-			output += "\n"
+			onlyATTD = True
+			for prop in props:
+				if prop != "attd" and propPts.get(prop, 0):
+					onlyATTD = False
+					break
+
+			if not onlyATTD:
+				vegas[pos][player] = posIdx[p]
+
 			posIdx[p] += 1
 
-		with open(f"static/nfl/{pos}_rank.csv", "w") as fh:
-			fh.write(output)
+	return vegas
 
-def calcPoints(prop, val):
+def simpleCalcPoints(j):
+	pts = 0
+
+	pts += int(j.get("rush_yd", "0")) * 0.1
+	pts += int(j.get("rush_td", "0")) * 6
+	pts += int(j.get("rec", "0")) * 0.5
+	pts += int(j.get("rec_yd", "0")) * 0.1
+	pts += int(j.get("rec_td", "0")) * 6
+	pts += int(j.get("fumbles_lost", "0")) * -2
+	pts += int(j.get("2pt", "0")) * 2
+	return round(pts, 2)
+
+def calcPoints(prop, val, format_="half"):
 	pts = 0
 	if prop == "rec":
-		pts += val * 0.5
+		if format_ == "std":
+			pts += val * 0.0
+		elif format_ == "half":
+			pts += val * 0.5
+		else:
+			pts += val * 1.0
 	elif prop in ["rec_yd", "rush_yd"]:
 		pts += val * 0.1
 	elif prop == "pass_yd":
@@ -3620,6 +4112,7 @@ if __name__ == '__main__':
 		writeCZ(args.token)
 
 	if args.fpros:
+		writeFantasyProsProjections()
 		writeFantasyPros()
 
 	if args.update:
