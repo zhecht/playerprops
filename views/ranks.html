@@ -91,15 +91,7 @@
 					TABLE.setFilter([{field:"pos", type:"=", value:pos.toUpperCase()}]);
 				}
 
-				if (["all", "qb"].includes(pos)) {
-					TABLE.showColumn("pass_td");
-					TABLE.showColumn("pass_yd");
-					TABLE.showColumn("int");
-				} else {
-					TABLE.hideColumn("pass_td");
-					TABLE.hideColumn("pass_yd");
-					TABLE.hideColumn("int");
-				}
+				showHideCols(pos);
 
 				document.querySelector(".pos.active").classList.remove("active");
 				el.classList.add("active");
@@ -117,16 +109,26 @@
 					if (pos != "all") {
 						TABLE.setFilter([{field:"pos", type:"=", value:pos.toUpperCase()}]);
 					}
-					if (["all", "qb"].includes(pos)) {
-						TABLE.showColumn("pass_td");
-						TABLE.showColumn("pass_yd");
-						TABLE.showColumn("int");
-					} else {
-						TABLE.hideColumn("pass_td");
-						TABLE.hideColumn("pass_yd");
-						TABLE.hideColumn("int");
-					}
+					showHideCols(pos);
 				}, 500);
+			}
+
+			function showHideCols(pos) {
+				if (["all", "qb"].includes(pos)) {
+					TABLE.showColumn("pass_td");
+					TABLE.showColumn("pass_yd");
+					TABLE.showColumn("int");
+				} else {
+					TABLE.hideColumn("pass_td");
+					TABLE.hideColumn("pass_yd");
+					TABLE.hideColumn("int");
+				}
+
+				if (["all", "qb", "rb"].includes(pos)) {
+					TABLE.showColumn("rush_yd");
+				} else {
+					TABLE.hideColumn("rush_yd");
+				}
 			}
 
 			function groupBy() {

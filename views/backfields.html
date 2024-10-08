@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Backfields</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/teams.css" type="text/css">
+		<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.9.3/dist/js/tabulator.min.js"></script>
+		<link href="https://unpkg.com/tabulator-tables@4.9.3/dist/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#rbbcTable {
+			height: 90%;
+			margin-top: 2.5%;
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 100%;
+		}
+		.trendCell {
+			display: flex;
+			justify-content: space-evenly;
+			padding: 0 10px;
+		}
+		@media (max-width: 450px) {
+			body { font-size: 14px; }
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+	</style>
+	<body>
+		<div id="tableDiv">
+			<div id="rbbcTable"></div>
+		</div>
+		<script>
+			let TABLE;
+			const teamNames = ["All", "ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LAR", "LV", "MIA", "MIN", "NO", "NE", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
+
+			function getTrend(field, data, percent=false) {
+				const div = document.createElement("div");
+				div.innerText = "("+data[field]+")";
+				if (data[field].toString().indexOf("-") == 0) {
+					div.classList.add("negative");
+				} else {
+					div.classList.add("positive");
+				}
+				return div;
+			}
+
+			function teamFilter(headerValue, rowValue, rowData, filterParams){
+				if (headerValue == "All") {
+					return true;
+				}
+				return rowValue.toUpperCase() == headerValue;
+			}
+
+			const trendFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				let val = cell.getValue();
+				div.innerText = val;
+				const data = cell.getRow().getData();
+				let avgVal = data[cell.getField().replace("last", "").toLowerCase()];
+				if (cell.getField() != "lastPts") {
+					val = parseInt(val.replace("%", ""));
+					avgVal = parseInt(avgVal.replace("%", ""));
+				}
+				if (data["lastSnap"].replace("%", "") != "0") {
+					if (val > avgVal) {
+						div.classList.add("positive");
+					} else if (val < avgVal) {
+						div.classList.add("negative");
+					}
+				}
+				return div;
+			}
+
+			const teamFormatter = function(cell, params, rendered) {
+				const div = document.createElement("div");
+				div.className = cell.getValue().toLowerCase();
+				div.innerText = cell.getValue().toUpperCase();
+				return div;
+			}
+
+			const snapSorter = function(a, b, aRow, bRow, col, dir, params) {
+				return parseInt(a.replace("%", "")) - parseInt(b.replace("%", ""));
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#rbbcTable", {
+					tooltipsHeader: true,
+					ajaxURL: "/getBackfields",
+					layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					groupBy: "team",
+					groupHeader: function(value, count, data, group){
+						const playerTxt = count == 1 ? "Player" : "Players"
+						return value + "<span style='color:black; margin-left:10px;'>(" + count + " "+playerTxt+")</span>";
+					},
+					initialSort: [
+						{column: "lastSnap", dir: "desc"},
+						{column: "team", dir: "asc"}
+					],
+					columns: [
+						{title: "Player", field: "player", headerFilter: "input", width: 150},
+						{title: "Team", field: "team", width: 80, hozAlign: "center", formatter: teamFormatter, editor: "input", headerFilter: "select", headerFilterPlaceholder:"All", headerFilterFunc: teamFilter, headerFilterParams:{values: teamNames}},
+						{title: "FPts", field: "lastPts", hozAlign: "center", width: 110, formatter: trendFormatter},
+						{title: "Avg FPts", field: "pts", hozAlign: "center", width: 110},
+						{title: "Snap %", field: "lastSnap", hozAlign: "center", width: 110, sorter: snapSorter, formatter: trendFormatter},
+						{title: "Avg Snap %", field: "snap", hozAlign: "center", width: 110},
+						{title: "RZ Looks Share", field: "lastRz", hozAlign: "center", width: 110, formatter: trendFormatter},
+						{title: "Avg RZ Looks Share", field: "rz", hozAlign: "center", width: 110},
+						{title: "RB Target Share", field: "lastTgt", hozAlign: "center", width: 110, formatter: trendFormatter},
+						{title: "Avg RB Target Share", field: "tgt", hozAlign: "center", width: 110},
+
+					]
+				})
+			}
+
+			renderTable();
+		</script>
+
+	</body>
+
+</html>

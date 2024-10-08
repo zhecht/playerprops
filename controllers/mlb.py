@@ -390,7 +390,8 @@ def writeCZ(date=None, token=None):
 	games = []
 	for event in data["competitions"][0]["events"]:
 		if str(datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			continue
+			#continue
+			pass
 		games.append(event["id"])
 
 	#games = ["c8704ffd-9499-47e1-b958-fe2b0e933d96"]
@@ -407,7 +408,8 @@ def writeCZ(date=None, token=None):
 		#print(data["name"], data["startTime"])
 
 		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			continue
+			#continue
+			pass
 
 		game = convertFDTeam(data["name"].lower().replace("|", "").replace(" at ", " @ "))
 		if game in res:
@@ -878,7 +880,8 @@ def writePinnacle(date, debug=False):
 	seenGames = {}
 	for row in data:
 		if str(datetime.strptime(row["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			continue
+			#continue
+			pass
 		if row["type"] == "matchup" and not row["parent"]:
 			player1 = row["participants"][0]["name"].lower()
 			player2 = row["participants"][1]["name"].lower()
@@ -1196,7 +1199,7 @@ def writeMGMManual():
 			const events = document.querySelectorAll(".event-item");
 
 			for (let event of events) {
-				if (event.innerText.includes("Futures")) {
+				if (event.innerText.includes("Awards") || event.innerText.includes("Parlays") || event.innerText.includes("Specials")) {
 					break;
 				}
 				if (event.innerText.includes("Daily Props")) {
@@ -1207,7 +1210,11 @@ def writeMGMManual():
 				}
 
 				if (event.innerText.includes("Tomorrow")) {
-					continue;
+					//continue;
+				}
+
+				if (event.innerText.includes("Futures")) {
+					break;
 				}
 
 				event.querySelector("a").click();
@@ -1295,7 +1302,8 @@ def writeMGM(date=None):
 			continue
 
 		if str(datetime.strptime(row["startDate"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			continue
+			pass
+			#continue
 		ids.append(row["id"])
 
 	#ids = ["14632993"]
@@ -1448,7 +1456,8 @@ def writeKambi(date):
 		if "event" not in event:
 			continue
 		if str(datetime.strptime(event["event"]["start"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			continue
+			#continue
+			pass
 		game = f"{event['event']['awayName']} @ {event['event']['homeName']}"
 		away, home = map(str, game.split(" @ "))
 		homeFull, awayFull = map(str, event["event"]["englishName"].lower().split(" - "))
@@ -2140,7 +2149,7 @@ def writeDK(date, propArg):
 				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
 				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
 				if startDt.day != int(date[-2:]):
-					continue
+					#continue
 					pass
 				game = event["name"].lower()
 				games = []

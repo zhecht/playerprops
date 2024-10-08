@@ -1040,7 +1040,7 @@ def writeDK():
 								label = "ftd"
 							elif label == "anytime td scorer":
 								label = "attd"
-							elif prop in ["pass tds", "pass yds", "rec tds", "rec yds", "rush tds", "rush yds"]:
+							elif label in ["pass tds", "pass yds", "rec tds", "rec yds", "rush tds", "rush yds"]:
 								label = prop.replace(" ", "_").replace("tds", "td").replace("yds", "yd")
 							else:
 								continue
@@ -1151,57 +1151,53 @@ def writeMGM():
 """
 
 	ids = [
-  "16319218",
-  "15860730",
-  "16319289",
-  "16319226",
-  "16319221",
-  "16319278",
-  "16319234",
-  "16319285",
-  "16319291",
-  "16341634",
-  "16341633",
-  "16341632",
-  "16319287",
-  "15860728",
-  "16319295",
-  "16319286",
-  "16319280",
-  "16319273",
-  "16319292",
-  "16319227",
-  "16319282",
-  "16319229",
-  "16319293",
-  "16319294",
-  "16319296",
-  "16319297",
-  "16319284",
-  "15860729",
-  "16319290",
-  "16319228",
-  "16319222",
-  "16319279",
-  "16319281",
-  "16319220",
-  "16319274",
-  "16319277",
-  "16319235",
-  "16319236",
-  "16343272",
-  "16343273",
-  "16341691",
-  "16341692",
-  "16341693",
-  "16341631",
-  "16341694",
-  "16341634",
-  "16341632",
-  "16341633",
-  "16341695",
-  "16341697",
-  "16341696"
+  "16386108",
+  "16386109",
+  "16386110",
+  "16386111",
+  "16386227",
+  "15860772",
+  "16386115",
+  "16386228",
+  "16386182",
+  "16386112",
+  "16386177",
+  "16386117",
+  "16386215",
+  "16386116",
+  "16386173",
+  "16386176",
+  "16386224",
+  "15860775",
+  "16386174",
+  "16386119",
+  "16386124",
+  "16386218",
+  "16386179",
+  "16386178",
+  "16386181",
+  "16386114",
+  "16386221",
+  "16386217",
+  "16386118",
+  "16386225",
+  "15860773",
+  "16386120",
+  "16386175",
+  "16386222",
+  "16386219",
+  "16386220",
+  "16386214",
+  "15860774",
+  "16386223",
+  "16386216",
+  "16386123",
+  "16386113",
+  "16386180",
+  "16386121",
+  "16386226",
+  "16386122",
+  "16386125"
 ]
 
 
@@ -2234,6 +2230,48 @@ def writeFanduel():
 	with open(f"static/ncaafprops/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
+def parseESPN(espnLines, noespn=None):
+
+	with open(f"{prefix}static/ncaafprops/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaafprops/espn.json") as fh:
+		espn = json.load(fh)
+
+	players = {}
+	for game in fdLines:
+		players[game] = {}
+		if "attd" not in fdLines[game]:
+			continue
+		for player in fdLines[game]["attd"]:
+			first = player.split(" ")[0][0]
+			last = player.split(" ")[-1]
+			players[game][f"{first} {last}"] = player
+
+	if not noespn:
+		for game in espn:
+			if game not in players:
+				continue
+			espnLines[game] = {}
+			for prop in espn[game]:
+				if prop == "ml":
+					espnLines[game][prop] = espn[game][prop]
+				elif prop in ["total", "spread"]:
+					espnLines[game][prop] = espn[game][prop].copy()
+				else:
+					espnLines[game][prop] = {}
+					away, home = map(str, game.split(" @ "))
+					for p in espn[game][prop]:
+						if p not in players[game]:
+							continue
+						player = players[game][p]
+						if "attd" in prop:
+							espnLines[game][prop][player] = espn[game][prop][p]
+						elif type(espn[game][prop][p]) is str:
+							espnLines[game][prop][player] = espn[game][prop][p]
+						else:
+							espnLines[game][prop][player] = espn[game][prop][p].copy()
+
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="attd", sharp=False):
 
 	prefix = ""
@@ -2330,9 +2368,6 @@ def writeEV(date=None, gameArg="", teamArg="", propArg="attd", bookArg="", boost
 	with open(f"{prefix}static/ncaafprops/draftkings.json") as fh:
 		dkLines = json.load(fh)
 
-	with open(f"{prefix}static/ncaafprops/espn.json") as fh:
-		espnLines = json.load(fh)
-
 	with open(f"{prefix}static/ncaafprops/actionnetwork.json") as fh:
 		actionnetwork = json.load(fh)
 
@@ -2341,6 +2376,9 @@ def writeEV(date=None, gameArg="", teamArg="", propArg="attd", bookArg="", boost
 
 	with open(f"{prefix}static/ncaafprops/ev.json") as fh:
 		evData = json.load(fh)
+
+	espnLines = {}
+	parseESPN(espnLines)
 
 	games = {}
 	for game in fdLines:
@@ -2689,7 +2727,7 @@ if __name__ == '__main__':
 		#writeFanduel()
 		writeActionNetwork(args.date)
 		writeKambi(args.date)
-		writeMGM()
+		#writeMGM()
 		writePinnacle()
 		#writeBovada()
 		writeDK()

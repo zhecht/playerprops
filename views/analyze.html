@@ -118,14 +118,14 @@
 			<div style="display: flex; flex-direction: column; justify-content: space-evenly;">
 				<div>
 					<div style="text-align: center; margin-bottom: 10px;">
-						<input type="radio" name="stat" id="median" checked onChange="changeStat(this)" />
+						<input type="radio" name="stat" id="median" onChange="changeStat(this)" checked />
 						<label for="median">Median</label>
 						<input type="radio" name="stat" id="mean" onChange="changeStat(this)" />
 						<label for="mean">Mean</label>
 						<input type="radio" name="stat" id="percErr" onChange="changeStat(this)" />
 						<label for="percErr">% Err</label>
 					</div>
-					<h4><span>Median</span> Difference btwn Actual ranks</h4>
+					<h4><span>PercErr</span> Difference btwn Actual ranks</h4>
 					<table>
 						<tr>
 							<th></th>
@@ -147,7 +147,7 @@
 				</div>
 
 				<div>
-					<h4><span>Median</span> Difference btwn Actual ranks when Vegas/ECR differ by ±3</h4>
+					<h4><span>PercErr</span> Difference btwn Actual ranks when Vegas/ECR differ by ±3</h4>
 					<table>
 						<tr>
 							<th></th>

@@ -76,7 +76,7 @@ def writeStats(week):
 		with open(outfile) as fh:
 			data = json.load(fh)
 
-		if "players" not in data["boxscore"]:
+		if "boxscore" not in data or "players" not in data["boxscore"]:
 			continue
 
 		stats[week][game]["scoring"] = {}
@@ -372,6 +372,7 @@ def calculatePoints(stats):
 	pts += 0.1 * int(stats.get("rush_yd", 0))
 	pts += 6 * int(stats.get("rec_td", 0))
 	pts += 6 * int(stats.get("rush_td", 0))
+	pts += -2 * int(stats.get("fumbles_lost", 0))
 	return round(pts, 1)
 
 def writeTrends():
@@ -507,10 +508,12 @@ def writeTrends():
 
 		posHdr = "RB" if pos == "rb" else "WR/TE"
 		hdrs = ["Team", "Player", "AVG PTS", f"WK{week} PTS", "SZN Snap %", f"WK{week} Snap %", f"{posHdr} RZ Look Share", f"WK{week} {posHdr} RZ Share", f"{posHdr} Target Share", f"WK{week} {posHdr} Target Share"]
+		tableHdrs = ["team", "player", "pts", "lastPts", "snap", "lastSnap", "rz", "lastRz", "tgt", "lastTgt"]
 		csv = "\t".join(hdrs)+"\n"
 		reddit = "|".join(hdrs)+"\n"
 		reddit += "|".join([":--"]*len(hdrs))+"\n"
 		team = data[0][0]
+		table = []
 		for idx, row in enumerate(sorted(data)):
 			if pos == "rb" and team != row[-1][0].lower():
 				csv += "\t".join(["-"]*len(hdrs))+"\n"
@@ -520,6 +523,8 @@ def writeTrends():
 				team = row[-1][0].lower()
 
 			csv += "\t".join([str(x) for x in row[-1]])+"\n"
+			table.append({hdr: val for hdr, val in zip(tableHdrs, row[-1])})
+
 
 			if pos == "rb" or idx < 40:
 				reddit += "|".join([str(x) for x in row[-1]])+"\n"
@@ -528,6 +533,8 @@ def writeTrends():
 			fh.write(csv)
 		with open(f"static/nfl/{pos.replace('/', '')}Trends.reddit", "w") as fh:
 			fh.write(reddit)
+		with open(f"static/nfl/{pos.replace('/', '')}Trends.json", "w") as fh:
+			json.dump(table, fh, indent=4)
 
 def writeRosters():
 	outfile = "out"

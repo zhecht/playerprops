@@ -228,7 +228,7 @@ def writeActionNetwork(dateArg = None):
 def writeCZ(token=None):
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/americanfootball/events/schedule/?competitionIds=007d7c61-07a7-4e18-bb40-15104b6eac92"
 	outfile = "outCZ"
-	cookie = "57d82a48-216c-4ca5-a09a-586984694d53:EgoAq+9Z3ILEAAAA:/pCHTYJhQm4ghyZoK+ZFCFkm2UdjD2TbrfZdKH83lAtCmb+z6YSY3osWVfy9S0TqhKsN6Mi/FwuALsd4bZjN8bAT47M1n2KjkrugZOxbpSwC/z4bZ37VRu2hzMxYwg4Emb29nGUV/b/9fe+X7okU9BfoB15WWRxnHbd/i65j2S8kmCfPycMFOGXcpeoaU/BI2JSeOpBo3KcjB/P2xloERwV/fk+clzEDUGEihtRM9/hMpKzmCqIeI+edZxbrMqmAnzwKwCFKkVoubSlkuw=="
+	cookie = "009ac568-2f34-4348-b138-ad9d8d21fd0a:EgoAsayRC/iaAAAA:TlX5KASIhJDkLOwjuStUaZDtv8osJaS0bl8Pn/tbWSe3dYUzgKx/yP7lg5J1GmeGZ2sTBNdj6cRH8hquWqeyRjdbo+IOBQhxfPwG5tSCcV16zo8J8axZpnldPpazwm8+hi6JRUzNdVeLO/8MNtWAbesrxx83h3VxvXkcG+Xw4wekPqCfE7fdJEdj++a3HgpZGxDUBJZC39/iw/+nhdceL754EtxZawB853AjfyPuceXP9EFsG8twDUMUOYwUxMgiWbzZwA8LvDB5OQY3lg=="
 	if token:
 		cookie = token
 	
@@ -242,7 +242,7 @@ def writeCZ(token=None):
 		games.append(event["id"])
 
 
-	#games = ["c2356615-f545-4688-9af2-5bce75f8f17c"]
+	#games = ["582f4429-471c-4c52-8c8b-72da74de79da"]
 
 	res = {}
 	for gameId in games:
@@ -298,13 +298,16 @@ def writeCZ(token=None):
 				prop = "2+td"
 			elif prop == "player to score 3 or more touchdowns":
 				prop = "3+td"
+			elif "total team defensive tackles" in prop:
+				player = prop.split(" total")[0]
+				prop = "team_tackles"
 			elif "total passing" in prop or "total rushing" in prop or "total receiving" in prop or "total receptions" in prop or "longest" in prop or "total defensive tackles" in prop or "total made field" in prop or "total kicking points" in prop or "total interceptions" in prop or "tackles + assists" in prop:
 				p = prop.split(" total")[0].split(" longest")[0].split(" - ")[0]
 				player = parsePlayer(p)
 				prop = prop.split(p+" ")[-1].replace("- ", "").replace("total ", "").replace(" + ", "+").replace(" ", "_").replace("passing", "pass").replace("rushing", "rush").replace("touchdowns", "td").replace("yards", "yd").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("completions", "cmp").replace("attempts", "att").replace("interceptions", "int").replace("made_field_goals", "fgm").replace("points", "pts").replace("assists", "ast")
 			elif " - alt " in prop:
 				player = parsePlayer(prop.split(" - ")[0])
-				prop = prop.split(" alt ")[-1].replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("completions", "cmp").replace("attempts", "att").replace("receptions", "rec").replace("touchdowns", "td").replace("yards", "yd").replace("interceptions thrown", "int").replace(" ", "_")
+				prop = prop.split(" alt ")[-1].replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("completions", "cmp").replace("attempts", "att").replace("receptions", "rec").replace("touchdowns", "td").replace("yards", "yd").replace("interceptions thrown", "int").replace("points", "pts").replace(" ", "_")
 				alt = True
 			else:
 				#print(prop)
@@ -316,6 +319,12 @@ def writeCZ(token=None):
 				prop = "pass+rush"
 			elif prop == "rush+rec_yd":
 				prop = "rush+rec"
+			elif prop == "defensive_tackles+ast":
+				prop = "tackles+ast"
+			elif prop == "made_extra_points":
+				prop = "xp"
+			elif prop == "made_field_goals":
+				prop = "fgm"
 
 			prop = f"{prefix}{prop}"
 
@@ -2462,13 +2471,15 @@ def write365():
 				if (prop.includes("milestones")) {
 					alt = true;
 				}
-				prop = prop.replace("player ", "").replace(" and ", "+").replace(" milestones", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("points", "pts").replace("assists", "ast").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace("yards", "yd").replace("touchdowns", "td").replace(" + ", "+").replaceAll(" ", "_");
+				prop = prop.replace("player ", "").replace("to record a ", "").replace(" and ", "+").replace(" milestones", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("points", "pts").replace("assists", "ast").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace("yards", "yd").replace("touchdowns", "td").replace(" + ", "+").replaceAll(" ", "_");
 				if (prop == "longest_pass_completion") {
 					prop = "longest_pass";
 				} else if (prop == "longest_rush_attempt") {
 					prop = "longest_rush";
 				} else if (prop == "rush+rec_yd") {
 					prop = "rush+rec";
+				} else if (prop == "sack") {
+					prop = "sacks";
 				}
 			} else if (prop.includes("spread")) {
 				prop = "spread";
@@ -2605,7 +2616,12 @@ def write365():
 						data[game][prop][line] = arr[idx]+"/"+odds;
 					} else {
 						odds = el.querySelectorAll("span")[2];
-						let line = el.querySelector(".gl-ParticipantCenteredStacked_Handicap").innerText;
+						let line = "0.5";
+						if (prop == "sacks") {
+							odds = el.querySelector("span");
+						} else {
+							line = el.querySelector(".gl-ParticipantCenteredStacked_Handicap").innerText;
+						}
 						data[game][prop][players[idx]] = {};
 						data[game][prop][players[idx]][line] = arr[idx]+"/"+odds.innerText;
 					}
@@ -2965,6 +2981,132 @@ def writeFantasyPros():
 	with open(f"{prefix}static/nfl/fpros.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
+def writeDefRanks(teamArg=None):
+	with open("static/nfl/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"{prefix}static/nfl/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/bet365.json") as fh:
+		bet365 = json.load(fh)
+
+	with open(f"{prefix}static/nfl/espn.json") as fh:
+		espn = json.load(fh)
+
+	with open(f"{prefix}static/nfl/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/nfl/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	espnLines = {}
+	parseESPN(espnLines)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"espn": espnLines,
+		"bet365": bet365,
+		"dk": dkLines,
+		"cz": czLines
+	}
+
+	data = {}
+
+	implied = {}
+	for game in lines["fd"]:
+		away, home = map(str, game.split(" @ "))
+		total = float(list(lines["fd"][game]["total"].keys())[0])
+		spread = float(list(lines["fd"][game]["spread"].keys())[0])
+		impliedAway = total / 2 + spread * -1 / 2
+		impliedHome = total / 2 + spread / 2
+		implied[away] = round(impliedHome)
+		implied[home] = round(impliedAway)
+
+	for book in lines:
+		for game in lines[book]:
+			if teamArg and teamArg not in game.split(" @ "):
+				continue
+			away, home = map(str, game.split(" @ "))
+
+			for team, opp in zip([away, home], [home, away]):
+				if team not in data:
+					data[team] = {"int": {}, "attd": {}}
+
+				for prop, line in [("attd", "0.5"), ("2+td", "1.5"), ("3+td", "2.5")]:
+					if prop in lines[book][game] and team in lines[book][game][prop]:
+						attd = lines[book][game][prop][team]
+
+						if line not in data[team]["attd"]:
+							data[team]["attd"][line] = []
+						data[team]["attd"][line].append(attd)
+
+				if "int" in lines[book][game]:
+					for player in lines[book][game]["int"]:
+						if player in roster[opp]:
+							for line in lines[book][game]["int"][player]:
+								if line not in data[team]["int"]:
+									data[team]["int"][line] = []
+								data[team]["int"][line].append(lines[book][game]["int"][player][line])
+
+	sortedOutput = []
+	for team in data:
+		j = {}
+		for prop in data[team]:
+			arr = []
+			for line in data[team][prop]:
+				avg = averageOdds(data[team][prop][line])
+				fv = getFairValue(avg, method="power")
+				if not fv:
+					continue
+
+				arr.append((math.ceil(float(line)), fv, avg))
+
+			if not arr:
+				continue
+			arr = sorted(arr, reverse=True)
+
+			j[prop] = {}
+			tot = last = 0
+			for line, fv, avg in arr:
+				if not fv:
+					fv = .002
+				tot += (fv - last)
+				j[prop][line] = fv - last
+				last = fv
+
+			j[prop][0] = 1 - tot
+
+		pts = 0
+		propPts = {}
+		for prop in j:
+			propPts[prop] = 0
+			for line in j[prop]:
+				p = calcDefPoints(prop, line * j[prop][line])
+				propPts[prop] += p
+			pts += propPts[prop]
+
+		p = calcDefPoints("implied", implied[team])
+		propPts["implied"] = p
+		pts += p
+		sortedOutput.append((pts, team, propPts))
+
+	for pts, team, propPts in sorted(sortedOutput, reverse=True):
+		print(team, pts)
+
+
 def writeRanks(teamArg=None):
 	with open("static/nfl/roster.json") as fh:
 		roster = json.load(fh)
@@ -3266,7 +3408,7 @@ def ranks_route():
 
 @nfl_blueprint.route('/analyze')
 def analyze_route():
-	week = "3"
+	week = "5"
 
 	with open(f"{prefix}static/nfl/stats.json") as fh:
 		stats = json.load(fh)
@@ -3490,6 +3632,8 @@ def getVegas(week):
 	sortedOutputs = {"ALL": []}
 	for team in data:
 		for player in data[team]:
+			if player not in roster[team]:
+				continue
 			pos = roster[team][player]
 			if pos not in sortedOutputs:
 				sortedOutputs[pos] = []
@@ -3578,12 +3722,15 @@ def getVegas(week):
 def simpleCalcPoints(j):
 	pts = 0
 
+	pts += int(j.get("pass_yd", "0")) * 0.04
+	pts += int(j.get("pass_td", "0")) * 4
 	pts += int(j.get("rush_yd", "0")) * 0.1
 	pts += int(j.get("rush_td", "0")) * 6
 	pts += int(j.get("rec", "0")) * 0.5
 	pts += int(j.get("rec_yd", "0")) * 0.1
 	pts += int(j.get("rec_td", "0")) * 6
 	pts += int(j.get("fumbles_lost", "0")) * -2
+	pts += int(j.get("int", "0")) * -2
 	pts += int(j.get("2pt", "0")) * 2
 	return round(pts, 2)
 
@@ -3607,6 +3754,39 @@ def calcPoints(prop, val, format_="half"):
 	elif prop == "int":
 		pts += val * -2
 	return pts
+
+def calcDefPoints(prop, val):
+	pts = 0
+	if prop == "int":
+		pts += val * 2
+	elif prop in ["attd", "2+td", "3+td"]:
+		pts += val * 6
+	elif prop == "implied":
+		if val == 0:
+			return 10
+		elif val < 7:
+			return 7
+		elif val < 14:
+			return 4
+		elif val < 21:
+			return 1
+		elif val < 28:
+			return 0
+		elif val < 25:
+			return -1
+		else:
+			return -4
+	return pts
+
+@nfl_blueprint.route('/getBackfields')
+def getBackfields_route():
+	with open(f"{prefix}static/nfl/rbTrends.json") as fh:
+		res = json.load(fh)
+	return jsonify(res)
+
+@nfl_blueprint.route('/backfields')
+def backfields_route():
+	return render_template("backfields.html")
 
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, gameArg=None, noespn=None):
 
@@ -4077,10 +4257,6 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
-
-	if args.ranks:
-		writeRanks(args.team)
-
 	if args.action:
 		writeActionNetwork(args.date)
 
@@ -4115,14 +4291,18 @@ if __name__ == '__main__':
 		writeFantasyProsProjections()
 		writeFantasyPros()
 
+	if args.ranks:
+		#writeDefRanks(args.team)
+		writeRanks(args.team)
+
 	if args.update:
 		#writeFanduel()
 		print("pn")
 		writePinnacle(args.date, args.debug)
 		print("kambi")
 		writeKambi()
-		print("mgm")
-		writeMGM()
+		#print("mgm")
+		#writeMGM()
 		#print("pb")
 		#writePointsbet()
 		#print("bv")
@@ -4170,8 +4350,8 @@ if __name__ == '__main__':
 		player = args.player
 		parseESPN(espnLines)
 
-		for game in fdLines:
-			for prop in fdLines[game]:
+		for game in bet365Lines:
+			for prop in bet365Lines[game]:
 				if args.prop and args.prop != prop:
 					continue
 
@@ -4216,15 +4396,31 @@ if __name__ == '__main__':
 
 	if args.plays:
 		plays = [
-			("lenoir", 100, "dk", "tackles+ast", 4.5, ""),
-			("cj mosley", 110, "dk", "tackles+ast", 7.5, ""),
-			("quincy williams", -115, "dk", "tackles+ast", 7.5, "")
+			#("lenoir", 100, "dk", "tackles+ast", 4.5, ""),
 		]
 
 		plays.extend([
-			("christian mccaffrey", 340, "fd", "2+td", "", ""),
-			("deebo samuel", 170, "fd", "attd", "", ""),
-			("breece hall", 135, "fd", "attd", "", "")
+			("aaron jones", 135, "dk", "attd", "", ""),
+			("zack moss", 110, "cz", "attd", "", ""),
+			("jonathon taylor", 110, "espn", "attd", "", ""),
+			("deandre swift", 240, "fd", "attd", "", ""),
+			("romeo doubs", 270, "fd", "attd", "", ""),
+			("dj moore", 220, "fd", "attd", "", ""),
+			("chase brown", 260, "fd", "attd", "", ""),
+			("tutu atwell", 340, "dk", "attd", "", ""),
+			("javonte williams", 290, "fd", "attd", "", ""),
+			("josh jacobs", 100, "espn", "attd", "", ""),
+			("chuba hubbard", 110, "fd", "attd", "", ""),
+			("zamir white", 280, "fd", "attd", "", ""),
+			("alexander mattison", 330, "fd", "attd", "", ""),
+			("tre tucker", 350, "mgm", "attd", "", ""),
+			("brian robinson", 115, "fd", "attd", "", ""),
+			("james conner", -120, "fd", "attd", "", ""),
+			("rashee rice", 160, "fd", "attd", "", ""),
+			("lamar jackson", 175, "espn", "attd", "", ""),
+			("devon achane", 150, "dk", "attd", "", ""),
+			("jameson williams", 245, "dk", "attd", "", ""),
+			("david montgomery", -120, "fd", "attd", "", ""),
 		])
 
 		with open(f"static/nfl/ev.json") as fh:
