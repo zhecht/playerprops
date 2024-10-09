@@ -360,7 +360,7 @@ def writeTeamTTOI():
 def writePlayerIds():
 
 	playerIds = {}
-	for team in ["ana", "ari", "bos", "buf", "car", "cbj", "cgy", "chi", "col", "dal", "det", "edm", "fla", "la", "min", "mtl", "nj", "nsh", "nyi", "nyr", "ott", "phi", "pit", "sea", "sj", "stl", "tb", "tor", "van", "vgk", "wpg", "wsh"]:
+	for team in ["ana", "bos", "buf", "car", "cbj", "cgy", "chi", "col", "dal", "det", "edm", "fla", "la", "min", "mtl", "nj", "nsh", "nyi", "nyr", "ott", "phi", "pit", "sea", "sj", "stl", "tb", "tor", "van", "vgk", "wpg", "wsh", "utah"]:
 		time.sleep(0.175)
 		url = f"https://www.espn.com/nhl/team/roster/_/name/{team}"
 		outfile = "outnhl"
@@ -405,7 +405,7 @@ def write_averages():
 			lastYearStats[team][player] = {}
 
 			time.sleep(0.175)
-			url = f"https://www.espn.com/nhl/player/gamelog/_/id/{pId}/type/nhl/year/2023"
+			url = f"https://www.espn.com/nhl/player/gamelog/_/id/{pId}/type/nhl/year/2024"
 			outfile = "outnhl"
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -431,7 +431,10 @@ def write_averages():
 				else:
 					tds = row.findAll("td")
 					if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
-						date = str(datetime.datetime.strptime(tds[0].text.strip(), "%a %m/%d")).split(" ")[0][6:]
+						if " 2/29" in tds[0].text.strip():
+							data = "2024-02-29"
+						else:
+							date = str(datetime.datetime.strptime(tds[0].text.strip(), "%a %m/%d")).split(" ")[0][6:]
 						lastYearStats[team][player][date] = {}
 						for idx, td in enumerate(tds[3:]):
 							header = headers[idx]
