@@ -1244,8 +1244,55 @@ def writeKambi():
 	with open(f"static/nhl/kambi.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
+def writeOnlyGoals():
+
+	goals = {}
+
+	date = "2024-10-10"
+
+	with open(f"{prefix}static/hockeyreference/boxscores.json") as fh:
+		boxscores = json.load(fh)
+
+	with open(f"{prefix}static/hockeyreference/parsed.json") as fh:
+		parsed = json.load(fh)
+
+	for game in boxscores[date]:
+		gameId = boxscores[date][game].split("/")[5]
+		if gameId in parsed:
+			continue
+		url = f"https://site.web.api.espn.com/apis/site/v2/sports/hockey/nhl/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
+		outfile = "outnhl"
+		time.sleep(0.2)
+		os.system(f"curl \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		for play in data["plays"]:
+			if play["type"]["id"] == "522":
+				parsed[gameId] = True
+			elif play["type"]["id"] == "505":
+				players = play["participants"]
+				player = parsePlayer(players[0]["athlete"]["displayName"])
+				goals[play["id"]] = {
+					"goal": player,
+					"ast": ",".join([parsePlayer(p["athlete"]["displayName"]) for p in players[1:]]),
+					"dt": str(datetime.strptime(play["wallclock"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=7)),
+					"period": play["period"]["displayValue"],
+					"time": play["clock"]["displayValue"],
+					"score": f"{play['awayScore']}-{play['homeScore']}",
+					"game": game
+				}
+
+	with open(f"{prefix}static/nhl/goals/{date}.json", "w") as fh:
+		json.dump(goals, fh, indent=4)
+
+	with open(f"{prefix}static/hockeyreference/parsed.json", "w") as fh:
+		json.dump(parsed, fh, indent=4)
+
+
 def parsePlayer(player):
-	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" sr", "").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 	if player == "michael eyssimont":
 		return "mikey eyssimont"
 	elif player == "john jason peterka":
@@ -1921,7 +1968,7 @@ def writeDK(date=None, propArg=""):
 						t = "nyr"
 					elif "islanders" in team:
 						t = "nyi"
-					elif "utah" in team:
+					elif "uta" in team:
 						t = "utah"
 					games.append(t)
 				game = " @ ".join(games)
@@ -2849,12 +2896,16 @@ if __name__ == '__main__':
 	parser.add_argument("--lineups", action="store_true", help="Lineups")
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
+	parser.add_argument("--onlygoals", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--token")
 	parser.add_argument("--player", help="Book")
 
 	args = parser.parse_args()
+
+	if args.onlygoals:
+		writeOnlyGoals()
 
 	if args.lineups:
 		writeLineups(plays)
