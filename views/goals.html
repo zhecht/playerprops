@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Goal Scorers</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<script type="text/javascript" src="/static/js/shared.js"></script>
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+	</head>
+	<style>
+		body {
+			margin: 0;
+			font-size: 18px;
+			height: 100vh;
+		}
+		#propsTable {
+		}
+		#tableDiv {
+			display: flex;
+			justify-content: center;
+			height: 85%;
+		}
+		#footer {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#header {
+			height: 8%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+		}
+		button {
+			padding:5px;
+		}
+		button:hover {
+			cursor: pointer;
+		}
+		a.active {
+			font-weight: bold;
+			text-decoration: underline;
+		}
+		button.active {
+			background: green;
+		}
+		a {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+			text-decoration: none;
+			color: #3391ff;
+		}
+		.tabulator-cell a {
+			color: inherit;
+		}
+		.negative { color: red; }
+		.positive { color: green; }
+		.yellow { background-color:yellow; }
+	</style>
+	<body>
+		<div id="header">
+		</div>
+		<div id="tableDiv">
+			<div id="propsTable"></div>
+		</div>
+		<script>
+			let TABLE;
+
+			const percentFormatter = function(cell, params, rendered) {
+				return cell.getValue()+"%";
+			}
+
+			const colorFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() >= parseFloat(data.line)) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				}
+				return "<div class='negative'>"+cell.getValue()+"</div>";
+			}
+
+			const diffFormatter = function(cell, params, rendered) {
+				const data = cell.getRow().getData();
+				if (cell.getValue() > 0) {
+					return "<div class='positive'>"+cell.getValue()+"</div>";
+				} else if (cell.getValue() < 0) {
+					return "<div class='negative'>"+cell.getValue()+"</div>";	
+				}
+				return "<div>"+cell.getValue()+"</div>";
+			}
+
+			function renderTable() {
+				TABLE = new Tabulator("#propsTable", {
+					tooltipsHeader: true,
+					data: {{data|safe}},
+					layout: "fitData",
+					//layout: window.innerWidth <= 450 ? "fitData" : "fitColumns",
+					
+					initialSort: [
+						{column: "dt", dir: "asc"},
+					],
+					columns: [
+						{title: "Scorer", field: "goal"},
+						{title: "Game", field: "game", hozAlign: "center"},
+						{title: "Time", field: "time", hozAlign: "center"},
+						{title: "Score", field: "score", hozAlign: "center"},
+						{title: "Assists", field: "ast"},
+						{title: "DT", field: "dt", visible: false},
+					]
+				})
+			}
+
+			renderTable();
+
+		</script>
+	</body>
+
+</html>

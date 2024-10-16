@@ -1,4 +1,4 @@
-
+from flask import *
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
@@ -10,6 +10,8 @@ import argparse
 import unicodedata
 import time
 from twilio.rest import Client
+
+nhl_blueprint = Blueprint('nhl', __name__, template_folder='views')
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -1244,11 +1246,97 @@ def writeKambi():
 	with open(f"static/nhl/kambi.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-def writeOnlyGoals():
+def writeOnlyGoals2():
 
 	goals = {}
 
 	date = "2024-10-10"
+
+	with open(f"{prefix}static/hockeyreference/boxscores.json") as fh:
+		boxscores = json.load(fh)
+
+	with open(f"{prefix}static/hockeyreference/parsed.json") as fh:
+		parsed = json.load(fh)
+
+	for game in boxscores[date]:
+		gameId = boxscores[date][game].split("/")[5]
+		if gameId in parsed:
+			continue
+		url = f"https://www.espn.com/nhl/boxscore/_/gameId/{gameId}"
+		if gameId != "401687618":
+			continue
+			pass
+		outfile = "outnhl"
+		time.sleep(0.2)
+		os.system(f"curl \"{url}\" -o {outfile}")
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		js = "{}"
+		for script in soup.findAll("script"):
+			if "window['__CONFIG__']=" in script.text:
+				m = re.search(r"window['__CONFIG__']={(.*?)};", script.text)
+				if m:
+					js = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+					js = f"{{{js}}}"
+					break
+
+		js = eval(js)
+
+		with open("out", "w") as fh:
+			json.dump(js, fh, indent=4)
+		exit()
+
+		gameOver = "Final" in soup.find("div", class_="pageContent").find("div", class_="ScoreCell__Time").text
+		if gameOver:
+			parsed[gameId] = True
+
+		for table in soup.find("div", class_="tabs__content").findAll("table"):
+			period = table.find("tbody").find("th").text.split(" ")[0]
+			for tr in table.find("tbody").findAll("tr"):
+				ast = ""
+				if "assists" in tr.findAll("td")[2].text.lower():
+					ast = [parsePlayer(p.split(" (")[0]) for p in tr.findAll("td")[2].text.split(": ")[-1].split(", ")]
+				goals.append({
+					"time": tr.find("td").text,
+					"goal": parsePlayer(tr.findAll("td")[2].text.split(" (")[0]),
+					"ast": ",".join(ast),
+					"score": tr.findAll("td")[-2].text+"-"+tr.findAll("td")[-1].text,
+					"game": game,
+					"period": period
+				})
+
+	with open(f"{prefix}static/nhl/goals/{date}.json", "w") as fh:
+		json.dump(goals, fh, indent=4)
+
+	with open(f"{prefix}static/hockeyreference/parsed.json", "w") as fh:
+		json.dump(parsed, fh, indent=4)
+
+@nhl_blueprint.route('/goals')
+def goals_route():
+	date = request.args.get("date")
+	if not date:
+		date = str(datetime.now())[:10]
+
+	with open(f"{prefix}static/nhl/goals/{date}.json") as fh:
+		data = json.load(fh)
+	res = []
+	for rowId in data:
+		row = data[rowId]
+		row["game"] = row["game"].upper()
+		row["goal"] = row["goal"].title()
+		row["ast"] = row["ast"].title()
+		if row['period'] == "OT":
+			row["time"] = f"OT {row['time']}"
+		else:
+			row["time"] = f"{row['period'][0]}p {row['time']}"
+		res.append(row)
+	return render_template("goals.html", data=res)
+
+def writeOnlyGoals(date=None):
+	if not date:
+		date = str(datetime.now())[:10]
+
+	goals = {}
 
 	with open(f"{prefix}static/hockeyreference/boxscores.json") as fh:
 		boxscores = json.load(fh)
@@ -2905,7 +2993,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if args.onlygoals:
-		writeOnlyGoals()
+		writeOnlyGoals(args.date)
 
 	if args.lineups:
 		writeLineups(plays)

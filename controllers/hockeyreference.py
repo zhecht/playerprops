@@ -103,7 +103,10 @@ def write_stats(date):
 							fullName = fullName.replace("T.J.", "T.")
 						elif fullName.startswith("A.J."):
 							fullName = fullName.replace("A.J.", "A.")
-						playerId = int(nameLink[-1])
+						try:
+							playerId = int(nameLink[-1])
+						except:
+							continue
 						playerIds[team][fullName] = playerId
 						playerList.append(fullName)
 					else:

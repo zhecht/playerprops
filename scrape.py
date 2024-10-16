@@ -257,180 +257,191 @@ def parsePlayer(player):
 
 data = {}
 props = {}
+
 async def write365(sport=None):
 	if not sport:
 		sport == "nfl"
 	# start with multi
-	url = "https://www.oh.bet365.com/?_h=CfVWPHD5idsD_8dFdjBYcw%3D%3D&btsffd=1#/AC/B12/C20426855/D47/E120593/F47/N7/"
+	urls = ["https://www.oh.bet365.com/?_h=CfVWPHD5idsD_8dFdjBYcw%3D%3D&btsffd=1#/AC/B12/C20426855/D47/E120593/F47/N7/"]
 	if sport == "nhl":
-		url = "https://www.oh.bet365.com/?_h=p2hqPA35Yw8_tTyHi3apXA%3D%3D&btsffd=1#/AC/B17/C20836572/D43/E170563/F43/N6/"
+		urls = ["https://www.oh.bet365.com/?_h=p2hqPA35Yw8_tTyHi3apXA%3D%3D&btsffd=1#/AC/B17/C20836572/D43/E170563/F43/N6/", "https://www.oh.bet365.com/?_h=utS-cSv5dnUh0yF1fiHydA%3D%3D&btsffd=1#/AC/B17/C20836572/D43/E170348/F43/"]
 
-	browser = await uc.start(no_sandbox=True)
-	page = await browser.get(url)
+	if False:
+		with open(f"static/{sport}/bet365.json") as fh:
+			data = json.load(fh)
 
-	await page.wait_for(selector=".srb-MarketSelectionButton-selected")
+	browser = None
+	for urlIdx, url in enumerate(urls):
+		if urlIdx == 0:
+			browser = await uc.start(no_sandbox=True)
+		page = await browser.get(url)
 
-	reject = await page.query_selector(".ccm-CookieConsentPopup_Reject")
-	await reject.mouse_click()
-
-	btns = await page.query_selector_all(".srb-MarketSelectionButton")
-	for btnIdx in range(0, len(btns)):
-		btn = btns[btnIdx]
 		await page.wait_for(selector=".srb-MarketSelectionButton-selected")
-		if btnIdx != 0:
-			await btn.scroll_into_view()
-			await btn.mouse_click()
-		#print(btn.text_all)
-		await page.wait_for(selector=".srb-MarketSelectionButton-selected")
+
+		reject = await page.query_selector(".ccm-CookieConsentPopup_Reject")
+		await reject.mouse_click()
+
 		btns = await page.query_selector_all(".srb-MarketSelectionButton")
-		prop = await page.query_selector(".srb-MarketSelectionButton-selected")
-		prop = prop.text.lower()
-		
-		if prop in props:
-			continue
-		props[prop] = True
+		for btnIdx in range(0, len(btns)):
+			btn = btns[btnIdx]
+			await page.wait_for(selector=".srb-MarketSelectionButton-selected")
+			if btnIdx != 0:
+				await btn.scroll_into_view()
+				await btn.mouse_click()
+			#print(btn.text_all)
+			await page.wait_for(selector=".srb-MarketSelectionButton-selected")
+			btns = await page.query_selector_all(".srb-MarketSelectionButton")
+			prop = await page.query_selector(".srb-MarketSelectionButton-selected")
+			prop = prop.text.lower()
+			
+			if prop in props:
+				continue
+			props[prop] = True
 
-		alt = False
-		if "touchdown scorers" in prop:
-			if "multi" in prop:
-				prop = "2+td"
+			alt = False
+			if "touchdown scorers" in prop:
+				if "multi" in prop:
+					prop = "2+td"
+				else:
+					prop = "attd"
+			elif "goalscorers" in prop:
+				if "multi" in prop:
+					continue
+				prop = "atgs"
 			else:
-				prop = "attd"
-		elif "goalscorers" in prop:
-			if "multi" in prop:
-				continue
-			prop = "atgs"
-		else:
-			if "milestones" in prop:
-				alt = True
-			if "power play" in prop:
-				continue
-			prop = prop.replace("player ", "").replace("to record a ", "").replace(" and ", "+").replace(" milestones", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("points", "pts").replace("assists", "ast").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace("shots on goal", "sog").replace("blocked shots", "bs").replace("yards", "yd").replace("touchdowns", "td").replace(" + ", "+").replace(" ", "_")
-			if prop == "longest_pass_completion":
-				prop = "longest_pass"
-			elif prop == "longest_rush_attempt":
-				prop = "longest_rush"
-			elif prop == "rush+rec_yd":
-				prop = "rush+rec"
-			elif prop == "sack":
-				prop = "sacks"
+				if "milestones" in prop:
+					alt = True
+				if "power play" in prop:
+					continue
+				prop = prop.replace("player ", "").replace("to record a ", "").replace(" and ", "+").replace(" milestones", "").replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("receptions", "rec").replace("reception", "rec").replace("points", "pts").replace("assists", "ast").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace("shots on goal", "sog").replace("blocked shots", "bs").replace("yards", "yd").replace("touchdowns", "td").replace(" + ", "+").replace(" ", "_")
+				if prop == "longest_pass_completion":
+					prop = "longest_pass"
+				elif prop == "longest_rush_attempt":
+					prop = "longest_rush"
+				elif prop == "rush+rec_yd":
+					prop = "rush+rec"
+				elif prop == "sack":
+					prop = "sacks"
 
-		if True:
-			for c in ["src-FixtureSubGroupWithShowMore_Closed", "src-FixtureSubGroup_Closed", "src-HScrollFixtureSubGroupWithBottomBorder_Closed"]:
-				divs = await page.query_selector_all("."+c)
+			if True:
+				for c in ["src-FixtureSubGroupWithShowMore_Closed", "src-FixtureSubGroup_Closed", "src-HScrollFixtureSubGroupWithBottomBorder_Closed"]:
+					divs = await page.query_selector_all("."+c)
 
-				for div in divs:
-					await div.scroll_into_view()
-					await div.mouse_click()
+					for div in divs:
+						await div.scroll_into_view()
+						await div.mouse_click()
+						time.sleep(round(random.uniform(0.9, 1.25), 2))
+
+				links = await page.query_selector_all(".msl-ShowMore_Link")
+
+				for el in links:
+					await el.scroll_into_view()
+					await el.mouse_click()
 					time.sleep(round(random.uniform(0.9, 1.25), 2))
-
-			links = await page.query_selector_all(".msl-ShowMore_Link")
-
-			for el in links:
-				await el.scroll_into_view()
-				await el.mouse_click()
-				time.sleep(round(random.uniform(0.9, 1.25), 2))
-		
-		divs = await page.query_selector_all(".gl-MarketGroupPod")
-		for div in divs:
-			game = await div.query_selector(".src-FixtureSubGroupButton_Text")
-			try:
-				away, home = map(str, game.text.split(" @ "))
-			except:
-				continue
-			if sport == "nhl":
-				away = convert365NHLTeam(away)
-				home = convert365NHLTeam(home)
-			else:
-				away = convert365Team(away)
-				home = convert365Team(home)
-
-			game = f"{away} @ {home}"
-			if game not in data:
-				data[game] = {}
-
-			players = await div.query_selector_all(".srb-ParticipantLabelWithTeam_Name")
-			cols = await div.query_selector_all(".gl-Market_General")
-
-			if alt:
-				for col in cols[1:]:
-					line = await col.query_selector("div")
-					line = str(float(line.text) - 0.5)
-					odds = await col.query_selector_all(".gl-Participant_General")
-					for player, odds in zip(players, odds):
-						player = parsePlayer(player.text)
-						odds = odds.text
-						if not odds:
-							continue
-						if prop not in data[game]:
-							data[game][prop] = {}
-						if player not in data[game][prop]:
-							data[game][prop][player] = {}
-						if line in data[game][prop][player]:
-							continue
-						data[game][prop][player][line] = odds
-				continue
-
-			odds1 = await cols[1].query_selector_all(".gl-Participant_General")
-			if len(cols) > 2:
-				odds2 = await cols[2].query_selector_all(".gl-Participant_General")
-			else:
-				odds2 = []
-			odds3 = await cols[-1].query_selector_all(".gl-Participant_General")
-
-			for idx, p in enumerate(players):
-				p = parsePlayer(p.text)
+			
+			divs = await page.query_selector_all(".gl-MarketGroupPod")
+			for div in divs:
+				game = await div.query_selector(".src-FixtureSubGroupButton_Text")
 				try:
-					o1 = await odds1[idx].query_selector_all("span")
-					o1 = o1[-1].text
-					o2 = ""
-					if odds2:
-						o2 = await odds2[idx].query_selector_all("span")
-					o3 = await odds3[idx].query_selector_all("span")
+					away, home = map(str, game.text.split(" @ "))
 				except:
 					continue
-				try:
-					o2 = o2[-1].text
-				except:
-					o2 = ""
-				try:
-					o3 = o3[-1].text
-				except:
-					o3 = ""
-
-				if prop not in data[game]:
-					data[game][prop] = {}
-					if prop == "2+td":
-						data[game]["3+td"] = {}
-					elif prop == "attd":
-						data[game]["ftd"] = {}
-						data[game]["ltd"] = {}
-					elif prop == "atgs":
-						data[game]["fgs"] = {}
-
-				if prop == "2+td":
-					data[game][prop][p] = o1
-					if o3:
-						data[game]["3+td"][p] = o3
-				elif prop == "attd":
-					if o2:
-						data[game][prop][p] = o2
-					data[game]["ftd"][p] = o1
-					if o3:
-						data[game]["ltd"][p] = o3
-				elif prop == "atgs":
-					if o2:
-						data[game][prop][p] = o2
-					data[game]["fgs"][p] = o1
+				if sport == "nhl":
+					away = convert365NHLTeam(away)
+					home = convert365NHLTeam(home)
 				else:
-					if p not in data[game][prop]:
-						data[game][prop][p] = {}
-					if prop == "sacks":
-						line = "0.5"
+					away = convert365Team(away)
+					home = convert365Team(home)
+
+				game = f"{away} @ {home}"
+				if game not in data:
+					data[game] = {}
+
+				players = await div.query_selector_all(".srb-ParticipantLabelWithTeam_Name")
+				cols = await div.query_selector_all(".gl-Market_General")
+
+				if alt:
+					for col in cols[1:]:
+						line = await col.query_selector("div")
+						line = str(float(line.text) - 0.5)
+						odds = await col.query_selector_all(".gl-Participant_General")
+						for player, odds in zip(players, odds):
+							player = parsePlayer(player.text)
+							odds = odds.text
+							if not odds:
+								continue
+							if prop not in data[game]:
+								data[game][prop] = {}
+							if player not in data[game][prop]:
+								data[game][prop][player] = {}
+							if line in data[game][prop][player]:
+								continue
+							data[game][prop][player][line] = odds
+					continue
+
+				odds1 = await cols[1].query_selector_all(".gl-Participant_General")
+				if len(cols) > 2:
+					odds2 = await cols[2].query_selector_all(".gl-Participant_General")
+				else:
+					odds2 = []
+				odds3 = await cols[-1].query_selector_all(".gl-Participant_General")
+
+				for idx, p in enumerate(players):
+					p = parsePlayer(p.text)
+					try:
+						o1 = await odds1[idx].query_selector_all("span")
+						o1 = o1[-1].text
+						o2 = ""
+						if odds2:
+							o2 = await odds2[idx].query_selector_all("span")
+						o3 = await odds3[idx].query_selector_all("span")
+					except:
+						continue
+					try:
+						o2 = o2[-1].text
+					except:
+						o2 = ""
+					try:
+						o3 = o3[-1].text
+					except:
+						o3 = ""
+
+					if prop not in data[game]:
+						data[game][prop] = {}
+						if prop == "2+td":
+							data[game]["3+td"] = {}
+						elif prop == "attd":
+							data[game]["ftd"] = {}
+							data[game]["ltd"] = {}
+						elif prop == "atgs":
+							data[game]["fgs"] = {}
+
+					if prop == "2+td":
+						data[game][prop][p] = o1
+						if o3:
+							data[game]["3+td"][p] = o3
+					elif prop == "attd":
+						if o2:
+							data[game][prop][p] = o2
+						data[game]["ftd"][p] = o1
+						if o3:
+							data[game]["ltd"][p] = o3
+					elif prop == "atgs":
+						if o3:
+							data[game][prop][p] = o3
+						data[game]["fgs"][p] = o1
 					else:
-						line = await odds1[idx].query_selector_all("span")
-						line = line[-2].text
-					data[game][prop][p][line] = f"{o1}/{o2}"
+						if p not in data[game][prop]:
+							data[game][prop][p] = {}
+						if prop == "sacks":
+							line = "0.5"
+						else:
+							line = await odds1[idx].query_selector_all("span")
+							line = line[-2].text
+						data[game][prop][p][line] = f"{o1}/{o2}"
+
+			if prop == "atgs":
+				break
 
 	with open(f"static/{sport}/bet365.json", "w") as fh:
 		json.dump(data, fh, indent=4)
@@ -465,7 +476,7 @@ async def writeESPN(sport=None):
 		article = articles[articleIdx]
 		if "LIVE" in article.text_all:
 			continue
-		if "Today" not in article.text_all:
+		if sport != "nfl" and "Today" not in article.text_all:
 			break
 			pass
 		teams = await article.query_selector_all(".text-primary")
@@ -735,7 +746,7 @@ async def writeMGM(sport=None):
 		event = events[eventIdx]
 
 
-		if "Today" not in event.text_all and "starting in" not in event.text_all.lower() and "p1" not in event.text_all.lower() and "p2" not in event.text_all.lower() and "p3" not in event.text_all.lower():
+		if sport != "nfl" and "Today" not in event.text_all and "starting in" not in event.text_all.lower() and "p1" not in event.text_all.lower() and "p2" not in event.text_all.lower() and "p3" not in event.text_all.lower():
 			break
 			pass
 		teams = await event.query_selector_all(".participant")
