@@ -270,14 +270,14 @@ def writeCZ(date=None, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/icehockey/events/schedule/?competitionIds=b7b715a9-c7e8-4c47-af0a-77385b525e09"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/icehockey/events/schedule?competitionIds=b7b715a9-c7e8-4c47-af0a-77385b525e09"
 	outfile = "nhloutCZ"
-	cookie = "009ac568-2f34-4348-b138-ad9d8d21fd0a:EgoAsayRC/iaAAAA:TlX5KASIhJDkLOwjuStUaZDtv8osJaS0bl8Pn/tbWSe3dYUzgKx/yP7lg5J1GmeGZ2sTBNdj6cRH8hquWqeyRjdbo+IOBQhxfPwG5tSCcV16zo8J8axZpnldPpazwm8+hi6JRUzNdVeLO/8MNtWAbesrxx83h3VxvXkcG+Xw4wekPqCfE7fdJEdj++a3HgpZGxDUBJZC39/iw/+nhdceL754EtxZawB853AjfyPuceXP9EFsG8twDUMUOYwUxMgiWbzZwA8LvDB5OQY3lg=="
+	cookie = "944a513d-653e-4d9d-937c-fe1b2af97e57:EgoAn2JaHoBwAAAA:iQnMDk9/lVD1Y7CzKsTrZol0bkjLdXd4ciUmy9xMfjvJE/rSHKpuvLSoAu0P7+tz59lI/7xSueH6a7+vhk32m/yBhES5GTu6qFf9ujk/SByBY8266aL6FcQuR6AAdqd3PQWsrdonKdftB32jjGac4M0I59iPbXPdpJPXY6fb2jgebckdfSSTkNaPTT7ZmJFSoDcfIf/evSJcz7Cl/8Q3yC3aNVK1LpqVch3/Ra6OumuGfhYLwyDd8ogy8VegUdOvKGwfpvT9EqMGow=="
 
 	if token:
 		cookie = token
 	
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -2532,8 +2532,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 		"fd": fdLines,
 		"espn": espnLines,
 		"365": bet365Lines,
-		#"pb": pbLines,
-		#"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines
 	}
@@ -3033,7 +3031,7 @@ if __name__ == '__main__':
 		writeBV()
 
 	if args.cz:
-		writeCZ(args.date)
+		writeCZ(args.date, args.token)
 
 	if args.update:
 		#writeFanduel()
@@ -3041,8 +3039,8 @@ if __name__ == '__main__':
 		writePinnacle(args.date)
 		print("kambi")
 		writeKambi()
-		print("dk")
-		writeDK(args.date)
+		#print("dk")
+		#writeDK(args.date)
 		print("cz")
 		writeCZ(args.date, args.token)
 		#print("bv")

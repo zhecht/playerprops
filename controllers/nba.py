@@ -203,14 +203,17 @@ def writeActionNetwork(dateArg = None):
 		json.dump(odds, fh, indent=4)
 
 
-def writeCZ(date):
+def writeCZ(date, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/basketball/events/schedule/?competitionIds=5806c896-4eec-4de1-874f-afed93114b8c"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/basketball/events/schedule?competitionIds=5806c896-4eec-4de1-874f-afed93114b8c"
 	outfile = "outCZ"
-	#os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	cookie = "944a513d-653e-4d9d-937c-fe1b2af97e57:EgoAn2JaHoBwAAAA:iQnMDk9/lVD1Y7CzKsTrZol0bkjLdXd4ciUmy9xMfjvJE/rSHKpuvLSoAu0P7+tz59lI/7xSueH6a7+vhk32m/yBhES5GTu6qFf9ujk/SByBY8266aL6FcQuR6AAdqd3PQWsrdonKdftB32jjGac4M0I59iPbXPdpJPXY6fb2jgebckdfSSTkNaPTT7ZmJFSoDcfIf/evSJcz7Cl/8Q3yC3aNVK1LpqVch3/Ra6OumuGfhYLwyDd8ogy8VegUdOvKGwfpvT9EqMGow=="
+	if token:
+		cookie = token
+
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -225,8 +228,7 @@ def writeCZ(date):
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
-		#os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
-		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: d54677cb-c7bf-4b5c-add6-0de10122dfcd:EQoAfmx+iUwAAAAA:uVSQjRFAgmnBJtUQy+W3HaDJApw3BiyFT+Ye9AkEaIc1sI4h0td2RugiLK6UVqB9Sh3JcvjD8P94BCiuxh7iONcqWtAJ9dkbzAJ42JL4ZuWdIGZjqvPu0dttlqflf0+r+YxBxHHK98AGaJqtnqRAsytkmeLa3BNvemeWO38tasM7GZMSjM9IHEK78zk6ydrfN0nCW7Kb76HAGqb5419ROLXCJU3IGJHw/8euZjxKipOK9AKTs0PY9OM4XHrQ8gXN1FIKY01iFeqEXQ==' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -237,7 +239,7 @@ def writeCZ(date):
 		if "Daily" in data["name"]:
 			continue
 
-		game = data["name"].lower().replace("|", "").replace("at", "@")
+		game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
 		away = convertNBATeam(game.split(' @ ')[0])
 		home = convertNBATeam(game.split(' @ ')[1])
 		game = f"{away} @ {home}"
@@ -576,6 +578,11 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 		if debug:
 			print(prop, row["matchupId"], keys)
+
+		if prop == "doubledouble":
+			prop = "double-double"
+		elif prop == "tripledouble":
+			prop = "triple-double"
 
 		prices = row["prices"]
 		switched = 0
@@ -1753,11 +1760,13 @@ def writeDK(date):
 
 	if False:
 		mainCats = {
-			"team": 530
+			"ast": 1217
 		}
 		subCats = {
-			530: [10514],
+			1217: [12495, 12537],
 		}
+
+	cookie = "-H 'Cookie: hgg=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiIxODU4ODA5NTUwIiwiZGtzLTYwIjoiMjg1IiwiZGtlLTEyNiI6IjM3NCIsImRrcy0xNzkiOiI1NjkiLCJka2UtMjA0IjoiNzA5IiwiZGtlLTI4OCI6IjExMjgiLCJka2UtMzE4IjoiMTI2MSIsImRrZS0zNDUiOiIxMzUzIiwiZGtlLTM0NiI6IjEzNTYiLCJka2UtNDI5IjoiMTcwNSIsImRrZS03MDAiOiIyOTkyIiwiZGtlLTczOSI6IjMxNDAiLCJka2UtNzU3IjoiMzIxMiIsImRraC03NjgiOiJxU2NDRWNxaSIsImRrZS03NjgiOiIwIiwiZGtlLTgwNiI6IjM0MjYiLCJka2UtODA3IjoiMzQzNyIsImRrZS04MjQiOiIzNTExIiwiZGtlLTgyNSI6IjM1MTQiLCJka3MtODM0IjoiMzU1NyIsImRrZS04MzYiOiIzNTcwIiwiZGtoLTg5NSI6IjhlU3ZaRG8wIiwiZGtlLTg5NSI6IjAiLCJka2UtOTAzIjoiMzg0OCIsImRrZS05MTciOiIzOTEzIiwiZGtlLTk0NyI6IjQwNDIiLCJka2UtOTc2IjoiNDE3MSIsImRrcy0xMTcyIjoiNDk2NCIsImRrcy0xMTc0IjoiNDk3MCIsImRrcy0xMjU1IjoiNTMyNiIsImRrcy0xMjU5IjoiNTMzOSIsImRrZS0xMjc3IjoiNTQxMSIsImRrZS0xMzI4IjoiNTY1MyIsImRraC0xNDYxIjoiTjZYQmZ6S1EiLCJka3MtMTQ2MSI6IjAiLCJka2UtMTU2MSI6IjY3MzMiLCJka2UtMTY1MyI6IjcxMzEiLCJka2UtMTY1NiI6IjcxNTEiLCJka2UtMTY4NiI6IjcyNzEiLCJka2UtMTcwOSI6IjczODMiLCJka3MtMTcxMSI6IjczOTUiLCJka2UtMTc0MCI6Ijc1MjciLCJka2UtMTc1NCI6Ijc2MDUiLCJka3MtMTc1NiI6Ijc2MTkiLCJka3MtMTc1OSI6Ijc2MzYiLCJka2UtMTc2MCI6Ijc2NDkiLCJka2UtMTc2NiI6Ijc2NzUiLCJka2gtMTc3NCI6IjJTY3BrTWF1IiwiZGtlLTE3NzQiOiIwIiwiZGtlLTE3NzAiOiI3NjkyIiwiZGtlLTE3ODAiOiI3NzMxIiwiZGtlLTE2ODkiOiI3Mjg3IiwiZGtlLTE2OTUiOiI3MzI5IiwiZGtlLTE3OTQiOiI3ODAxIiwiZGtlLTE4MDEiOiI3ODM4IiwiZGtoLTE4MDUiOiJPR2tibGtIeCIsImRrZS0xODA1IjoiMCIsImRrcy0xODE0IjoiNzkwMSIsImRraC0xNjQxIjoiUjBrX2xta0ciLCJka2UtMTY0MSI6IjAiLCJka2UtMTgyOCI6Ijc5NTYiLCJka2gtMTgzMiI6ImFfdEFzODZmIiwiZGtlLTE4MzIiOiIwIiwiZGtzLTE4NDciOiI4MDU0IiwiZGtzLTE3ODYiOiI3NzU4IiwiZGtlLTE4NTEiOiI4MDk3IiwiZGtlLTE4NTgiOiI4MTQ3IiwiZGtlLTE4NjEiOiI4MTU3IiwiZGtlLTE4NjAiOiI4MTUyIiwiZGtlLTE4NjgiOiI4MTg4IiwiZGtoLTE4NzUiOiJZRFJaX3NoSiIsImRrcy0xODc1IjoiMCIsImRrcy0xODc2IjoiODIxMSIsImRraC0xODc5IjoidmI5WWl6bE4iLCJka2UtMTg3OSI6IjAiLCJka2UtMTg0MSI6IjgwMjQiLCJka3MtMTg4MiI6IjgyMzkiLCJka2UtMTg4MSI6IjgyMzYiLCJka2UtMTg4MyI6IjgyNDMiLCJka2UtMTg4MCI6IjgyMzIiLCJka2UtMTg4NyI6IjgyNjQiLCJka2UtMTg5MCI6IjgyNzYiLCJka2UtMTkwMSI6IjgzMjYiLCJka2UtMTg5NSI6IjgzMDAiLCJka2gtMTg2NCI6IlNWbjFNRjc5IiwiZGtlLTE4NjQiOiIwIiwibmJmIjoxNzIyNDQyMjc0LCJleHAiOjE3MjI0NDI1NzQsImlhdCI6MTcyMjQ0MjI3NCwiaXNzIjoiZGsifQ.jA0OxjKzxkyuAktWmqFbJHkI6SWik-T-DyZuLjL9ZKM; STE=\"2024-07-31T16:43:12.166175Z\"; STIDN=eyJDIjoxMjIzNTQ4NTIzLCJTIjo3MTU0NjgxMTM5NCwiU1MiOjc1Mjc3OTAxMDAyLCJWIjoxODU4ODA5NTUwLCJMIjoxLCJFIjoiMjAyNC0wNy0zMVQxNjo0MToxNC42ODc5Mzk4WiIsIlNFIjoiVVMtREsiLCJVQSI6IngxcVNUYXJVNVFRRlo3TDNxcUlCbWpxWFozazhKVmt2OGFvaCttT1ZpWFE9IiwiREsiOiIzMTQyYjRkMy0yNjU2LTRhNDMtYTBjNi00MTEyM2Y5OTEyNmUiLCJESSI6IjEzNTBmMGM0LWQ3MDItNDUwZC1hOWVmLTJlZjRjZjcxOTY3NyIsIkREIjo0NDg3NTQ0MDk4OH0=; STH=3a3368e54afc8e4c0a5c91094077f5cd1ce31d692aaaf5432b67972b5c3eb6fc; _abck=56D0C7A07377CFD1419CD432549CD1DB~0~YAAQJdbOF6Bzr+SQAQAAsmCPCQykOCRLV67pZ3Dd/613rD8UDsL5x/r+Q6G6jXCECjlRwzW7ESOMYaoy0fhStB3jiEPLialxs/UD9kkWAWPhuOq/RRxzYkX+QY0wZ/Uf8WSSap57OIQdRC3k3jlI6z2G8PKs4IyyQ/bRZfS2Wo6yO0x/icRKUAUeESKrgv6XrNaZCr14SjDVxBBt3Qk4aqJPKbWIbaj+1PewAcP+y/bFEVCmbcrAruJ4TiyqMTEHbRtM9y2O0WsTg79IZu52bpOI2jFjEUXZNRlz2WVhxbApaKY09QQbbZ3euFMffJ25/bXgiFpt7YFwfYh1v+4jrIvbwBwoCDiHn+xy17v6CXq5hIEyO4Bra6QT1sDzil+lQZPgqrPBE0xwoHxSWnhVr60EK1X5IVfypMHUcTvLKFcEP2eqwSZ67Luc/ompWuxooaOVNYrgvH/Vvs5UbyVOEsDcAXoyGt0BW3ZVMVPHXS/30dP3Rw==~-1~-1~1722445877; PRV=3P=0&V=1858809550&E=1720639388; ss-pid=4CNl0TGg6ki1ygGONs5g; ab.storage.deviceId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%22fe7382ec-2564-85bf-d7c4-3eea92cb7c3e%22%2C%22c%22%3A1709950180242%2C%22l%22%3A1709950180242%7D; ab.storage.userId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%2228afffab-27db-4805-85ca-bc8af84ecb98%22%2C%22c%22%3A1712278087074%2C%22l%22%3A1712278087074%7D; ab.storage.sessionId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%223eff9525-6179-dc9c-ce88-9e51fca24c58%22%2C%22e%22%3A1722444192818%2C%22c%22%3A1722442278923%2C%22l%22%3A1722442392818%7D; _gcl_au=1.1.386764008.1720096930; _ga_QG8WHJSQMJ=GS1.1.1722442278.7.1.1722442393.19.0.0; _ga=GA1.2.2079166597.1720096930; _dpm_id.16f4=b3163c2a-8640-4fb7-8d66-2162123e163e.1720096930.7.1722442393.1722178863.1f3bf842-66c7-446c-95e3-d3d5049471a9; _tgpc=78b6db99-db5f-5ce5-848f-0d7e4938d8f2; _tglksd=eyJzIjoiYjRkNjE4MWYtMTJjZS01ZDJkLTgwNTYtZWQ2NzIxM2MzMzM2Iiwic3QiOjE3MjI0NDIyNzgyNzEsInNvZCI6IihkaXJlY3QpIiwic29kdCI6MTcyMTg3ODUxOTY5OCwic29kcyI6Im8iLCJzb2RzdCI6MTcyMTg3ODUxOTY5OH0=; _sp_srt_id.16f4=55c32e85-f32f-42ac-a0e8-b1e37c9d3bc6.1720096930.6.1722442279.1722178650.6d45df5a-aea8-4a66-a4ba-0ef841197d1d.cdc2d898-fa3f-4430-a4e4-b34e1909bb05...0; _scid=e6437688-491e-4800-b4b2-e46e81b2816c; _ga_M8T3LWXCC5=GS1.2.1722442279.7.1.1722442288.51.0.0; _svsid=9d0929120b67695ad6ee074ccfd583b7; _sctr=1%7C1722398400000; _hjSessionUser_2150570=eyJpZCI6ImNmMDA3YTA2LTFiNmMtNTFkYS05Y2M4LWNmNTAyY2RjMWM0ZCIsImNyZWF0ZWQiOjE3MjA1NTMwMDE4OTMsImV4aXN0aW5nIjp0cnVlfQ==; _csrf=ba945d1a-57c4-4b50-a4b2-1edea5014b72; ss-id=x8zwcqe0hExjZeHXAKPK; ak_bmsc=F8F9B7ED0366DC4EB63B2DD6D078134C~000000000000000000000000000000~YAAQJdbOF3hzr+SQAQAAp1uPCRjLBiubHwSBX74Dd/8hmIdve4Tnb++KpwPtaGp+NN2ZcEf+LtxC0PWwzhZQ1one2MxGFFw1J6BXg+qiFAoQ6+I3JExoHz4r+gqodWq7y5Iri7+3aBFQRDtn17JMd1PTEEuN8EckzKIidL3ggrEPS+h1qtof3aHJUdx/jkCUjkaN/phWSvohlUGscny8dJvRz76e3F20koI5UsjJ/rQV7dUn6HNw1b5H1tDeL7UR1mbBrCLz6YPDx4XCjybvteRQpyLGI0o9L6xhXqv12exVAbZ15vpuNJalhR6eB4/PVwCmfVniFcr/xc8hivkuBBMOj1lN7ADykNA60jFaIRAY2BD2yj27Aedr7ETAFnvac0L0ITfH20LkA2cFhGUxmzOJN0JQ6iTU7VGgk19FzV+oeUxNmMPX; bm_sz=D7ABF43D4A5671594F842F6C403AB281~YAAQJdbOF3lzr+SQAQAAp1uPCRgFgps3gN3zvxvZ+vbm5t9IRWYlb7as+myjQOyHzYhriG6n+oxyoRdQbE6wLz996sfM/6r99tfwOLP2K8ULgA2nXfOPvqk6BwofdTsUd7KP7EnKhcCjhADO18uKB/QvIJgyS3IFBROxP2XFzS15m/DrRbF7lQDRscWtVo8oOITxNTBlwg0g4fI3gzjG6A4uHYxjeCegxSrHFHGFr4KZXgOnsJhmZe0lqIRWUFcIKC/gfsDd+jfyUnprMso1Flsv9blGlvycOoWTHPdEQvUudpOZlZ3JYz9H5y+dU94wBD9ejxIlRKP26giQISjun829Kt7CuKxJXYAcSJeiomZFh5Abj+Mkv0wi6ZcRcmOVFt49eywPazFHpGM8DVcUkVEFMcpNCeiJ/CtC60U9SoJy+ermF1hTqiAq~3622209~4408134; bm_sv=6618DE86472CB31D7B7F16DAE6689651~YAAQJdbOF96Lr+SQAQAA4iSRCRjfwGUmEhVBbE3y/2VDAAvuPyI2gX7io7CQCPfcdMOnBnNhxHIKYt9PFr7Y1TADQHFUC9kqXu7Nbj9d1BrLlfi1rPbv/YKPqhqSTLkbNSWbeKhKM4HfOu7C+RLV383VzGeyDhc2zOuBKBVNivHMTF9njS3vK6RKeSPFCfxOJdDHgNlIYykf0Ke2WJvflHflTUykwWUaYIlqoB52Ixb9opHQVTptWjetGdYjuOO2S2ZPkw==~1; _dpm_ses.16f4=*; _tgidts=eyJzaCI6ImQ0MWQ4Y2Q5OGYwMGIyMDRlOTgwMDk5OGVjZjg0MjdlIiwiY2kiOiIxZDMxOGRlZC0yOWYwLTUzYjItYjFkNy0yMDlmODEwNDdlZGYiLCJzaSI6ImI0ZDYxODFmLTEyY2UtNWQyZC04MDU2LWVkNjcyMTNjMzMzNiJ9; _tguatd=eyJzYyI6IihkaXJlY3QpIn0=; _tgsid=eyJscGQiOiJ7XCJscHVcIjpcImh0dHBzOi8vc3BvcnRzYm9vay5kcmFmdGtpbmdzLmNvbSUyRmxlYWd1ZXMlMkZiYXNlYmFsbCUyRm1sYlwiLFwibHB0XCI6XCJNTEIlMjBCZXR0aW5nJTIwT2RkcyUyMCUyNiUyMExpbmVzJTIwJTdDJTIwRHJhZnRLaW5ncyUyMFNwb3J0c2Jvb2tcIixcImxwclwiOlwiXCJ9IiwicHMiOiJkOTY4OTkxNy03ZTAxLTQ2NTktYmUyOS1mZThlNmI4ODY3MzgiLCJwdmMiOiIxIiwic2MiOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6LTEiLCJlYyI6IjUiLCJwdiI6IjEiLCJ0aW0iOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6MTcyMjQ0MjI4MjA3NDotMSJ9; _sp_srt_ses.16f4=*; _gid=GA1.2.150403708.1722442279; _scid_r=e6437688-491e-4800-b4b2-e46e81b2816c; _uetsid=85e6d8504f5711efbe6337917e0e834a; _uetvid=d50156603a0211efbb275bc348d5d48b; _hjSession_2150570=eyJpZCI6ImQxMTAyZTZjLTkyYzItNGMwNy1hNzMzLTcxNDhiODBhOTI4MyIsImMiOjE3MjI0NDIyODE2NDUsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MH0=; _rdt_uuid=1720096930967.9d40f035-a394-4136-b9ce-2cf3bb298115'"
 
 	lines = {}
 	for mainCat in mainCats:
@@ -1768,9 +1777,10 @@ def writeDK(date):
 			if subCat:
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
+			#print(url)
 			outfile = "outnba"
 			#print(url)
-			os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' -o {outfile}")
+			os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.draftkings.com/' -H 'Origin: https://sportsbook.draftkings.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-site' -H 'Priority: u=0' -H 'TE: trailers' {cookie} -o {outfile}")
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -1898,6 +1908,8 @@ def writeDK(date):
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0]).strip()
 								if player not in lines[game][prop]:
 									lines[game][prop][player] = {}
+								if outcomes[0]["line"] in lines[game][prop][player]:
+									continue
 								lines[game][prop][player][outcomes[0]['line']] = f"{outcomes[0]['oddsAmerican']}"
 								if len(row["outcomes"]) > 1:
 									lines[game][prop][player][outcomes[0]['line']] += f"/{outcomes[1]['oddsAmerican']}"
@@ -2654,6 +2666,45 @@ def bvParlay():
 	with open("static/nba/bvParlays.csv", "w") as fh:
 		fh.write(output)
 
+def parseESPN(espnLines, noespn=None):
+	with open("static/basketballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"static/nba/espn.json") as fh:
+		espn = json.load(fh)
+
+	players = {}
+	for team in roster:
+		players[team] = {}
+		for player in roster[team]:
+			first = player.split(" ")[0][0]
+			last = player.split(" ")[-1]
+			players[team][f"{first} {last}"] = player
+
+	if not noespn:
+		for game in espn:
+			espnLines[game] = {}
+			for prop in espn[game]:
+				if prop == "ml":
+					espnLines[game][prop] = espn[game][prop]
+				elif prop in ["total", "spread"]:
+					espnLines[game][prop] = espn[game][prop].copy()
+				else:
+					espnLines[game][prop] = {}
+					away, home = map(str, game.split(" @ "))
+					for p in espn[game][prop]:
+						if p not in players[away] and p not in players[home]:
+							continue
+						if p in players[away]:
+							player = players[away][p]
+						else:
+							player = players[home][p]
+						
+						if type(espn[game][prop][p]) is str:
+							espnLines[game][prop][player] = espn[game][prop][p]
+						else:
+							espnLines[game][prop][player] = espn[game][prop][p].copy()
+
 def writePlayer(player, propArg):
 	with open(f"{prefix}static/nba/draftkings.json") as fh:
 		dkLines = json.load(fh)
@@ -2761,7 +2812,7 @@ def writeMinutes():
 	for team in rotoTeams:
 		url = f"https://www.rotowire.com/basketball/ajax/get-projected-minutes.php?team={team.upper()}"
 		time.sleep(0.3)
-		os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' -H 'Cookie: PHPSESSID=82cdcdf861a1a39c5ae433e2ea917197; g_uuid=f873170b-ed5f-4688-9146-956442a88346; cohort_id=3; rwlanding=%252F; g_sid=1703792287331.w936baxr' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' -H 'Referer: https://www.rotowire.com/basketball/nba-lineups.php' -H 'Cookie: PHPSESSID=fa8217e19e4a32a38d5bd2e3e46e4487; rwlanding=%252F; g_uuid=8ccd1e2c-792c-4822-a45e-9b68d791c622; g_sid=1729631249817.jm63rbi; cohort_id=3; usprivacy=1NNN' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' -H 'Priority: u=0' -H 'TE: trailers' -o {outfile}")
 		team = convertNBATeam(team)
 		minutes[team] = {}
 
@@ -2813,6 +2864,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nba/espn.json") as fh:
 		espnLines = json.load(fh)
 
+	with open(f"{prefix}static/nba/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
 	with open(f"{prefix}static/basketballreference/lastYearStats.json") as fh:
 		lastYearStats = json.load(fh)
 
@@ -2843,15 +2897,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nba/minutes.json") as fh:
 		minutes = json.load(fh)
 
+	espnLines = {}
+	parseESPN(espnLines)
+
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
-		#"mgm": mgmLines,
+		"mgm": mgmLines,
 		"fd": fdLines,
-		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines,
-		"espn": espnLines
+		"espn": espnLines,
+		"bet365": bet365Lines
 	}
 
 	with open(f"{prefix}static/nba/ev.json") as fh:
@@ -2936,45 +2993,45 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					team = t
 
-					if player not in splits[team] or prop not in splits[team][player]:
-						continue
-
 					playerSplits = {}
 					if player in trades:
 						for hdr in splits[trades[player]][player]:
 							playerSplits[hdr] = splits[trades[player]][player][hdr]
 						for hdr in splits[team][player]:
 							playerSplits[hdr] += ","+splits[team][player][hdr]
-					else:
+					elif team in splits and player in splits[team]:
 						playerSplits = splits[team][player]
 
-					projMin = minutes[team].get(player, 0)
-					minArr = playerSplits["min"].split(",")
-					winLossArr = playerSplits["winLoss"].split(",")
-					awayHomeArr = playerSplits["awayHome"].split(",")
+					projMin = 0
+					if team in minutes:
+						projMin = minutes[team].get(player, 0)
+					minArr = playerSplits.get("min", "").split(",")
+					winLossArr = playerSplits.get("winLoss", "").split(",")
+					awayHomeArr = playerSplits.get("awayHome", "").split(",")
 
-					totalSplits = playerSplits[prop]
-					totalOver = round(len([x for x in playerSplits[prop].split(",") if int(x) > float(playerHandicap)]) * 100 / len(minArr))
-					totalOverPerMin = round(len([x for i, x in enumerate(playerSplits[prop].split(",")) if int(x) * projMin / int(minArr[i]) > float(playerHandicap)]) * 100 / len(minArr))
-					total15Over = round(len([x for x in playerSplits[prop].split(",")[-15:] if int(x) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
-					total15OverPerMin = round(len([x for x, m in zip(playerSplits[prop].split(",")[-15:], minArr[-15:]) if int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
+					totalSplits = playerSplits.get(prop, "")
+					if len(minArr) > 1 and prop in playerSplits:
+						totalOver = round(len([x for x in playerSplits[prop].split(",") if int(x) > float(playerHandicap)]) * 100 / len(minArr))
+						totalOverPerMin = round(len([x for i, x in enumerate(playerSplits[prop].split(",")) if int(x) * projMin / int(minArr[i]) > float(playerHandicap)]) * 100 / len(minArr))
+						total15Over = round(len([x for x in playerSplits[prop].split(",")[-15:] if int(x) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
+						total15OverPerMin = round(len([x for x, m in zip(playerSplits[prop].split(",")[-15:], minArr[-15:]) if int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
 
 					winArrLength = len([x for x in winLossArr if x == "W"])
-					if winArrLength:
+					if winArrLength and prop in playerSplits:
 						winLossSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "W" and int(x) > float(playerHandicap)]) * 100 / winArrLength)
 						winLossSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "W" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / winArrLength)
 					loseArrLength = len([x for x in winLossArr if x == "L"])
-					if loseArrLength:
+					if loseArrLength and prop in playerSplits:
 						winLossSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), winLossArr) if wl == "L" and int(x) > float(playerHandicap)]) * 100 / loseArrLength)
 						winLossSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), winLossArr, minArr) if wl == "L" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / loseArrLength)
 
 					awayArrLength = len([x for x in awayHomeArr if x == "A"])
-					if awayArrLength:
+					if awayArrLength and prop in playerSplits:
 						awayHomeSplits[0] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "A" and int(x) > float(playerHandicap)]) * 100 / awayArrLength)
 						awayHomeSplitsPerMin[0] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "A" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / awayArrLength)
 
 					homeArrLength = len([x for x in awayHomeArr if x == "H"])						
-					if homeArrLength:
+					if homeArrLength and prop in playerSplits:
 						awayHomeSplits[1] = round(len([x for x, wl in zip(playerSplits[prop].split(","), awayHomeArr) if wl == "H" and int(x) > float(playerHandicap)]) * 100 / homeArrLength)
 					
 						awayHomeSplitsPerMin[1] = round(len([x for x, wl, m in zip(playerSplits[prop].split(","), awayHomeArr, minArr) if wl == "H" and int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / homeArrLength)
@@ -3460,7 +3517,7 @@ def sortEV():
 	with open("static/nba/threesday.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "PN", "Kambi/BR", "CZ", "ESPN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -3468,7 +3525,7 @@ def sortEV():
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "+row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(row[-1]['imp'])}%", row[-1]["game"].upper(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
+		for book in ["fd", "dk", "mgm", "bet365", "pn", "kambi", "cz", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -3478,7 +3535,7 @@ def sortEV():
 	with open("static/nba/lines.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PN", "Kambi/BR", "CZ", "LYR %", "L15 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank", "IN"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "PN", "Kambi/BR", "CZ", "ESPN", "LYR %", "L15 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank", "IN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -3490,8 +3547,8 @@ def sortEV():
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(row[-1]['imp'])}%", row[-1]["game"].upper(), row[-1]['team'].upper(), player.title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pn", "kambi", "cz"]:
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR").replace("BET365", "365"), f"{round(row[-1]['imp'])}%", row[-1]["game"].upper(), row[-1]['team'].upper(), player.title(), row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "bet365", "pn", "kambi", "cz", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -3559,6 +3616,7 @@ if __name__ == '__main__':
 	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
+	parser.add_argument("--token")
 	parser.add_argument("--player", help="Player")
 
 	args = parser.parse_args()
@@ -3622,7 +3680,7 @@ if __name__ == '__main__':
 		bvParlay()
 
 	if args.cz:
-		writeCZ(args.date)
+		writeCZ(args.date, args.token)
 
 	if args.matchups:
 		writeMatchups()
@@ -3638,11 +3696,12 @@ if __name__ == '__main__':
 		#writeMGM(args.date)
 		#print("pb")
 		#writePointsbet(args.date)
-		print("dk")
-		writeDK(args.date)
-		writeCZ(args.date)
-		print("bv")
-		writeBV(args.date)
+		#print("dk")
+		#writeDK(args.date)
+		print("cz")
+		writeCZ(args.date, args.token)
+		#print("bv")
+		#writeBV(args.date)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
