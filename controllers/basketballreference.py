@@ -476,6 +476,8 @@ def parsePlayer(player):
 		player = "jaden ivey"
 	elif player == "nicolas claxton":
 		player = "nic claxton"
+	elif player == "alex sarr":
+		return "alexandre sarr"
 	return player
 
 def writePlayerIds():

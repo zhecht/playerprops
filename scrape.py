@@ -6,6 +6,25 @@ import unicodedata
 import nodriver as uc
 import argparse
 
+def convertCollege(team):
+	team = strip_accents(team.lower())
+	team = team.replace(".", "").replace("'", "").replace("-", " ")
+	j = {
+		"uconn": "connecticut",
+		"indiana u": "indiana",
+		"miami fl": "miami",
+		"nc greensboro": "unc greensboro",
+		"oklahoma st": "oklahoma state",
+		"san diego st": "san diego state",
+		"st johns": "saint johns",
+		"saint josephs": "st josephs",
+		"wv mountaineers": "west virginia",
+		"va commonwealth": "vcu"
+	}
+	if team.endswith(" u"):
+		return team[:-2]
+	return j.get(team, team)
+
 def convert365Team(team):
 	team = team.lower()
 	t = team.split(" ")[0]
@@ -369,6 +388,12 @@ def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iv", "").replace(" iii", "").replace(" ii", "")
 	if player == "jadeney":
 		return "jaden ivey"
+	elif player.startswith("sebastian aho"):
+		return "sebastian aho"
+	elif player == "alex sarr":
+		return "alexandre sarr"
+	elif player == "mitchell marner":
+		return "mitch marner"
 	return player
 
 data = {}
@@ -383,7 +408,7 @@ async def write365(sport=None):
 	if sport == "nhl":
 		urls = ["https://www.oh.bet365.com/?_h=p2hqPA35Yw8_tTyHi3apXA%3D%3D&btsffd=1#/AC/B17/C20836572/D43/E170563/F43/N6/", "https://www.oh.bet365.com/?_h=utS-cSv5dnUh0yF1fiHydA%3D%3D&btsffd=1#/AC/B17/C20836572/D43/E170348/F43/"]
 	elif sport == "nba":
-		urls = ["https://www.oh.bet365.com/?_h=2t7rH-j5aYaLEGrY6urXTQ%3D%3D&btsffd=1#/AC/B18/C20604387/D43/E181378/F43/N43/"]
+		urls = ["https://www.oh.bet365.com/?_h=2t7rH-j5aYaLEGrY6urXTQ%3D%3D&btsffd=1#/AC/B18/C20604387/D43/E181379/F43/N43/"]
 
 	if False:
 		with open(f"static/{sport}/bet365.json") as fh:
@@ -592,7 +617,7 @@ async def write365(sport=None):
 	#time.sleep(50)
 	browser.stop()
 
-async def writeESPN(sport=None):
+async def writeESPN(sport=None, keep=None):
 	if not sport:
 		sport = "nfl"
 
@@ -601,11 +626,11 @@ async def writeESPN(sport=None):
 		url = "https://espnbet.com/sport/football/organization/united-states/competition/ncaaf"
 	elif sport == "nhl":
 		url = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl"
-	elif sport == "nba":
-		url = "https://espnbet.com/sport/basketball/organization/united-states/competition/nba"
+	elif sport in ["nba", "ncaab"]:
+		url = f"https://espnbet.com/sport/basketball/organization/united-states/competition/{sport}"
 	data = {}
 
-	if False:
+	if keep:
 		with open(f"static/{sport}/espn.json") as fh:
 			data = json.load(fh)
 
@@ -638,9 +663,11 @@ async def writeESPN(sport=None):
 			away = teams[0].text.lower()
 			if away.startswith("("):
 				away = away.split(") ")[-1]
+			away = convertCollege(away)
 			home = teams[-1].text.lower()
 			if home.startswith("("):
 				home = home.split(") ")[-1]
+			home = convertCollege(home)
 		game = f"{away} @ {home}"
 
 		if game in data:
@@ -671,7 +698,7 @@ async def writeESPN(sport=None):
 			for detailIdx in range(len(details)):
 				detail = details[detailIdx]
 				prop = await detail.query_selector("h2")
-				print(prop)
+				#print(prop)
 				try:
 					prop = prop.text.lower()
 				except:
@@ -704,17 +731,34 @@ async def writeESPN(sport=None):
 					prop = "pts"
 				elif prop == "player total points":
 					prop = "pts"
+					if sport == "ncaab":
+						skip = 3
 				elif prop == "player total rebounds":
 					prop = "reb"
+					if sport == "ncaab":
+						skip = 3
 				elif prop == "player total assists":
 					prop = "ast"
-					if sport == "nhl":
+					if sport in ["nhl", "ncaab"]:
 						skip = 3
-				elif sport == "nba" and prop.startswith("player"):
-					if "first" in prop:
+				elif sport in ["nba", "ncaab"] and prop.startswith("player"):
+					if "first" in prop or "1st" in prop:
 						continue
-					prop = prop.replace("player total ", "").replace("player to record a ", "").replace(", ", "+").replace(" and ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("turnovers", "to").replace(" ", "_")
-					skip = 3
+					ou = False
+					if "o/u" in prop:
+						ou = True
+					prop = prop.replace("player total ", "").replace(" o/u", "").replace("player to record a ", "").replace(", ", "+").replace(" and ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("3-pointers attempted", "3pta").replace("free throws made", "ftm").replace("field goals made", "fgm").replace("field goals attempted", "fga").replace("turnovers", "to").replace(" ", "_")
+					if ou and prop in ["pts", "reb", "ast", "3ptm"]:
+						skip = 2
+					else:
+						skip = 3
+
+					if prop in ["3pta", "fgm", "fga", "ftm"]:
+						continue
+				elif sport == "ncaab" and " total " in prop:
+					player = parsePlayer(prop.split(" total ")[0])
+					prop = prop.split(" total ")[-1].replace(", ", "+").replace(" and ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("turnovers", "to").replace(" ", "_")
+					skip = 1
 				elif prop == "player total blocked shots":
 					prop = "bs"
 					skip = 3
@@ -762,6 +806,8 @@ async def writeESPN(sport=None):
 						prop = "longest_pass"
 					elif prop == "def_int":
 						skip = 1
+				elif sport == "nfl" and prop.startswith("total"):
+					prop = prop.replace("total ", "").replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("interceptions", "int").replace("completions", "cmp").replace("completion", "cmp").replace("yards", "yd").replace("touchdowns", "td").replace("tds", "td").replace("assists", "ast").replace("defensive", "def").replace(" ", "_")
 				else:
 					continue
 
@@ -780,7 +826,7 @@ async def writeESPN(sport=None):
 					data[game][prop] = {}
 
 				sections = [detail]
-				if prop == "tackles+ast" or prop == "int" or (sport == "nba" and prop in ["pts", "reb", "ast"]):
+				if prop == "tackles+ast" or prop == "int" or (sport in ["nba", "ncaab"] and prop in ["pts", "reb", "ast"]):
 					sections = await detail.query_selector_all("div[aria-label='']")
 
 				for section in sections:
@@ -796,7 +842,7 @@ async def writeESPN(sport=None):
 						ou = ""
 						i = btnIdx
 						if prop != "int":
-							if sport in ["ncaaf", "nhl", "nba"] and skip == 3:
+							if sport in ["ncaaf", "nhl", "nba", "ncaab"] and skip == 3:
 								i += 1
 							if i >= len(btns):
 								continue
@@ -868,10 +914,13 @@ async def writeESPN(sport=None):
 								if not line:
 									continue
 								line = line.text
-								if "+" in line:
-									line = str(float(line.replace("+", "")) - 0.5)
-								else:
-									line = line.split(" ")[1]
+								try:
+									if "+" in line:
+										line = str(float(line.replace("+", "")) - 0.5)
+									else:
+										line = line.split(" ")[1]
+								except:
+									continue
 
 							if skip == 2 and prop != "tackles+ast":
 								p = await btns[btnIdx].parent.parent.parent.query_selector("header")
@@ -882,10 +931,13 @@ async def writeESPN(sport=None):
 									player = player.split(" ")[0][0]+" "+last[-1]
 								except:
 									continue
-							elif sport == "nba" and skip == 3:
+							elif sport in ["nba", "ncaab"] and skip == 3:
 								player = parsePlayer(btns[btnIdx].text.lower().split(" total ")[0].split(" to record")[0])
-								last = player.split(" ")
-								player = player.split(" ")[0][0]+" "+last[-1]
+								if sport == "nba":
+									last = player.split(" ")
+									player = player.split(" ")[0][0]+" "+last[-1]
+
+							#print(player, prop, line, ou)
 
 							if player in players:
 								player = players[player]
@@ -908,7 +960,7 @@ async def writeESPN(sport=None):
 		json.dump(data, fh, indent=4)
 	browser.stop()
 
-async def writeMGM(sport=None):
+async def writeMGM(sport=None, keep=None):
 	if not sport:
 		sport = "nfl"
 	url = "https://sports.mi.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35"
@@ -917,10 +969,12 @@ async def writeMGM(sport=None):
 	elif sport == "nhl":
 		url = "https://sports.mi.betmgm.com/en/sports/hockey-12/betting/usa-9/nhl-34"
 	elif sport == "nba":
-		url = "https://sports.mi.betmgm.com/en/sports/basketball-7/betting/usa-9"
+		url = "https://sports.mi.betmgm.com/en/sports/basketball-7/betting/usa-9/nba-6004"
+	elif sport == "ncaab":
+		url = "https://sports.mi.betmgm.com/en/sports/basketball-7/betting/usa-9/college-264"
 
 	data = {}
-	if False:
+	if keep:
 		with open(f"static/{sport}/mgm.json") as fh:
 			data = json.load(fh)
 
@@ -936,13 +990,15 @@ async def writeMGM(sport=None):
 		if sport != "nfl" and "Today" not in event.text_all and "starting in" not in event.text_all.lower() and "p1" not in event.text_all.lower() and "p2" not in event.text_all.lower() and "p3" not in event.text_all.lower():
 			if sport == "nhl" and eventIdx == 0:
 				pass
+			elif sport == "ncaab":
+				continue
 			else:
 				break
 				pass
 		teams = await event.query_selector_all(".participant")
-		if sport == "ncaaf":
-			away = teams[0].text.strip().lower()
-			home = teams[1].text.strip().lower()
+		if sport.startswith("ncaa"):
+			away = convertCollege(teams[0].text.strip().lower())
+			home = convertCollege(teams[1].text.strip().lower())
 		elif sport == "nhl":
 			away = convertMGMNHLTeam(teams[0].text.strip())
 			home = convertMGMNHLTeam(teams[1].text.strip())
@@ -1142,12 +1198,9 @@ async def writeMGM(sport=None):
 						line = await odds[playerIdx*2].parent.query_selector(".name")
 						line = line.text.strip().split(" ")[-1]
 						ou = odds[playerIdx*2].text+"/"+odds[playerIdx*2+1].text
-						if prop == "ast":
-							data[game][prop][player] = ou
-						else:
-							data[game][prop][player] = {
-								line: ou
-							}
+						data[game][prop][player] = {
+							line: ou
+						}
 				else:
 					odds = await panel.query_selector_all(".value")
 					players = await panel.query_selector_all(".attribute-key")
@@ -1170,11 +1223,288 @@ async def writeMGM(sport=None):
 		json.dump(data, fh, indent=4)
 	browser.stop()
 
+async def writeNCAABFD(keep):
+	url = f"https://sportsbook.fanduel.com/navigation/ncaab"
+	if True:
+		url += "?tab=top-25"
+	browser = await uc.start(no_sandbox=True)
+	page = await browser.get(url)
 
-async def writeFD(sport=None):
+	await page.wait_for(selector="#main ul")
+
+	data = {}
+	if keep:
+		with open(f"static/ncaab/fanduelLines.json") as fh:
+			data = json.load(fh)
+
+	links = await page.query_selector_all("#main ul")
+	links = await links[2].query_selector_all("li")
+	linkIdx = -1
+	while True:
+		linkIdx += 1
+		if "half" in links[linkIdx].text_all.lower() or "overtime" in links[linkIdx].text_all.lower():
+			continue
+
+		if "MON" in links[linkIdx].text_all or "TUE" in links[linkIdx].text_all or "WED" in links[linkIdx].text_all or "THU" in links[linkIdx].text_all or "FRI" in links[linkIdx].text_all or "SAT" in links[linkIdx].text_all or "SUN" in links[linkIdx].text_all:
+			break
+
+		teams = await links[linkIdx].query_selector_all("span[role=text]")
+		if not teams:
+			continue
+		away = convertCollege(teams[0].text)
+		home = convertCollege(teams[1].text)
+		game = f"{away} @ {home}"
+
+		if game in data:
+			continue
+
+		link = await links[linkIdx].query_selector("span[role=link]")
+		await link.parent.click()
+		await page.wait_for(selector="a[aria-selected=true]")
+
+		nav = await page.query_selector_all("nav")
+		nav = nav[-1]
+		tabs = await nav.query_selector_all("a")
+
+		game = await page.query_selector("h1")
+		game = game.text.lower().replace(" odds", "")
+		sp = game.split(" @ ")
+		if " at " in game:
+			sp = game.split(" at ")
+		away, home = map(str, sp)
+		awayFull, homeFull = away, home
+		away = convertCollege(away)
+		home = convertCollege(home)
+		game = f"{away} @ {home}"
+
+		if game in data:
+			continue
+
+		data[game] = {}
+
+		for tabIdx in range(len(tabs)):
+			try:
+				tab = tabs[tabIdx]
+			except:
+				continue
+			await page.wait_for(selector="div[data-test-id=ArrowAction]")
+
+			if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense"]:
+			#if tab.text.lower() not in ["popular"]:
+				continue
+
+			await tab.scroll_into_view()
+			await tab.mouse_click()
+			await page.wait_for(selector="div[data-test-id=ArrowAction]")
+			nav = await page.query_selector_all("nav")
+			nav = nav[-1]
+			tabs = await nav.query_selector_all("a")
+
+			arrows = await page.query_selector_all("div[data-test-id=ArrowAction]")
+
+			for arrowIdx, arrow in enumerate(arrows):
+				label = arrow.text.lower()
+				div = arrow.parent.parent.parent
+
+				prop = prefix = fullPlayer = player = mainLine = ""
+				skip = 2
+				player = False
+				alt = False
+
+				if "1st half" in label or "first half" in label:
+					prefix = "1h_"
+				elif "2nd half" in label or "second half" in label:
+					prefix = "2h_"
+				elif "1st quarter" in label:
+					prefix = "1q_"
+
+				if label == "game lines":
+					prop = "lines"
+				else:
+					if label.startswith("to score") and label.endswith("points"):
+						prop = "pts"
+						mainLine = str(float(label.split(" ")[-2].replace("+", "")) - 0.5)
+						skip = 1
+					elif label.endswith("+ made threes"):
+						prop = "3ptm"
+						mainLine = str(float(label.split(" ")[0].replace("+", "")) - 0.5)
+						skip = 1
+					elif label.startswith("to record") and label.endswith("rebounds"):
+						prop = "reb"
+						mainLine = str(float(label.split(" ")[-2].replace("+", "")) - 0.5)
+						skip = 1
+					elif label.startswith("to record") and label.endswith("assists"):
+						prop = "ast"
+						mainLine = str(float(label.split(" ")[-2].replace("+", "")) - 0.5)
+						skip = 1
+					elif label.startswith("to record") and label.endswith("steals"):
+						prop = "stl"
+						mainLine = str(float(label.split(" ")[-2].replace("+", "")) - 0.5)
+						skip = 1
+					elif label.startswith("to record") and label.endswith("blocks"):
+						prop = "blk"
+						mainLine = str(float(label.split(" ")[-2].replace("+", "")) - 0.5)
+						skip = 1
+					elif label.endswith(") total points"):
+						prop = "pts"
+					elif label.endswith(") total rebounds"):
+						prop = "reb"
+					elif label.endswith(") total assists"):
+						prop = "ast"
+					elif label.endswith(") total points + assists"):
+						prop = "pts+ast"
+					elif label.endswith(") total points + rebounds"):
+						prop = "pts+reb"
+					elif label.endswith(") total points + rebounds + assists"):
+						prop = "pts+reb+ast"
+					elif label.endswith(") total rebounds + assists"):
+						prop = "reb+ast"
+					elif label.endswith("made threes"):
+						mainLine = str(float(label.split(" ")[0].replace("+", "")) - 0.5)
+						prop = "3ptm"
+						skip = 1
+					elif " - alt" in label:
+						alt = True
+						skip = 1
+						player = parsePlayer(label.split(" - ")[0].split(" (")[0])
+						prop = label.split("alternate total ")[-1].split("alt ")[-1].replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("threes", "3ptm").replace(" + ", "+").replace(" ", "_")
+					else:
+						continue
+
+				prop = f"{prefix}{prop}"
+
+				if not prop:
+					continue
+
+				path = await arrow.query_selector("svg[data-test-id=ArrowActionIcon]")
+				path = await path.query_selector("path")
+				if prop != "lines" and path.attributes[1].split(" ")[0] != "M.147":
+					await arrow.click()
+					#await div.wait_for(selector="div[role=button]")
+					#await div.wait_for(selector="div[aria-label='Show more']")
+
+				el = await div.query_selector("div[aria-label='Show more']")
+				if el:
+					await el.click()
+					#await div.wait_for("div[aria-label='Show less']")
+
+				if prop != "lines" and prop not in data[game]:
+					data[game][prop] = {}
+
+				btns = await div.query_selector_all("div[role=button]")
+				bs = []
+				for btn in btns:
+					if "aria-label" in btn.attributes:
+						bs.append(btn)
+				btns = bs
+				start = 1
+
+				if "..." in btns[1].text:
+					start += 1
+
+				#if "aria-label" not in btns[start].attributes:
+				#	start += 1
+
+				if prop == "lines":
+					btns = btns[1:]
+					idx = btns[1].attributes.index("aria-label")
+					label = btns[1].attributes[idx+1]
+					if "unavailable" not in label:
+						data[game]["ml"] = label.split(", ")[2].split(" ")[0]+"/"+btns[4].attributes[idx+1].split(", ")[2].split(" ")[0]
+
+					label = btns[0].attributes[1]
+					if "unavailable" not in label:
+						line = label.split(", ")[2]
+						data[game]["spread"] = {}
+						data[game]["spread"][float(line.replace("+", ""))] = label.split(", ")[3].split(" ")[0]+"/"+btns[3].attributes[1].split(", ")[3].split(" ")[0]
+					line = btns[2].attributes[1].split(", ")[3].split(" ")[1]
+					data[game]["total"] = {}
+					data[game]["total"][line] = btns[2].attributes[1].split(", ")[4].split(" ")[0]+"/"+btns[5].attributes[1].split(", ")[4].split(" ")[0]
+					continue
+
+				for i in range(start, len(btns), skip):
+					btn = btns[i]
+					#print(i, start, skip, btn.attributes)
+					if "data-test-id" in btn.attributes or "aria-label" not in btn.attributes:
+						continue
+
+					labelIdx = btn.attributes.index("aria-label") + 1
+					label = btn.attributes[labelIdx]
+					if "Show more" in label or "Show less" in label or "unavailable" in label:
+						continue
+
+					try:
+						fields = label.split(", ")
+						line = fields[-2]
+						odds = fields[-1].split(" ")[0]
+					except:
+						continue
+
+					if skip == 1:
+						if mainLine:
+							player = parsePlayer(fields[1].split(" (")[0])
+							line = mainLine
+						elif alt:
+							line = fields[1].split(" ")[-1]
+						else:
+							line = fields[-2]
+
+						player = player.split(" (")[0]
+						if player not in data[game][prop]:
+							data[game][prop][player] = {}
+						if line in data[game][prop][player]:
+							if alt:
+								if " under " in fields[1].lower():
+									if "/" not in data[game][prop][player][line]:
+										data[game][prop][player][line] += "/"+odds
+								else:
+									ov = data[game][prop][player][line].split("/")[0]
+									un = ""
+									if "/" in ov:
+										un = data[game][prop][player][line].split("/")[1]
+									if int(odds) > int(ov):
+										data[game][prop][player][line].split("/")[-1]
+										data[game][prop][player][line] = f"{odds}"
+										if un and "/" not in data[game][prop][player][line]:
+											data[game][prop][player][line] += f"/{un}"
+							continue
+						data[game][prop][player][line] = odds
+					else:
+						line = fields[-2]
+						player = parsePlayer(fields[0].lower().split(" (")[0])
+						if player not in data[game][prop]:
+							data[game][prop][player] = {}
+						data[game][prop][player][line] = odds
+						if i+1 < len(btns) and "unavailable" not in btns[i+1].attributes[labelIdx]:
+							try:
+								data[game][prop][player][line] += "/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
+							except:
+								continue
+			
+
+		with open(f"static/ncaab/fanduelLines.json", "w") as fh:
+			json.dump(data, fh, indent=4)
+
+		page = await browser.get(url)
+
+		await page.wait_for(selector="#main ul")
+
+		links = await page.query_selector_all("#main ul")
+		links = await links[2].query_selector_all("li")
+		linkIdx = -1
+
+	with open(f"static/ncaab/fanduelLines.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+	browser.stop()
+
+async def writeFD(sport=None, keep=None):
 	if not sport:
 		sport = "nfl"
 	url = f"https://sportsbook.fanduel.com/navigation/{sport}"
+
+	if sport == "ncaab":
+		await writeNCAABFD(keep)
+		exit()
 
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
@@ -1195,11 +1525,10 @@ async def writeFD(sport=None):
 
 	await page.wait_for(selector="div[role=dialog]")
 	links = await page.query_selector_all("div[role=dialog] a")
-	capture = False
 
 	data = {}
-	if capture:
-		with open("static/nfl/fanduelLines.json") as fh:
+	if keep:
+		with open(f"static/{sport}/fanduelLines.json") as fh:
 			data = json.load(fh)
 
 	for linkIdx in range(len(links)):
@@ -1226,6 +1555,9 @@ async def writeFD(sport=None):
 		elif sport == "nba":
 			away = convertNBATeam(away)
 			home = convertNBATeam(home)
+		elif sport == "ncaab":
+			away = convertCollege(away)
+			home = convertCollege(home)
 		game = f"{away} @ {home}"
 
 		if sport == "nfl" and "Thursday" in links[linkIdx].text_all:
@@ -1275,6 +1607,9 @@ async def writeFD(sport=None):
 		elif sport == "nba":
 			away = convertNBATeam(away)
 			home = convertNBATeam(home)
+		elif sport == "ncaab":
+			away = convertCollege(away)
+			home = convertCollege(home)
 		game = f"{away} @ {home}"
 
 		data[game] = {}
@@ -1289,7 +1624,7 @@ async def writeFD(sport=None):
 			if sport == "nhl":
 				if tab.text.lower() not in ["popular", "goals", "shots", "points/assists"]:
 					continue
-			elif sport == "nba":
+			elif sport in ["nba", "ncaab"]:
 				if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense"]:
 				#if tab.text.lower() not in ["popular"]:
 					continue
@@ -1297,7 +1632,7 @@ async def writeFD(sport=None):
 				if tab.text.lower() not in ["popular", "td scorer props", "passing props", "receiving props", "rushing props"]:
 				#if tab.text.lower() not in ["popular"]:
 					continue
-			if tab.text.lower() != "popular" or sport in ["nhl", "nba"]:
+			if tab.text.lower() != "popular" or sport in ["nhl", "nba", "ncaab"]:
 				await tab.scroll_into_view()
 				await tab.mouse_click()
 				await page.wait_for(selector="div[data-test-id=ArrowAction]")
@@ -1403,10 +1738,10 @@ async def writeFD(sport=None):
 					alt = True
 					fullPlayer = label.split(" -")[0]
 					player = parsePlayer(label.split(" -")[0].split(" (")[0])
-					prop = label.split("alt ")[1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("threes", "3ptm").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replace(" ", "_")
+					prop = label.split("alternate total ")[-1].split("alt ")[-1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("threes", "3ptm").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replace(" ", "_")
 				elif " - passing + rushing yds" in label:
 					prop = "pass+rush"
-				elif sport == "nba":
+				elif sport in ["nba", "ncaab"]:
 					if label.startswith("to score") and label.endswith("points"):
 						prop = "pts"
 						mainLine = str(float(label.split(" ")[-2].replace("+", "")) - 0.5)
@@ -1431,6 +1766,20 @@ async def writeFD(sport=None):
 						prop = "blk"
 						mainLine = str(float(label.split(" ")[-2].replace("+", "")) - 0.5)
 						skip = 1
+					elif label.endswith(") total points"):
+						prop = "pts"
+					elif label.endswith(") total rebounds"):
+						prop = "reb"
+					elif label.endswith(") total assists"):
+						prop = "ast"
+					elif label.endswith(") total points + assists"):
+						prop = "pts+ast"
+					elif label.endswith(") total points + rebounds"):
+						prop = "pts+reb"
+					elif label.endswith(") total points + rebounds + assists"):
+						prop = "pts+reb+ast"
+					elif label.endswith(") total rebounds + assists"):
+						prop = "reb+ast"
 					else:
 						continue
 				else:
@@ -1567,10 +1916,41 @@ async def writeFD(sport=None):
 						data[game][prop][player] = odds
 					elif skip == 1 and prop == "reb+ast":
 						player = parsePlayer(fields[0].split(" - alt")[0])
+						if "reb + ast" in player:
+							player = player.replace("   alt reb + ast", "")
 						line = fields[1].split(" ")[-1]
 						if player not in data[game][prop]:
 							data[game][prop][player] = {}
 						if line in data[game][prop][player]:
+							continue
+						data[game][prop][player][line] = odds
+					elif sport == "ncaab" and skip == 1:
+						if mainLine:
+							player = parsePlayer(fields[1].split(" (")[0])
+							line = mainLine
+						elif alt:
+							line = fields[1].split(" ")[-1]
+						else:
+							line = fields[-2]
+
+						player = player.split(" (")[0]
+						if player not in data[game][prop]:
+							data[game][prop][player] = {}
+						if line in data[game][prop][player]:
+							if alt:
+								if " under " in fields[1].lower():
+									if "/" not in data[game][prop][player][line]:
+										data[game][prop][player][line] += "/"+odds
+								else:
+									ov = data[game][prop][player][line].split("/")[0]
+									un = ""
+									if "/" in ov:
+										un = data[game][prop][player][line].split("/")[1]
+									if int(odds) > int(ov):
+										data[game][prop][player][line].split("/")[-1]
+										data[game][prop][player][line] = f"{odds}"
+										if un and "/" not in data[game][prop][player][line]:
+											data[game][prop][player][line] += f"/{un}"
 							continue
 						data[game][prop][player][line] = odds
 					elif skip == 1:
@@ -1589,6 +1969,8 @@ async def writeFD(sport=None):
 						else:
 							line = fields[x].lower().replace(fullPlayer+" ", "").split(" ")[0].replace("+", "")
 							line = str(float(line) - 0.5)
+
+						player = player.split(" (")[0]
 						if player not in data[game][prop]:
 							data[game][prop][player] = {}
 						if line in data[game][prop][player]:
@@ -1603,13 +1985,18 @@ async def writeFD(sport=None):
 					else:
 						if sport == "nba" and alt:
 							line = fields[1].split(" ")[0]
+						elif sport == "ncaab":
+							line = fields[-2]
 						player = parsePlayer(fields[0].lower().split(" (")[0].split(" - alt")[0])
 						if player not in data[game][prop]:
 							data[game][prop][player] = {}
 						data[game][prop][player][line] = odds
 						if i+1 < len(btns) and "unavailable" not in btns[i+1].attributes[labelIdx]:
 							try:
-								data[game][prop][player][line] += "/"+btns[i+1].attributes[labelIdx].split(", ")[2].split(" ")[0]
+								if sport == "ncaab":
+									data[game][prop][player][line] += "/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
+								else:
+									data[game][prop][player][line] += "/"+btns[i+1].attributes[labelIdx].split(", ")[2].split(" ")[0]
 							except:
 								continue
 			
@@ -1620,16 +2007,21 @@ async def writeFD(sport=None):
 		json.dump(data, fh, indent=4)
 	browser.stop()
 
-async def writeDK(sport=None):
+async def writeDK(sport=None, keep=None):
 	if not sport:
 		sport = "nfl"
 
-	if sport == "nba":
-		url = "https://sportsbook.draftkings.com/leagues/basketball/nba"
+	if sport in ["nba", "ncaab"]:
+		url = f"https://sportsbook.draftkings.com/leagues/basketball/{sport}"
 	elif sport == "nhl":
 		url = "https://sportsbook.draftkings.com/leagues/hockey/nhl"
 	else:
 		url = "https://sportsbook.draftkings.com/leagues/football/nfl"
+
+	data = {}
+	if keep:
+		with open(f"static/{sport}/draftkings.json") as fh:
+			data = json.load(fh)
 
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
@@ -1642,7 +2034,7 @@ async def writeDK(sport=None):
 	data = {}
 
 	for mainIdx, mainTab in enumerate(mainTabs):
-		if sport == "nba":
+		if sport in ["nba", "ncaab"]:
 			if mainTab.text.lower() not in ["player points", "player rebounds", "player assists", "player threes", "player combos", "player defense"]:
 				continue
 		elif sport == "nhl":
@@ -1652,7 +2044,7 @@ async def writeDK(sport=None):
 			if mainTab.text.lower() not in ["td scorers", "passing props", "rushing props", "receiving props", "d/st props"]:
 				continue
 
-		await mainTab.mouse_click()
+		await mainTab.click()
 		await page.wait_for(selector=".sportsbook-event-accordion__wrapper")
 
 
@@ -1675,7 +2067,7 @@ async def writeDK(sport=None):
 
 			skip = 1
 			alt = False
-			if "o/u" in prop or prop in ["saves"]:
+			if "o/u" in prop or prop in ["saves"] or mainTab.text.lower() == "d/st props":
 				skip = 2
 
 			if prop.startswith("alt"):
@@ -1695,10 +2087,14 @@ async def writeDK(sport=None):
 
 			gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
 			for gameDiv in gameDivs:
+				game = await gameDiv.query_selector(".sportsbook-event-accordion__title-wrapper")
 				teams = await gameDiv.query_selector_all(".sportsbook-event-accordion__title-logo")
 
 				altIdx = teams[0].attributes.index("alt")
-				if sport == "nba":
+				if sport == "ncaab":
+					away = convertCollege(game.text_all.lower().split(" at ")[0])
+					home = convertCollege(game.text_all.lower().split(" at ")[-1])
+				elif sport == "nba":
 					away = convert365NBATeam(teams[0].attributes[altIdx+1].split(" ")[0])
 					home = convert365NBATeam(teams[1].attributes[altIdx+1].split(" ")[0])
 				elif sport == "nhl":
@@ -1716,6 +2112,9 @@ async def writeDK(sport=None):
 
 				if game not in data:
 					data[game] = {}
+
+				if keep and prop in data[game]:
+					continue
 
 				#print(mainTab.text, prop, tab.text)
 
@@ -1763,6 +2162,16 @@ async def writeDK(sport=None):
 						player = parsePlayer(btn.attributes[attrIdx+1].strip())
 						if player in data[game]["attd"] and "/" not in data[game]["attd"][player]:
 							data[game]["attd"][player] += "/"+odds.text.replace("\u2212", "-")
+				elif sport == "ncaab":
+					players = await gameDiv.query_selector_all(".side-rail-name")
+					odds = await gameDiv.query_selector_all(".sb-selection-picker__selection--focused")
+					for player, odd in zip(players, odds):
+						player = parsePlayer(player.text)
+						spans = await odd.query_selector_all("span")
+						line = str(float(spans[0].text.replace("+", "")) - 0.5)
+						data[game][prop][player] = {
+							line: spans[-1].text
+						}
 				elif skip == 1 or alt:
 					divs = await gameDiv.query_selector_all(".component-29")
 					for div in divs:
@@ -1845,6 +2254,7 @@ if __name__ == '__main__':
 	parser.add_argument("--espn", action="store_true")
 	parser.add_argument("--mgm", action="store_true")
 	parser.add_argument("--dk", action="store_true")
+	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--sport")
 
@@ -1854,13 +2264,13 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(write365(args.sport))
 
 	if args.fd:
-		uc.loop().run_until_complete(writeFD(args.sport))
+		uc.loop().run_until_complete(writeFD(args.sport, args.keep))
 
 	if args.espn:
-		uc.loop().run_until_complete(writeESPN(args.sport))
+		uc.loop().run_until_complete(writeESPN(args.sport, args.keep))
 
 	if args.mgm:
-		uc.loop().run_until_complete(writeMGM(args.sport))
+		uc.loop().run_until_complete(writeMGM(args.sport, args.keep))
 
 	if args.dk:
-		uc.loop().run_until_complete(writeDK(args.sport))
+		uc.loop().run_until_complete(writeDK(args.sport, args.keep))

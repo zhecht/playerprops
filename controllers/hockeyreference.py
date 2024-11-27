@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup as BS
 from bs4 import Comment
 import datetime
 from sys import platform
+import unicodedata
 from subprocess import call
 from glob import glob
 
@@ -32,6 +33,28 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
+def strip_accents(text):
+	try:
+		text = unicode(text, 'utf-8')
+	except NameError: # unicode is a default on python 3 
+		pass
+
+	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
+
+	return str(text)
+
+def parsePlayer(player):
+	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" sr", "").replace(" jr", "").replace(" iii", "").replace(" ii", "")
+	if player == "michael eyssimont":
+		return "mikey eyssimont"
+	elif player == "john jason peterka":
+		return "jj peterka"
+	elif player == "alexander nylander":
+		return "alex nylander"
+	elif player == "matthew boldy":
+		return "matt boldy"
+	return player
+
 def write_stats(date):
 	with open(f"{prefix}static/hockeyreference/boxscores.json") as fh:
 		boxscores = json.load(fh)
@@ -40,9 +63,18 @@ def write_stats(date):
 		playerIds = json.load(fh)
 
 	dates = [date]
-	#dates = ["2022-10-11", "2022-10-12", "2022-10-13", "2022-10-14", "2022-10-15", "2022-10-17", "2022-10-18", "2022-10-19", "2022-10-20", "2022-10-21", "2022-10-22", "2022-10-23"]
-	for date in dates:
 
+	if False:
+		dates = []
+		dt = datetime.datetime(2024,10,11)
+		while True:
+			if dt > datetime.datetime.now():
+				break
+			dates.append(str(dt)[:10])
+			dt = dt + datetime.timedelta(days=1)
+
+	for date in dates:
+		print(date)
 		if date not in boxscores:
 			print("No games found for this date, grabbing schedule")
 			write_schedule(date)
@@ -94,16 +126,9 @@ def write_stats(date):
 						if not row.find("a"):
 							continue
 						nameLink = row.find("a").get("href").split("/")
-						fullName = row.find("a").text.lower().title().replace("-", " ")
-						if fullName.startswith("J.T."):
-							fullName = fullName.replace("J.T.", "J.")
-						elif fullName.startswith("J.J."):
-							fullName = fullName.replace("J.J.", "J.")
-						elif fullName.startswith("T.J."):
-							fullName = fullName.replace("T.J.", "T.")
-						elif fullName.startswith("A.J."):
-							fullName = fullName.replace("A.J.", "A.")
 						try:
+							fullName = row.find("a").find("span").text.lower().replace("-", " ")
+							fullName = parsePlayer(fullName)
 							playerId = int(nameLink[-1])
 						except:
 							continue
@@ -145,11 +170,11 @@ def write_stats(date):
 				with open(f"{prefix}static/hockeyreference/{team}/{date}.json", "w") as fh:
 					json.dump(allStats[team], fh, indent=4)
 
-	write_totals()
-	writeSplits()
-
 	with open(f"{prefix}static/hockeyreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
+
+	write_totals()
+	writeSplits()
 
 def writeSplits():
 	with open(f"{prefix}static/hockeyreference/schedule.json") as fh:

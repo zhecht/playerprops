@@ -2525,6 +2525,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/nhl/bet365.json") as fh:
 		bet365Lines = json.load(fh)
 
+	#espnLines = {"min @ buf": {"atgs": {"matt boldy": "160/-225", "jj peterka": "200/-300", "tage thompson": "155/-220"}}}
+
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
@@ -2611,14 +2613,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					convertedProp = prop.replace("sog", "s").replace("ast", "a").replace("saves", "sv").replace("atgs", "g")
 					away, home = map(str, game.split(" @ "))
 					team = away
-					name = f"{player[0].upper()}. {player.split(' ')[-1].title()}"
-					
-					if name == "J. Ek":
-						name = "J. Eriksson Ek"
-					elif name == "R. Hopkins":
-						name = "R. Nugent Hopkins"
-					elif name == "O. Larsson":
-						name = "O. Ekman Larsson"
+					name = player
 
 					if home in playerIds and name in playerIds[home]:
 						team = home

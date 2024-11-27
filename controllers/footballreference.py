@@ -401,6 +401,9 @@ def writeTrends():
 		for team in snaps:
 			for player in snaps[team]:
 
+				if player in ["khalil herbert", "cam akers"]:
+					continue
+
 				if pos == "rb" and snaps[team][player]["pos"] != "rb":
 					continue
 				elif pos == "wr/te" and snaps[team][player]["pos"] == "rb":
@@ -466,6 +469,9 @@ def writeTrends():
 							if snapTot:
 								totRZ += tot + redzoneTotals[team]["te"][i]
 							i += 1
+
+					if pos != "rb" and sum(rzShare) < 10:
+						continue
 					rzShare = round(sum(rzShare) * 100 / totRZ)
 				except:
 					rzShare = 0
@@ -496,13 +502,14 @@ def writeTrends():
 				except:
 					tgtShare = "0"
 					wkTgtShare = "0"
+
 				wkSnap = snaps[team][player]["pct"][-1]
 				if wkSnap == "0%" or wkSnap == "0":
 					wkRzShare = "-"
 					wkTgtShare = "-"
 				arr = [team.upper(), player.title(), pts, wkPts, f"{sznSnap}%", wkSnap, f"{rzShare}%", f"{wkRzShare}%", f"{tgtShare}%", f"{wkTgtShare}%"]
 				if pos == "rb":
-					data.append((team, wkPts*-1, arr))
+					data.append((team, wkPts*-1, pts*-1, arr))
 				else:
 					data.append((rzShare*-1, int(str(wkRzShare).replace("-", "0"))*-1, arr))
 

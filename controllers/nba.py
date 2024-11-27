@@ -1116,34 +1116,220 @@ def parsePlayer(player):
 		player = "nic claxton"
 	elif player == "gregory jackson":
 		player = "gg jackson"
+	elif player == "alex sarr":
+		return "alexandre sarr"
 	return player
 
 def writeESPN():
 	js = """
 
 	{
-		function parsePlayer(player) {
-			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			let t = team.split(" ")[0];
+			if (t == "la") {
+				if (team.includes("clippers")) {
+					return "lac";
+				}
+				return "lal";
+			} else if (t == "uta") {
+				return "utah";
+			}
+			return t;
 		}
 
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			return player;
+		}
+
+		let status = "";
+
+		async function readPage(game) {
+
+			for (tab of ["lines", "player props"]) {
+			//for (tab of ["player props"]) {
+				for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
+					if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
+						t.click();
+						break;
+					}
+				}
+				if (tab != "lines") {
+					while (!window.location.href.includes(tab.replace(" ", "_"))) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				}
+				await new Promise(resolve => setTimeout(resolve, 3000));
+
+				for (detail of document.querySelectorAll("details")) {
+					let prop = detail.querySelector("h2").innerText.toLowerCase();
+					let isOU = false;
+
+					if (prop.includes("o/u")) {
+						isOU = true;
+					}
+
+					let skip = 2;
+					let player = "";
+					if (prop == "moneyline") {
+						prop = "ml";
+					} else if (prop == "game spread") {
+						prop = "spread";
+					} else if (prop == "total points") {
+						prop = "total";
+					} else if (prop.includes("double double")) {
+						prop = "double_double";
+						skip = 3;
+					} else if (prop.includes("triple double")) {
+						prop = "triple_double";
+						skip = 3;
+					} else if (prop.indexOf("player") == 0) {
+						if (prop.includes("first") || prop.includes("type")) {
+							continue;
+						}
+						prop = prop.replace("player total ", "").replace("player ", "").replace(" o/u", "").replace("points", "pts").replace("assists", "ast").replace("rebounds", "reb").replace("steals", "stl").replace("blocks", "blk").replace("turnovers", "to").replace(" and ", "+").replace(", ", "+").replace("field goals", "fg").replace("free throws", "ft").replace("3-pointers", "3pt").replace(" attempted", "a").replace(" made", "m").replaceAll(" ", "_");
+						if (prop == "ast+reb") {
+							prop = "reb+ast";
+						}
+						skip = 3;
+						if (["pts", "reb", "ast", "3ptm"].includes(prop)) {
+							skip = 2;
+						}
+					} else {
+						continue;
+					}
+
+					let open = detail.getAttribute("open");
+					if (open == null) {
+						detail.querySelector("summary").click();
+						while (detail.querySelectorAll("button").length == 0) {
+							await new Promise(resolve => setTimeout(resolve, 500));
+						}
+					}
+
+					if (!data[game][prop]) {
+						data[game][prop] = {};
+					}
+
+					let sections = [detail];
+					if (skip == 2) {
+						sections = detail.querySelectorAll("div[aria-label='']");
+					}
+
+					for (section of sections) {
+						let btns = section.querySelectorAll("button");
+						let seeAll = false;
+						if (btns[btns.length - 1].innerText == "See All Lines") {
+							seeAll = true;
+							btns[btns.length - 1].click();
+						}
+
+						if (false && seeAll) {
+							let modal = document.querySelector(".modal--see-all-lines");
+							while (!modal) {
+								await new Promise(resolve => setTimeout(resolve, 700));
+								modal = document.querySelector(".modal--see-all-lines");
+							}
+
+							while (modal.querySelectorAll("button").length == 0) {
+								await new Promise(resolve => setTimeout(resolve, 700));
+							}
+
+							let btns = Array.from(modal.querySelectorAll("button"));
+							btns.shift();
+
+							if (prop == "tackles+ast") {
+								player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+							}
+
+							for (i = 0; i < btns.length; i += skip) {
+								if (["spread", "total"].includes(prop)) {
+									let line = btns[i].querySelector("span").innerText.split(" ");
+									if (line.includes("pk")) {
+										continue;
+									}
+									line = parseFloat(line[line.length - 1]).toFixed(1);
+									let ou = btns[i].querySelectorAll("span")[1].innerText+"/"+btns[i+1].querySelectorAll("span")[1].innerText;
+									data[game][prop][line] = ou.replace("Even", "+100");
+								} else if (prop == "tackles+ast") {
+									let ou = btns[i].querySelectorAll("span")[1].innerText+"/"+btns[i+1].querySelectorAll("span")[1].innerText;
+									let line = btns[i].querySelector("span").innerText.split(" ");
+									line = parseFloat(line[line.length - 1]).toFixed(1);
+									if (!data[game][prop][player]) {
+										data[game][prop][player] = {}
+									}
+									data[game][prop][player][line] = ou.replace("Even", "+100");
+								} else {
+									let ou = btns[i+1].querySelectorAll("span")[1].innerText+"/"+btns[i+2].querySelectorAll("span")[1].innerText;
+									let player = parsePlayer(btns[i].innerText.toLowerCase().split(" to score ")[0].split(" first ")[0]);
+									let last = player.split(" ");
+									last.shift();
+									last = last.join(" ");
+									player = player.split(" ")[0][0]+" "+last;
+									data[game][prop][player] = ou.replace("Even", "+100");
+								}
+							}
+							modal.querySelector("button").click();
+							while (document.querySelector(".modal--see-all-lines")) {
+								await new Promise(resolve => setTimeout(resolve, 500));
+							}
+						} else {
+							if (skip == 2) {
+								player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+								let last = player.split(" ");
+								player = player.split(" ")[0][0]+" "+last[last.length - 1];
+							}
+							for (i = 0; i < btns.length; i += skip) {
+								if (btns[i].innerText == "See All Lines") {
+									continue;
+								}
+								if (btns[i].getAttribute("disabled") != null) {
+									continue;
+								}
+								let ou = btns[i].querySelectorAll("span")[1].innerText;
+								if (skip != 1) {
+									ou += "/"+btns[i+1].querySelectorAll("span")[1].innerText;
+								}
+
+								if (prop == "ml") {
+									data[game][prop] = ou.replace("Even", "+100");
+								} else if (prop == "double_double" || prop == "triple_double") {
+									data[game][prop][player] = ou;
+								} else {
+									let line = btns[i].querySelector("span").innerText;
+									if (line.includes("+")) {
+										line = (parseFloat(line.replace("+", "")) - 0.5).toFixed(1);
+									} else {
+										line = line.split(" ")[1];
+									}
+
+									if (!data[game][prop][player]) {
+										data[game][prop][player] = {};
+									}
+									data[game][prop][player][line] = ou.replace("Even", "+100");
+								}
+							}
+						}
+					}
+				}
+			}
+			status = "done";
+		}
 
 		async function main() {
-			let away = document.querySelector("div[data-testid='away-team-card'] span").innerText.split(" ")[0].toLowerCase();
-			let home = document.querySelector("div[data-testid='home-team-card'] span").innerText.split(" ")[0].toLowerCase();
-			let game = away+" @ "+home;
-			data[game] = {
-				"first_3ptm": {}
-			};
-			let table = document.querySelector("div[data-testid='drawer-1st 3PT Field Goal Scorer']");
-			if (table.querySelectorAll("button").length == 0) {
-				table.querySelector("div").click();
-				await new Promise(resolve => setTimeout(resolve, 1000));
-			}
-			const btns = table.querySelectorAll("button");
-			for (let btn of btns) {
-				let player = parsePlayer(btn.querySelector("span").innerText);
-				let odds = btn.querySelector("span:nth-child(2)").innerText;
-				data[game]["first_3ptm"][player] = odds;
+
+			let awayTeam = convertTeam(document.querySelector("div[data-testid=away-team-card] h2").innerText);
+			let homeTeam = convertTeam(document.querySelector("div[data-testid=home-team-card] h2").innerText);
+			let game = awayTeam + " @ " + homeTeam;
+			
+			data[game] = {};
+
+			status = "";
+			readPage(game);
+
+			while (status != "done") {
+				await new Promise(resolve => setTimeout(resolve, 2000));
 			}
 
 			console.log(data);
@@ -1151,7 +1337,6 @@ def writeESPN():
 
 		main();
 	}
-
 	"""
 
 def writeFanduelManual():

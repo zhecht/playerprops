@@ -377,7 +377,7 @@ def writeCZ(date=None, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule/?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "mlboutCZ"
 	cookie = "57d82a48-216c-4ca5-a09a-586984694d53:EgoAq+9Z3ILEAAAA:/pCHTYJhQm4ghyZoK+ZFCFkm2UdjD2TbrfZdKH83lAtCmb+z6YSY3osWVfy9S0TqhKsN6Mi/FwuALsd4bZjN8bAT47M1n2KjkrugZOxbpSwC/z4bZ37VRu2hzMxYwg4Emb29nGUV/b/9fe+X7okU9BfoB15WWRxnHbd/i65j2S8kmCfPycMFOGXcpeoaU/BI2JSeOpBo3KcjB/P2xloERwV/fk+clzEDUGEihtRM9/hMpKzmCqIeI+edZxbrMqmAnzwKwCFKkVoubSlkuw=="
 	if token:

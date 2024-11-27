@@ -2841,6 +2841,10 @@ def parseESPN(espnLines, noespn=None):
 				continue
 			elif team == "kc" and player == "jaylen watson":
 				continue
+			elif team == "pit" and player == "roman wilson":
+				continue
+			elif team == "min" and player == "jermar jefferson":
+				continue
 			players[team][f"{first} {last}"] = player
 
 	if not noespn:
@@ -4141,7 +4145,7 @@ def sortEV():
 				a = [x for x in totals[player][prop+"Splits"] if x < float(row[-1]["playerHandicap"])]
 			over = len(a) / len(totals[player][prop+"Splits"]) * 100
 			splits = ",".join([str(int(x)) for x in totals[player][prop+"Splits"]])
-			arr.extend([avg, f"{int(over)}", splits])
+			arr.extend([avg, f"{int(over)}%", splits])
 		elif player and player in totals and prop in ["rush+rec", "pass+rush"]:
 			p1, p2 = map(str, prop.split("+"))
 			p1 += "_yd"
@@ -4160,7 +4164,7 @@ def sortEV():
 			else:
 				over = 0
 			splits = ",".join([str(int(x) + int(y)) for x, y in zip(rushArr, totals[player].get(f"{p2}Splits", []))])
-			arr.extend([avg, f"{int(over)}", splits])
+			arr.extend([avg, f"{int(over)}%", splits])
 		else:
 			arr.extend(["-", "-", "-"])
 		output += "\t".join([str(x) for x in arr])+"\n"
@@ -4400,27 +4404,11 @@ if __name__ == '__main__':
 		]
 
 		plays.extend([
-			("aaron jones", 135, "dk", "attd", "", ""),
-			("zack moss", 110, "cz", "attd", "", ""),
-			("jonathon taylor", 110, "espn", "attd", "", ""),
-			("deandre swift", 240, "fd", "attd", "", ""),
-			("romeo doubs", 270, "fd", "attd", "", ""),
-			("dj moore", 220, "fd", "attd", "", ""),
-			("chase brown", 260, "fd", "attd", "", ""),
-			("tutu atwell", 340, "dk", "attd", "", ""),
-			("javonte williams", 290, "fd", "attd", "", ""),
-			("josh jacobs", 100, "espn", "attd", "", ""),
-			("chuba hubbard", 110, "fd", "attd", "", ""),
-			("zamir white", 280, "fd", "attd", "", ""),
-			("alexander mattison", 330, "fd", "attd", "", ""),
-			("tre tucker", 350, "mgm", "attd", "", ""),
-			("brian robinson", 115, "fd", "attd", "", ""),
-			("james conner", -120, "fd", "attd", "", ""),
-			("rashee rice", 160, "fd", "attd", "", ""),
-			("lamar jackson", 175, "espn", "attd", "", ""),
-			("devon achane", 150, "dk", "attd", "", ""),
-			("jameson williams", 245, "dk", "attd", "", ""),
-			("david montgomery", -120, "fd", "attd", "", ""),
+			("lamar jackson", 220, "fd", "attd", "", ""),
+			("rashod bateman", 330, "fd", "attd", "", ""),
+			("quentin johnston", 220, "fd", "attd", "", ""),
+			("jk dobbins", 110, "fd", "attd", "", ""),
+			("zay flowers", 190, "fd", "attd", "", ""),
 		])
 
 		with open(f"static/nfl/ev.json") as fh:
