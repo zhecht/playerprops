@@ -1190,7 +1190,7 @@ def writeKambi():
 				player = parsePlayer(betOffer["outcomes"][0]["participant"])
 				try:
 					last, first = map(str, player.split(", "))
-					player = f"{first} {last}"
+					player = parsePlayer(f"{first} {last}")
 				except:
 					pass
 			if "ml" in label:
@@ -1216,7 +1216,7 @@ def writeKambi():
 						player = parsePlayer(outcome["participant"])
 						try:
 							last, first = map(str, player.split(", "))
-							player = f"{first} {last}"
+							player = parsePlayer(f"{first} {last}")
 							data[game][label][player] = outcome["oddsAmerican"]
 						except:
 							continue
@@ -2226,24 +2226,164 @@ def writeESPN():
 	js = """
 
 	{
-		function parsePlayer(player) {
-			return player.toLowerCase().replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" iii", "").replaceAll(" ii", "");
+		function convertTeam(team) {
+			team = team.toLowerCase();
+			let t = team.split(" ")[0];
+			if (t == "ny") {
+				if (team.includes("rangers")) {
+					return "nyr";
+				}
+				return "nyi";
+			} else if (t == "vgs") {
+				return "vgk";
+			}
+			return t;
 		}
 
+		function parsePlayer(player) {
+			player = player.toLowerCase().split(" (")[0].replaceAll(".", "").replaceAll("'", "").replaceAll("-", " ").replaceAll(" jr", "").replaceAll(" sr", "").replaceAll(" iii", "").replaceAll(" ii", "").replaceAll(" iv", "");
+			return player;
+		}
+
+		let status = "";
+
+		async function readPage(game) {
+
+			//for (tab of ["lines", "player props"]) {
+			for (tab of ["player props"]) {
+				for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
+					if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
+						t.click();
+						break;
+					}
+				}
+				if (tab != "lines") {
+					while (!window.location.href.includes(tab.replace(" ", "_"))) {
+						await new Promise(resolve => setTimeout(resolve, 500));
+					}
+				}
+				await new Promise(resolve => setTimeout(resolve, 3000));
+
+				for (detail of document.querySelectorAll("details")) {
+					let prop = detail.querySelector("h2").innerText.toLowerCase();
+					let isOU = false;
+
+					if (prop.includes("o/u")) {
+						isOU = true;
+					}
+
+					let skip = 2;
+					let player = "";
+					if (prop == "moneyline") {
+						prop = "ml";
+					} else if (prop == "game spread") {
+						prop = "spread";
+					} else if (prop == "total goals") {
+						prop = "total";
+					} else if (prop == "player total goals") {
+						skip = 3;
+						prop = "atgs";
+					} else if (prop == "player total shots") {
+						prop = "sog";
+					} else if (prop == "player total assists") {
+						prop = "ast";
+						skip = 3;
+					} else if (prop == "player total blocked shots") {
+						prop = "bs";
+						skip = 3;
+					} else if (prop == "player saves") {
+						prop = "saves";
+						skip = 3;
+					} else if (prop == "player points") {
+						prop = "pts";
+					} else {
+						continue;
+					}
+
+					let open = detail.getAttribute("open");
+					if (open == null) {
+						detail.querySelector("summary").click();
+						while (detail.querySelectorAll("button").length == 0) {
+							await new Promise(resolve => setTimeout(resolve, 500));
+						}
+					}
+
+					if (!data[game][prop]) {
+						data[game][prop] = {};
+					}
+
+					let sections = [detail];
+					if (skip == 2) {
+						sections = detail.querySelectorAll("div[aria-label='']");
+					}
+
+					for (section of sections) {
+						let btns = section.querySelectorAll("button");
+
+						if (skip == 2) {
+							player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+						}
+						for (i = 0; i < btns.length; i += skip) {
+							if (btns[i].innerText == "See All Lines") {
+								continue;
+							}
+							if (skip != 3 && btns[i].getAttribute("disabled") != null) {
+								continue;
+							}
+
+							let idx = i;
+							if (skip == 3) {
+								idx += 1;
+							}
+
+							let ou = btns[idx].querySelectorAll("span")[1].innerText;
+							if (skip != 1 && btns[idx+1].getAttribute("disabled") == null) {
+								ou += "/"+btns[idx+1].querySelectorAll("span")[1].innerText;
+							}
+
+							if (skip == 3) {
+								player = parsePlayer(btns[i].innerText.toLowerCase().split(" total")[0].split(" to record")[0]);
+							}
+
+							if (prop == "ml") {
+								data[game][prop] = ou.replace("Even", "+100");
+							} else if (prop == "double_double" || prop == "triple_double") {
+								data[game][prop][player] = ou;
+							} else if (prop == "atgs") {
+								data[game][prop][player] = ou.replace("Even", "+100");
+							} else {
+								let line = btns[idx].querySelector("span").innerText;
+								if (line.includes("+")) {
+									line = (parseFloat(line.replace("+", "")) - 0.5).toFixed(1);
+								} else {
+									line = line.split(" ")[1];
+								}
+
+								if (!data[game][prop][player]) {
+									data[game][prop][player] = {};
+								}
+								data[game][prop][player][line] = ou.replace("Even", "+100");
+							}
+						}
+					}
+				}
+			}
+			status = "done";
+		}
 
 		async function main() {
-			let away = document.querySelector("div[data-testid='away-team-card'] span").innerText.split(" ")[0].toLowerCase();
-			let home = document.querySelector("div[data-testid='home-team-card'] span").innerText.split(" ")[0].toLowerCase();
-			let game = away+" @ "+home;
-			data[game] = {
-				"fgs": {}
-			};
-			let table = document.querySelector("div[data-testid='drawer-First Goalscorer']");
-			const btns = table.querySelectorAll("button");
-			for (let btn of btns) {
-				let player = parsePlayer(btn.querySelector("span").innerText);
-				let odds = btn.querySelector("span:nth-child(2)").innerText;
-				data[game]["fgs"][player] = odds;
+
+			let awayTeam = convertTeam(document.querySelector("div[data-testid=away-team-card] h2").innerText);
+			let homeTeam = convertTeam(document.querySelector("div[data-testid=home-team-card] h2").innerText);
+			let game = awayTeam + " @ " + homeTeam;
+			
+			data[game] = {};
+
+			status = "";
+			readPage(game);
+
+			while (status != "done") {
+				await new Promise(resolve => setTimeout(resolve, 2000));
 			}
 
 			console.log(data);
@@ -2251,7 +2391,6 @@ def writeESPN():
 
 		main();
 	}
-
 	"""
 
 def write365():
@@ -2472,10 +2611,12 @@ def write365():
 	"""
 	pass
 
-def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg=None, underArg=None, nocz=None):
+def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg=None, underArg=None, nocz=None, addArg=None):
 
 	if not boost:
 		boost = 1
+	if not addArg:
+		addArg = 0
 
 	#with open(f"{prefix}static/nhl/bet365.json") as fh:
 	#	bet365Lines = json.load(fh)
@@ -2754,6 +2895,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					#line = int(line) + 100
 					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
+					line += addArg
 					#line += 100
 					#print(maxOU in l, maxOU, l)
 					l.remove(maxOU)
@@ -2979,6 +3121,7 @@ if __name__ == '__main__':
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
 	parser.add_argument("--onlygoals", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
+	parser.add_argument("--add", type=int)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--token")
 	parser.add_argument("--player", help="Book")
@@ -3042,7 +3185,7 @@ if __name__ == '__main__':
 		#writeBV()
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under, nocz=args.nocz)
+		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost, overArg=args.over, underArg=args.under, nocz=args.nocz, addArg=args.add)
 
 	if args.print:
 		sortEV(args.prop)

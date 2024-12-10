@@ -1147,8 +1147,8 @@ def writeESPN():
 
 		async function readPage(game) {
 
-			for (tab of ["lines", "player props"]) {
-			//for (tab of ["player props"]) {
+			//for (tab of ["lines", "player props"]) {
+			for (tab of ["player props"]) {
 				for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
 					if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
 						t.click();
@@ -1219,96 +1219,57 @@ def writeESPN():
 
 					for (section of sections) {
 						let btns = section.querySelectorAll("button");
-						let seeAll = false;
-						if (btns[btns.length - 1].innerText == "See All Lines") {
-							seeAll = true;
-							btns[btns.length - 1].click();
+
+						if (skip == 2) {
+							player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+							let last = player.split(" ");
+							player = player.split(" ")[0][0]+" "+last[last.length - 1];
 						}
-
-						if (false && seeAll) {
-							let modal = document.querySelector(".modal--see-all-lines");
-							while (!modal) {
-								await new Promise(resolve => setTimeout(resolve, 700));
-								modal = document.querySelector(".modal--see-all-lines");
+						for (i = 0; i < btns.length; i += skip) {
+							if (btns[i].innerText == "See All Lines") {
+								continue;
+							}
+							if (skip != 3 && btns[i].getAttribute("disabled") != null) {
+								continue;
 							}
 
-							while (modal.querySelectorAll("button").length == 0) {
-								await new Promise(resolve => setTimeout(resolve, 700));
+							let idx = i;
+							if (skip == 3) {
+								idx += 1;
 							}
 
-							let btns = Array.from(modal.querySelectorAll("button"));
-							btns.shift();
-
-							if (prop == "tackles+ast") {
-								player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+							let ou = "";
+							try {
+								ou = btns[idx].querySelectorAll("span")[1].innerText;
+							} catch (err) {
+								continue;
+							}
+							if (skip != 1 && btns[idx+1].getAttribute("disabled") == null) {
+								ou += "/"+btns[idx+1].querySelectorAll("span")[1].innerText;
 							}
 
-							for (i = 0; i < btns.length; i += skip) {
-								if (["spread", "total"].includes(prop)) {
-									let line = btns[i].querySelector("span").innerText.split(" ");
-									if (line.includes("pk")) {
-										continue;
-									}
-									line = parseFloat(line[line.length - 1]).toFixed(1);
-									let ou = btns[i].querySelectorAll("span")[1].innerText+"/"+btns[i+1].querySelectorAll("span")[1].innerText;
-									data[game][prop][line] = ou.replace("Even", "+100");
-								} else if (prop == "tackles+ast") {
-									let ou = btns[i].querySelectorAll("span")[1].innerText+"/"+btns[i+1].querySelectorAll("span")[1].innerText;
-									let line = btns[i].querySelector("span").innerText.split(" ");
-									line = parseFloat(line[line.length - 1]).toFixed(1);
-									if (!data[game][prop][player]) {
-										data[game][prop][player] = {}
-									}
-									data[game][prop][player][line] = ou.replace("Even", "+100");
-								} else {
-									let ou = btns[i+1].querySelectorAll("span")[1].innerText+"/"+btns[i+2].querySelectorAll("span")[1].innerText;
-									let player = parsePlayer(btns[i].innerText.toLowerCase().split(" to score ")[0].split(" first ")[0]);
-									let last = player.split(" ");
-									last.shift();
-									last = last.join(" ");
-									player = player.split(" ")[0][0]+" "+last;
-									data[game][prop][player] = ou.replace("Even", "+100");
-								}
-							}
-							modal.querySelector("button").click();
-							while (document.querySelector(".modal--see-all-lines")) {
-								await new Promise(resolve => setTimeout(resolve, 500));
-							}
-						} else {
-							if (skip == 2) {
-								player = parsePlayer(btns[0].parentElement.parentElement.previousSibling.innerText);
+							if (skip == 3) {
+								player = parsePlayer(btns[i].innerText.toLowerCase().split(" total")[0].split(" to record")[0]);
 								let last = player.split(" ");
-								player = player.split(" ")[0][0]+" "+last[last.length - 1];
+								player = player.split(" ")[0][0]+" "+last[last.length-1];
 							}
-							for (i = 0; i < btns.length; i += skip) {
-								if (btns[i].innerText == "See All Lines") {
-									continue;
-								}
-								if (btns[i].getAttribute("disabled") != null) {
-									continue;
-								}
-								let ou = btns[i].querySelectorAll("span")[1].innerText;
-								if (skip != 1) {
-									ou += "/"+btns[i+1].querySelectorAll("span")[1].innerText;
-								}
 
-								if (prop == "ml") {
-									data[game][prop] = ou.replace("Even", "+100");
-								} else if (prop == "double_double" || prop == "triple_double") {
-									data[game][prop][player] = ou;
+							if (prop == "ml") {
+								data[game][prop] = ou.replace("Even", "+100");
+							} else if (prop == "double_double" || prop == "triple_double") {
+								data[game][prop][player] = ou;
+							} else {
+								let line = btns[idx].querySelector("span").innerText;
+								if (line.includes("+")) {
+									line = (parseFloat(line.replace("+", "")) - 0.5).toFixed(1);
 								} else {
-									let line = btns[i].querySelector("span").innerText;
-									if (line.includes("+")) {
-										line = (parseFloat(line.replace("+", "")) - 0.5).toFixed(1);
-									} else {
-										line = line.split(" ")[1];
-									}
-
-									if (!data[game][prop][player]) {
-										data[game][prop][player] = {};
-									}
-									data[game][prop][player][line] = ou.replace("Even", "+100");
+									line = line.split(" ")[1];
 								}
+
+								if (!data[game][prop][player]) {
+									data[game][prop][player] = {};
+								}
+								data[game][prop][player][line] = ou.replace("Even", "+100");
 							}
 						}
 					}
@@ -2878,12 +2839,15 @@ def parseESPN(espnLines, noespn=None):
 					espnLines[game][prop] = {}
 					away, home = map(str, game.split(" @ "))
 					for p in espn[game][prop]:
-						if p not in players[away] and p not in players[home]:
-							continue
-						if p in players[away]:
-							player = players[away][p]
+						if p == "j jadeney":
+							player = "jaden ivey"
 						else:
-							player = players[home][p]
+							if p not in players[away] and p not in players[home]:
+								continue
+							if p in players[away]:
+								player = players[away][p]
+							else:
+								player = players[home][p]
 						
 						if type(espn[game][prop][p]) is str:
 							espnLines[game][prop][player] = espn[game][prop][p]
@@ -3161,6 +3125,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				last10TotalOver = last20TotalOver = last50TotalOver = 0
 				totalGames = totalOver = totalOverPerMin = 0
 				total15Over = total15OverPerMin = 0
+				total10Over = total10OverPerMin = 0
 				totalSplits = []
 				totalSplitsPerMin = []
 				avgMin = []
@@ -3200,6 +3165,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						totalOverPerMin = round(len([x for i, x in enumerate(playerSplits[prop].split(",")) if int(x) * projMin / int(minArr[i]) > float(playerHandicap)]) * 100 / len(minArr))
 						total15Over = round(len([x for x in playerSplits[prop].split(",")[-15:] if int(x) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
 						total15OverPerMin = round(len([x for x, m in zip(playerSplits[prop].split(",")[-15:], minArr[-15:]) if int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len(minArr[-15:]))
+						total10Over = round(len([x for x in playerSplits[prop].split(",")[-10:] if int(x) > float(playerHandicap)]) * 100 / len(minArr[-10:]))
+						total10OverPerMin = round(len([x for x, m in zip(playerSplits[prop].split(",")[-10:], minArr[-10:]) if int(x) * projMin / int(m) > float(playerHandicap)]) * 100 / len(minArr[-10:]))
 
 					winArrLength = len([x for x in winLossArr if x == "W"])
 					if winArrLength and prop in playerSplits:
@@ -3261,6 +3228,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						totalOverPerMin = 100 - totalOverPerMin
 						total15Over = 100 - total15Over
 						total15OverPerMin = 100 - total15OverPerMin
+						total10Over = 100 - total10Over
+						total10OverPerMin = 100 - total10OverPerMin
 
 					for book in lines:
 						lineData = lines[book]
@@ -3469,6 +3438,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["totalOverPerMin"] = totalOverPerMin
 						evData[key]["total15Over"] = total15Over
 						evData[key]["total15OverPerMin"] = total15OverPerMin
+						evData[key]["total10Over"] = total10Over
+						evData[key]["total10OverPerMin"] = total10OverPerMin
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["totalSplitsPerMin"] = ",".join(totalSplitsPerMin)
 						evData[key]["lastYearTotal"] = lastTotalOver
@@ -3514,7 +3485,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"gameLine": gameLine,
 								"bookOdds": ", ".join([f"{b}: {o}" for o, b in zip(l, books)])
 							}
-							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits", "awayHomeSplitsPerMin", "winLossSplitsPerMin"]:
+							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total10Over", "total10OverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits", "awayHomeSplitsPerMin", "winLossSplitsPerMin"]:
 								j[x] = evData[key][x]
 							htmlData.append(j)
 
@@ -3720,7 +3691,7 @@ def sortEV():
 	with open("static/nba/lines.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "PN", "Kambi/BR", "CZ", "ESPN", "LYR %", "L15 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank", "IN"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Team", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "PN", "Kambi/BR", "CZ", "ESPN", "LYR %", "L10 %", "SZN %", "Splits", "Def Rank", "Def Pos Rank", "IN"]) + "\n"
 	for row in sorted(data, reverse=True):
 		player = row[-1]["player"]
 		prop = row[-1]["prop"]
@@ -3740,7 +3711,7 @@ def sortEV():
 			arr.append(str(o))
 		arr.append(f"{row[-1]['lastYearTotal']}%")
 		#arr.append(f"{row[-1]['last50YearTotal']}%")
-		arr.append(f"{row[-1]['total15Over']}%")
+		arr.append(f"{row[-1]['total10Over']}%")
 		arr.append(f"{row[-1]['totalOver']}%")
 		arr.append(",".join(row[-1]["totalSplits"].split(",")[-10:]))
 		arr.extend([row[-1]["rank"], row[-1]["posRank"]])
@@ -3810,6 +3781,7 @@ if __name__ == '__main__':
 		writeLineups()
 
 	if args.minutes:
+		writeLineups()
 		writeMinutes()
 
 	dinger = False

@@ -478,6 +478,9 @@ def write_averages():
 								val = float(td.text.strip())
 							lastYearStats[team][player][date][header] = val
 
+			with open(f"{prefix}static/hockeyreference/averages.json", "w") as fh:
+				json.dump(averages, fh, indent=4)
+
 	with open(f"{prefix}static/hockeyreference/averages.json", "w") as fh:
 		json.dump(averages, fh, indent=4)
 

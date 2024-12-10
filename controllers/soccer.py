@@ -21,8 +21,8 @@ elif os.path.exists("/home/playerprops/playerprops"):
 
 def convertTeam(game):
 	game = strip_accents(game).replace(".", "").replace("-", " ").replace("'", "").replace("/", " ")
-	if " @ " in game:
-		away, home = map(str, game.split(" @ "))
+	if " v " in game:
+		away, home = map(str, game.split(" v "))
 	else:
 		away = game
 		home = ""
@@ -40,7 +40,7 @@ def convertTeam(game):
 		g.append(t)
 
 	if len(g) == 2:
-		game = " @ ".join(g)
+		game = " v ".join(g)
 	else:
 		game = g[0]
 	game = game.replace("fc ", "").replace("1 ", "").replace("cf ", "").replace("fk ", "").replace("sv ", "").replace("vfb ", "").replace("nk ", "").replace(" *", "").replace("united", "utd").replace("saint ", "st ")
@@ -61,6 +61,7 @@ def convertTeam(game):
 		"ajax cape": "cape town spurs",
 		"ajax amsterdam": "ajax",
 		"apoel nicosia": "apoel",
+		"atalanta bc": "atalanta",
 		"athletic club bilbao": "athletic bilbao",
 		"atl paranaense": "paranaense",
 		"athletico pr": "paranaense",
@@ -116,6 +117,7 @@ def convertTeam(game):
 		"forest green rovers": "forest green",
 		"futebol clube de arouca": "arouca",
 		"gazisehir gaziantep": "gaziantep",
+		"gdinamo zagreb": "dinamo zagreb",
 		"girondins de bordeaux": "bordeax",
 		"goianiense go": "atletico goianiense",
 		"glentoran belfast": "glentoran",
@@ -168,6 +170,7 @@ def convertTeam(game):
 		"paris sg": "paris st germain",
 		"pas lamia 1964": "lamia",
 		"pcska sofia": "cska sofia",
+		"peindhoven": "psv",
 		"peterborough utd": "peterborough",
 		"philadelphia union": "philadelphia",
 		"pludogorets razgrad": "ludogorets",
@@ -186,6 +189,7 @@ def convertTeam(game):
 		"real sociedad": "sociedad",
 		"real betis": "betis",
 		"real zaragoza": "zaragoza",
+		"rb salzburg": "salzburg",
 		"red bull salzburg": "salzburg",
 		"royal antwerp": "antwerp",
 		"ruzomberok": "mruzomberok",
@@ -205,6 +209,7 @@ def convertTeam(game):
 		"sport recife pe": "sport recife",
 		"sport recife pe": "sport recife",
 		"sport club do recife": "sport recife",
+		"sporting cp": "sporting lisbon",
 		"st patricks athletic": "st patricks",
 		"st gilloise": "union st gilloise",
 		"stade rennes": "rennes",
@@ -435,8 +440,7 @@ def writeLeagues(bookArg):
 		json.dump(leagues, fh, indent=4)
 
 
-def writePinnacle(date):
-	debug = False
+def writePinnacle(date, debug=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
@@ -446,6 +450,13 @@ def writePinnacle(date):
 	
 	with open("static/soccer/leagues.json") as fh:
 		leagues = json.load(fh)
+
+	if False:
+		leagues = {
+			"pn": {
+				"uefa - champions league": 2627
+			}
+		}
 
 	for league in leagues["pn"]:
 		url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/'+str(leagues["pn"][league])+'/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -o '+outfile
@@ -462,7 +473,7 @@ def writePinnacle(date):
 			if row["parent"] and row["parent"]["id"] not in ids:
 				ids.append(row["parent"]["id"])
 
-		#ids = ["1578036428"]
+		#ids = ["1601362569"]
 		for bid in ids:
 			url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(bid)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" -o '+outfile
 
@@ -520,7 +531,7 @@ def writePinnacle(date):
 			except:
 				continue
 
-			game = f"{convertTeam(player1)} @ {convertTeam(player2)}"
+			game = f"{convertTeam(player1)} v {convertTeam(player2)}"
 			if game in res:
 				continue
 			res[game] = {}
@@ -568,6 +579,11 @@ def writePinnacle(date):
 				if prop == "moneyline":
 					continue
 
+				if prop == "goals":
+					prop = "atgs"
+					if prop not in res[game]:
+						res[game][prop] = {}
+
 				prop = f"{prefix}{prop}"
 				switched = 0
 				prices = row["prices"]
@@ -580,7 +596,10 @@ def writePinnacle(date):
 						ou = f"{prices[1]['price']}/{prices[0]['price']}"
 						switched = 1
 
-					if "dnb" in prop or "btts" in prop:
+					if prop == "atgs":
+						player = parsePlayer(player[5:-6])
+						res[game][prop][player] = ou
+					elif "dnb" in prop or "btts" in prop:
 						res[game][prop] = ou
 						continue
 
@@ -621,22 +640,22 @@ def writeMGM(date=None):
 		outfile = f"socceroutMGM"
 
 		time.sleep(0.3)
-		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+		#os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
 
 		ids = []
-		for row in data["fixtures"]:
+		for row in data.get("fixtures", []):
 			if str(datetime.strptime(row["startDate"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 				continue
 			ids.append(row["id"])
 
-		#ids = ["2:6114325"]
+		ids = ["2:7515348"]
 		for mgmid in ids:
 			url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=false&statisticsModes=All"
 			time.sleep(0.3)
-			os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+			#os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -649,7 +668,7 @@ def writeMGM(date=None):
 
 			try:
 				p1, p2 = map(str, game.split(" - "))
-				game = f"{convertTeam(p1)} @ {convertTeam(p2)}"
+				game = f"{convertTeam(p1)} v {convertTeam(p2)}"
 			except:
 				continue
 
@@ -681,9 +700,9 @@ def writeMGM(date=None):
 					if ":" in prop or "odd" in prop:
 						continue
 					if p1 in prop:
-						prop = "away_corners"
-					elif p2 in prop:
 						prop = "home_corners"
+					elif p2 in prop:
+						prop = "away_corners"
 					else:
 						prop = "corners"
 				elif "total goals" in prop:
@@ -692,9 +711,9 @@ def writeMGM(date=None):
 					if "match result" in prop or "double chance" in prop:
 						continue
 					if p1 in prop:
-						prop = "away_total"
-					elif p2 in prop:
 						prop = "home_total"
+					elif p2 in prop:
+						prop = "away_total"
 					else:
 						prop = "total"
 				else:
@@ -811,7 +830,7 @@ def writeBovada(date=None):
 			continue
 		player1 = strip_accents(comp[0]['name'].lower())
 		player2 = strip_accents(comp[1]['name'].lower())
-		game = f"{convertTeam(player1)} @ {convertTeam(player2)}"
+		game = f"{convertTeam(player1)} v {convertTeam(player2)}"
 
 		res[game] = {}
 
@@ -974,6 +993,10 @@ def writeKambi(date=None):
 		"usa/mls",
 	]
 
+	leagues = [
+		"champions_league/all",
+	]
+
 	with open("static/soccer/leagues.json") as fh:
 		leagues = json.load(fh)["kambi"]
 
@@ -994,7 +1017,7 @@ def writeKambi(date=None):
 		for event in j["events"]:
 			game = event["event"]["name"].lower()
 			player1, player2 = map(str, game.split(f" {event['event']['nameDelimiter']} "))
-			game = f"{convertTeam(player1)} @ {convertTeam(player2)}"
+			game = f"{convertTeam(player1)} v {convertTeam(player2)}"
 			fullTeams[game] = [strip_accents(player1).replace("munich", "munchen"), strip_accents(player2).replace("munich", "munchen")]
 			if game in eventIds:
 				continue
@@ -1005,7 +1028,7 @@ def writeKambi(date=None):
 			data[game] = {}
 
 
-		#eventIds = {"houston dynamo @ vancouver whitecaps": 1019281138}
+		eventIds = {"leipzig v aston villa": 1021554748}
 		for game in eventIds:
 			eventId = eventIds[game]
 			teamIds = {}
@@ -1025,8 +1048,8 @@ def writeKambi(date=None):
 			if str(datetime.strptime(j["betOffers"][0]["closed"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 				continue
 
-			player1 = strip_accents(j["events"][0]["homeName"].lower())
-			player2 = strip_accents(j["events"][0]["awayName"].lower())
+			player1 = strip_accents(j["events"][0]["awayName"].lower())
+			player2 = strip_accents(j["events"][0]["homeName"].lower())
 
 			i = 0
 			for betOffer in j["betOffers"]:
@@ -1168,8 +1191,8 @@ def writeFanduel():
 	for game in games:
 		gameId = game.split("-")[-1]
 		game = game.split("/")[-1][:-9].replace("-v-", "-@-").replace("-", " ")
-		away, home = map(str, game.split(" @ "))
-		game = f"{convertTeam(away)} @ {convertTeam(home)}"
+		away, home = map(str, game.split(" v "))
+		game = f"{convertTeam(away)} v {convertTeam(home)}"
 
 		lines[game] = {}
 
@@ -1317,8 +1340,6 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	prefix = ""
 	if sharp:
 		prefix = "pn_"
-	if player not in evData:
-		evData[player] = {}
 
 	impliedOver = impliedUnder = 0
 	over = int(ou.split("/")[0])
@@ -1333,45 +1354,54 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 		profit = 100 * bet / (finalOdds * -1)
 
 	if "/" not in ou:
-		ev = impliedOver * profit + (1-impliedOver) * -1 * bet
-		ev = round(ev, 1)
+		u = 1.07 - impliedOver
+		if u > 1:
+			return
+		if over > 0:
+			under = int((100*u) / (-1+u))
+		else:
+			under = int((100 - 100*u) / u)
 	else:
 		under = int(ou.split("/")[1])
-		if under > 0:
-			impliedUnder = 100 / (under+100)
-		else:
-			impliedUnder = -1*under / (-1*under+100)
 
-		x = impliedOver
-		y = impliedUnder
-		while round(x+y, 8) != 1.0:
-			k = math.log(2) / math.log(2 / (x+y))
-			x = x**k
-			y = y**k
 
-		dec = 1 / x
-		if dec >= 2:
-			fairVal = round((dec - 1)  * 100)
-		else:
-			fairVal = round(-100 / (dec - 1))
-		#fairVal = round((1 / x - 1)  * 100)
-		implied = round(x*100, 2)
-		#ev = round(x * (finalOdds - fairVal), 1)
+	if under > 0:
+		impliedUnder = 100 / (under+100)
+	else:
+		impliedUnder = -1*under / (-1*under+100)
 
-		#multiplicative 
-		mult = impliedOver / (impliedOver + impliedUnder)
-		add = impliedOver - (impliedOver+impliedUnder-1) / 2
+	x = impliedOver
+	y = impliedUnder
+	while round(x+y, 8) != 1.0:
+		k = math.log(2) / math.log(2 / (x+y))
+		x = x**k
+		y = y**k
 
-		evs = []
-		for method in [x, mult, add]:
-			ev = method * profit + (1-method) * -1 * bet
-			ev = round(ev, 1)
-			evs.append(ev)
+	dec = 1 / x
+	if dec >= 2:
+		fairVal = round((dec - 1)  * 100)
+	else:
+		fairVal = round(-100 / (dec - 1))
+	#fairVal = round((1 / x - 1)  * 100)
+	implied = round(x*100, 2)
+	#ev = round(x * (finalOdds - fairVal), 1)
 
-		ev = min(evs)
+	#multiplicative 
+	mult = impliedOver / (impliedOver + impliedUnder)
+	add = impliedOver - (impliedOver+impliedUnder-1) / 2
 
-		evData[player][f"{prefix}fairVal"] = fairVal
-		evData[player][f"{prefix}implied"] = implied
+	evs = []
+	for method in [x, mult, add]:
+		ev = method * profit + (1-method) * -1 * bet
+		ev = round(ev, 1)
+		evs.append(ev)
+
+	ev = min(evs)
+
+	if player not in evData:
+		evData[player] = {}
+	evData[player][f"{prefix}fairVal"] = fairVal
+	evData[player][f"{prefix}implied"] = implied
 	
 	evData[player][f"{prefix}ev"] = ev
 
@@ -1406,6 +1436,7 @@ def writeDK(date, leagueArg=""):
 		mainCats = {"corners": 543}
 		subCats = {543: [4846, 4849, 4845, 5462]}
 
+	cookie = ""
 	lines = {}
 	fullGame = {}
 	with open("static/soccer/leagues.json") as fh:
@@ -1421,8 +1452,8 @@ def writeDK(date, leagueArg=""):
 				if subCat:
 					url += f"/subcategories/{subCat}"
 				url += "?format=json"
-				outfile = "outsoccer"
-				call(["curl", "-k", url, "-o", outfile])
+				outfile = "socceroutDK"
+				os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' {cookie} -o {outfile}")
 
 				with open(outfile) as fh:
 					data = json.load(fh)
@@ -1437,10 +1468,10 @@ def writeDK(date, leagueArg=""):
 					if startDt.day != int(date[-2:]):
 						continue
 						pass
-					game = event["name"].lower().replace(" vs ", " @ ")
-					away, home = map(str, game.split(" @ "))
-					game = f"{convertTeam(away)} @ {convertTeam(home)}"
-					fullGame[game] = event["name"].lower().replace(" vs ", " @ ")
+					game = event["name"].lower().replace(" vs ", " v ")
+					away, home = map(str, game.split(" v "))
+					game = f"{convertTeam(away)} v {convertTeam(home)}"
+					fullGame[game] = event["name"].lower().replace(" vs ", " v ")
 					if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
 						continue
 
@@ -1464,7 +1495,7 @@ def writeDK(date, leagueArg=""):
 								except:
 									continue
 
-								away, home = map(str, fullGame[game].split(" @ "))
+								away, home = map(str, fullGame[game].split(" v "))
 
 								if "label" not in row:
 									continue
@@ -1537,6 +1568,215 @@ def writeDK(date, leagueArg=""):
 	with open("static/soccer/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
+def writeCZ(date=None, token=None, keep=None):
+	if not date:
+		date = str(datetime.now())[:10]
+
+	res = {}
+	if keep:
+		with open("static/soccer/caesars.json") as fh:
+			res = json.load(fh)
+
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/football/events/schedule"
+	outfile = "socceroutCZ"
+	cookie = "ca95f0df-2820-461e-9433-779074af4a6c:EgoAZaaIrYnhAAAA:2QUHraQzVgfuSvKDcwuoRbHiZCxXs1hMN8Zlj0AGOZYELSga3iSBkAweRvEa//bM+xqmboAdxLHMjiJB/85pBZS4zO2T/XWvi3BZp5umnnghVonRLfvgPcSA/QwtAolO/PNHNoDEzmw0Zsm+mfG6kUCSLklcHClOZhR5aZbvIMBQ7iBXOfhHcNKAF/6FWk0Ji1LIB+C3AeoM9J+Htpu8IU8ri9fLasWcvjUbbTNbOeEUGl2yAEUa/G+p+kI5ycCdWLtriA+yxFzzEg=="
+
+	if token:
+		cookie = token
+	
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	games = []
+	for league in data.get("competitions", []):
+		for event in league["events"]:
+			if str(datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] == date:
+				if "(W)" in event["name"]:
+					continue
+				game = event["name"].lower().replace("|", "").replace(" vs ", " v ")
+				away, home = map(str, game.split(" v "))
+				game = f"{convertTeam(away)} v {convertTeam(home)}"
+				if game in res:
+					continue
+				games.append(event["id"])
+
+	#games = ["34c2c0fb-7af4-467d-a2c9-f79017105ec5"]
+	for gameId in games:
+		for tab in ["", "Player%20Props", "Team%20Props", "Match%20Props", "Corners"]:
+			url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/events/{gameId}"
+			if tab:
+				url += f"/tabs/{tab}"
+			time.sleep(0.2)
+			os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
+
+			with open(outfile) as fh:
+				data = json.load(fh)
+
+			#with open("out", "w") as fh:
+			#	json.dump(data, fh, indent=4)
+
+			game = data["name"].lower().replace("|", "").replace(" vs ", " v ")
+			away, home = map(str, game.split(" v "))
+			game = f"{convertTeam(away)} v {convertTeam(home)}"
+
+			if game not in res:
+				res[game] = {}
+
+			for market in data["markets"]:
+				if "name" not in market:
+					continue
+
+				if market["active"] == False:
+					continue
+				prop = market["name"].lower().replace("|", "").split(" (")[0]
+				template = market["templateName"].lower().replace("|", "")
+				display = market["displayName"].lower()
+
+				prefix = player = ""
+				playerProp = False
+				if "1st half" in prop:
+					prefix = "1h_"
+				elif "2nd half" in prop:
+					prefix = "2h_"
+
+				skip = 2
+				if prop == "draw no bet":
+					prop = "dnb"
+				elif prop == "both teams to score":
+					prop = "btts"
+				elif prop == "handicap betting":
+					prop = "spread"
+				elif prop == "total goals":
+					prop = "total"
+				elif prop.startswith("total match goals"):
+					if "over/under" not in prop:
+						continue
+					prop = "total"
+				elif prop == "anytime goalscorer":
+					prop = "atgs"
+					skip = 1
+				elif prop.endswith("half betting"):
+					prop = "ml"
+					skip = 3
+				elif template in ["first away goalscorer", "first home goalscorer"]:
+					prop = "team_fgs"
+					skip = 1
+				elif prop == "player to score a header":
+					prop = "header"
+					skip = 1
+				elif prop == "total match shots":
+					prop = "game_shots"
+					skip = 1
+				elif prop == "total match shots on target":
+					prop = "game_shots_on_target"
+					skip = 1
+				elif prop == "total match tackles":
+					prop = "game_tackles"
+					skip = 1
+				elif display == "total corners" or display == "1st half corners" or display == "2nd half corners":
+					prop = "corners"
+				elif display.endswith("total corners"):
+					prop = f"{display.split(' ')[0]}_corners"
+				elif template.startswith("total player"):
+					prop = template.split(" ")[-1]
+					if prop == "target":
+						prop = "shots_on_target"
+					prop = "player_"+prop
+					skip = 1
+				elif template.startswith("total home") or template.startswith("total away"):
+					prop = "_".join(template[6:].split(" "))
+					skip = 1
+				else:
+					continue
+
+				prop = f"{prefix}{prop}"
+
+				if prop not in res[game]:
+					res[game][prop] = {}
+
+				selections = market["selections"]
+				mainLine = ""
+				for i in range(0, len(selections), skip):
+					try:
+						ou = str(selections[i]["price"]["a"])
+					except:
+						continue
+					if skip == 3:
+						ou += f"/{selections[i+1]['price']['a']}/{selections[i+2]['price']['a']}"
+					elif skip == 2:
+						ou += f"/{selections[i+1]['price']['a']}"
+						if selections[i]["name"].lower().replace("|", "").split(" ")[0] in ["under", "home"]:
+							ou = f"{selections[i+1]['price']['a']}/{selections[i]['price']['a']}"
+
+					if "ml" in prop or "btts" in prop or prop in ["dnb"]:
+						res[game][prop] = ou
+					elif prop in ["atgs", "fgs", "team_fgs", "header"]:
+						player = parsePlayer(selections[i]["name"].replace("|", ""))
+						res[game][prop][player] = ou
+					elif "spread" in prop:
+						line = str(market["line"])
+						mainLine = line
+						res[game][prop][line] = ou
+					elif prop.startswith("away") or prop.startswith("home") or prop in ["game_shots", "game_shots_on_target", "game_tackles"] or "corners" in prop:
+						if "corners" in prop:
+							line = selections[i]["name"].split(" ")[-2]
+						else:
+							line = selections[i]["name"].replace("|", "").split(" ")[-1]
+						res[game][prop][line] = ou
+					elif "total" in prop:
+						line = str(market.get("line", ""))
+						if not line:
+							line = selections[i]["name"].split(" ")[-1]
+						if line not in res[game][prop]:
+							res[game][prop][line] = ou
+						else:
+							over = int(res[game][prop][line].split("/")[0])
+							if int(ou.split("/")[0]) > over:
+								over = int(ou.split("/")[0])
+							under = int(res[game][prop][line].split("/")[-1])
+							if int(ou.split("/")[-1]) > under:
+								under = int(ou.split("/")[-1])
+							res[game][prop][line] = f"{over}/{under}"
+					else:
+						player = parsePlayer(market["name"].lower().replace("|", "").split(" total ")[0])
+						line = str(float(selections[i]["name"][1:-2]) - 0.5)
+						if player not in res[game][prop]:
+							res[game][prop][player] = {}
+						res[game][prop][player][line] = ou
+
+				#print(market["name"], prop, mainLine)
+				if prop in ["spread", "total"]:
+					try:
+						linePrices = market["movingLines"]["linePrices"]
+					except:
+						continue
+					for prices in linePrices:
+						selections = prices["selections"]
+						if prop == "spread":
+							line = float(prices["line"])
+							ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
+							if selections[0]["selectionType"] == "home":
+								line *= -1
+								ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
+							line = str(line)
+						else:
+							line = str(float(prices["line"]))
+							ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
+							if selections[0]["selectionType"] == "under":
+								ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
+						if line == mainLine:
+							continue
+						res[game][prop][line] = ou
+
+		with open("static/soccer/caesars.json", "w") as fh:
+			json.dump(res, fh, indent=4)
+
+	with open("static/soccer/caesars.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
+
 def writePointsbet(date=None):
 	url = "https://api.mi.pointsbet.com/api/v2/sports/soccer/events/nextup"
 	outfile = f"socceroutPB"
@@ -1590,7 +1830,7 @@ def writePointsbet(date=None):
 				if market["eventName"].lower() == "draw no bet":
 					away = market["outcomes"][0]["name"].lower()
 					home = market["outcomes"][1]["name"].lower()
-					game = f"{convertTeam(away)} @ {convertTeam(home)}"
+					game = f"{convertTeam(away)} v {convertTeam(home)}"
 					break
 		except:
 			continue
@@ -2603,19 +2843,19 @@ def write365():
 
 			if (["set", "total_sets", "set1_total", "away_total"].indexOf(prop) >= 0) {
 				for (div of document.getElementsByClassName("src-FixtureSubGroup")) {
-					let game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " @ ").replaceAll(".", "").replaceAll("/", " / ");
-					let away = game.split(" @ ")[0];
-					let home = game.split(" @ ")[1];
+					let game = div.querySelector(".src-FixtureSubGroupButton_Text").innerText.toLowerCase().replace(" vs ", " v ").replaceAll(".", "").replaceAll("/", " / ");
+					let away = game.split(" v ")[0];
+					let home = game.split(" v ")[1];
 					if (away.indexOf(" / ") >= 0) {
 						let away1 = away.split(" / ")[0];
 						let away2 = away.split(" / ")[1];
 						let home1 = home.split(" / ")[0];
 						let home2 = home.split(" / ")[1];
-						game = away1.split(" ")[away1.split(" ").length - 1]+" / "+away2.split(" ")[away2.split(" ").length - 1]+" @ "+home1.split(" ")[home1.split(" ").length - 1]+" / "+home2.split(" ")[home2.split(" ").length - 1];
+						game = away1.split(" ")[away1.split(" ").length - 1]+" / "+away2.split(" ")[away2.split(" ").length - 1]+" v "+home1.split(" ")[home1.split(" ").length - 1]+" / "+home2.split(" ")[home2.split(" ").length - 1];
 					} else {
 						away = away.split(" ")[away.split(" ").length - 1];
 						home = home.split(" ")[home.split(" ").length - 1];
-						game = away+" @ "+home;
+						game = away+" v "+home;
 					}
 
 					if (data[game] === undefined) {
@@ -2685,17 +2925,17 @@ def write365():
 					}
 					let away = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[0].innerText.toLowerCase().replaceAll(".", "");
 					let home = div.querySelectorAll(".rcl-ParticipantFixtureDetailsTeam_TeamName")[1].innerText.toLowerCase().replaceAll(".", "");
-					let game = (away+" @ "+home).replaceAll("/", " / ");
+					let game = (away+" v "+home).replaceAll("/", " / ");
 					if (away.indexOf("/") >= 0) {
 						let away1 = away.split("/")[0];
 						let away2 = away.split("/")[1];
 						let home1 = home.split("/")[0];
 						let home2 = home.split("/")[1];
-						game = away1.split(" ")[away1.split(" ").length - 1]+" / "+away2.split(" ")[away2.split(" ").length - 1]+" @ "+home1.split(" ")[home1.split(" ").length - 1]+" / "+home2.split(" ")[home2.split(" ").length - 1];
+						game = away1.split(" ")[away1.split(" ").length - 1]+" / "+away2.split(" ")[away2.split(" ").length - 1]+" v "+home1.split(" ")[home1.split(" ").length - 1]+" / "+home2.split(" ")[home2.split(" ").length - 1];
 					} else {
 						away = away.split(" ")[away.split(" ").length - 1];
 						home = home.split(" ")[home.split(" ").length - 1];
-						game = away+" @ "+home;
+						game = away+" v "+home;
 					}
 					games.push(game);
 
@@ -2768,14 +3008,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 	with open(f"{prefix}static/soccer/draftkings.json") as fh:
 		dkLines = json.load(fh)
 
-	#with open(f"{prefix}static/soccer/bet365.json") as fh:
-	#	bet365Lines = json.load(fh)
+	with open(f"{prefix}static/soccer/bet365.json") as fh:
+		bet365Lines = json.load(fh)
 
 	with open(f"{prefix}static/soccer/fanduelLines.json") as fh:
 		fdLines = json.load(fh)
-
-	with open(f"{prefix}static/soccer/bovada.json") as fh:
-		bvLines = json.load(fh)
 
 	with open(f"{prefix}static/soccer/mgm.json") as fh:
 		mgmLines = json.load(fh)
@@ -2783,11 +3020,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 	with open(f"{prefix}static/soccer/pinnacle.json") as fh:
 		pnLines = json.load(fh)
 
-	with open(f"{prefix}static/soccer/pointsbet.json") as fh:
-		pbLines = json.load(fh)
+	with open(f"{prefix}static/soccer/caesars.json") as fh:
+		czLines = json.load(fh)
 
 	with open(f"{prefix}static/soccer/kambi.json") as fh:
 		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/soccer/espn.json") as fh:
+		espnLines = json.load(fh)
 
 	with open(f"{prefix}static/soccer/ev.json") as fh:
 		evData = json.load(fh)
@@ -2797,22 +3037,25 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
-		"pb": pbLines,
-		"bv": bvLines,
 		"dk": dkLines,
-		#"bet365": bet365Lines,
-		#"cz": czLines
+		"365": bet365Lines,
+		"cz": czLines,
+		"espn": espnLines
 	}
 
 	evData = {}
-	for game in fdLines:
+	games = []
+	for book in lines:
+		for game in lines[book]:
+			if game not in games:
+				games.append(game)
+
+	for game in games:
 		if teamArg and teamArg not in game:
 			continue
 
-		#print(game)
-
 		try:
-			team1, team2 = map(str, game.split(" @ "))
+			team1, team2 = map(str, game.split(" v "))
 		except:
 			continue
 
@@ -2828,12 +3071,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 			if propArg and prop != propArg:
 				continue
 
+			if prop in ["assist"]:
+				continue
+
 			handicaps = {}
 			for book in lines:
 				lineData = lines[book]
 				if game in lineData and prop in lineData[game]:
 					if type(lineData[game][prop]) is not dict:
-						handicaps[("", "")] = ""
+						handicaps[(" ", " ")] = ""
 						break
 					for handicap in lineData[game][prop]:
 						player = playerHandicap = ""
@@ -2844,13 +3090,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 						except:
 							player = handicap
 							playerHandicap = ""
-							if type(lineData[game][prop][player]) is dict:
+							if " " in lineData[game][prop][player]:
+								playerHandicap = lineData[game][prop][player].split(" ")[0]
+								handicaps[(handicap, playerHandicap)] = player
+							elif type(lineData[game][prop][player]) is dict:
 								for h in lineData[game][prop][player]:
 									handicaps[(handicap, h)] = player
 							else:
-								if " " in lineData[game][prop][player]:
-									playerHandicap = lineData[game][prop][player].split(" ")[0]
-								handicaps[(handicap, playerHandicap)] = player
+								handicaps[(handicap, "0.5")] = player
 
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
@@ -2863,23 +3110,23 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 					for book in lines:
 						lineData = lines[book]
 						if game in lineData and prop in lineData[game]:
-
-							if type(lineData[game][prop]) is not dict:
+							#print(book, game, prop, handicap)
+							if type(lineData[game][prop]) is str:
 								val = lineData[game][prop]
 							else:
 								if handicap not in lineData[game][prop]:
 									continue
 								val = lineData[game][prop][handicap]
 
-								if player:
-									if type(val) is dict:
-										if playerHandicap not in val:
-											continue
-										val = lineData[game][prop][handicap][playerHandicap]
-									else:
-										if prop not in ["atgs", "goal_assist"] and playerHandicap != val.split(" ")[0]:
-											continue
-										val = lineData[game][prop][handicap].split(" ")[-1]
+							if player.strip():
+								if type(val) is dict:
+									if playerHandicap not in val:
+										continue
+									val = lineData[game][prop][handicap][playerHandicap]
+								else:
+									if " " in val and playerHandicap != val.split(" ")[0]:
+										continue
+									val = lineData[game][prop][handicap].split(" ")[-1]
 
 							try:
 								o = val.split(" ")[-1].split("/")[i]
@@ -2890,8 +3137,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 								o = val
 								ou = val
 
-							if not o:
+							if not o or o == "-" or "odds" in o.lower():
 								continue
+
+							#print(prop, player, o)
 							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
@@ -2899,30 +3148,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 					if len(books) < 2:
 						continue
 
-					kambi = ""
-					try:
-						bookIdx = books.index("kambi")
-						kambi = odds[bookIdx]
-						odds.remove(kambi)
-						books.remove("kambi")
-					except:
-						pass
-
 					pn = ""
 					try:
 						bookIdx = books.index("pn")
 						pn = odds[bookIdx]
 						odds.remove(pn)
 						books.remove("pn")
-					except:
-						pass
-
-					bet365 = ""
-					try:
-						bookIdx = books.index("bet365")
-						bet365 = odds[bookIdx]
-						odds.remove(bet365)
-						books.remove("bet365")
 					except:
 						pass
 
@@ -2966,21 +3197,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 
 					l.remove(maxOU)
 					books.remove(evBook)
-					if kambi:
-						books.append("kambi")
-						l.append(kambi)
 					if pn:
 						books.append("pn")
 						l.append(pn)
-					if bet365:
-						books.append("bet365")
-						l.append(bet365)
 
 					avgOver = []
 					avgUnder = []
 
 					for book in l:
-						if book:
+						if book and book != "-":
 							avgOver.append(convertDecOdds(int(book.split("/")[0])))
 							if "/" in book:
 								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
@@ -3070,17 +3295,17 @@ def printEV(propArg):
 			continue
 		print(row[:-1])
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi"]) + "\n"
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
 	for row in sorted(data, reverse=True):
-		if row[-1]["prop"] not in ["atgs", "assist"] and "player_shots" not in row[-1]["prop"]:
+		if row[-1]["prop"] not in ["atgs", "score_or_assist", "team_fgs"]:
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[-1]["game"], row[-1]["player"], row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi"]:
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), row[-1]["game"], row[-1]["player"], row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -3090,23 +3315,43 @@ def printEV(propArg):
 	with open("static/soccer/atgs.csv", "w") as fh:
 		fh.write(output)
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Prop", "O/U", "FD", "DK", "MGM", "BV", "PB", "PN", "Kambi"]) + "\n"
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
 	for row in sorted(data, reverse=True):
-		if "player_shots" in row[-1]["prop"] or row[-1]["prop"] in ["atgs", "assist", "dnb", "btts"]:
+		if "player_" not in row[-1]["prop"] and row[-1]["prop"] not in ["assist"]:
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].upper(), row[-1]["game"], row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "pb", "pn", "kambi"]:
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), row[-1]["game"], row[-1]["handicap"].title(), row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
+			o = str(row[-1]["bookOdds"].get(book, "-"))
+			if o.startswith("+"):
+				o = "'"+o
+			arr.append(str(o))
+		output += "\t".join([str(x) for x in arr])+"\n"
+
+	with open("static/soccer/playerProps.csv", "w") as fh:
+		fh.write(output)
+
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
+	for row in sorted(data, reverse=True):
+		if "player_" in row[-1]["prop"] or row[-1]["prop"] in ["atgs", "assist", "score_or_assist"]:
+			continue
+		ou = ("u" if row[-1]["under"] else "o")+" "
+		if row[-1]["player"]:
+			ou += row[-1]["playerHandicap"]
+		else:
+			ou += row[-1]["handicap"]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), row[-1]["game"], row[-1]["prop"], ou]
+		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
 
-		for team in row[-1]["game"].split(" @ "):
+		for team in row[-1]["game"].split(" v "):
 			if team in totals:
 				f = a = t = ""
 				if "corners" in row[-1]["prop"] and "corners" in totals[team]:
@@ -3129,11 +3374,14 @@ def printEV(propArg):
 					a = round(sum(totals[team][h+"opp_total"]) / len(totals[team][h+"opp_total"]), 1)
 					t = round((sum(totals[team][h+"game_total"])) / len(totals[team][h+"game_total"]), 1)
 				if t:
-					arr.append(f"{f} - {a} - {t}")
+					#arr.append(f"{f} - {a} - {t}")
+					pass
 				else:
-					arr.append("-")
+					#arr.append("-")
+					pass
 			else:
-				arr.append("-")
+				#arr.append("-")
+				pass
 
 		if False and row[-1]["game"] in winLoss and row[-1]["prop"] in ["corners", "away_corners", "home_corners"]:
 			wl = "L"
@@ -3164,6 +3412,7 @@ if __name__ == '__main__':
 	parser.add_argument("--all", action="store_true", help="ALL AVGs")
 	parser.add_argument("--fd", action="store_true", help="Fanduel")
 	parser.add_argument("--dk", action="store_true", help="Fanduel")
+	parser.add_argument("--cz", action="store_true")
 	parser.add_argument("--pb", action="store_true", help="Pointsbet")
 	parser.add_argument("--writeBV", action="store_true", help="Bovada")
 	parser.add_argument("--bv", action="store_true", help="Bovada")
@@ -3198,8 +3447,11 @@ if __name__ == '__main__':
 	parser.add_argument("--sgp", action="store_true", help="SGP")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
+	parser.add_argument("--token")
 	parser.add_argument("--espnIds", action="store_true", help="ESPN Ids")
 	parser.add_argument("--espn", action="store_true", help="ESPN")
+	parser.add_argument("--keep", action="store_true")
+	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("-m", "--matchup", help="Matchup")
 	parser.add_argument("--player", help="Player")
 
@@ -3244,20 +3496,28 @@ if __name__ == '__main__':
 	if args.mgm:
 		writeMGM(args.date)
 
+	if args.cz:
+		writeCZ(args.date, args.token, args.keep)
+
 	if args.pn:
-		writePinnacle(args.date)
+		writePinnacle(args.date, args.debug)
 
 	if args.pb:
 		writePointsbet(args.date)
 
 	if args.update:
-		writeFanduel()
-		writeDK(args.date)
-		writeBovada(args.date)
+		#writeFanduel()
+		#writeDK(args.date)
+		#writeBovada(args.date)
+		print("BR")
 		writeKambi(args.date)
+		print("MGM")
 		writeMGM(args.date)
-		writePointsbet(args.date)
+		#writePointsbet(args.date)
+		print("PN")
 		writePinnacle(args.date)
+		print("CZ")
+		writeCZ(args.date, args.token, args.keep)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, boost=args.boost, doubles=args.doubles, singles=args.singles, teamArg=args.team)

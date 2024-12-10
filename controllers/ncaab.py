@@ -2705,6 +2705,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			if propArg and prop != propArg:
 				continue
 
+			if prop == "1h_pts":
+				continue
+
 			handicaps = {}
 			for book in lines:
 				lineData = lines[book]

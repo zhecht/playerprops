@@ -1264,7 +1264,10 @@ def writeKambi():
 				except:
 					pass
 			if "ml" in label:
-				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+				try:
+					data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+				except:
+					continue
 				if convertNFLTeam(betOffer["outcomes"][0]["participant"].lower()) == away:
 					data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 
@@ -1353,8 +1356,8 @@ def writeESPN():
 
 		async function readPage(game) {
 
-			for (tab of ["lines", "player props", "td scorers"]) {
-			//for (tab of ["player props"]) {
+			//for (tab of ["lines", "player props", "td scorers"]) {
+			for (tab of ["player props", "td scorers"]) {
 				for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
 					if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
 						t.click();
@@ -1554,7 +1557,7 @@ def writeESPN():
 										line = line.split(" ")[1];
 									}
 
-									if (skip == 2 && prop != "tackles+ast") {
+									if (skip == 2 && prop != "tackles+ast" && btns[i].parentElement.parentElement.previousSibling) { 
 										player = parsePlayer(btns[i].parentElement.parentElement.previousSibling.innerText);
 										let last = player.split(" ");
 										player = player.split(" ")[0][0]+" "+last[last.length - 1];
@@ -2867,6 +2870,10 @@ def parseESPN(espnLines, noespn=None):
 							player = players[home][p]
 						if "attd" in prop:
 							espnLines[game][prop][player] = espn[game][prop][p]["0.5"]
+							if "1.5" in espn[game][prop][p]:
+								if "2+td" not in espnLines[game]:
+									espnLines[game]["2+td"] = {}
+								espnLines[game]["2+td"][player] = espn[game][prop][p]["1.5"]
 						elif type(espn[game][prop][p]) is str:
 							espnLines[game][prop][player] = espn[game][prop][p]
 						else:
@@ -4400,15 +4407,11 @@ if __name__ == '__main__':
 
 	if args.plays:
 		plays = [
-			#("lenoir", 100, "dk", "tackles+ast", 4.5, ""),
+			("cooper rush", 102, "fd", "pass_cmp", 23.5, ""),
 		]
 
 		plays.extend([
-			("lamar jackson", 220, "fd", "attd", "", ""),
-			("rashod bateman", 330, "fd", "attd", "", ""),
-			("quentin johnston", 220, "fd", "attd", "", ""),
-			("jk dobbins", 110, "fd", "attd", "", ""),
-			("zay flowers", 190, "fd", "attd", "", ""),
+			#("baker mayfield", 550, "fd", "attd", "", ""),
 		])
 
 		with open(f"static/nfl/ev.json") as fh:

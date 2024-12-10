@@ -517,7 +517,7 @@ def writeTrends():
 		hdrs = ["Team", "Player", "AVG PTS", f"WK{week} PTS", "SZN Snap %", f"WK{week} Snap %", f"{posHdr} RZ Look Share", f"WK{week} {posHdr} RZ Share", f"{posHdr} Target Share", f"WK{week} {posHdr} Target Share"]
 		tableHdrs = ["team", "player", "pts", "lastPts", "snap", "lastSnap", "rz", "lastRz", "tgt", "lastTgt"]
 		csv = "\t".join(hdrs)+"\n"
-		reddit = "|".join(hdrs)+"\n"
+		reddit = "#ARI\n"+"|".join(hdrs)+"\n"
 		reddit += "|".join([":--"]*len(hdrs))+"\n"
 		team = data[0][0]
 		table = []
@@ -525,7 +525,7 @@ def writeTrends():
 			if pos == "rb" and team != row[-1][0].lower():
 				csv += "\t".join(["-"]*len(hdrs))+"\n"
 				#reddit += "|".join(["-"]*len(hdrs))+"\n"
-				reddit += "\n"+"|".join(hdrs)+"\n"
+				reddit += "\n#"+row[-1][0]+"\n"+"|".join(hdrs)+"\n"
 				reddit += "|".join([":--"]*len(hdrs))+"\n"
 				team = row[-1][0].lower()
 
