@@ -1078,7 +1078,7 @@ def writeKambi(date):
 			if "ml" in label:
 				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 				if convertNBATeam(betOffer["outcomes"][0]["participant"].lower()) == away:
-				 	data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+					data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
 
 			else:
 				if label not in data[game]:
@@ -1122,7 +1122,7 @@ def parsePlayer(player):
 
 def writeESPN():
 	js = """
-
+	
 	{
 		function convertTeam(team) {
 			team = team.toLowerCase();
@@ -1148,6 +1148,7 @@ def writeESPN():
 		async function readPage(game) {
 
 			//for (tab of ["lines", "player props"]) {
+			//console.log(game);
 			for (tab of ["player props"]) {
 				for (let t of document.querySelectorAll("button[data-testid='tablist-carousel-tab']")) {
 					if (t.innerText.toLowerCase() == tab && t.getAttribute("data-selected") == null) {
@@ -1192,9 +1193,13 @@ def writeESPN():
 						if (prop == "ast+reb") {
 							prop = "reb+ast";
 						}
-						skip = 3;
-						if (["pts", "reb", "ast", "3ptm"].includes(prop)) {
-							skip = 2;
+						skip = 1;
+						if (isOU) {
+							if (["pts", "reb", "ast", "3ptm"].includes(prop)) {
+								skip = 2;
+							} else {
+								skip = 3;
+							}
 						}
 					} else {
 						continue;
@@ -1244,20 +1249,35 @@ def writeESPN():
 							} catch (err) {
 								continue;
 							}
+							
 							if (skip != 1 && btns[idx+1].getAttribute("disabled") == null) {
 								ou += "/"+btns[idx+1].querySelectorAll("span")[1].innerText;
 							}
 
+							ou = ou.replace("Even", "+100");
+
 							if (skip == 3) {
 								player = parsePlayer(btns[i].innerText.toLowerCase().split(" total")[0].split(" to record")[0]);
 								let last = player.split(" ");
-								player = player.split(" ")[0][0]+" "+last[last.length-1];
+								player = player.split(" ")[0][0]+" "+last[last.length - 1];
 							}
 
+							//console.log(prop, player, ou);
+
 							if (prop == "ml") {
-								data[game][prop] = ou.replace("Even", "+100");
+								data[game][prop] = ou;
 							} else if (prop == "double_double" || prop == "triple_double") {
 								data[game][prop][player] = ou;
+							} else if (skip == 1) {
+								player = parsePlayer(btns[i].parentElement.parentElement.querySelector("th").innerText);
+								last = player.split(" ");
+								player = player.split(" ")[0][0]+" "+last[last.length - 1];
+								if (!data[game][prop][player]) {
+									data[game][prop][player] = {};
+								}
+								line = btns[i].parentElement.id.split("-");
+								line = (parseFloat(line[line.length - 1].replace("+", "")) - 0.5).toString();
+								data[game][prop][player][line] = ou;
 							} else {
 								let line = btns[idx].querySelector("span").innerText;
 								if (line.includes("+")) {
@@ -1266,10 +1286,26 @@ def writeESPN():
 									line = line.split(" ")[1];
 								}
 
+								if (!player) {
+									continue;
+								}
+
 								if (!data[game][prop][player]) {
 									data[game][prop][player] = {};
 								}
-								data[game][prop][player][line] = ou.replace("Even", "+100");
+
+								if (data[game][prop][player][line]) {
+									let over = data[game][prop][player][line];
+									if (parseInt(ou.split("/")[0]) > parseInt(over)) {
+										over = ou.split("/")[0];
+									}
+									if (ou.includes("/")) {
+										over += "/"+ou.split("/")[1];
+									}
+									data[game][prop][player][line] = over;
+								} else {
+									data[game][prop][player][line] = ou;
+								}
 							}
 						}
 					}
@@ -1632,15 +1668,15 @@ def writeFanduel():
 	"""
 
 	games = [
-    "https://sportsbook.fanduel.com/basketball/nba/new-orleans-pelicans-@-orlando-magic-33121993",
-    "https://sportsbook.fanduel.com/basketball/nba/sacramento-kings-@-washington-wizards-33121994",
-    "https://sportsbook.fanduel.com/basketball/nba/chicago-bulls-@-houston-rockets-33121995",
-    "https://sportsbook.fanduel.com/basketball/nba/brooklyn-nets-@-milwaukee-bucks-33121996",
-    "https://sportsbook.fanduel.com/basketball/nba/utah-jazz-@-dallas-mavericks-33121998",
-    "https://sportsbook.fanduel.com/basketball/nba/new-york-knicks-@-denver-nuggets-33121999",
-    "https://sportsbook.fanduel.com/basketball/nba/atlanta-hawks-@-phoenix-suns-33121997",
-    "https://sportsbook.fanduel.com/basketball/nba/boston-celtics-@-detroit-pistons-33124791",
-    "https://sportsbook.fanduel.com/basketball/nba/oklahoma-city-thunder-@-toronto-raptors-33124795"
+	"https://sportsbook.fanduel.com/basketball/nba/new-orleans-pelicans-@-orlando-magic-33121993",
+	"https://sportsbook.fanduel.com/basketball/nba/sacramento-kings-@-washington-wizards-33121994",
+	"https://sportsbook.fanduel.com/basketball/nba/chicago-bulls-@-houston-rockets-33121995",
+	"https://sportsbook.fanduel.com/basketball/nba/brooklyn-nets-@-milwaukee-bucks-33121996",
+	"https://sportsbook.fanduel.com/basketball/nba/utah-jazz-@-dallas-mavericks-33121998",
+	"https://sportsbook.fanduel.com/basketball/nba/new-york-knicks-@-denver-nuggets-33121999",
+	"https://sportsbook.fanduel.com/basketball/nba/atlanta-hawks-@-phoenix-suns-33121997",
+	"https://sportsbook.fanduel.com/basketball/nba/boston-celtics-@-detroit-pistons-33124791",
+	"https://sportsbook.fanduel.com/basketball/nba/oklahoma-city-thunder-@-toronto-raptors-33124795"
 ]
 	
 	#games = ["https://mi.sportsbook.fanduel.com/basketball/nba/milwaukee-bucks-@-charlotte-hornets-32803962"]
@@ -2902,10 +2938,12 @@ def writePlayer(player, propArg):
 
 					print(book, lines[book][game][prop][p])
 
-def writeLineups():
+def writeLineups(tmrw=None):
 	url = "https://www.rotowire.com/basketball/nba-lineups.php"
+	if tmrw:
+		url += "?date=tomorrow"
 	outfile = "outnba2"
-	call(["curl", "-k", url, "-o", outfile])
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:133.0) Gecko/20100101 Firefox/133.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Referer: https://www.rotowire.com/basketball/nba-lineups.php' -H 'Connection: keep-alive' -H 'Cookie: PHPSESSID=fa8217e19e4a32a38d5bd2e3e46e4487; g_uuid=8ccd1e2c-792c-4822-a45e-9b68d791c622; cohort_id=3; usprivacy=1NNN; g_sid=1729631249817.jm63rbi; g_device=macos%7Cdesktop; ktag_version=20241128; cookieyes-consent=consentid:dHRLVWZXcDZsYkVZazdGUFZwa2E4YU5acFNQQk5WMFI,consent:yes,action:no,necessary:yes,functional:yes,analytics:yes,performance:yes,advertisement:yes,other:yes' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: same-origin' -H 'Priority: u=0, i' -o {outfile}")
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	lineups = {}
@@ -2920,14 +2958,17 @@ def writeLineups():
 			team = teamLink.get("href").split("-")[-1]
 			rotoTeams.append(team)
 			team = convertNBATeam(team)
-			lineups[team] = {
-				"confirmed": False if "is-expected" in statusList[idx].get("class") else True,
-				"starters": [],
-				"50/50": [],
-				"likely": [],
-				"unlikely": [],
-				"out": []
-			}
+			try:
+				lineups[team] = {
+					"confirmed": False if "is-expected" in statusList[idx].get("class") else True,
+					"starters": [],
+					"50/50": [],
+					"likely": [],
+					"unlikely": [],
+					"out": []
+				}
+			except:
+				continue
 			for playerIdx, li in enumerate(lineupList[idx].findAll("li", class_="lineup__player")):
 				player = " ".join(li.find("a").get("href").split("/")[-1].split("-")[:-1])
 				player = parsePlayer(player)
@@ -2961,7 +3002,7 @@ def writeMinutes():
 	for team in rotoTeams:
 		url = f"https://www.rotowire.com/basketball/ajax/get-projected-minutes.php?team={team.upper()}"
 		time.sleep(0.3)
-		os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' -H 'Referer: https://www.rotowire.com/basketball/nba-lineups.php' -H 'Cookie: PHPSESSID=fa8217e19e4a32a38d5bd2e3e46e4487; rwlanding=%252F; g_uuid=8ccd1e2c-792c-4822-a45e-9b68d791c622; g_sid=1729631249817.jm63rbi; cohort_id=3; usprivacy=1NNN' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' -H 'Priority: u=0' -H 'TE: trailers' -o {outfile}")
+		os.system(f"curl {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'X-Requested-With: XMLHttpRequest' -H 'Connection: keep-alive' -H 'Referer: https://www.rotowire.com/basketball/nba-lineups.php' -H 'Cookie: PHPSESSID=fa8217e19e4a32a38d5bd2e3e46e4487; g_uuid=8ccd1e2c-792c-4822-a45e-9b68d791c622; cohort_id=3; usprivacy=1NNN; g_sid=1729631249817.jm63rbi; g_device=macos%7Cdesktop; ktag_version=20241128; cookieyes-consent=consentid:dHRLVWZXcDZsYkVZazdGUFZwa2E4YU5acFNQQk5WMFI,consent:yes,action:no,necessary:yes,functional:yes,analytics:yes,performance:yes,advertisement:yes,other:yes' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' -H 'Priority: u=0' -H 'TE: trailers' -o {outfile}")
 		team = convertNBATeam(team)
 		minutes[team] = {}
 
@@ -3087,7 +3128,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			if propArg and prop != propArg:
 				continue
 
-			if "live" in prop:
+			if "live" in prop or "+ three" in prop or "+ ast" in prop or "+ reb" in prop or "+ pts" in prop:
 				continue
 
 			handicaps = {}
@@ -3767,6 +3808,7 @@ if __name__ == '__main__':
 	parser.add_argument("--injuries", action="store_true", help="injuries")
 	parser.add_argument("--leaders", action="store_true", help="leaders")
 	parser.add_argument("--sgp", action="store_true", help="SGP")
+	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("--insurance", action="store_true")
 	parser.add_argument("--historical", action="store_true")
 	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
@@ -3778,10 +3820,10 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if args.lineups:
-		writeLineups()
+		writeLineups(args.tmrw)
 
 	if args.minutes:
-		writeLineups()
+		writeLineups(args.tmrw)
 		writeMinutes()
 
 	dinger = False

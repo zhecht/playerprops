@@ -134,8 +134,8 @@ def writeKenpom():
 		json.dump(data, fh, indent=4)
 
 def convertTeam(team):
-	team = strip_accents(team.lower().split(" (")[0])
-	team = team.replace("'", "").replace(".", "").replace("- ", "").replace("-", " ").replace("a and m", "a&m")
+	team = strip_accents(team.lower())
+	team = team.replace("'", "").replace(".", "").replace("- ", "").replace("-", " ").replace("(", "").replace(")", "").replace(" and ", " & ")
 	if team.endswith(" u"):
 		team = team[:-2]
 	trans = {
@@ -159,8 +159,10 @@ def convertTeam(team):
 		"long island": "liu",
 		"long island university": "liu",
 		"siu edwardsville": "siue",
+		"bethune cookman wildcats": "bethune cookman",
 		"boston": "boston university",
 		"central florida": "cfu",
+		"central connecticut": "central connecticut state",
 		"cal irvine": "uc irvine",
 		"cal poly slo": "cal poly", 
 		"cal state fullerton": "csu fullerton",
@@ -172,13 +174,14 @@ def convertTeam(team):
 		"csun": "csu northridge",
 		"cal state northridge": "csu northridge",
 		"cal riverside": "uc riverside",
-		"detroit mercy": "detroit",
 		"detroitu": "detroit",
 		"eastern carolina": "east carolina",
+		"east tenn state": "east tennessee state",
 		"fau": "florida atlantic",
-		"fiu": "florida international",
+		"florida international": "fiu",
 		"grambling": "grambling state",
 		"illinois chicago": "uic",
+		"iu indianapolis": "iupui",
 		"kansas city": "umkc",
 		"kennesaw st": "kennesaw state",
 		"purdue fort wayne": "ipfw",
@@ -186,6 +189,9 @@ def convertTeam(team):
 		"louisiana lafayette": "louisiana",
 		"ul lafayette": "louisiana",
 		"louisiana monroe": "ul monroe",
+		"loyola md": "loyola maryland",
+		"massachusetts": "umass",
+		"mercyhurst lakers": "mercyhurst",
 		"miami ohio": "miami oh",
 		"middle tennessee state": "middle tennessee",
 		"middle tenn state": "middle tennessee",
@@ -215,7 +221,9 @@ def convertTeam(team):
 		"san jose st": "san jose",
 		"san jose state": "san jose",
 		"saint marys ca": "saint marys",
+		"spartanburg": "usc upstate",
 		"so illinois": "southern illinois",
+		"southern": "southern university",
 		"southern mississippi": "southern miss",
 		"st francis": "st francis pa",
 		"saint francis pa": "st francis pa",
@@ -233,14 +241,19 @@ def convertTeam(team):
 		"t a&m corpus christi": "texas a&m cc",
 		"texas a&m corpus": "texas a&m cc",
 		"tennessee martin": "ut martin",
+		"ualbany": "albany",
 		"uconn": "connecticut",
 		"uiw": "incarnate word",
 		"ulm": "ul monroe",
 		"uncw": "unc wilmington",
+		"nc asheville": "unc asheville",
 		"uncg": "nc greensboro",
 		"md baltimore county": "umbc",
 		"md baltimore": "umbc",
 		"utrgv": "ut rio grande valley",
+		"west georgia wolves": "west georgia",
+		"w carolina": "western carolina",
+		"wofford terriers": "wofford",
 		"wisc green bay": "green bay",
 		"wisconsin green bay": "green bay",
 		"wisconsin milwaukee": "milwaukee",
@@ -404,7 +417,7 @@ def writeActionNetwork(dateArg = None):
 	with open(f"{prefix}static/ncaab/actionnetwork.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
 
-def writeCZ(date, march, token=None):
+def writeCZ(date, march, token=None, keep=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
@@ -432,8 +445,12 @@ def writeCZ(date, march, token=None):
 		games.append(event["id"])
 
 
-	#games = ["9835ed03-b6bc-49c3-b274-5e6a32b56612"]
+	#games = ["8e974b89-2c64-4bc4-8b45-f947477cd981"]
 	res = {}
+	if keep:
+		with open("static/ncaab/caesars.json") as fh:
+			res = json.load(fh)
+	
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
@@ -1143,6 +1160,10 @@ def writeKambi(date, march):
 		date = str(datetime.now())[:10]
 
 	data = {}
+	if False:
+		with open("static/ncaab/kambi.json") as fh:
+			data = json.load(fh)
+
 	outfile = f"outnba.json"
 	url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/basketball/ncaab"
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/basketball/ncaab/all/all/matches.json?lang=en_US&market=US"
@@ -1169,6 +1190,8 @@ def writeKambi(date, march):
 		if game in eventIds:
 			continue
 			#pass
+		if game in data:
+			continue
 		#swapped[game] = swap
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
@@ -1263,10 +1286,13 @@ def writeKambi(date, march):
 				except:
 					pass
 			if "ml" in label:
-				data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
-				t = betOffer["outcomes"][0].get("participant", betOffer["outcomes"][0]["label"])
-				if t.lower().startswith(awayFull):
-				 	data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+				try:
+					data[game][label] = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
+					t = betOffer["outcomes"][0].get("participant", betOffer["outcomes"][0]["label"])
+					if t.lower().startswith(awayFull):
+					 	data[game][label] = betOffer["outcomes"][0]["oddsAmerican"]+"/"+betOffer["outcomes"][1]["oddsAmerican"]
+				except:
+					pass
 			else:
 				if label not in data[game]:
 					data[game][label] = {}
@@ -3028,7 +3054,6 @@ if __name__ == '__main__':
 	parser.add_argument("--dinger", action="store_true", help="Dinger Tues")
 	parser.add_argument("--plays", action="store_true", help="Plays")
 	parser.add_argument("--players", action="store_true", help="Players")
-	parser.add_argument("--keep", action="store_true", help="Keep")
 	parser.add_argument("--summary", action="store_true", help="Summary")
 	parser.add_argument("--text", action="store_true", help="Text")
 	parser.add_argument("--matchups", action="store_true", help="Matchups")
@@ -3038,6 +3063,7 @@ if __name__ == '__main__':
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
 	parser.add_argument("--kenpom", action="store_true")
 	parser.add_argument("--march", action="store_true")
+	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--token")
@@ -3086,7 +3112,7 @@ if __name__ == '__main__':
 		bvParlay()
 
 	if args.cz:
-		writeCZ(args.date, args.march, args.token)
+		writeCZ(args.date, args.march, args.token, args.keep)
 
 	if args.matchups:
 		writeMatchups()
@@ -3103,7 +3129,7 @@ if __name__ == '__main__':
 		print("kambi")
 		writeKambi(args.date, args.march)
 		print("cz")
-		writeCZ(args.date, args.march, args.token)
+		writeCZ(args.date, args.march, args.token, args.keep)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)

@@ -31,10 +31,10 @@ def convertTeam(game):
 		if not team:
 			continue
 		t = team
-		for suffix in ["sp", "rj", "fr", "ce", "ba", "pr", "rs", "rb", "rc", "ssc", "sc", "cf", "bb", "as", "fc", "se", "te", "ba", "jk", "tc", "nk", "calcio", "fbc", "fk", "ac", "mg", "ad", "town", "athletic", "county", "rovers", "cd", "ec", "sk", "u21"]:
+		for suffix in ["sp", "rj", "fr", "ce", "ba", "pr", "rs", "rb", "rc", "ssc", "sc", "cf", "bb", "as", "fc", "se", "te", "ba", "jk", "tc", "nk", "calcio", "fbc", "ff", "fk", "ac", "mg", "ad", "town", "athletic", "county", "rovers", "cd", "ec", "sk", "u21"]:
 			if t.endswith(f" {suffix}"):
 				t = t[:-1*(len(suffix) + 1)]
-		for prefix in ["sc", "aa", "ac", "as", "jk", "sk", "us", "sd", "ec", "aep", "ns", "ssd", "ssc", "kaa", "fks", "csd", "sm", "rb", "em", "rks", "bk", "hsk", "se"]:
+		for prefix in ["sc", "aa", "ac", "as", "jk", "sk", "us", "sd", "ec", "aep", "ns", "ssd", "ssc", "ssv", "kaa", "fks", "csd", "sm", "rb", "em", "rks", "bk", "hsk", "se", "if"]:
 			if t.startswith(f"{prefix} "):
 				t = t[(len(prefix) + 1):]
 		g.append(t)
@@ -43,65 +43,91 @@ def convertTeam(game):
 		game = " v ".join(g)
 	else:
 		game = g[0]
-	game = game.replace("fc ", "").replace("1 ", "").replace("cf ", "").replace("fk ", "").replace("sv ", "").replace("vfb ", "").replace("nk ", "").replace(" *", "").replace("united", "utd").replace("saint ", "st ")
+	game = game.replace(" rovers", "").replace("afc ", "").replace("fc ", "").replace("1 ", "").replace("csm ", "").replace("cf ", "").replace("fk ", "").replace("sv ", "").replace("tsg ", "").replace("vfb ", "").replace("vfl ", "").replace("nk ", "").replace(" *", "").replace(" utd", " united").replace("saint ", "st ").replace(" city", "")
 	# cities
-	game = game.replace("new york city", "nyc").replace("san jose", "sj").replace("por ", "portland ").replace("col ", "colorado ").replace("chi ", "chicago ").replace("chicago fire", "chicago").replace("phi ", "philadelphia ").replace("orl ", "orlando ").replace("hou ", "houston ").replace("lafc", "los angeles").replace("van ", "vancouver ").replace("sea ", "seattle ").replace("min ", "minnesota ")
+	game = game.replace("new york city", "nyc").replace("san jose", "sj").replace("por ", "portland ").replace("col ", "colorado ").replace("chi ", "chicago ").replace("chicago fire", "chicago").replace("phi ", "philadelphia ").replace("orl ", "orlando ").replace("hou ", "houston ").replace("lafc", "los angeles").replace("van ", "vancouver ").replace("sea ", "seattle ").replace("min ", "minnesota ").replace("bucuresti", "bucharest")
 	tr = {
 		"atletica ponte preta": "ponte preta",
 		"aberystwyth town": "aberystwyth",
 		"accrington stanley": "accrington",
+		"afc": "amsterdam",
 		"ca bucaramanga": "atletico bucaramanga",
 		"ae zakakiou": "aez zakakiou",
 		"ae kifisia": "kifisia",
 		"kifisias": "kifisia",
 		"abc rn": "abc",
 		"abc natal rn": "abc",
-		"amazulu durban": "amazulu",
+		"ael limassol": "ael",
+		"acs sepsi osk sfantul gheorghe": "sepsi",
+		"hermannstadt": "ahermannstadt",
 		"albacete balompie": "albacete",
+		"amazulu durban": "amazulu",
+		"apoel nikosia": "apoel",
 		"ajax cape": "cape town spurs",
 		"ajax amsterdam": "ajax",
+		"ld alajuelense": "alajuelense",
 		"apoel nicosia": "apoel",
+		"araz naxcivancouver pfk": "araz nakhchivan",
+		"argentinos jrs": "argentinos juniors",
 		"atalanta bc": "atalanta",
 		"athletic club bilbao": "athletic bilbao",
+		"auta arad": "uta arad",
+		"athens kallithea": "kallithea",
 		"atl paranaense": "paranaense",
 		"athletico pr": "paranaense",
 		"athletico paranaense": "paranaense",
 		"atletico go": "atletico goianiense",
+		"atromitos athens": "atromitos",
+		"avs": "avs futebol sad",
+		"banja luka": "borac banja luka",
 		"bayer leverkusen": "leverkusen",
 		"benfica lisbon": "benfica",
 		"besiktas istanbul": "besiktas",
-		"birmingham city": "birmingham",
 		"blackburn rovers": "blackburn",
+		"barry town united": "barry united",
+		"bod glimt": "bodo glimt",
 		"bohemians dublin": "bohemians",
 		"bolton wanderers": "bolton",
+		"borussia mgladbach": "monchengladbach",
 		"ad pasto": "deportivo pasto",
 		"borussia dortmund": "dortmund",
+		"borussia monchengladbach": "monchengladbach",
 		"breidablik kopavogur": "breidablik",
 		"brighton & hove albion": "brighton",
 		"brighton and hove albion": "brighton",
+		"briton ferry llansawel": "briton ferry",
 		"bsc young boys bern": "young boys",
 		"bsc young boys": "young boys",
+		"burton albion": "burton",
+		"ca tigre": "tigre",
 		"caernarfon town": "caernarfon",
 		"cajamarca utc": "utc de cajamarca",
 		"utc cajamarca": "utc de cajamarca",
 		"universidad tecnica de cajamarca": "utc de cajamarca",
-		"cardiff city": "cardiff",
-		"carlisle utd": "carlisle",
+		"cambridge": "cambridge united",
+		"cambuur leeuwarden": "cambuur",
+		"carlisle united": "carlisle",
 		"catanzaro 1929": "catanzaro",
+		"caykur rizespor": "rizespor",
+		"cd burgos": "burgos",
+		"cd cuenca": "deportivo cuunca",
+		"cd eldense": "eldense",
 		"cd hermanos colmenarez": "hermanos colmenarez",
 		"cd hermanos colmenares": "hermanos colmenarez",
-		"cd cuenca": "deportivo cuunca",
 		"cd mirandes": "mirandes",
+		"cd tenerife": "tenerife",
 		"charlton athletic": "charlton",
 		"cherno more varna": "cherno more",
+		"club atletico tucuman": "atletico tucuman",
 		"colorado rapids": "colorado",
 		"columbus crew": "columbus",
-		"colchester utd": "colchester",
+		"colchester united": "colchester",
 		"como 1907": "como",
-		"coventry city": "coventry",
 		"coquimbo unido": "coquimbo",
 		"crewe alexandra": "crewe",
+		"crusaders belfast": "crusaders",
 		"crvena zvezda": "red star belgrade",
+		"crvena zvezda beograd" : "red star belgrade",
 		"cska 1948 sofia": "cska 1948",
 		"cukaricki belgrade": "cukaricki",
 		"darmstadt 98": "darmstadt",
@@ -109,73 +135,118 @@ def convertTeam(game):
 		"deportivo alaves": "alaves",
 		"deportivo binacional": "binacional",
 		"derby county": "derby",
+		"djurgardens": "djurgarden",
+		"dukla praha": "dukla prague",
 		"dungannon swifts": "dungannon",
-		"drogheda utd": "drogheda",
+		"drogheda united": "drogheda",
+		"dynamo kyiv": "dynamo kiev",
+		"en paralimni": "enosis neon paralimni",
+		"estudiantes lp": "estudiantes",
+		"estudiantes de la plata": "estudiantes",
 		"estudiantes de merida": "estudiantes merida",
-		"exeter city": "exeter",
+		"estrela da amadora": "estrela",
+		"estrela amadora": "estrela",
+		"excelsior rotterdam": "rotterdam",
+		"fcv dender eh": "dender",
+		"feignies aulnoye efc": "feignies",
+		"feignies aulnoye": "feignies",
 		"ferencvarosi": "ferencvaros",
 		"forest green rovers": "forest green",
 		"futebol clube de arouca": "arouca",
 		"gazisehir gaziantep": "gaziantep",
 		"gdinamo zagreb": "dinamo zagreb",
+		"gimnasia de la plata": "gimnasia",
+		"gimnasia la plata": "gimnasia",
+		"gimnasia lp": "gimnasia",
 		"girondins de bordeaux": "bordeax",
 		"goianiense go": "atletico goianiense",
 		"glentoran belfast": "glentoran",
 		"hamburger sv": "hamburg",
+		"hamrun": "hamrun spartans",
+		"hibernians paola": "hibernians",
+		"hellas verona": "verona",
+		"heracles almelo": "heracles",
+		"hgorica": "hnk gorica",
 		"honka espoo": "honka",
 		"ilves tampere": "ilves",
 		"tampereen ilves": "ilves",
+		"rivadavia": "independiente rivadavia",
 		"inter milan": "inter",
 		"internazionale": "inter",
 		"internacional rs": "internacional",
+		"instituto ac cordoba": "instituto",
+		"istra": "istra 1961",
 		"houston dynamo": "houston",
-		"sporting kansas city": "kansas city",
-		"sporting kc": "kansas city",
+		"kv mechelen": "mechelen",
+		"kv kortrijk": "kortrijk",
+		"koninklijke": "koninklijke hfc",
+		"la roche vf": "la roche vendee football",
 		"lausanne": "lausanne sport",
+		"lamia 1964": "lamia",
 		"lamontville golden arrows": "golden arrows",
 		"lask": "lask linz",
 		"ldu quito": "ldu",
-		"leeds utd": "leeds",
-		"leicester city": "leicester",
+		"le puy football 43 auvergne": "le puy",
+		"leeds united": "leeds",
+		"oud heverlee": "leuven",
+		"oh leuven": "leuven",
 		"los angeles galaxy": "la galaxy",
-		"lincoln": "lincoln city",
+		"lokomotiva zagreb": "lokomotiva",
+		"lille osc": "lille",
+		"lausanne sport": "lausanne",
 		"ludogorets razgrad": "ludogorets",
 		"luton town": "luton",
 		"pludogorets": "ludogorets",
-		"manchester city": "man city",
-		"man utd": "manchester utd",
+		"maccabi bnei raina": "maccabi bnei reineh",
+		"mainz": "mainz 05",
+		"manchester": "man",
+		"man united": "manchester united",
 		"mezokovesd zsory": "mezokovesd",
-		"minnesota utd": "minnesota",
+		"minnesota united": "minnesota",
 		"minnesota stars": "minnesota",
 		"montreal impact": "montreal",
-		"mk dons": "milton keynes dons",
+		"milton keynes dons": "mk dons",
 		"mura murska sobota": "mura",
-		"newcastle utd": "newcastle",
-		"newry city": "newry",
+		"mruzomberok": "ruzomberok",
+		"napredak krusevac": "napredak",
+		"naxxar": "naxxar lions",
+		"nebraska omaha": "omaha",
+		"neftchi": "neftchi baku",
+		"newcastle united": "newcastle",
+		"newells old boys": "newells",
 		"nordsj earthquakesaelland": "nordsjaelland",
-		"norwich city": "norwich",
 		"notts co": "notts",
 		"notts county": "notts",
+		"nijkerk": "sparta nijkerk",
 		"nuova cosenza": "cosenza",
 		"olimpija ljubljana": "olimpija",
+		"olomouc": "sigma olomouc",
 		"olympiacos": "olympiakos",
 		"olympiakos piraeus": "olympiakos",
 		"olympique marseille": "marseille",
+		"omonia nicosia": "omonia",
 		"ogc nice": "nice",
 		"orense sporting club": "orense",
+		"oud heverlee leuven": "oud heverlee",
 		"paderborn 07": "paderborn",
 		"pafos": "paphos",
 		"paks": "paksi",
+		"panaitolikos": "panetolikos",
+		"panetolikos agrinio": "panetolikos",
+		"paok thessaloniki": "paok",
 		"paris st g": "paris st germain",
 		"paris sg": "paris st germain",
 		"pas lamia 1964": "lamia",
 		"pcska sofia": "cska sofia",
+		"pec zwolle": "zwolle",
+		"petrolul": "petrolul ploiesti",
 		"peindhoven": "psv",
-		"peterborough utd": "peterborough",
+		"peterborough united": "peterborough",
 		"philadelphia union": "philadelphia",
 		"pludogorets razgrad": "ludogorets",
 		"plokomotiv plovdiv": "lokomotiv plovdiv",
 		"plymouth argyle": "plymouth",
+		"politehnica iasi": "poli iasi",
 		"preston north end": "preston",
 		"pslavia sofia": "slavia sofia",
 		"psg": "paris st germain",
@@ -184,15 +255,23 @@ def convertTeam(game):
 		"puskas academy": "puskas akademia",
 		"qpr": "queens park rangers",
 		"qarabagh": "qarabag",
+		"racing club ferrol": "ferrol",
 		"racing strasbourg": "strasbourg",
+		"radnicki kragujevac": "radnicki 1923",
 		"rc lens": "lens",
+		"rc calais": "calais",
+		"real valladolid": "valladolid",
+		"real oviedo": "oviedo",
+		"rfs": "rigas fs",
 		"real sociedad": "sociedad",
 		"real betis": "betis",
 		"real zaragoza": "zaragoza",
 		"rb salzburg": "salzburg",
 		"red bull salzburg": "salzburg",
+		"rotherham united": "rotherham",
 		"royal antwerp": "antwerp",
 		"ruzomberok": "mruzomberok",
+		"sarmiento de junin": "sarmiento",
 		"seattle sounders": "seattle",
 		"acs sepsi osk": "spesi",
 		"sepsi osk": "sepsi",
@@ -202,28 +281,42 @@ def convertTeam(game):
 		"sheff wed": "sheffield wednesday",
 		"shelbourne dublin": "shelbourne",
 		"shrewsbury town": "shrewsbury",
+		"sliema": "sliema wanderers",
 		"sligo rovers": "sligo",
+		"slovancouver bratislava": "slovan bratislava",
 		"sport boys (per)": "sport boys", 
 		"sankt gallen": "st gallen",
+		"saprissa": "deportivo saprissa",
 		"schalke": "schalke 04",
+		"slaven koprivnica": "slaven belupo",
 		"sport recife pe": "sport recife",
 		"sport recife pe": "sport recife",
 		"sport club do recife": "sport recife",
 		"sporting cp": "sporting lisbon",
+		"sporting de gijon": "gijon",
+		"sporting gijon": "gijon",
+		"sporting de charleroi": "charleroi",
+		"st truidense": "sint truiden",
 		"st patricks athletic": "st patricks",
 		"st gilloise": "union st gilloise",
+		"royale union st gilloise": "union st gilloise",
+		"standard de liege": "standard liege",
 		"stade rennes": "rennes",
-		"stoke city": "stoke",
-		"swanseattle city": "swansea",
+		"supersport": "supersport united",
 		"swallows": "moroka swallows",
 		"cd tolima": "tolima",
 		"deportes tolima": "tolima",
+		"talleres de cordoba": "talleres",
 		"tallinna flora": "flora tallinn",
+		"tsc": "backa topola",
+		"tottenham hotspur": "tottenham",
 		"tranmere rovers": "tranmere",
 		"ud las palmas": "las palmas",
+		"union de santa fe": "union santa fe",
 		"university college dublin": "ucd",
 		"uni college dublin": "ucd",
 		"univ college dublin": "ucd",
+		"ulm 1846": "ulm",
 		"uc dublin": "ucd",
 		"vitoria salvador": "vitoria",
 		"vfl osnabruck": "osnabruck",
@@ -231,15 +324,19 @@ def convertTeam(game):
 		"vitesse arnhem": "vitesse",
 		"debrecen": "debreceni vsc",
 		"vallecano": "rayo vallecano",
+		"velez sarsfield": "velez",
 		"verona": "hellas verona",
 		"villarreal b": "villarreal ii",
+		"vitoria guimaraes": "guimaraes",
 		"vsc debrecen": "debreceni vsc",
 		"widzew odz": "widzew lodz",
-		"west ham utd": "west ham",
+		"west ham united": "west ham",
 		"west bromwich albion": "west brom",
+		"west bromwich": "west brom",
 		"wycombe wanderers": "wycombe",
 		"zorya luhansk": "zorya",
 		"zalaegerszegi": "zalaegerszeg",
+		"zemplin michalovce": "zemplin",
 		"zorya lugansk": "zorya",
 		"zrinjski": "zrinjski mostar"
 	}
@@ -249,6 +346,8 @@ def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 	if player == "mohammed diomande":
 		player = "mohamed diomande"
+	elif player == "ivanan":
+		return "ivan ivan"
 	elif player == "toral bayramov":
 		player = "tural bayramov"
 	elif player == "matt godden":
@@ -277,6 +376,14 @@ def parsePlayer(player):
 		return "josh debayo"
 	elif player == "cammy ballantyne":
 		return "cameron ballantyne"
+	elif player == "emerson urso":
+		return "emerson lima"
+	elif player == "marc casado torras":
+		return "marc casado"
+	elif player == "xavi quintilla":
+		return "xavier quintilla"
+	elif player == "emerson marcelina":
+		return "marcelina emerson"
 	return player
 
 def parseTeam(player):
@@ -640,7 +747,7 @@ def writeMGM(date=None):
 		outfile = f"socceroutMGM"
 
 		time.sleep(0.3)
-		#os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+		os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -651,11 +758,11 @@ def writeMGM(date=None):
 				continue
 			ids.append(row["id"])
 
-		ids = ["2:7515348"]
+		#ids = ["2:7515348"]
 		for mgmid in ids:
 			url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=false&statisticsModes=All"
 			time.sleep(0.3)
-			#os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+			os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -791,13 +898,18 @@ def writeBovada(date=None):
 		"south-america/peru/primera-division",
 	])
 
+	outfile = f"socceroutBV"
+
 	with open("static/soccer/leagues.json") as fh:
 		leagues = json.load(fh)["bv"]
 
 	ids = []
 	for which in leagues:
+		#continue
+		if which != "UEFA Champions League":
+			pass
+			#continue
 		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description{leagues[which]}?marketFilterId=def&preMatchOnly=true&eventsLimit=5000&lang=en"
-		outfile = f"socceroutBV"
 
 		time.sleep(0.3)
 		os.system(f"curl -k \"{url}\" -o {outfile}")
@@ -815,7 +927,7 @@ def writeBovada(date=None):
 
 	res = {}
 	
-	#ids = ['/soccer/north-america/united-states/mls/cf-montreal-fc-cincinnati-202309201930']
+	#ids = ['/soccer/europe/england/premier-league-2-u21/west-bromwich-albion-u21-reading-u21-202412161400']
 	for link in ids:
 		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description{link}?lang=en"
 		time.sleep(0.3)
@@ -850,12 +962,12 @@ def writeBovada(date=None):
 					elif "draw no bet" in prop:
 						prop = "dnb"
 					elif prop == "total" or "total goals" in prop:
-						if "exact" in prop or "&" in prop or "and" in prop:
+						if "exact" in prop or "&" in prop or "and" in prop or "asian" in prop:
 							continue
 						if player1 in strip_accents(prop):
-							prop = "away_total"
-						elif player2 in strip_accents(prop):
 							prop = "home_total"
+						elif player2 in strip_accents(prop):
+							prop = "away_total"
 						else:
 							prop = "total"
 					elif prop == "both teams to score":
@@ -868,9 +980,9 @@ def writeBovada(date=None):
 						prop = "goal_assist"
 					elif "total corners" in prop:
 						if player1 in strip_accents(prop):
-							prop = "away_corners"
-						elif player2 in strip_accents(prop):
 							prop = "home_corners"
+						elif player2 in strip_accents(prop):
+							prop = "away_corners"
 						elif prop == "total corners handicap":
 							prop = "corners_spread"
 						else:
@@ -881,9 +993,9 @@ def writeBovada(date=None):
 							suffix = "_on_target"
 
 						if player1 in strip_accents(prop):
-							prop = "away_shots"
-						elif player2 in strip_accents(prop):
 							prop = "home_shots"
+						elif player2 in strip_accents(prop):
+							prop = "away_shots"
 						elif prop == "total attempts" or prop == "total attempts on target":
 							prop = "game_shots"
 						else:
@@ -892,18 +1004,18 @@ def writeBovada(date=None):
 						prop += suffix
 					elif "total tackles" in prop:
 						if player1 in strip_accents(prop):
-							prop = "away_tackles"
-						elif player2 in strip_accents(prop):
 							prop = "home_tackles"
+						elif player2 in strip_accents(prop):
+							prop = "away_tackles"
 						elif prop == "total tackles":
-							prop = "tackles"
+							prop = "game_tackles"
 						else:
 							prop = "player_tackles"
 					elif "total offsides" in prop:
 						if player1 in strip_accents(prop):
-							prop = "away_offsides"
-						elif player2 in strip_accents(prop):
 							prop = "home_offsides"
+						elif player2 in strip_accents(prop):
+							prop = "away_offsides"
 						else:
 							prop = "offsides"
 					else:
@@ -942,7 +1054,11 @@ def writeBovada(date=None):
 							ou = f"{market['outcomes'][idx]['price']['american']}"
 							if skip == 2:
 								try:
-									ou += f"/{market['outcomes'][idx+1]['price']['american']}"
+									under = f"{market['outcomes'][idx+1]['price']['american']}"
+									if market["outcomes"][idx+1]["description"] == "Over":
+										ou = under+"/"+ou
+									else:
+										ou += "/"+under
 								except:
 									continue
 
@@ -958,6 +1074,9 @@ def writeBovada(date=None):
 								res[game][prop][handicap]["0.5"] = ou.replace("EVEN", "100")
 							else:
 								res[game][prop][handicap] = ou.replace("EVEN", "100")
+
+		with open("static/soccer/bovada.json", "w") as fh:
+			json.dump(res, fh, indent=4)
 
 	with open("static/soccer/bovada.json", "w") as fh:
 		json.dump(res, fh, indent=4)
@@ -993,9 +1112,10 @@ def writeKambi(date=None):
 		"usa/mls",
 	]
 
-	leagues = [
-		"champions_league/all",
-	]
+	if False:
+		leagues = [
+			"champions_league/all",
+		]
 
 	with open("static/soccer/leagues.json") as fh:
 		leagues = json.load(fh)["kambi"]
@@ -1028,7 +1148,7 @@ def writeKambi(date=None):
 			data[game] = {}
 
 
-		eventIds = {"leipzig v aston villa": 1021554748}
+		#eventIds = {"leipzig v aston villa": 1021554748}
 		for game in eventIds:
 			eventId = eventIds[game]
 			teamIds = {}
@@ -1611,8 +1731,11 @@ def writeCZ(date=None, token=None, keep=None):
 			time.sleep(0.2)
 			os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
 
-			with open(outfile) as fh:
-				data = json.load(fh)
+			try:
+				with open(outfile) as fh:
+					data = json.load(fh)
+			except:
+				continue
 
 			#with open("out", "w") as fh:
 			#	json.dump(data, fh, indent=4)
@@ -2461,7 +2584,7 @@ def writeESPN(teamArg):
 
 	team = teamArg.replace(" ", "-")
 	if team not in espnIds:
-		print("not found in espn ids")
+		print(f"{team} not found in espn ids")
 		return
 
 	league = teamLeagues[team]
@@ -2470,7 +2593,7 @@ def writeESPN(teamArg):
 		boxscores[team] = []
 
 	path = f"static/soccerreference/{league}/{team}.json"
-	if not os.path.exists(path):
+	if True or not os.path.exists(path):
 		with open(path, "w") as fh:
 			json.dump({}, fh, indent=4)
 
@@ -2485,8 +2608,8 @@ def writeESPN(teamArg):
 		teamData = j.copy()
 
 	years = [""]
-	if league == "mls" or team in ["jeonbuk-motors", "fk-qarabag"]:
-		years.append("2023")
+	#if league == "mls" or team in ["jeonbuk-motors"]:
+	#	years.append("2023")
 
 	for year in years:
 		url = f"https://www.espn.com/soccer/team/results/_/id/{espnIds[team]}"
@@ -2513,7 +2636,7 @@ def writeESPN(teamArg):
 				if gameId in boxscores[team]:
 					pass
 					#continue
-				if gameId != "672806":
+				if gameId != "717732":
 					pass
 					#continue
 				boxscores[team].append(gameId)
@@ -2557,6 +2680,8 @@ def writeESPN(teamArg):
 						player = parsePlayer(playerRow["name"])
 						playerIds[currTeam][player] = playerId
 
+						#print(currTeam, team, player)
+
 						if currTeam == team:
 							if player not in teamData["playerStats"]:
 								teamData["playerStats"][player] = {
@@ -2590,10 +2715,20 @@ def writeESPN(teamArg):
 				if not isTeam:
 					fullTeam = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][1]["displayName"].lower()
 					fullTeamOpp = data["page"]["content"]["gamepackage"]["gmStrp"]["tms"][0]["displayName"].lower()
-				if fullTeamOpp == "milton keynes dons":
-					fullTeamOpp = "mk dons"
-				elif fullTeamOpp == "st johnstone":
-					fullTeamOpp = "st. johnstone"
+				fullTeam = strip_accents(fullTeam)
+				fullTeamOpp = strip_accents(fullTeamOpp)
+				j = {
+					"egnatia": "egnatia rrogozhine",
+					"fk qarabag": "qarabag",
+					"if elfsborg": "elfsborg",
+					"iran": "ir iran",
+					"malmo ff": "malmo",
+					"milton keynes dons": "mk dons",
+					"nk celje": "celje",
+					"rigas futbola skola": "rigas fs",
+					"st johnstone": "st. johnstone",
+				}
+				fullTeamOpp = j.get(fullTeamOpp, fullTeamOpp)
 
 				isHome = False
 				if idx == 0:
@@ -2620,6 +2755,8 @@ def writeESPN(teamArg):
 						continue
 
 					if "goal" in eventType or "scored" in eventType:
+						if "homeAway" not in eventRow:
+							continue
 						eventTeamIdx = 0 if eventRow["homeAway"] == "home" else 1
 						if not halftime:
 							firstHalfScore[eventTeamIdx] += 1
@@ -2686,7 +2823,7 @@ def writeESPN(teamArg):
 
 
 						suffix = ""
-						if detail.split(".")[0].endswith(fullTeamOpp):
+						if strip_accents(detail).split(".")[0].endswith(fullTeamOpp):
 							suffix = "_against"
 						
 						stat = player = ""
@@ -2697,7 +2834,9 @@ def writeESPN(teamArg):
 							stat = "shots"
 							if " saved." in detail or "goal!" in detail:
 								stat = "sot"
-							if detail.split("(")[-1].split(")")[0] == fullTeamOpp:
+
+							#print(detail, player, fullTeamOpp)
+							if strip_accents(detail).split("(")[-1].split(")")[0] == fullTeamOpp:
 								suffix = "_against"
 
 						if not stat:
@@ -2728,6 +2867,8 @@ def writeESPN(teamArg):
 				teamData["teamStats"][date]["goals_against"] = finalScore[otherIdx]
 				teamData["teamStats"][date]["1h_goals_against"] = firstHalfScore[otherIdx]
 				teamData["teamStats"][date]["2h_goals_against"] = secondHalfScore[otherIdx]
+
+	#exit()
 
 	writeTotals(teamData)
 	with open(path, "w") as fh:
@@ -2794,15 +2935,18 @@ def writeESPNIds(date=""):
 			continue
 		if league not in ["us-open-cup", "english-league-two", "english-national-league", "scottish-league-one"]:
 			pass
-			continue
+			#continue
 		if not os.path.isdir(f"static/soccerreference/{league}"):
 			os.mkdir(f"static/soccerreference/{league}")
 
 		for row in table.find("tbody").findAll("tr"):
-			awayId = row.find("td").find("span").find("a").get("href")
-			homeId = row.findAll("td")[1].find("span").find("a").get("href")
-			awayTeam = awayId.split("/")[-1]
-			homeTeam = homeId.split("/")[-1]
+			try:
+				awayId = row.find("td").find("span").find("a").get("href")
+				homeId = row.findAll("td")[1].find("span").find("a").get("href")
+				awayTeam = awayId.split("/")[-1]
+				homeTeam = homeId.split("/")[-1]
+			except:
+				continue
 
 			teams.append(awayTeam)
 			teams.append(homeTeam)
@@ -2819,8 +2963,10 @@ def writeESPNIds(date=""):
 	with open("static/soccer/teamLeagues.json", "w") as fh:
 		json.dump(teamLeagues, fh, indent=4)
 
+	#teams = teams[teams.index("hamrun-spartans"):]
 	for team in teams:
 		pass
+		print("\n\n",team,"\n\n")
 		writeESPN(team)
 
 def write365():
@@ -3023,6 +3169,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 	with open(f"{prefix}static/soccer/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/soccer/bovada.json") as fh:
+		bvLines = json.load(fh)
+
 	with open(f"{prefix}static/soccer/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
@@ -3032,6 +3181,16 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 	with open(f"{prefix}static/soccer/ev.json") as fh:
 		evData = json.load(fh)
 
+	with open(f"{prefix}static/soccer/teamLeagues.json") as fh:
+		teamLeagues = json.load(fh)
+
+	teamPaths = {}
+	for team in teamLeagues:
+		if type(team) is not str:
+			continue
+		t = team.replace("-"," ")
+		teamPaths[convertTeam(t)] = f"{teamLeagues[team]}/{team}"
+
 	lines = {
 		"pn": pnLines,
 		"kambi": kambiLines,
@@ -3040,7 +3199,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 		"dk": dkLines,
 		"365": bet365Lines,
 		"cz": czLines,
-		"espn": espnLines
+		"espn": espnLines,
+		#"bv": bvLines
 	}
 
 	evData = {}
@@ -3251,7 +3411,43 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 						if float(evData[key]["ev"]) > 0:
 							#print(evData[key]["ev"], game, prop, handicap, int(line), ou, evBook, "\n\t", l)
 							pass
+
+
+						team = hit = log = ""
+						if player:
+							for t in [team1,team2]:
+								if t not in teamPaths:
+									continue
+								path = teamPaths[t]
+								if os.path.exists(f"static/soccerreference/{path}.json"):
+									with open(f"static/soccerreference/{path}.json") as fh:
+										stats = json.load(fh)
+									if player in stats.get("playerStats", ""):
+										team = t
+
+										tot = stats["playerStats"][player]["tot"]
+										p = ""
+										if prop == "player_shots_on_target":
+											p = "sot"
+										elif prop == "player_shots":
+											p = "shots"
+										elif prop == "atgs":
+											p = "g"
+										elif prop == "assist":
+											p = "goalassists"
+
+										if p and p in tot:
+											arr = tot[p].split(",")
+											log = ",".join(arr[-10:])
+											hit = len([x for x in arr if int(x) > float(playerHandicap)]) * 100 / len(arr)
+											hit = round(hit, 2)
+										break
+
+
 						evData[key]["game"] = game
+						evData[key]["team"] = team
+						evData[key]["hit"] = hit
+						evData[key]["log"] = log
 						evData[key]["player"] = player
 						evData[key]["book"] = evBook
 						evData[key]["books"] = books
@@ -3295,27 +3491,35 @@ def printEV(propArg):
 			continue
 		print(row[:-1])
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
+	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN", "% Over", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
-		if row[-1]["prop"] not in ["atgs", "score_or_assist", "team_fgs"]:
+		if row[-1]["prop"] not in ["atgs", "score_or_assist", "team_fgs", "header"]:
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), row[-1]["game"], row[-1]["player"], row[-1]["prop"], ou]
+		teamGame = row[-1]["team"]
+		if not teamGame:
+			teamGame = row[-1]["game"]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), teamGame, row[-1]["player"], row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
+		try:
+			hit = round(float(row[-1]['hit']))
+		except:
+			hit = "-"
+		arr.extend([f"{hit}%", row[-1]['log']])
 		output += "\t".join([str(x) for x in arr])+"\n"
 
-	with open("static/soccer/atgs.csv", "w") as fh:
-		fh.write(output)
+	#with open("static/soccer/atgs.csv", "w") as fh:
+	#	fh.write(output)
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN", "% Over", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if "player_" not in row[-1]["prop"] and row[-1]["prop"] not in ["assist"]:
 			continue
@@ -3324,27 +3528,35 @@ def printEV(propArg):
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), row[-1]["game"], row[-1]["handicap"].title(), row[-1]["prop"], ou]
+		teamGame = row[-1]["team"]
+		if not teamGame:
+			teamGame = row[-1]["game"]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), teamGame, row[-1]["handicap"].title(), row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
+		try:
+			hit = round(float(row[-1]['hit']))
+		except:
+			hit = "-"
+		arr.extend([f"{hit}%", row[-1]['log']])
 		output += "\t".join([str(x) for x in arr])+"\n"
 
-	with open("static/soccer/playerProps.csv", "w") as fh:
-		fh.write(output)
+	#with open("static/soccer/playerProps.csv", "w") as fh:
+	#	fh.write(output)
 
-	output = "\t".join(["EV", "PN EV", "EV Book", "Game", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Game", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
 	for row in sorted(data, reverse=True):
-		if "player_" in row[-1]["prop"] or row[-1]["prop"] in ["atgs", "assist", "score_or_assist"]:
+		if "player_" in row[-1]["prop"] or row[-1]["prop"] in ["atgs", "team_fgs", "assist", "score_or_assist", "header"]:
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), row[-1]["game"], row[-1]["prop"], ou]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), row[-1]["game"], row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -3374,13 +3586,11 @@ def printEV(propArg):
 					a = round(sum(totals[team][h+"opp_total"]) / len(totals[team][h+"opp_total"]), 1)
 					t = round((sum(totals[team][h+"game_total"])) / len(totals[team][h+"game_total"]), 1)
 				if t:
-					#arr.append(f"{f} - {a} - {t}")
-					pass
+					arr.append(f"{f} - {a} - {t}")
 				else:
-					#arr.append("-")
-					pass
+					arr.append("-")
 			else:
-				#arr.append("-")
+				arr.append("-")
 				pass
 
 		if False and row[-1]["game"] in winLoss and row[-1]["prop"] in ["corners", "away_corners", "home_corners"]:
@@ -3511,8 +3721,8 @@ if __name__ == '__main__':
 		#writeBovada(args.date)
 		print("BR")
 		writeKambi(args.date)
-		print("MGM")
-		writeMGM(args.date)
+		#print("MGM")
+		#writeMGM(args.date)
 		#writePointsbet(args.date)
 		print("PN")
 		writePinnacle(args.date)
@@ -3524,3 +3734,76 @@ if __name__ == '__main__':
 
 	if args.print:
 		printEV(args.prop)
+
+
+	if args.player:
+		with open(f"{prefix}static/soccer/draftkings.json") as fh:
+			dkLines = json.load(fh)
+
+		with open(f"{prefix}static/soccer/bet365.json") as fh:
+			bet365Lines = json.load(fh)
+
+		with open(f"{prefix}static/soccer/fanduelLines.json") as fh:
+			fdLines = json.load(fh)
+
+		with open(f"{prefix}static/soccer/kambi.json") as fh:
+			kambiLines = json.load(fh)
+
+		with open(f"{prefix}static/soccer/mgm.json") as fh:
+			mgmLines = json.load(fh)
+
+		with open(f"{prefix}static/soccer/pinnacle.json") as fh:
+			pnLines = json.load(fh)
+
+		with open(f"{prefix}static/soccer/caesars.json") as fh:
+			czLines = json.load(fh)
+
+		with open(f"{prefix}static/soccer/espn.json") as fh:
+			espnLines = json.load(fh)
+	
+		player = args.player
+
+		for game in bet365Lines:
+			for prop in bet365Lines[game]:
+				if args.prop and args.prop != prop:
+					continue
+
+				dk = fd = bet365 = kambi = espn = cz = mgm = pn = ""
+				try:
+					mgm = mgmLines[game][prop][player]
+				except:
+					pass
+				try:
+					dk = dkLines[game][prop][player]
+				except:
+					pass
+				try:
+					fd = fdLines[game][prop][player]
+				except:
+					pass
+				try:
+					bet365 = bet365Lines[game][prop][player]
+				except:
+					pass
+				try:
+					kambi = kambiLines[game][prop][player]
+				except:
+					pass
+				try:
+					pn = pnLines[game][prop][player]
+				except:
+					pass
+				try:
+					espn = espnLines[game][prop][player]
+				except:
+					pass
+				try:
+					cz = czLines[game][prop][player]
+				except:
+					pass
+
+				if not mgm and not fd and not bet365 and not kambi and not pn and not espn and not cz:
+					continue
+
+				print(f"{prop} fd='{fd}'\ndk='{dk}'\n365='{bet365}'\nkambi='{kambi}'\ncz='{cz}'\nespn='{espn}'\npn={pn}\nmgm={mgm}")
+

@@ -1080,6 +1080,8 @@ def writeKambi():
 	fullTeam = {}
 	eventIds = {}
 	for event in j["events"]:
+		if event["event"]["state"] == "STARTED":
+			continue
 		game = event["event"]["name"].lower()
 		away, home = map(str, game.split(" @ "))
 		homeFull, awayFull = map(str, event["event"]["englishName"].lower().split(" - "))
@@ -1381,8 +1383,8 @@ def writeOnlyGoals(date=None):
 
 def parsePlayer(player):
 	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" sr", "").replace(" jr", "").replace(" iii", "").replace(" ii", "")
-	if player == "michael eyssimont":
-		return "mikey eyssimont"
+	if player == "mikey eyssimont":
+		return "michael eyssimont"
 	elif player == "john jason peterka":
 		return "jj peterka"
 	elif player == "alexander nylander":
@@ -2714,7 +2716,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 			if propArg and prop != propArg:
 				continue
 
-			if not propArg and prop in ["spread", "pp_pts"]:
+			if not propArg and (prop in ["spread", "pp_pts", "3ml"] or "total" in prop):
 				#pass
 				continue
 
