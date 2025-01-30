@@ -3016,6 +3016,56 @@ def writeMinutes():
 	with open("static/nba/minutes.json", "w") as fh:
 		json.dump(minutes, fh, indent=4)
 
+def writeRanks(teamArg=None):
+	with open(f"{prefix}static/nba/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/bet365.json") as fh:
+		bet365 = json.load(fh)
+
+	with open(f"{prefix}static/nba/espn.json") as fh:
+		espn = json.load(fh)
+
+	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	espnLines = {}
+	parseESPN(espnLines)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"espn": espnLines,
+		"bet365": bet365,
+		"dk": dkLines,
+		"cz": czLines
+	}
+
+	with open("static/nba/ranksData.json") as fh:
+		data = json.load(fh)
+
+	for book in lines:
+		for game in lines[book]:
+			if teamArg and teamArg not in game.split(" @ "):
+				continue
+
+			for prop in lines[book][game]:
+				pass
+
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	if not boost:
@@ -3812,6 +3862,7 @@ if __name__ == '__main__':
 	parser.add_argument("--insurance", action="store_true")
 	parser.add_argument("--historical", action="store_true")
 	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
+	parser.add_argument("--ranks", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--token")
@@ -3913,3 +3964,6 @@ if __name__ == '__main__':
 
 	if args.historical:
 		printHistorical()
+
+	if args.ranks:
+		writeRanks()

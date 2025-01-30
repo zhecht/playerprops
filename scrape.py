@@ -1958,7 +1958,7 @@ async def writeMGM(sport=None, keep=None, league=None, tomorrow=None):
 								players = await panel.query_selector_all(".attribute-key")
 								odds = await panel.query_selector_all("ms-option")
 								for playerIdx, player in enumerate(players):
-									player = parsePlayer(player.text.split(" (")[0])
+									player = parsePlayer(player.text.split(" (")[0].strip())
 									if player not in data[game][prop]:
 										data[game][prop][player] = {}
 									over = await odds[playerIdx].query_selector(".value")
@@ -2034,7 +2034,7 @@ async def writeMGM(sport=None, keep=None, league=None, tomorrow=None):
 							players = await panel.query_selector_all(".attribute-key")
 							odds = await panel.query_selector_all(".option-pick")
 							for playerIdx, player in enumerate(players):
-								player = parsePlayer(player.text.split(" (")[0])
+								player = parsePlayer(player.text.split(" (")[0].strip())
 								try:
 									line = await odds[playerIdx*2].query_selector(".name")
 									line = line.text.strip().split(" ")[-1]
