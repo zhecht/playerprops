@@ -223,7 +223,7 @@ def writeCZ(date, token=None):
 		games.append(event["id"])
 
 
-	#games = ["654790b8-c1cd-4088-bcb1-bcbcd6a03b60"]
+	#games = ["aba11601-f98d-4fb8-9e27-b72bea37784e"]
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
@@ -316,7 +316,7 @@ def writeCZ(date, token=None):
 					except:
 						continue
 				elif skip == 1:
-					player = parsePlayer(selections[i]["name"].replace("|", ""))
+					player = parsePlayer(selections[i]["name"].replace("|", "").strip())
 					res[game][prop][player] = ou
 				else:
 					line = str(float(market["line"]))
@@ -1106,6 +1106,7 @@ def writeKambi(date):
 
 def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
+	player = player.strip()
 	if player == "k caldwell pope":
 		player = "kentavious caldwell pope"
 	elif player == "cameron thomas":
@@ -1824,6 +1825,74 @@ def writeFanduel():
 	
 	with open(f"static/nba/fanduelLines.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
+
+def averageOdds(odds):
+	avgOver = []
+	avgUnder = []
+	for o in odds:
+		if o and o != "-" and o.split("/")[0] != "-":
+			avgOver.append(convertDecOdds(int(o.split("/")[0])))
+			if "/" in o:
+				avgUnder.append(convertDecOdds(int(o.split("/")[1])))
+
+	if avgOver:
+		avgOver = float(sum(avgOver) / len(avgOver))
+		avgOver = convertAmericanOdds(avgOver)
+	else:
+		avgOver = "-"
+	if avgUnder:
+		avgUnder = float(sum(avgUnder) / len(avgUnder))
+		avgUnder = convertAmericanOdds(avgUnder)
+	else:
+		avgUnder = "-"
+
+	ou = f"{avgOver}/{avgUnder}"
+	if ou.endswith("/-"):
+		ou = ou.split("/")[0]
+	return ou
+
+def getFairValue(ou, method=None):
+	over = int(ou.split("/")[0])
+	if over > 0:
+		impliedOver = 100 / (over+100)
+	else:
+		impliedOver = -1*over / (-1*over+100)
+
+	# assume 7.1% vig if no under
+	if "/" not in ou:
+		u = 1.071 - impliedOver
+		if u > 1:
+			return
+		if over > 0:
+			under = int((100*u) / (-1+u))
+		else:
+			under = int((100 - 100*u) / u)
+	else:
+		under = int(ou.split("/")[1])
+
+	if under > 0:
+		impliedUnder = 100 / (under+100)
+	else:
+		impliedUnder = -1*under / (-1*under+100)
+
+	# power method
+	x = impliedOver
+	y = impliedUnder
+	while round(x+y, 8) != 1.0:
+		k = math.log(2) / math.log(2 / (x+y))
+		x = x**k
+		y = y**k
+
+	mult = impliedOver / (impliedOver + impliedUnder)
+	add = impliedOver - (impliedOver+impliedUnder-1) / 2
+	implied = min(x,mult,add)
+	if method == "mult":
+		return mult
+	elif method == "add":
+		return add
+	elif method == "power":
+		return x
+	return implied
 
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
 
@@ -2861,6 +2930,8 @@ def parseESPN(espnLines, noespn=None):
 		for player in roster[team]:
 			first = player.split(" ")[0][0]
 			last = player.split(" ")[-1]
+			if team == "hou" and player == "jeff green":
+				return
 			players[team][f"{first} {last}"] = player
 
 	if not noespn:
@@ -3016,6 +3087,25 @@ def writeMinutes():
 	with open("static/nba/minutes.json", "w") as fh:
 		json.dump(minutes, fh, indent=4)
 
+def calcPoints(prop, val):
+	pts = 0
+	if prop == "pts":
+		pts += val * 1
+	elif prop in ["reb", "ast"]:
+		pts += val * 1.5
+	#elif prop == "reb":
+	#	pts += val * 1.2
+	elif prop == "ast":
+		pts += val * 1.5
+	elif prop in ["stl", "blk"]:
+		pts += val * 3
+	elif prop == "to":
+		pts += val * -1
+	return pts
+
+
+#https://www.fantasypros.com/nba/projections/daily-overall.php
+
 def writeRanks(teamArg=None):
 	with open(f"{prefix}static/nba/kambi.json") as fh:
 		kambiLines = json.load(fh)
@@ -3041,6 +3131,9 @@ def writeRanks(teamArg=None):
 	with open(f"{prefix}static/nba/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/basketballreference/roster.json") as fh:
+		roster = json.load(fh)
+
 	espnLines = {}
 	parseESPN(espnLines)
 
@@ -3064,7 +3157,156 @@ def writeRanks(teamArg=None):
 				continue
 
 			for prop in lines[book][game]:
-				pass
+				if prop not in ["pts", "reb", "ast", "stl", "blk", "to"]:
+					continue
+
+				if book == "bet365" and prop == "pts":
+					continue
+
+				for player in lines[book][game][prop]:
+					away, home = map(str, game.split(" @ "))
+					if player in roster[away]:
+						t = away
+					elif player in roster[home]:
+						t = home
+					else:
+						continue
+					pos = roster[t][player]
+					if "G" in pos:
+						pos = "G"
+					elif "F" in pos:
+						pos = "F"
+
+					if t not in data:
+						data[t] = {}
+					if player not in data[t]:
+						data[t][player] = {}
+					if prop not in data[t][player]:
+						data[t][player][prop] = {}
+
+					for line in lines[book][game][prop][player]:
+						odds = lines[book][game][prop][player][line]
+						if not odds:
+							continue
+						implied = getFairValue(odds)
+						if not implied:
+							continue
+						#ous.append((abs(.5-implied), odds, line, math.ceil(float(line)) * implied))
+						if line not in data[t][player][prop]:
+							data[t][player][prop][line] = []
+						if player == "lebron james" and prop == "stl":
+							print(book, line, odds)
+						data[t][player][prop][line].append(odds)
+
+	with open("static/nba/ranksData.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+	sortedOutputs = {"ALL": []}
+	for team in data:
+		for player in data[team]:
+			pos = roster[team][player]
+			if "G" in pos:
+				pos = "G"
+			elif "F" in pos:
+				pos = "F"
+			if pos not in sortedOutputs:
+				sortedOutputs[pos] = []
+			j = {}
+			inc = {}
+			for prop in data[team][player]:
+				arr = []
+				for line in data[team][player][prop]:
+					odds = data[team][player][prop][line]
+					l = []
+					for o in odds:
+						implied = getFairValue(o)
+						l.append(implied)
+					l = sorted(l)
+					avgOdds = averageOdds(odds)
+					arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power"), avgOdds))
+
+				if not arr:
+					continue
+
+				arr = sorted(arr, reverse=True)
+
+				j[prop] = {}
+				tot = last = 0
+				for line, implied, avg in arr:
+					if not implied:
+						implied = .002
+					tot += (implied - last)
+					j[prop][line] = implied - last
+					if player == "lebron james" and prop == "stl":
+						print(line, implied, implied-last, avg)
+					last = implied
+
+				j[prop][0] = 1 - tot
+
+			pts = 0
+			propPts = {}
+			for prop in j:
+				propPts[prop] = 0
+				for line in j[prop]:
+					p = calcPoints(prop, line * j[prop][line])
+					propPts[prop] += p
+				pts += propPts[prop]
+
+			sortedOutputs[pos].append((pts, player, pos, team, propPts, inc, j))
+			sortedOutputs["ALL"].append((pts, player, pos, team, propPts, inc, j))
+
+	reddit = ""
+	table = []
+	for pos in ["ALL", "G", "F", "C"]:
+		output = "\tPTS\tTEAM\tPLAYER"
+		reddit += "PTS|PLAYER"
+		props = ["pts", "reb", "ast", "stl", "blk", "to"]
+		for prop in props:
+			output += f"\t{prop.upper()}"
+		#output += "\tINC"
+		output += "\n"
+		reddit += "\n"
+
+		posIdx = {}
+		for pts, player, p, team, propPts, inc, j in sorted(sortedOutputs[pos], reverse=True):
+			if p not in posIdx:
+				posIdx[p] = 1
+			x = f"{p}{posIdx[p]}"
+			output += f"{x}"
+
+			if player == "lebron james":
+				print(player, propPts["stl"], j["stl"])
+
+			j = {
+				"player": player.title(),
+				"pos": p,
+				"rank": x,
+				"pts": round(pts, 1),
+				#"fpDiff": fpDiff.replace("'", ""),
+			}
+
+			output += f"\t{round(pts, 1)}\t{team.upper()}\t{player.title()}"
+			for prop in props:
+				x = 0
+				if prop in propPts:
+					x = round(propPts[prop], 2)
+				output += f"\t{x or '-'}"
+				j[prop] = x
+
+			#j["inc"] = ",".join(inc.keys())
+
+			# incomplete highlight
+			#output += "\t,"+",".join(inc.keys())+","
+			output += "\n"
+			if pos == "ALL":
+				table.append(j)
+			posIdx[p] += 1
+
+		with open(f"static/nba/rank_{pos}.csv", "w") as fh:
+			fh.write(output)
+
+	with open(f"static/nba/ranks.json", "w") as fh:
+		json.dump(table, fh, indent=4)
 
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
@@ -3184,6 +3426,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 			handicaps = {}
 			for book in lines:
 				lineData = lines[book]
+
 				if game in lineData and prop in lineData[game]:
 					if type(lineData[game][prop]) is not dict:
 						handicaps[(" ", " ")] = ""
