@@ -550,10 +550,10 @@ def parsePinnacle(res, games, gameId, retry, debug):
 	relatedData = {}
 	for row in related:
 		if "special" in row:
-			prop = row["units"].lower().replace("yards", "_yd").replace("receiving", "rec").replace("passing", "pass").replace("rushing", "rush").replace("interceptions", "int").replace("attempts", "att")
+			prop = row["units"].lower().replace("yards", "yd").replace("receiving", "rec").replace("passing", "pass").replace("rushing", "rush").replace("interceptions", "int").replace("completions", "cmp").replace("attempts", "att").replace(" + ", "+").replace(" ", "_")
 			if prop == "touchdownpasses":
 				prop = "pass_td"
-			elif prop == "1st touchdown":
+			elif prop == "1st_touchdown":
 				prop = "ftd"
 			elif prop == "touchdowns":
 				prop = "attd"
@@ -569,14 +569,15 @@ def parsePinnacle(res, games, gameId, retry, debug):
 				prop = "pass_cmp"
 			elif prop == "passatt":
 				prop = "pass_att"
-			elif prop == "tackles + assists":
-				prop = "tackles+ast"
 
 			over = row["participants"][0]["id"]
 			under = row["participants"][1]["id"]
 			if row["participants"][0]["name"] == "Under":
 				over, under = under, over
-			player = parsePlayer(row["special"]["description"].split(" (")[0])
+			player = parsePlayer(row["special"]["description"].split(" (")[0].split(" for ")[-1])
+			if player.endswith("score a touchdown?"):
+				prop = "attd"
+				player = player.split(" score ")[0].split("will ")[-1]
 			relatedData[row["id"]] = {
 				"player": player,
 				"prop": prop,
