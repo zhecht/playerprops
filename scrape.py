@@ -3600,7 +3600,7 @@ async def writeDK(sport=None, keep=None, propArg=None, league=None, tomorrow=Non
 				continue
 		elif sport == "nhl":
 			if mainTab.text.lower().strip() not in ["game lines", "goalscorer", "shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]:
-			#if mainTab.text.lower() not in ["assists", "blocks", "goalie props", "team totals"]:
+			#if mainTab.text.lower() not in ["shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]:
 				continue
 		else:
 			if mainTab.text.lower().strip() not in ["td scorers", "passing props", "rushing props", "receiving props", "d/st props"]:

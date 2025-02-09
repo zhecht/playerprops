@@ -2931,7 +2931,7 @@ def parseESPN(espnLines, noespn=None):
 			first = player.split(" ")[0][0]
 			last = player.split(" ")[-1]
 			if team == "hou" and player == "jeff green":
-				return
+				continue
 			players[team][f"{first} {last}"] = player
 
 	if not noespn:
@@ -3148,8 +3148,9 @@ def writeRanks(teamArg=None):
 		"cz": czLines
 	}
 
-	with open("static/nba/ranksData.json") as fh:
-		data = json.load(fh)
+	#with open("static/nba/ranksData.json") as fh:
+	#	data = json.load(fh)
+	data = {}
 
 	for book in lines:
 		for game in lines[book]:
@@ -3248,9 +3249,10 @@ def writeRanks(teamArg=None):
 			for prop in j:
 				propPts[prop] = 0
 				for line in j[prop]:
-					p = calcPoints(prop, line * j[prop][line])
+					#p = calcPoints(prop, line * j[prop][line])
+					p = line * j[prop][line]
 					propPts[prop] += p
-				pts += propPts[prop]
+				pts += calcPoints(prop, propPts[prop])
 
 			sortedOutputs[pos].append((pts, player, pos, team, propPts, inc, j))
 			sortedOutputs["ALL"].append((pts, player, pos, team, propPts, inc, j))
@@ -3258,7 +3260,7 @@ def writeRanks(teamArg=None):
 	reddit = ""
 	table = []
 	for pos in ["ALL", "G", "F", "C"]:
-		output = "\tPTS\tTEAM\tPLAYER"
+		output = "\tFPTS\tTEAM\tPLAYER"
 		reddit += "PTS|PLAYER"
 		props = ["pts", "reb", "ast", "stl", "blk", "to"]
 		for prop in props:
@@ -3275,7 +3277,7 @@ def writeRanks(teamArg=None):
 			output += f"{x}"
 
 			if player == "lebron james":
-				print(player, propPts["stl"], j["stl"])
+				print(player, propPts.get("stl"), j.get("stl"))
 
 			j = {
 				"player": player.title(),
@@ -3481,7 +3483,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					if player in trades:
 						for hdr in splits[trades[player]][player]:
 							playerSplits[hdr] = splits[trades[player]][player][hdr]
-						for hdr in splits[team][player]:
+						for hdr in splits[team].get(player, []):
 							playerSplits[hdr] += ","+splits[team][player][hdr]
 					elif team in splits and player in splits[team]:
 						playerSplits = splits[team][player]
