@@ -21,6 +21,53 @@ elif os.path.exists("/home/playerprops/playerprops"):
 
 march_blueprint = Blueprint('march', __name__, template_folder='views')
 
+ncaab_blueprint = Blueprint('ncaab', __name__, template_folder='views')
+
+@ncaab_blueprint.route('/ncaab/<player>/<prop>/<line>')
+def get_ncaab_route_line(player, prop, line):
+	player = player.replace("-", " ")
+	line = float(line)
+	
+	with open("static/ncaab/stats.json") as fh:
+		stats = json.load(fh)
+	stats = stats["villanova"][player]
+	opp = stats["opp"].split(",")
+	games = len(opp)
+	arr = stats[prop].split(",")
+
+	totalOverArr = [x for x in arr if int(x) > line]
+	totalOver = round(len(totalOverArr) * 100 / games)
+
+	data = {
+		"opp": opp,
+		"away": [x for x, ah in zip(arr, opp) if ah == "A" and int(x) > line],
+		"home": [x for x, ah in zip(arr, opp) if ah == "H" and int(x) > line],
+		"szn": [x for x in arr if int(x) > line],
+		"arr": arr,
+		"x": [x for x in range(len(arr))]
+	}
+	return render_template("ncaab.html", player=player, line=line, data=data, prop=prop)
+
+@ncaab_blueprint.route('/ncaab/<player>')
+def get_ncaab_route(player):
+	player = player.replace("-", " ")
+	data = getPlayerEvData(player)
+	return render_template("ncaab.html", player=player, data=data)
+
+def getPlayerEvData(player):
+	with open(f"{prefix}static/ncaab/ev.json") as fh:
+		evData = json.load(fh)
+	res = []
+	for row in evData:
+		data = evData[row]
+		if data["player"] == player:
+			j = data.copy()
+			j["odds"] = f"{data['line']} {data['book'].upper()}"
+			j["prop"] = data["prop"].upper()
+			j["line"] = f"{'u' if data['under'] else 'o'}{data['playerHandicap']}"
+			res.append(j)
+	return res
+
 @march_blueprint.route('/getMarch')
 def getmarch_route():
 	with open(f"{prefix}static/ncaab/kenpom.json") as fh:
@@ -2659,6 +2706,44 @@ def writePlayers(keep=None):
 	with open(f"{prefix}static/ncaab/stats.json", "w") as fh:
 		json.dump(stats, fh)
 
+def writeDaily():
+	with open(f"{prefix}static/ncaab/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/espn.json") as fh:
+		espnLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/stats.json") as fh:
+		stats = json.load(fh)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"espn": espnLines,
+		"dk": dkLines,
+		"cz": czLines
+	}
+
+	date = str(datetime.now())[:10]
+	with open(f"static/ncaab/lines/{date}.json", "w") as fh:
+		json.dump(lines, fh)
 
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
@@ -2979,6 +3064,8 @@ def sortEV():
 
 	#with open(f"static/ncaab/totals.json") as fh:
 	#	totals = json.load(fh)
+
+	writeDaily()
 
 	data = []
 	for player in evData:

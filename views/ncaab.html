@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>CBB Props</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="/static/css/nbateams.css" type="text/css">
+		<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+		<link href="/static/css/tabulator.min.css" rel="stylesheet">
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	</head>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		#name {
+			text-align: center;
+		}
+		#evTable {
+			width: 30%;
+		}
+		#ouTable {
+			width: 600px;
+		}
+	</style>
+	<body>
+		<h1 id="name">{{player.title()}}</h1>
+		<div style="display:flex;justify-content:space-evenly;">
+			<div id="evTable"></div>
+			<div id="ouTable"></div>
+		</div>
+	</body>
+	<script>
+		const data = JSON.parse('{{data|tojson|safe}}');
+		const TABLE = new Tabulator("#evTable", {
+			layout: "fitColumns",
+			//data: data,
+			initialSort: [
+				{column: "ev", dir: "desc"},
+			],
+			columns: [
+				{title: "EV", field: "ev", hozAlign: "center", sorter: "number", width: "60"},
+				{title: "Odds", field: "odds", hozAlign: "center", width: "100"},
+				{title: "Prop", field: "prop", hozAlign: "center", width: "80"},
+				{title: "Line", field: "line", hozAlign: "center", width: "60"},
+				{title: "Splits", field: "totalSplits"},
+			]
+		});
+
+		setTimeout(function() {
+			TABLE.getRows()[0].select();
+		}, 200);
+
+		/*
+		const vals = data[0].totalSplits.split(",").map(Number);
+		const ou = parseFloat(data[0].line.substring(1));
+		console.log(vals, ou);
+		const d = [{
+			type: "bar",
+			x: [1,2,3,4,5,6,7,8,9,10],
+			y: vals,
+			text: vals.map(String),
+			textposition: "inside",
+			marker: {
+				color: vals.map(y => y >= ou ? "green" : "red"),
+			},
+			hoverinfo: "y"
+		}];
+		const layout = {
+			title: "Player ",
+			shapes: [{
+				type: "line",
+				x0: -0.5, y0: ou,
+				x1: vals.length+0.5, y1: ou,
+				line: {
+					color: "blue",
+					width: 2,
+					//dash: "dash"
+				}
+			}],
+			yaxis: {
+				showgrid: false,
+				title: data[0].prop
+			}
+		};
+		Plotly.newPlot("ouTable", d, layout);
+		*/
+
+		const vals = data.arr.map(Number);
+		const ou = parseFloat("{{line}}");
+		const d = [{
+			type: "bar",
+			x: data.x,
+			y: vals,
+			text: vals.map(String),
+			textposition: "inside",
+			marker: {
+				color: vals.map(y => y >= ou ? "green" : "red"),
+			},
+			hoverinfo: "y"
+		}];
+		const layout = {
+			title: "Player ",
+			shapes: [{
+				type: "line",
+				x0: -0.5, y0: ou,
+				x1: vals.length+0.5, y1: ou,
+				line: {
+					color: "blue",
+					width: 2,
+					//dash: "dash"
+				}
+			}],
+			yaxis: {
+				showgrid: false,
+				title: "{{prop}}"
+			}
+		};
+		Plotly.newPlot("ouTable", d, layout);
+	</script>
+</html>

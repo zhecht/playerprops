@@ -86,6 +86,10 @@ def convertFDTeam(team):
 		team = "dal"
 	elif team.endswith("ducks"):
 		team = "ana"
+	elif team == "sweden":
+		return "swe"
+	elif team == "canada":
+		return "can"
 	return team
 
 def strip_accents(text):
@@ -270,7 +274,9 @@ def writeCZ(date=None, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/icehockey/events/schedule?competitionIds=b7b715a9-c7e8-4c47-af0a-77385b525e09"
+	league = "b7b715a9-c7e8-4c47-af0a-77385b525e09"
+	url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/icehockey/events/schedule?competitionIds={league}"
+
 	outfile = "nhloutCZ"
 	cookie = "944a513d-653e-4d9d-937c-fe1b2af97e57:EgoAn2JaHoBwAAAA:iQnMDk9/lVD1Y7CzKsTrZol0bkjLdXd4ciUmy9xMfjvJE/rSHKpuvLSoAu0P7+tz59lI/7xSueH6a7+vhk32m/yBhES5GTu6qFf9ujk/SByBY8266aL6FcQuR6AAdqd3PQWsrdonKdftB32jjGac4M0I59iPbXPdpJPXY6fb2jgebckdfSSTkNaPTT7ZmJFSoDcfIf/evSJcz7Cl/8Q3yC3aNVK1LpqVch3/Ra6OumuGfhYLwyDd8ogy8VegUdOvKGwfpvT9EqMGow=="
 
@@ -301,7 +307,7 @@ def writeCZ(date=None, token=None):
 		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 			continue
 
-		game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
+		game = data["name"].lower().replace("|", "").replace(" at ", " @ ").replace(" 4n", "")
 		away, home = map(str, game.split(" @ "))
 		game = f"{convertFDTeam(away)} @ {convertFDTeam(home)}"
 		res[game] = {}
@@ -747,7 +753,9 @@ def writePinnacle(date):
 
 	url = "https://www.pinnacle.com/en/hockey/nhl/matchups#period:0"
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/1456/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" --connect-timeout 60 -o nhloutPN'
+	league ="1456"
+
+	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/'+league+'/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 66ac2815-a68dc902-a5052c0c-c60f3d05" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" --connect-timeout 60 -o nhloutPN'
 
 	os.system(url)
 	outfile = f"nhloutPN"
@@ -1070,8 +1078,11 @@ def writeMGM(date=None):
 def writeKambi():
 	data = {}
 	outfile = f"outnhl.json"
+
 	url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/ice_hockey/nhl"
-	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/ice_hockey/nhl/all/all/matches.json?lang=en_US&market=US"
+
+	league = "nhl"
+	url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/ice_hockey/{league}/all/all/matches.json?lang=en_US&market=US"
 	os.system(f"curl \"{url}\" --connect-timeout 30 -o {outfile}")
 	
 	with open(outfile) as fh:
@@ -1391,6 +1402,8 @@ def parsePlayer(player):
 		return "alex nylander"
 	elif player == "matthew boldy":
 		return "matt boldy"
+	elif player == "cameron atkinson":
+		return "cam atkinson"
 	return player
 
 def writeFanduelManual():

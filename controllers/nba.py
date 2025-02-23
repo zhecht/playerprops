@@ -3310,6 +3310,46 @@ def writeRanks(teamArg=None):
 	with open(f"static/nba/ranks.json", "w") as fh:
 		json.dump(table, fh, indent=4)
 
+def writeDaily():
+	with open(f"{prefix}static/nba/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	with open(f"{prefix}static/nba/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
+	espnLines = {}
+	parseESPN(espnLines)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"dk": dkLines,
+		"cz": czLines,
+		"espn": espnLines,
+		"bet365": bet365Lines
+	}
+
+	date = str(datetime.now())[:10]
+	with open(f"static/nba/lines/{date}.json", "w") as fh:
+		json.dump(lines, fh)
+
 def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	if not boost:
@@ -3760,6 +3800,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							awayHomePerMin = f"{100 - awayHomeSplitsPerMin[0]}% - {100 - awayHomeSplitsPerMin[1]}%"
 
 						confirmed = False
+						starting = False
 						if team in lineups:
 							confirmed = lineups[team]["confirmed"]
 
@@ -3821,7 +3862,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"gameLine": gameLine,
 								"bookOdds": ", ".join([f"{b}: {o}" for o, b in zip(l, books)])
 							}
-							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total10Over", "total10OverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits", "awayHomeSplitsPerMin", "winLossSplitsPerMin"]:
+							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total10Over", "total10OverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits", "awayHomeSplitsPerMin", "winLossSplitsPerMin", "confirmed"]:
 								j[x] = evData[key][x]
 							htmlData.append(j)
 
@@ -3965,6 +4006,8 @@ def writeMatchups():
 
 
 def sortEV():
+	writeDaily()
+
 	with open(f"{prefix}static/nba/ev.json") as fh:
 		evData = json.load(fh)
 

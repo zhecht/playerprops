@@ -34,7 +34,7 @@ def convertTeam(game):
 		for suffix in ["sp", "rj", "fr", "ce", "ba", "pr", "rs", "rb", "rc", "ssc", "sc", "cf", "bb", "as", "fc", "se", "te", "ba", "jk", "tc", "nk", "calcio", "fbc", "ff", "fk", "ac", "mg", "ad", "town", "athletic", "county", "rovers", "cd", "ec", "sk", "u21"]:
 			if t.endswith(f" {suffix}"):
 				t = t[:-1*(len(suffix) + 1)]
-		for prefix in ["sc", "aa", "ac", "as", "jk", "sk", "us", "sd", "ec", "aep", "ns", "ssd", "ssc", "ssv", "kaa", "fks", "csd", "sm", "rb", "em", "rks", "bk", "hsk", "se", "if"]:
+		for prefix in ["sc", "aa", "ac", "as", "jk", "sk", "us", "sd", "ec", "aep", "ns", "scr", "ssd", "ssc", "ssv", "kaa", "krc", "fks", "csd", "sm", "rb", "em", "rks", "bk", "hsk", "se", "if"]:
 			if t.startswith(f"{prefix} "):
 				t = t[(len(prefix) + 1):]
 		g.append(t)
@@ -99,6 +99,7 @@ def convertTeam(game):
 		"bsc young boys bern": "young boys",
 		"bsc young boys": "young boys",
 		"burton albion": "burton",
+		"bw linz": "blau weiss linz",
 		"ca tigre": "tigre",
 		"caernarfon town": "caernarfon",
 		"cajamarca utc": "utc de cajamarca",
@@ -237,6 +238,7 @@ def convertTeam(game):
 		"paris st g": "paris st germain",
 		"paris sg": "paris st germain",
 		"pas lamia 1964": "lamia",
+		"saos pau": "pau",
 		"pcska sofia": "cska sofia",
 		"pec zwolle": "zwolle",
 		"petrolul": "petrolul ploiesti",
@@ -270,6 +272,7 @@ def convertTeam(game):
 		"red bull salzburg": "salzburg",
 		"rotherham united": "rotherham",
 		"royal antwerp": "antwerp",
+		"rheindorf altach": "altach",
 		"ruzomberok": "mruzomberok",
 		"sarmiento de junin": "sarmiento",
 		"seattle sounders": "seattle",
@@ -3184,12 +3187,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 	with open(f"{prefix}static/soccer/teamLeagues.json") as fh:
 		teamLeagues = json.load(fh)
 
-	teamPaths = {}
-	for team in teamLeagues:
-		if type(team) is not str:
-			continue
-		t = team.replace("-"," ")
-		teamPaths[convertTeam(t)] = f"{teamLeagues[team]}/{team}"
+	with open(f"{prefix}static/soccer/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	with open(f"{prefix}static/soccer/roster.json") as fh:
+		roster = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -3202,6 +3204,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 		"espn": espnLines,
 		#"bv": bvLines
 	}
+
+	today = str(datetime.now())[:10]
+	leagues = {}
+	for league in schedule[today]:
+		for game in schedule[today][league]:
+			leagues[game] = league
 
 	evData = {}
 	games = []
@@ -3237,6 +3245,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 			handicaps = {}
 			for book in lines:
 				lineData = lines[book]
+
 				if game in lineData and prop in lineData[game]:
 					if type(lineData[game][prop]) is not dict:
 						handicaps[(" ", " ")] = ""
@@ -3271,6 +3280,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 						lineData = lines[book]
 						if game in lineData and prop in lineData[game]:
 							#print(book, game, prop, handicap)
+							if book == "cz" and prop == "player_tackles":
+								#continue
+								pass
+
 							if type(lineData[game][prop]) is str:
 								val = lineData[game][prop]
 							else:
@@ -3406,47 +3419,44 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 							devig(evData, key, pn, line, prop=prop, sharp=True)
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
-							print(key)
+							#print(key)
 							continue
 						if float(evData[key]["ev"]) > 0:
 							#print(evData[key]["ev"], game, prop, handicap, int(line), ou, evBook, "\n\t", l)
 							pass
 
 
-						team = hit = log = ""
-						if player:
-							for t in [team1,team2]:
-								if t not in teamPaths:
-									continue
-								path = teamPaths[t]
-								if os.path.exists(f"static/soccerreference/{path}.json"):
-									with open(f"static/soccerreference/{path}.json") as fh:
-										stats = json.load(fh)
-									if player in stats.get("playerStats", ""):
-										team = t
+						team = hit = hitL10 = log = ""
+						if player and player in roster and game in leagues:
+							potentialTeams = roster[player]
+							league = leagues[game]
+							away, home = map(str, game.split(" v "))
+							
+							if away in potentialTeams:
+								team = away
+							elif home in potentialTeams:
+								team = home
+							
+							leagueArg = league.replace(" ", "_")
+							tArg = team.replace(" ", "_")
+							path = f"static/soccer/stats/{leagueArg}/{tArg}.json"
+							if team and os.path.exists(path):
+								#print(game, prop, player)
+								with open(path) as fh:
+									stats = json.load(fh)
 
-										tot = stats["playerStats"][player]["tot"]
-										p = ""
-										if prop == "player_shots_on_target":
-											p = "sot"
-										elif prop == "player_shots":
-											p = "shots"
-										elif prop == "atgs":
-											p = "g"
-										elif prop == "assist":
-											p = "goalassists"
-
-										if p and p in tot:
-											arr = tot[p].split(",")
-											log = ",".join(arr[-10:])
-											hit = len([x for x in arr if int(x) > float(playerHandicap)]) * 100 / len(arr)
-											hit = round(hit, 2)
-										break
-
+								p = prop.replace("player_", "")
+								if player in stats and p in stats[player]:
+									arr = stats[player][p].split(",")
+									arr = [x for x in arr if x != ""]
+									log = ",".join(arr[-10:])
+									hit = len([x for x in arr if int(x) > float(playerHandicap)]) * 100 / len(arr)
+									hitL10 = len([x for x in arr[-10:] if int(x) > float(playerHandicap)]) * 100 / len(arr[-10:])
 
 						evData[key]["game"] = game
 						evData[key]["team"] = team
 						evData[key]["hit"] = hit
+						evData[key]["hitL10"] = hitL10
 						evData[key]["log"] = log
 						evData[key]["player"] = player
 						evData[key]["book"] = evBook
@@ -3519,10 +3529,16 @@ def printEV(propArg):
 	#with open("static/soccer/atgs.csv", "w") as fh:
 	#	fh.write(output)
 
-	output = "\t".join(["EV", "EV Book", "Game", "Player", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN", "% Over", "Splits"]) + "\n"
+	output = "\t".join(["EV", "EV Book", "Imp", "Game", "Player", "Prop", "O/U", "FD", "DK", "Bet365", "CZ", "Kambi", "ESPN", "L10% Over", "% Over", "Splits"]) + "\n"
 	for row in sorted(data, reverse=True):
 		if "player_" not in row[-1]["prop"] and row[-1]["prop"] not in ["assist"]:
 			continue
+		implied = 0
+		if row[-1]["line"] > 0:
+			implied = 100 / (row[-1]["line"] + 100)
+		else:
+			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
+		implied *= 100
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
@@ -3531,8 +3547,8 @@ def printEV(propArg):
 		teamGame = row[-1]["team"]
 		if not teamGame:
 			teamGame = row[-1]["game"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), teamGame, row[-1]["handicap"].title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), f"{round(implied)}%", teamGame, row[-1]["handicap"].title(), row[-1]["prop"].replace("player_", ""), ou]
+		for book in ["fd", "dk", "365", "cz", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -3540,12 +3556,17 @@ def printEV(propArg):
 		try:
 			hit = round(float(row[-1]['hit']))
 		except:
+			continue
 			hit = "-"
-		arr.extend([f"{hit}%", row[-1]['log']])
+		try:
+			hitL10 = round(float(row[-1]['hitL10']))
+		except:
+			hitL10 = "-"
+		arr.extend([f"{hitL10}%", f"{hit}%", row[-1]['log']])
 		output += "\t".join([str(x) for x in arr])+"\n"
 
-	#with open("static/soccer/playerProps.csv", "w") as fh:
-	#	fh.write(output)
+	with open("static/soccer/playerProps.csv", "w") as fh:
+		fh.write(output)
 
 	output = "\t".join(["EV", "EV Book", "Game", "Prop", "O/U", "FD", "DK", "MGM", "Bet365", "CZ", "PN", "Kambi", "ESPN"]) + "\n"
 	for row in sorted(data, reverse=True):
