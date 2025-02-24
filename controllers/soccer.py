@@ -3205,7 +3205,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 		#"bv": bvLines
 	}
 
-	today = str(datetime.now())[:10]
+	today = str(datetime.now() + timedelta(days=1))[:10]
 	leagues = {}
 	for league in schedule[today]:
 		for game in schedule[today][league]:
@@ -3313,10 +3313,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 							if not o or o == "-" or "odds" in o.lower():
 								continue
 
-							#print(prop, player, o)
-							highestOdds.append(int(o.replace("+", "")))
-							odds.append(ou)
-							books.append(book)
+							try:
+								highestOdds.append(int(o.replace("+", "")))
+								odds.append(ou)
+								books.append(book)
+							except:
+								continue
 
 					if len(books) < 2:
 						continue
@@ -3556,7 +3558,7 @@ def printEV(propArg):
 		try:
 			hit = round(float(row[-1]['hit']))
 		except:
-			continue
+			#continue
 			hit = "-"
 		try:
 			hitL10 = round(float(row[-1]['hitL10']))

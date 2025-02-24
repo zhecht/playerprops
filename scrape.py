@@ -479,6 +479,7 @@ async def write365(sport=None, keep=None):
 	elif sport == "soccer":
 		#urls = ["https://www.nj.bet365.com/?_h=RZ9RUwb5FXe3IH58lQH52Q%3D%3D&btsffd=1#/AC/B1/C1/D1002/G10236/J99/Q1/F^24/N5/", "https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
 		urls = ["https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
+		urls = ["https://www.nj.bet365.com"]
 	elif sport == "ncaab":
 		urls = ["https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D48/E1453/F10/N1/", "https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D516/E181335/F516/N2/", "https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D48/E928/F40/N4/"]
 		#urls = ["https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D516/E181335/F516/N2/", "https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D48/E928/F40/N4/"]
@@ -493,11 +494,33 @@ async def write365(sport=None, keep=None):
 			browser = await uc.start(no_sandbox=True)
 		page = await browser.get(url)
 
-		await page.wait_for(selector=".srb-MarketSelectionButton-selected")
-
 		reject = await page.query_selector(".ccm-CookieConsentPopup_Reject")
 		if reject:
 			await reject.mouse_click()
+
+		if sport == "soccer":
+			await page.wait_for(selector=".wn-PillItem")
+			img = await page.query_selector("img[alt='Upcoming Soccer']")
+			await img.parent.mouse_click()
+			await page.wait_for(selector=".srb-MarketSelectionAllButton_Label")
+
+			# change to 24h
+			x = await page.query_selector(".sph-MultiLevelDropDown")
+			await x.mouse_click()
+			time.sleep(0.2)
+			print(x.children)
+			time.sleep(30)
+
+			x = await page.query_selector(".srb-MarketSelectionAllButton_Label")
+			await x.mouse_click()
+			time.sleep(0.5)
+			x = await page.query_selector("div[data-content=Player]")
+			await x.mouse_click()
+			time.sleep(0.5)
+			x = await page.query_selector(".srb-MarketSelectionPopupItem")
+			await x.mouse_click()
+		
+		await page.wait_for(selector=".srb-MarketSelectionButton-selected")
 
 		btns = await page.query_selector_all(".srb-MarketSelectionButton")
 		for btnIdx in range(0, len(btns)):
@@ -778,6 +801,7 @@ async def write365(sport=None, keep=None):
 						}
 				# alt
 				elif prop not in ["atgs", "player_passes"] and "o/u" not in fullProp and "over/under" not in fullProp and fullProp not in ["points low", "points high"]:
+					print("HERE",prop)
 					if prop not in data[game]:
 						data[game][prop] = {}
 
@@ -2273,7 +2297,7 @@ async def writeSoccerFD(keep, league, tomorrow):
 
 	leagues = [base+url]
 	leagues = ["argentinian-primera-division","australian-a-league-men's","austrian-bundesliga","azerbaijan-premier-league","belgian-first-division-a","bosnia-and-herzegovina---premier-league","bulgarian-a-pfg","colombian-primera-a","costa-rican-primera-division","croatian-1-hnl","cyprus---1st-division","czech-1-liga", "ecuador-serie-a","english-premier-league", "english-championship", "english-fa-cup", "english-football-league-cup","english-league-1", "english-league-2", "french-ligue-1", "french-ligue-2", "german-bundesliga", "german-bundesliga-2", "greek-super-league", "guatemalan-liga-nacional", "hungarian-nb-i", "fifa-world-cup", "uefa-nations-league", "international-friendlies", "uefa-champions-league", "uefa-europa-league", "fifa-club-world-cup", "uefa-europa-conference-league", "irish-premier-division", "italian-serie-a", "italian-serie-b", "italian-cup", "maltese-premier-league", "mexican-liga-mx", "dutch-eredivisie", "dutch-cup", "northern-irish-premiership", "polish-ekstraklasa", "portuguese-cup", "portuguese-primeira-liga", "romanian-liga-i", "scottish-premiership", "serbian-first-league", "serbian-super-league", "slovakian-superliga", "south-africa---premier-division", "spanish-la-liga", "spanish-segunda-division", "swiss-super-league", "turkish-super-league", "wales---premiership"]
-	#leagues = leagues[leagues.index("french-ligue-1"):]
+	#leagues = leagues[leagues.index("colombian-primera-a"):]
 	if league:
 		leagues = [league]
 	browser = await uc.start(no_sandbox=True)
@@ -3163,7 +3187,7 @@ async def writeSoccerDK(keep, league, tomorrow):
 	"""
 
 	urls = ["australia---league-a", "austria---bundesliga", "azerbaijan---premier", "belgium---first-division-a", "bolivia---premiera", "bulgaria---first-league", "caf-champions-league", "champions-league", "champions-league-women", "colombia---primera", "costa-rica---primera-div", "croatia---1.hnl", "cyprus---1st-div", "czech-republic---first-league", "ecuador---primera-a", "england---championship", "english-football-league-cup", "english-fa-cup", "england---league-one", "england---league-two", "england---premier-league", "europa-conference-league", "europa-league", "france---ligue-1", "france---ligue-2", "germany---2.bundesliga", "germany---1.bundesliga", "greece---super-league", "guatemala---liga-nacional", "honduras---liga-nacional", "hungary---nb-i", "india---i-league", "israel---premier-league", "italy-cup", "italy---serie-a", "italy---serie-b", "mexico---liga-mx", "netherlands-cup", "netherlands---eredivisie", "northern-ireland---premier", "poland---ekstraklasa", "portugal-cup", "portugal---primeira-liga", "romania---liga-1", "scotland---premiership", "serbia---superliga", "south-africa---premier", "spain---la-liga", "spain---segunda", "swiss---super-league", "turkey---super-ligi", "uefa-nations-league", "wales---premier", "world-cup-2026"]
-	#urls = urls[urls.index("champions-league"):]
+	#urls = urls[urls.index("mexico---liga-mx"):]
 	if league:
 		urls = [league]
 

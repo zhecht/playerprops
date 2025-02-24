@@ -14,13 +14,12 @@ async def writeMatches(date=None):
 	with open("static/soccer/links.json") as fh:
 		links = json.load(fh)
 
-	today = date
-	if not today:
-		today = str(datetime.now())[:10]
+	if not date:
+		date = str(datetime.now())[:10]
 
-	schedule[today] = {}
+	schedule[date] = {}
 
-	url = "https://fbref.com/en/matches/"
+	url = f"https://fbref.com/en/matches/{date}"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
 
@@ -31,8 +30,8 @@ async def writeMatches(date=None):
 		league = report.parent.parent.children[0].children[0].children[0].href.split("/")[-1].lower().replace("-", " ").replace(" stats", "")
 		if league not in links:
 			links[league] = {}
-		if league not in schedule[today]:
-			schedule[today][league] = []
+		if league not in schedule[date]:
+			schedule[date][league] = []
 
 		for td in report.parent.children:
 			if "home_team" in td.attributes:
@@ -41,10 +40,13 @@ async def writeMatches(date=None):
 				awayLink = td.children[0]
 				break
 
-		home = convertSoccer(homeLink.href.split("/")[-1].lower().replace("-", " ").replace(" stats", ""))
-		away = convertSoccer(awayLink.href.split("/")[-1].lower().replace("-", " ").replace(" stats", ""))
+		try:
+			home = convertSoccer(homeLink.href.split("/")[-1].lower().replace("-", " ").replace(" stats", ""))
+			away = convertSoccer(awayLink.href.split("/")[-1].lower().replace("-", " ").replace(" stats", ""))
+		except:
+			continue
 		game = f"{home} v {away}"
-		schedule[today][league].append(game)
+		schedule[date][league].append(game)
 		links[league][home] = homeLink.href
 		links[league][away] = awayLink.href
 
@@ -169,22 +171,26 @@ async def writeStats(leagueArg, teamArg):
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
+	parser.add_argument("--date", "-d")
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--league", "-l")
 	parser.add_argument("--matches", action="store_true")
+	parser.add_argument("--all", action="store_true")
 	parser.add_argument("--stats", action="store_true")
 	parser.add_argument("--today", action="store_true")
 
 	args = parser.parse_args()
 
 	if args.matches:
-		uc.loop().run_until_complete(writeMatches())
+		uc.loop().run_until_complete(writeMatches(args.date))
 
 	if args.stats:
-		if args.today:
+		if args.today or args.all:
 			with open("static/soccer/schedule.json") as fh:
 				schedule = json.load(fh)
 			today = str(datetime.now())[:10]
+			if args.date:
+				today = args.date
 			for league in schedule[today]:
 				for game in schedule[today][league]:
 					for team in game.split(" v "):
