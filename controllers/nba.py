@@ -1852,7 +1852,10 @@ def averageOdds(odds):
 	return ou
 
 def getFairValue(ou, method=None):
-	over = int(ou.split("/")[0])
+	try:
+		over = int(ou.split("/")[0])
+	except:
+		return
 	if over > 0:
 		impliedOver = 100 / (over+100)
 	else:
@@ -2423,9 +2426,9 @@ def writeRankings():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 		ranking = ids[idx]
 
-		for row in soup.find("table").findAll("tr")[1:]:
-			tds = row.findAll("td")
-			team = convertTeamRankingsTeam(row.findAll("a")[0].text.lower())
+		for row in soup.find("table").find_all("tr")[1:]:
+			tds = row.find_all("td")
+			team = convertTeamRankingsTeam(row.find_all("a")[0].text.lower())
 
 			if team not in rankings:
 				rankings[team] = {
@@ -2470,7 +2473,7 @@ def writeSGP():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		data = "{}"
-		for script in soup.findAll("script"):
+		for script in soup.find_all("script"):
 			if not script.string:
 				continue
 			if "__INITIAL_STATE" in script.string:
@@ -3019,12 +3022,12 @@ def writeLineups(tmrw=None):
 
 	lineups = {}
 	rotoTeams = []
-	for game in soup.findAll("div", class_="lineup"):
+	for game in soup.find_all("div", class_="lineup"):
 		if "is-tools" in game.get("class"):
 			continue
-		teams = game.findAll("a", class_="lineup__team")
-		lineupList = game.findAll("ul", class_="lineup__list")
-		statusList = game.findAll("li", class_="lineup__status")
+		teams = game.find_all("a", class_="lineup__team")
+		lineupList = game.find_all("ul", class_="lineup__list")
+		statusList = game.find_all("li", class_="lineup__status")
 		for idx, teamLink in enumerate(teams):
 			team = teamLink.get("href").split("-")[-1]
 			rotoTeams.append(team)
@@ -3040,7 +3043,7 @@ def writeLineups(tmrw=None):
 				}
 			except:
 				continue
-			for playerIdx, li in enumerate(lineupList[idx].findAll("li", class_="lineup__player")):
+			for playerIdx, li in enumerate(lineupList[idx].find_all("li", class_="lineup__player")):
 				player = " ".join(li.find("a").get("href").split("/")[-1].split("-")[:-1])
 				player = parsePlayer(player)
 				pos = li.find("div").text
@@ -3938,7 +3941,7 @@ def writeMatchups():
 
 	data = {}
 	rankings = {}
-	for tr in soup.find("table", id="data-table").findAll("tr")[1:]:
+	for tr in soup.find("table", id="data-table").find_all("tr")[1:]:
 		period = "szn"
 		if "GC-7" in tr.get("class"):
 			period = "L7"
@@ -3969,7 +3972,7 @@ def writeMatchups():
 
 		data[team][period][pos] = {}
 		props = ["pts", "reb", "ast", "3ptm", "stl", "blk", "to", "fg%", "ft%"]
-		for td, prop in zip(tr.findAll("td")[1:], props):
+		for td, prop in zip(tr.find_all("td")[1:], props):
 			key = f"{period}_{pos}_{prop}"
 			if key not in rankings:
 				rankings[key] = []

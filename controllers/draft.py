@@ -91,7 +91,7 @@ def writeDepthCharts():
         soup = BS(open(outfile, 'rb').read(), "lxml")
 
         pos = []
-        for row in soup.find("tbody").findAll("tr"):
+        for row in soup.find("tbody").find_all("tr"):
             p = row.text.strip().lower()
             if p == "wr":
                 if "wr1" not in pos:
@@ -102,9 +102,9 @@ def writeDepthCharts():
                     p = "wr3"
             pos.append(p)
 
-        for row, p in zip(soup.findAll("tbody")[1].findAll("tr"), pos):
+        for row, p in zip(soup.find_all("tbody")[1].find_all("tr"), pos):
             data[team][p] = []
-            for a in row.findAll("a"):
+            for a in row.find_all("a"):
                 player = parsePlayer(a.text)
                 data[team][p].append(player)
 
@@ -232,15 +232,15 @@ def writeNumberfire():
     soup = BS(open(outfile, 'rb').read(), "lxml")
 
     players = []
-    for row in soup.find("table", class_="projection-table").find("tbody").findAll("tr"):
+    for row in soup.find("table", class_="projection-table").find("tbody").find_all("tr"):
         player = row.find("span").text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
         players.append(player)
 
     data = {}
-    statTable = soup.findAll("table", class_="projection-table")[1]
-    for row, player in zip(statTable.find("tbody").findAll("tr"), players):
+    statTable = soup.find_all("table", class_="projection-table")[1]
+    for row, player in zip(statTable.find("tbody").find_all("tr"), players):
         data[player] = {}
-        for td in row.findAll("td")[4:]:
+        for td in row.find_all("td")[4:]:
             hdr = td.get("class")[0]
             data[player][hdr] = td.text.strip()
 
@@ -258,11 +258,11 @@ def writeADP():
     soup = BS(open(outfile, 'rb').read(), "lxml")
 
     adp = {}
-    for row in soup.find("table", id="data").findAll("tr")[1:]:
+    for row in soup.find("table", id="data").find_all("tr")[1:]:
         player = parsePlayer(row.find("a").text)
         adp[player] = {}
         for idx, book in zip([3,4,5], ["yahoo", "sleeper", "rtsports"]):
-            adp[player][book] = row.findAll("td")[idx].text
+            adp[player][book] = row.find_all("td")[idx].text
 
     with open(f"{prefix}static/draft/adp.json", "w") as fh:
         json.dump(adp, fh, indent=4)
@@ -283,25 +283,25 @@ def writeFantasyPros():
 
         headers = []
         mainHeader = []
-        for td in table.find("tr").findAll("td")[1:]:
+        for td in table.find("tr").find_all("td")[1:]:
             mainHeader.extend([td.find("b").text.lower().replace("rushing", "rush").replace("receiving", "rec").replace("passing", "pass")] * int(td.get("colspan")))
 
         i = 1
         if pos in ["k", "dst"]:
             i = 0
-        for idx, th in enumerate(table.findAll("tr")[i].findAll("th")[1:]):
+        for idx, th in enumerate(table.find_all("tr")[i].find_all("th")[1:]):
             hdr = th.text.strip().lower()
             if mainHeader:
                 hdr = mainHeader[idx]+"_"+hdr
             headers.append(hdr.replace("_yds", "_yd").replace("_tds", "_td").replace("rec_rec", "rec").replace("pass_ints", "int"))
 
-        for row in table.findAll("tr")[2:]:
+        for row in table.find_all("tr")[2:]:
             player = row.find("td").find("a").text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "")
             if player not in data:
                 data[player] = {
                     "pos": pos
                 }
-            for col, hdr in zip(row.findAll("td")[1:], headers):
+            for col, hdr in zip(row.find_all("td")[1:], headers):
                 data[player][hdr] = float(col.text.strip().replace(",", ""))
 
     with open(f"{prefix}static/nflfutures/fpros.json", "w") as fh:

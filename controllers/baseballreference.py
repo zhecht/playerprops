@@ -487,7 +487,7 @@ def write_schedule(date):
 
 	date = ""
 
-	for table in soup.findAll("div", class_="ResponsiveTable"):
+	for table in soup.find_all("div", class_="ResponsiveTable"):
 		if table.find("div", class_="Table__Title"):
 			if "spring training" in table.find("div", class_="Table__Title").text.lower():
 				continue
@@ -507,11 +507,11 @@ def write_schedule(date):
 			scores[date] = {}
 
 		seen = {}
-		for row in table.findAll("tr")[1:]:
-			tds = row.findAll("td")
+		for row in table.find_all("tr")[1:]:
+			tds = row.find_all("td")
 			try:
-				awayTeam = tds[0].findAll("a")[-1].get("href").split("/")[-2]
-				homeTeam = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+				awayTeam = tds[0].find_all("a")[-1].get("href").split("/")[-2]
+				homeTeam = tds[1].find_all("a")[-1].get("href").split("/")[-2]
 			except:
 				continue
 
@@ -591,7 +591,7 @@ def writeYears():
 			select = soup.find("div", class_="gamelog").find("select", class_="dropdown__select")
 			if not select:
 				continue
-			years = [y.text for y in select.findAll("option")]
+			years = [y.text for y in select.find_all("option")]
 
 			for year in years:
 				if year == currYear:
@@ -600,7 +600,7 @@ def writeYears():
 					#continue
 					pass
 				if len(year) != 4:
-					for title in soup.find("div", class_="gamelog").findAll("div", class_="Table__Title"):
+					for title in soup.find("div", class_="gamelog").find_all("div", class_="Table__Title"):
 						if "regular" in title.text.lower():
 							year = title.text.lower()[:4]
 					if len(year) != 4:
@@ -627,7 +627,7 @@ def writeYears():
 
 				headers = []
 				table = soup.find("div", class_="gamelog")
-				rows = table.findAll("tr")
+				rows = table.find_all("tr")
 				for rowIdx, row in enumerate(rows):
 					try:
 						title = row.findPrevious("div", class_="Table__Title").text.lower()
@@ -636,15 +636,15 @@ def writeYears():
 					if "regular season" not in title:
 						continue
 					if not headers and row.text.lower().startswith("date"):
-						tds = row.findAll("td")[3:]
+						tds = row.find_all("td")[3:]
 						if not tds:
-							tds = row.findAll("th")[3:]
+							tds = row.find_all("th")[3:]
 						for td in tds:
 							headers.append(td.text.strip().lower())
 					elif "totals" in row.text.lower() or rowIdx == len(rows) - 1:
 						if "totals" not in row.text.lower() and "totals_row" not in row.get("class"):
 							continue
-						for idx, td in enumerate(row.findAll("td")[1:]):
+						for idx, td in enumerate(row.find_all("td")[1:]):
 							header = headers[idx]
 							try:
 								val = float(td.text.strip())
@@ -664,12 +664,12 @@ def writeYears():
 							yearStats[year][team][player]["tot"]["1b"] = sum(yearStats[year][team][player]["splits"]["1b"])
 							yearStats[year][team][player]["tot"]["h+r+rbi"] = sum(yearStats[year][team][player]["splits"]["h+r+rbi"])
 					else:
-						tds = row.findAll("td")
+						tds = row.find_all("td")
 						if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
 							date = str(datetime.datetime.strptime(tds[0].text.strip()+"/"+year, "%a %m/%d/%Y")).split(" ")[0]
 							awayHome = "A" if "@" in tds[1].text else "H"
 							try:
-								opp = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+								opp = tds[1].find_all("a")[-1].get("href").split("/")[-2]
 							except:
 								continue
 
@@ -928,8 +928,8 @@ def writeBirthdays():
 		call(["curl", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for row in soup.findAll("tr")[2:]:
-			tds = row.findAll("td")
+		for row in soup.find_all("tr")[2:]:
+			tds = row.find_all("td")
 			if tds[-1].text != "Active":
 				continue
 
@@ -978,13 +978,13 @@ def writeRoster():
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for table in soup.findAll("table"):
-			for row in table.findAll("tr")[1:]:
-				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
-				fullName = parsePlayer(row.findAll("td")[1].find("a").text)
+		for table in soup.find_all("table"):
+			for row in table.find_all("tr")[1:]:
+				nameLink = row.find_all("td")[1].find("a").get("href").split("/")
+				fullName = parsePlayer(row.find_all("td")[1].find("a").text)
 				playerId = int(nameLink[-1])
 				playerIds[team][fullName] = playerId
-				roster[team][fullName] = row.findAll("td")[2].text.strip()
+				roster[team][fullName] = row.find_all("td")[2].text.strip()
 
 	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
@@ -1047,10 +1047,10 @@ def write_player_rankings():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 		ranking = ids[idx]
 
-		for row in soup.find("table").findAll("tr")[1:]:
-			tds = row.findAll("td")
+		for row in soup.find("table").find_all("tr")[1:]:
+			tds = row.find_all("td")
 			player = row.find("a").text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "").split(" (")[0]
-			team = convertTeamRankingsTeam(row.findAll("a")[1].text.lower())
+			team = convertTeamRankingsTeam(row.find_all("a")[1].text.lower())
 
 			if team not in rankings:
 				rankings[team] = {}
@@ -1092,8 +1092,8 @@ def write_rankings():
 		ranking = ids[idx]
 		lastYearRanks = []
 
-		for row in soup.find("table").findAll("tr")[1:]:
-			tds = row.findAll("td")
+		for row in soup.find("table").find_all("tr")[1:]:
+			tds = row.find_all("td")
 			team = convertTeamRankingsTeam(row.find("a").text.lower())
 			if team not in rankings:
 				rankings[team] = {}
@@ -1185,33 +1185,33 @@ def write_batting_pitches():
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	headers = []
-	for td in soup.find("tr").findAll("th")[1:]:
+	for td in soup.find("tr").find_all("th")[1:]:
 		headers.append(td.text.lower())
 
 	battingPitches = {}
-	for tr in soup.findAll("tr")[1:]:
+	for tr in soup.find_all("tr")[1:]:
 		try:
 			team = convertRotoTeam(tr.find("th").find("a").get("href").split("/")[-2].lower())
 		except:
 			continue
 		j = {}
-		for td, hdr in zip(tr.findAll("td"), headers):
+		for td, hdr in zip(tr.find_all("td"), headers):
 			j[hdr] = td.text
 
 		battingPitches[team] = j
 
 	playerBattingPitches = {}
 	referenceIds = {}
-	for comment in soup.findAll(text=lambda text:isinstance(text, Comment)):
+	for comment in soup.find_all(text=lambda text:isinstance(text, Comment)):
 		if "div_players_pitches_batting" in comment:
 			soup = BS(comment, "lxml")
 
 			headers = []
-			for th in soup.find("tr").findAll("th")[1:]:
+			for th in soup.find("tr").find_all("th")[1:]:
 				headers.append(th.text.lower())
 
-			for tr in soup.findAll("tr")[1:]:
-				tds = tr.findAll("td")
+			for tr in soup.find_all("tr")[1:]:
+				tds = tr.find_all("td")
 				if not tds or not tr.find("a"):
 					continue
 				j = {}
@@ -1245,32 +1245,32 @@ def write_pitching_pitches():
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	headers = []
-	for td in soup.find("tr").findAll("th")[1:]:
+	for td in soup.find("tr").find_all("th")[1:]:
 		headers.append(td.text.lower())
 
 	pitchingPitches = {}
-	for tr in soup.findAll("tr")[1:]:
+	for tr in soup.find_all("tr")[1:]:
 		try:
 			team = convertRotoTeam(tr.find("th").find("a").get("href").split("/")[-2].lower())
 		except:
 			continue
 		j = {}
-		for td, hdr in zip(tr.findAll("td"), headers):
+		for td, hdr in zip(tr.find_all("td"), headers):
 			j[hdr] = td.text
 
 		pitchingPitches[team] = j
 
 	playerPitchingPitches = {}
-	for comment in soup.findAll(text=lambda text:isinstance(text, Comment)):
+	for comment in soup.find_all(text=lambda text:isinstance(text, Comment)):
 		if "div_players_pitches_pitching" in comment:
 			soup = BS(comment, "lxml")
 
 			headers = []
-			for th in soup.find("tr").findAll("th")[1:]:
+			for th in soup.find("tr").find_all("th")[1:]:
 				headers.append(th.text.lower())
 
-			for tr in soup.findAll("tr")[1:]:
-				tds = tr.findAll("td")
+			for tr in soup.find_all("tr")[1:]:
+				tds = tr.find_all("td")
 				if not tds or not tr.find("a"):
 					continue
 				j = {}
@@ -1358,7 +1358,7 @@ def convertSavantTeam(team):
 	elif team == "royals":
 		return "kc"
 	elif team == "athletics":
-		return "oak"
+		return "ath"
 	elif team == "rays":
 		return "tb"
 	elif team == "blue jays":
@@ -1415,7 +1415,7 @@ def writeSavantParkFactors():
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	data = "{}"
-	for script in soup.findAll("script"):
+	for script in soup.find_all("script"):
 		if "var data" in script.string:
 			m = re.search(r"var data = \[{(.*?)}\];", script.string)
 			if m:
@@ -1458,7 +1458,7 @@ def writeSavantExpected():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		data = "{}"
-		for script in soup.findAll("script"):
+		for script in soup.find_all("script"):
 			if "var data" in script.string:
 				m = re.search(r"var data = \[{(.*?)}\];", script.string)
 				if m:
@@ -1497,7 +1497,7 @@ def writeSavantPitcherAdvanced():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		data = "{}"
-		for script in soup.findAll("script"):
+		for script in soup.find_all("script"):
 			if "var data" in script.string:
 				m = re.search(r"var data = \[{(.*?)}\];", script.string)
 				if m:
@@ -1565,7 +1565,7 @@ def writeSavantExpectedHR():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		data = "{}"
-		for script in soup.findAll("script"):
+		for script in soup.find_all("script"):
 			if "var data" in script.string:
 				m = re.search(r"var data = \[{(.*?)}\];", script.string)
 				if m:
@@ -1636,7 +1636,7 @@ def writeTrades():
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	data = "{}"
-	for script in soup.findAll("script"):
+	for script in soup.find_all("script"):
 		if script.string and '"transactions"' in script.string:
 			m = re.search(r"transactions\":\[{(.*?)}}\],", script.string)
 			if m:
@@ -1686,18 +1686,18 @@ def writeBaseballReferencePH():
 		call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 		betweenRest = 0
-		for tr in soup.find("table", id="batting_gamelogs").find("tbody").findAll("tr"):
+		for tr in soup.find("table", id="batting_gamelogs").find("tbody").find_all("tr"):
 			if tr.get("class") and ("thead" in tr.get("class") or "partial_table" in tr.get("class")):
 				continue
-			inngs = tr.findAll("td")[7].text.lower()
+			inngs = tr.find_all("td")[7].text.lower()
 			ph[team][player]["games"] += 1
 			if "gs" in inngs:
 				ph[team][player]["phf"] += 1
 			elif "cg" not in inngs:
 				ph[team][player]["ph"] += 1
 
-			if "(" in tr.findAll("td")[1].text:
-				daysSinceLast = int(tr.findAll("td")[1].text.split("(")[-1][:-1])
+			if "(" in tr.find_all("td")[1].text:
+				daysSinceLast = int(tr.find_all("td")[1].text.split("(")[-1][:-1])
 				if daysSinceLast == 1:
 					ph[team][player]["rest"].append(betweenRest)
 				betweenRest = 0

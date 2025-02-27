@@ -2896,25 +2896,25 @@ def writeFantasyProsProjections():
 
 		headers = []
 		mainHeader = []
-		for td in table.find("tr").findAll("td")[1:]:
+		for td in table.find("tr").find_all("td")[1:]:
 			mainHeader.extend([td.find("b").text.lower().replace("rushing", "rush").replace("receiving", "rec").replace("passing", "pass")] * int(td.get("colspan")))
 
 		i = 1
 		if pos in ["k", "dst"]:
 			i = 0
-		for idx, th in enumerate(table.findAll("tr")[i].findAll("th")[1:]):
+		for idx, th in enumerate(table.find_all("tr")[i].find_all("th")[1:]):
 			hdr = th.text.strip().lower()
 			if mainHeader:
 				hdr = mainHeader[idx]+"_"+hdr
 			headers.append(hdr.replace("_yds", "_yd").replace("_tds", "_td").replace("rec_rec", "rec").replace("pass_ints", "int"))
 
-		for row in table.findAll("tr")[2:]:
+		for row in table.find_all("tr")[2:]:
 			player = parsePlayer(row.find("td").find("a").text)
 			if player not in data:
 				data[player] = {
 					"pos": pos
 				}
-			for col, hdr in zip(row.findAll("td")[1:], headers):
+			for col, hdr in zip(row.find_all("td")[1:], headers):
 				data[player][hdr] = float(col.text.strip().replace(",", ""))
 
 	with open(f"{prefix}static/nfl/fprosProjections.json", "w") as fh:
@@ -2942,7 +2942,7 @@ def writeFantasyPros():
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
 			js = "{}"
-			for script in soup.findAll("script"):
+			for script in soup.find_all("script"):
 				if "var ecrData" in script.text:
 					m = re.search(r"var ecrData = {(.*?)};", script.text)
 					if m:
@@ -2971,7 +2971,7 @@ def writeFantasyPros():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		js = "{}"
-		for script in soup.findAll("script"):
+		for script in soup.find_all("script"):
 			if "var ecrData" in script.text:
 				m = re.search(r"var ecrData = {(.*?)};", script.text)
 				if m:

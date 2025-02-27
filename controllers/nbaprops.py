@@ -165,11 +165,11 @@ def writeLineups():
 	date = str(date)[:10]
 
 	lineups = {}
-	for game in soup.findAll("div", class_="lineup"):
+	for game in soup.find_all("div", class_="lineup"):
 		if "is-tools" in game.get("class"):
 			continue
-		teams = game.findAll("a", class_="lineup__team")
-		lineupList = game.findAll("ul", class_="lineup__list")
+		teams = game.find_all("a", class_="lineup__team")
+		lineupList = game.find_all("ul", class_="lineup__list")
 		for idx, teamLink in enumerate(teams):
 			team = teamLink.get("href").split("-")[-1]
 			if team == "was":
@@ -190,7 +190,7 @@ def writeLineups():
 			}
 			injured = False
 
-			for playerIdx, li in enumerate(lineupList[idx].findAll("li", class_="lineup__player")):
+			for playerIdx, li in enumerate(lineupList[idx].find_all("li", class_="lineup__player")):
 				player = " ".join(li.find("a").get("href").split("/")[-1].split("-")[:-1])
 				player = convertRotoPlayer(player)
 				pos = li.find("div").text

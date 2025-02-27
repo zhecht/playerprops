@@ -108,7 +108,7 @@ def write_stats(date):
 			headers = []
 			playerList = []
 			team = away
-			for idx, table in enumerate(soup.findAll("table")[1:9]):
+			for idx, table in enumerate(soup.find_all("table")[1:9]):
 				if idx in [2,4,6]:
 					playerList = []
 				if idx == 4:
@@ -118,7 +118,7 @@ def write_stats(date):
 					playerIds[team] = {}
 
 				playerIdx = 0
-				for row in table.findAll("tr"):
+				for row in table.find_all("tr"):
 					if idx in [0,2,4,6]:
 						# PLAYERS
 						if row.text.strip().lower() in ["skaters", "defensemen", "goalies"]:
@@ -141,7 +141,7 @@ def write_stats(date):
 						firstTd = row.find("td").text.strip().lower()
 						if firstTd in ["g", "sa"]:
 							headers = []
-							for td in row.findAll("td"):
+							for td in row.find_all("td"):
 								headers.append(td.text.strip().lower())
 							continue
 
@@ -151,7 +151,7 @@ def write_stats(date):
 							continue
 						playerIdx += 1
 						playerStats = {}
-						for tdIdx, td in enumerate(row.findAll("td")):
+						for tdIdx, td in enumerate(row.find_all("td")):
 							header = headers[tdIdx]
 							val = 0
 							if header in ["toi", "pptoi", "shtoi", "estoi"]:
@@ -321,15 +321,15 @@ def writeRankings():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		headers = []
-		for hdr in soup.findAll("th"):
+		for hdr in soup.find_all("th"):
 			headers.append(hdr.text.lower())
 
-		for row in soup.find("tbody").findAll("tr"):
+		for row in soup.find("tbody").find_all("tr"):
 			team = convertStatMuseTeam(row.find("td").text.lower())
 			rankings[team] = {
 				timePeriod: {}
 			}
-			for td, hdr in zip(row.findAll("td")[2:], headers[2:]):
+			for td, hdr in zip(row.find_all("td")[2:], headers[2:]):
 				rankings[team][timePeriod][hdr] = td.text
 
 	with open(f"{prefix}static/hockeyreference/rankings.json", "w") as fh:
@@ -396,10 +396,10 @@ def writePlayerIds():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		playerIds[team] = {}
-		for table in soup.findAll("table"):
-			for row in table.find("tbody").findAll("tr"):
-				pid = row.findAll("td")[1].find("a").get("href").split("/")[-1]
-				player = row.findAll("td")[1].find("a").text
+		for table in soup.find_all("table"):
+			for row in table.find("tbody").find_all("tr"):
+				pid = row.find_all("td")[1].find("a").get("href").split("/")[-1]
+				player = row.find_all("td")[1].find("a").text
 				player = f"{player[0].upper()}. {player.split(' ')[-1].title()}"
 				playerIds[team][player] = pid
 
@@ -439,15 +439,15 @@ def write_averages():
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
 			headers = []
-			for row in soup.findAll("tr"):
+			for row in soup.find_all("tr"):
 				if not headers and row.text.lower().startswith("date"):
-					tds = row.findAll("td")[3:]
+					tds = row.find_all("td")[3:]
 					if not tds:
-						tds = row.findAll("th")[3:]
+						tds = row.find_all("th")[3:]
 					for td in tds:
 						headers.append(td.text.strip().lower())
 				elif row.text.startswith("Totals"):
-					for idx, td in enumerate(row.findAll("td")[1:]):
+					for idx, td in enumerate(row.find_all("td")[1:]):
 						header = headers[idx]
 						if header in ["toi/g", "prod"]:
 							valSp = td.text.strip().split(":")
@@ -457,7 +457,7 @@ def write_averages():
 						averages[team][player][header] = val
 					averages[team][player]["gamesPlayed"] = gamesPlayed
 				else:
-					tds = row.findAll("td")
+					tds = row.find_all("td")
 					if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
 						if " 2/29" in tds[0].text.strip():
 							data = "2024-02-29"
@@ -508,7 +508,7 @@ def write_schedule(date):
 
 	date = ""
 
-	for table in soup.findAll("div", class_="ResponsiveTable"):
+	for table in soup.find_all("div", class_="ResponsiveTable"):
 		if table.find("div", class_="Table__Title"):
 			date = table.find("div", class_="Table__Title").text.strip()
 			date = str(datetime.datetime.strptime(date, "%A, %B %d, %Y"))[:10]
@@ -518,11 +518,11 @@ def write_schedule(date):
 		if date not in scores:
 			scores[date] = {}
 
-		for row in table.findAll("tr")[1:]:
-			tds = row.findAll("td")
+		for row in table.find_all("tr")[1:]:
+			tds = row.find_all("td")
 			try:
-				awayTeam = tds[0].findAll("a")[-1].get("href").split("/")[-2]
-				homeTeam = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+				awayTeam = tds[0].find_all("a")[-1].get("href").split("/")[-2]
+				homeTeam = tds[1].find_all("a")[-1].get("href").split("/")[-2]
 			except:
 				continue
 			boxscore = tds[2].find("a").get("href")

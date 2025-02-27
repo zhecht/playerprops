@@ -753,7 +753,7 @@ def writeSchedule(week):
 
 	schedule[week] = []
 
-	for table in soup.findAll("div", class_="ResponsiveTable"):
+	for table in soup.find_all("div", class_="ResponsiveTable"):
 		try:
 			date = table.find("div", class_="Table__Title").text.strip()
 			date = str(datetime.strptime(date, "%A, %B %d, %Y"))[:10]
@@ -764,10 +764,10 @@ def writeSchedule(week):
 			boxscores[week] = {}
 		if week not in scores:
 			scores[week] = {}
-		for row in table.findAll("tr")[1:]:
-			tds = row.findAll("td")
-			awayTeam = tds[0].findAll("a")[-1].get("href").split("/")[-2]
-			homeTeam = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+		for row in table.find_all("tr")[1:]:
+			tds = row.find_all("td")
+			awayTeam = tds[0].find_all("a")[-1].get("href").split("/")[-2]
+			homeTeam = tds[1].find_all("a")[-1].get("href").split("/")[-2]
 			score = tds[2].find("a").text.strip()
 			if ", " in score:
 				scoreSp = score.replace(" (2OT)", "").replace(" (OT)", "").split(", ")
@@ -807,13 +807,13 @@ def writeRosters():
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for table in soup.findAll("table"):
-			for row in table.findAll("tr")[1:]:
-				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
+		for table in soup.find_all("table"):
+			for row in table.find_all("tr")[1:]:
+				nameLink = row.find_all("td")[1].find("a").get("href").split("/")
 				fullName = nameLink[-1].replace("-", " ")
 				playerId = int(nameLink[-2])
 				playerIds[team][fullName] = playerId
-				roster[team][fullName] = row.findAll("td")[2].text.strip()
+				roster[team][fullName] = row.find_all("td")[2].text.strip()
 
 	with open(f"{prefix}static/profootballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
@@ -1106,15 +1106,15 @@ def writeAverages():
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
-			for table in soup.findAll("table")[:-1]:
+			for table in soup.find_all("table")[:-1]:
 				if "postseason" in table.text.strip().lower() or "preseason" in table.text.strip().lower():
 					continue
 				headers = []
-				for th in soup.findAll("tr")[1].findAll("th")[3:]:
+				for th in soup.find_all("tr")[1].find_all("th")[3:]:
 					headers.append(convertESPNHeader(th.get("title").lower()))
-				for row in table.findAll("tr")[2:]:
+				for row in table.find_all("tr")[2:]:
 					if row.text.lower().startswith("regular season stats"):
-						for idx, td in enumerate(row.findAll("td")[1:]):
+						for idx, td in enumerate(row.find_all("td")[1:]):
 							header = headers[idx]
 							val = td.text.strip().replace(",", "")
 							if "-" in val:
@@ -1127,9 +1127,9 @@ def writeAverages():
 
 						averages[team][player]["gamesPlayed"] = gamesPlayed
 					else:
-						tds = row.findAll("td")
+						tds = row.find_all("td")
 						if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
-							#opp = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+							#opp = tds[1].find_all("a")[-1].get("href").split("/")[-2]
 							dateStr = tds[0].text.strip()
 							if 1 <= int(dateStr.split(" ")[-1].split("/")[0]) <= 4:
 								dateStr += f"/{int(year)+1}"
@@ -1186,8 +1186,8 @@ def write_rankings():
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for row in soup.find("table").findAll("tr")[1:]:
-			tds = row.findAll("td")
+		for row in soup.find("table").find_all("tr")[1:]:
+			tds = row.find_all("td")
 			team = convertTeamRankingsTeam(row.find("a").text.lower())
 			if team not in rankings:
 				rankings[team] = {}

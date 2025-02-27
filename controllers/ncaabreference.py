@@ -190,9 +190,9 @@ def write_averages(teams = []):
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
-			for row in soup.findAll("tr"):
+			for row in soup.find_all("tr"):
 				if row.text.lower().startswith("total"):
-					for idx, td in enumerate(row.findAll("td")[1:]):
+					for idx, td in enumerate(row.find_all("td")[1:]):
 						header = headers[idx]
 						if header in ["fg", "3pt", "ft"]:
 							made, att = map(float, td.text.strip().split("-"))
@@ -203,7 +203,7 @@ def write_averages(teams = []):
 							averages[team][player][header] = val
 					averages[team][player]["gamesPlayed"] = gamesPlayed
 				else:
-					tds = row.findAll("td")
+					tds = row.find_all("td")
 					if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
 						date = str(datetime.datetime.strptime(tds[0].text.strip(), "%a %m/%d")).split(" ")[0][6:]
 						lastYearStats[team][player][date] = {}
@@ -278,12 +278,12 @@ def writeRosters():
 		if not soup.find("table"):
 			continue
 
-		for row in soup.find("table").findAll("tr")[1:]:
-			nameLink = row.findAll("td")[1].find("a").get("href").split("/")
+		for row in soup.find("table").find_all("tr")[1:]:
+			nameLink = row.find_all("td")[1].find("a").get("href").split("/")
 			fullName = nameLink[-1].replace("-", " ")
 			playerId = int(nameLink[-2])
 			playerIds[team][fullName] = playerId
-			roster[team][fullName] = row.findAll("td")[2].text.strip()
+			roster[team][fullName] = row.find_all("td")[2].text.strip()
 
 	with open(f"{prefix}static/ncaabreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
@@ -447,8 +447,8 @@ def writePlayerIds():
 		call(["curl", "-k", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for tr in soup.find("div", class_="ResponsiveTable").findAll("tr")[1:]:
-			td = tr.findAll("td")[1].find("a")
+		for tr in soup.find("div", class_="ResponsiveTable").find_all("tr")[1:]:
+			td = tr.find_all("td")[1].find("a")
 			playerIds[team][td.text.strip()] = int(td.get("href").split("/")[-2])
 
 		with open(f"{prefix}static/ncaabreference/playerIds.json", "w") as fh:
@@ -468,13 +468,13 @@ def writeColors():
 
 	colors = {}
 	css = ""
-	for link in [a.get("href") for a in soup.findAll("a", class_="team-button")]:
+	for link in [a.get("href") for a in soup.find_all("a", class_="team-button")]:
 		time.sleep(0.3)
 		outfile = "out"
 		call(["curl", "-k", link, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for teamLink in soup.findAll("a", class_="team-button"):
+		for teamLink in soup.find_all("a", class_="team-button"):
 			team = teamLink.text.lower().replace("'", "").replace(".", "").replace(")", "").replace("(", "").replace("&", "")
 			styles = {}
 			for style in teamLink.get("style").split(";"):

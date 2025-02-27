@@ -123,7 +123,7 @@ def writeBallparkpal():
 	"""
 
 def convertBPPTeam(team):
-	return team.replace("nationals", "wsh").replace("phillies", "phi").replace("twins", "min").replace("tigers", "det").replace("marlins", "mia").replace("reds", "cin").replace("cardinals", "stl").replace("rays", "tb").replace("braves", "atl").replace("pirates", "pit").replace("astros", "hou").replace("orioles", "bal").replace("blue jays", "tor").replace("guardians", "cle").replace("royals", "kc").replace("red sox", "bos").replace("cubs", "chc").replace("mets", "nym").replace("yankees", "nyy").replace("white sox", "chw").replace("rockies", "col").replace("brewers", "mil").replace("giants", "sf").replace("angels", "laa").replace("rangers", "tex").replace("athletics", "oak").replace("padres", "sd").replace("mariners", "sea").replace("dodgers", "lad").replace("dbacks", "ari")
+	return team.replace("nationals", "wsh").replace("phillies", "phi").replace("twins", "min").replace("tigers", "det").replace("marlins", "mia").replace("reds", "cin").replace("cardinals", "stl").replace("rays", "tb").replace("braves", "atl").replace("pirates", "pit").replace("astros", "hou").replace("orioles", "bal").replace("blue jays", "tor").replace("guardians", "cle").replace("royals", "kc").replace("red sox", "bos").replace("cubs", "chc").replace("mets", "nym").replace("yankees", "nyy").replace("white sox", "chw").replace("rockies", "col").replace("brewers", "mil").replace("giants", "sf").replace("angels", "laa").replace("rangers", "tex").replace("athletics", "ath").replace("padres", "sd").replace("mariners", "sea").replace("dodgers", "lad").replace("dbacks", "ari")
 
 def checkBPP():
 	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
@@ -171,12 +171,12 @@ def writeLineups(plays = []):
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	pitchers = {}
-	for table in soup.findAll("div", class_="starting-lineups__matchup"):
+	for table in soup.find_all("div", class_="starting-lineups__matchup"):
 		player = parsePlayer(table.find("a").text.strip())
 
 
 	data = {}
-	for table in soup.findAll("div", class_="starting-lineups__matchup"):
+	for table in soup.find_all("div", class_="starting-lineups__matchup"):
 		for idx, which in enumerate(["away", "home"]):
 			try:
 				team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari").replace("cws", "chw")
@@ -186,8 +186,8 @@ def writeLineups(plays = []):
 			if team in data:
 				continue
 			data[team] = []
-			pitchers[team] = parsePlayer(table.findAll("div", class_="starting-lineups__pitcher-name")[idx].text.strip())
-			for player in table.find("ol", class_=f"starting-lineups__team--{which}").findAll("li"):
+			pitchers[team] = parsePlayer(table.find_all("div", class_="starting-lineups__pitcher-name")[idx].text.strip())
+			for player in table.find("ol", class_=f"starting-lineups__team--{which}").find_all("li"):
 				try:
 					player = parsePlayer(player.find("a").text.strip())
 				except:
@@ -569,7 +569,7 @@ def writeActionNetwork(dateArg = None):
 		json.dump(odds, fh, indent=4)
 
 def convertFDTeam(team):
-	team = team.replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "oak").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
+	team = team.replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "ath").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
 	return team
 
 def writeFanduel(team=None):
@@ -780,7 +780,7 @@ def write365():
 			} else if (team.includes("mlb-MLBLogo-3")) {
 				return "atl";
 			} else if (team.includes("mlb-MLBLogo-21")) {
-				return "oak";
+				return "ath";
 			} else if (team.includes("mlb-MLBLogo-7")) {
 				return "chw";
 			} else if (team.includes("mlb-MLBLogo-8")) {

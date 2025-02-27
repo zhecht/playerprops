@@ -47,7 +47,7 @@ def write_schedule(date):
 		scores[date] = {}
 
 	data = "{}"
-	for script in soup.findAll("script"):
+	for script in soup.find_all("script"):
 		if script.text.strip().startswith("window.espn.scoreboard"):
 			m = re.search(r"window\.espn\.scoreboardData\s+=? (.*?)};", script.text)
 			if m:

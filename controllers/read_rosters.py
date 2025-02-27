@@ -81,7 +81,7 @@ def write_cron_FA_json():
 				last = player.find('.//base:last', namespaces=ns).text
 				full = player.find('.//base:full', namespaces=ns).text
 				pos = player.find('.//base:display_position', namespaces=ns).text
-				selected_pos = player.findall('.//base:position', namespaces=ns)[-1].text
+				selected_pos = player.find_all('.//base:position', namespaces=ns)[-1].text
 				nfl_team = player.find('.//base:editorial_team_abbr', namespaces=ns).text
 
 				if pos == "WR,RB":
@@ -220,7 +220,7 @@ def read_rosters(skip_remove_puncuation=False, players_prefix=players_prefix):
 			last = player.find('.//base:last', namespaces=ns).text
 			full = player.find('.//base:full', namespaces=ns).text
 			pos = player.find('.//base:display_position', namespaces=ns).text
-			selected_pos = player.findall('.//base:position', namespaces=ns)[-1].text
+			selected_pos = player.find_all('.//base:position', namespaces=ns)[-1].text
 			nfl_team = player.find('.//base:editorial_team_abbr', namespaces=ns).text
 
 			if pos == "WR,RB":

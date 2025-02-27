@@ -1285,7 +1285,7 @@ def writeOnlyGoals2():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		js = "{}"
-		for script in soup.findAll("script"):
+		for script in soup.find_all("script"):
 			if "window['__CONFIG__']=" in script.text:
 				m = re.search(r"window['__CONFIG__']={(.*?)};", script.text)
 				if m:
@@ -1303,17 +1303,17 @@ def writeOnlyGoals2():
 		if gameOver:
 			parsed[gameId] = True
 
-		for table in soup.find("div", class_="tabs__content").findAll("table"):
+		for table in soup.find("div", class_="tabs__content").find_all("table"):
 			period = table.find("tbody").find("th").text.split(" ")[0]
-			for tr in table.find("tbody").findAll("tr"):
+			for tr in table.find("tbody").find_all("tr"):
 				ast = ""
-				if "assists" in tr.findAll("td")[2].text.lower():
-					ast = [parsePlayer(p.split(" (")[0]) for p in tr.findAll("td")[2].text.split(": ")[-1].split(", ")]
+				if "assists" in tr.find_all("td")[2].text.lower():
+					ast = [parsePlayer(p.split(" (")[0]) for p in tr.find_all("td")[2].text.split(": ")[-1].split(", ")]
 				goals.append({
 					"time": tr.find("td").text,
-					"goal": parsePlayer(tr.findAll("td")[2].text.split(" (")[0]),
+					"goal": parsePlayer(tr.find_all("td")[2].text.split(" (")[0]),
 					"ast": ",".join(ast),
-					"score": tr.findAll("td")[-2].text+"-"+tr.findAll("td")[-1].text,
+					"score": tr.find_all("td")[-2].text+"-"+tr.find_all("td")[-1].text,
 					"game": game,
 					"period": period
 				})

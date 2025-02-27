@@ -154,8 +154,8 @@ def writeKenpom():
 
 	data = {}
 	soup = BS(open(outfile, 'rb').read(), "lxml")
-	for tr in soup.find("table", id="ratings-table").findAll("tr")[2:]:
-		tds = tr.findAll("td")
+	for tr in soup.find("table", id="ratings-table").find_all("tr")[2:]:
+		tds = tr.find_all("td")
 		if not tds:
 			continue
 		team = tds[1].find("a").text.lower().replace(".", "").replace("'", "")
@@ -2595,7 +2595,7 @@ def writePlayers(keep=None):
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	teamIds = {}
-	for div in soup.findAll("section", class_="TeamLinks"):
+	for div in soup.find_all("section", class_="TeamLinks"):
 		team = convertTeam(strip_accents(div.find("a").text.lower()))
 		id = div.find("a").get("href").split("/")[-2]
 		teamIds[team] = id
@@ -2615,9 +2615,9 @@ def writePlayers(keep=None):
 		if not soup.find("table", class_="Table"):
 			continue
 
-		for row in soup.find("table", class_="Table").findAll("tr")[1:]:
+		for row in soup.find("table", class_="Table").find_all("tr")[1:]:
 			playerId = row.find("a").get("href").split("/")[-2]
-			player = parsePlayer(row.findAll("td")[1].find("a").text)
+			player = parsePlayer(row.find_all("td")[1].find("a").text)
 			playerIds[team][player] = playerId
 
 
@@ -2668,15 +2668,15 @@ def writePlayers(keep=None):
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
 			hdrs = []
-			for td in soup.find("thead").findAll("th")[1:]:
+			for td in soup.find("thead").find_all("th")[1:]:
 				hdrs.append(td.text.lower())
 
 			playerStats = {}
-			for tbody in soup.find("div", class_="gamelog").findAll("tbody"):
-				for row in tbody.findAll("tr"):
+			for tbody in soup.find("div", class_="gamelog").find_all("tbody"):
+				for row in tbody.find_all("tr"):
 					if "note-row" in row.get("class") or "totals_row" in row.get("class"):
 						continue
-					for td, hdr in zip(row.findAll("td")[1:], hdrs):
+					for td, hdr in zip(row.find_all("td")[1:], hdrs):
 						val = td.text
 						if hdr == "opp":
 							val = "A" if "@" in val else "H"

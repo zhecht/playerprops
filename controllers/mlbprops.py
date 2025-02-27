@@ -980,14 +980,14 @@ def writeLineups(date):
 		leftOrRight = json.load(fh)
 
 	lineups = {}
-	for box in soup.findAll("div", class_="lineup"):
+	for box in soup.find_all("div", class_="lineup"):
 		if "is-tools" in box.get("class") or "is-ad" in box.get("class"):
 			continue
 
-		away = convertDKTeam(box.findAll("div", class_="lineup__abbr")[0].text.lower())
-		home = convertDKTeam(box.findAll("div", class_="lineup__abbr")[1].text.lower())
+		away = convertDKTeam(box.find_all("div", class_="lineup__abbr")[0].text.lower())
+		home = convertDKTeam(box.find_all("div", class_="lineup__abbr")[1].text.lower())
 
-		for idx, lineupList in enumerate(box.findAll("ul", class_="lineup__list")):
+		for idx, lineupList in enumerate(box.find_all("ul", class_="lineup__list")):
 			team = away if idx == 0 else home
 
 			if team not in leftOrRight:
@@ -1010,7 +1010,7 @@ def writeLineups(date):
 				"batting": [],
 				"pitching": startingPitcher
 			}
-			for li in lineupList.findAll("li")[2:]:
+			for li in lineupList.find_all("li")[2:]:
 				try:
 					player = " ".join(li.find("a").get("href").lower().split("/")[-1].split("-")[:-1])
 					lineups[lineupTeam]["batting"].append(player)
@@ -1067,7 +1067,7 @@ def write_numberfire_projections():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		try:
-			rows = soup.find("table", class_="stat-table").find("tbody").findAll("tr")
+			rows = soup.find("table", class_="stat-table").find("tbody").find_all("tr")
 		except:
 			continue
 		for row in rows:
@@ -1083,7 +1083,7 @@ def write_numberfire_projections():
 			projections[team][player] = {}
 
 			cutoff = 5 if t == "batters" else 4
-			for td in row.findAll("td")[cutoff:]:
+			for td in row.find_all("td")[cutoff:]:
 				hdr = td.get("class")[0]
 				if hdr == "wl":
 					w,l = map(float, td.text.strip().split("-"))
@@ -1343,8 +1343,8 @@ def writeBPPlayerProps(date):
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	bps = {}
-	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
-		prop = row.findAll("td")[6].text.lower().split(" ")[1]
+	for row in soup.find("table", id="table_id").find_all("tr")[1:]:
+		prop = row.find_all("td")[6].text.lower().split(" ")[1]
 		if prop == "bases":
 			prop = "tb"
 		elif prop == "ks":
@@ -1353,29 +1353,29 @@ def writeBPPlayerProps(date):
 			prop = "h"
 
 		if prop == "k":
-			line = row.findAll("td")[6].text.split(" ")[-1]
+			line = row.find_all("td")[6].text.split(" ")[-1]
 			prop = f"{line}k"
 
 		if prop not in bps:
 			bps[prop] = []
 
 		try:
-			bps[prop].append(int(row.findAll("td")[7].text))
+			bps[prop].append(int(row.find_all("td")[7].text))
 		except:
 			continue
 
 	for prop in bps:
 		bps[prop] = sorted(bps[prop])
 
-	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
+	for row in soup.find("table", id="table_id").find_all("tr")[1:]:
 		team = row.find("td").text.lower().replace("was", "wsh")
-		player = row.findAll("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+		player = row.find_all("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 		if player == "nicholas castellanos":
 			player = "nick castellanos"
 		elif player == "nate lowe":
 			player = "nathaniel lowe"
-		pa = float(row.findAll("td")[5].text)
-		prop = row.findAll("td")[6].text.lower().split(" ")[1]
+		pa = float(row.find_all("td")[5].text)
+		prop = row.find_all("td")[6].text.lower().split(" ")[1]
 		if prop == "bases":
 			prop = "tb"
 		elif prop == "ks":
@@ -1384,13 +1384,13 @@ def writeBPPlayerProps(date):
 			prop = "h"
 
 		try:
-			bp = int(row.findAll("td")[7].text)
+			bp = int(row.find_all("td")[7].text)
 		except:
 			continue
 
 		line = 0
 		if prop == "k":
-			line = row.findAll("td")[6].text.split(" ")[-1]
+			line = row.find_all("td")[6].text.split(" ")[-1]
 			prop = f"{line}k"
 
 		if team not in playerProps:
@@ -1419,20 +1419,20 @@ def writeBallparks(date):
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
-	for row in soup.find("table", class_="parkFactorsTable").findAll("tr")[1:]:
+	for row in soup.find("table", class_="parkFactorsTable").find_all("tr")[1:]:
 		game = row.find("div", class_="matchupText").text.strip().lower().replace("was", "wsh")
 		hr = row.find("td", class_="projectionText").text
 
 		ballparks[game] = hr
 
-	for row in soup.find("table", id="table_id").findAll("tr")[1:]:
+	for row in soup.find("table", id="table_id").find_all("tr")[1:]:
 		team = row.find("td").text.lower().replace("was", "wsh")
-		player = row.findAll("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+		player = row.find_all("td")[1].text.lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
 		if player == "nicholas castellanos":
 			player = "nick castellanos"
 		elif player == "nate lowe":
 			player = "nathaniel lowe"
-		hr = float(row.findAll("td")[3].text)
+		hr = float(row.find_all("td")[3].text)
 
 		if team not in playerHRFactors:
 			playerHRFactors[team] = {}
@@ -1562,7 +1562,7 @@ def quartiles(arr):
 	return q1, mid, q3
 
 def convertFDTeam(team):
-	team = team.replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "oak").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
+	team = team.replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "ath").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
 	return team
 
 def writeBovada(date):

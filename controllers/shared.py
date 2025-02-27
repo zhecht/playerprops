@@ -1,5 +1,21 @@
 import unicodedata
 
+def convertImpOdds(odds):
+	if odds == 0:
+		return 0
+	if odds > 0:
+		impOdds = 100 / (odds+100)
+	else:
+		impOdds = -odds / (-odds+100)
+	return impOdds
+
+def convertAmericanFromImplied(odds):
+	if odds == 0:
+		return 0
+	if odds > 0:
+		return round((100 / odds) - 100)
+	return round(-100 / (odds / (1 - odds)))
+
 def strip_accents(text):
 	try:
 		text = unicode(text, 'utf-8')
@@ -34,9 +50,106 @@ def parsePlayer(player):
 		return "cam atkinson"
 	return player
 
+def convertMLBTeam(team):
+	team = team.lower().replace(".", "")
+	t = team.replace(" ", "")[:3]
+	if t == "chi":
+		if "cubs" in team:
+			return "chc"
+		return "chw"
+	elif t in ["kan", "kcr"]:
+		return "kc"
+	elif t == "los":
+		if "dodgers" in team:
+			return "lad"
+		return "laa"
+	elif t == "new":
+		if "yankees" in team:
+			return "nyy"
+		return "nym"
+	elif t == "ath" or t == "the":
+		return "ath"
+	elif t == "was":
+		return "wsh"
+	elif t == "sdp":
+		return "sd"
+	elif t == "sfg":
+		return "sf"
+	elif t == "san":
+		if "padres" in team:
+			return "sd"
+		return "sf"
+	elif t in ["tam", "tbr"]:
+		return "tb"
+	return t
+
+def convertMGMTeam(team):
+	if team == "diamondbacks":
+		return "ari"
+	elif team == "braves":
+		return "atl"
+	elif team == "orioles":
+		return "bal"
+	elif team == "red sox":
+		return "bos"
+	elif team == "cubs":
+		return "chc"
+	elif team == "white sox":
+		return "chw"
+	elif team == "reds":
+		return "cin"
+	elif team == "guardians":
+		return "cle"
+	elif team == "rockies":
+		return "col"
+	elif team == "tigers":
+		return "det"
+	elif team == "astros":
+		return "hou"
+	elif team == "royals":
+		return "kc"
+	elif team == "angels":
+		return "laa"
+	elif team == "dodgers":
+		return "lad"
+	elif team == "marlins":
+		return "mia"
+	elif team == "brewers":
+		return "mil"
+	elif team == "twins":
+		return "min"
+	elif team == "mets":
+		return "nym"
+	elif team == "yankees":
+		return "nyy"
+	elif team == "athletics":
+		return "ath"
+	elif team == "phillies":
+		return "phi"
+	elif team == "pirates":
+		return "pit"
+	elif team == "padres":
+		return "sd"
+	elif team == "giants":
+		return "sf"
+	elif team == "mariners":
+		return "sea"
+	elif team == "cardinals":
+		return "stl"
+	elif team == "rays":
+		return "tb"
+	elif team == "rangers":
+		return "tex"
+	elif team == "blue jays":
+		return "tor"
+	elif team == "nationals":
+		return "wsh"
+	return team
+
 def convertSoccer(team):
 	team = team.lower().replace("-", " ").replace(".", "").replace("/", " ").replace("'", "")
 	team = team.replace("munchen", "munich").replace(" utd", " united").replace(" city", "").replace(" town", "").replace(" county", "").replace(" rovers", "")
+	team = strip_accents(team)
 
 	if len(team) > 2:
 		if (team[2] == " " and team[:2] in ["ac", "ad", "as", "bb", "ca", "cd", "cf", "cs", "fc", "fk", "kv", "ld", "nk", "rb", "rc", "sc", "sd", "sk", "sm", "ss", "sv", "uc", "us", "vv"]) or team[:3] in ["aep", "afc", "bvv", "csm", "fcv", "fsv", "pfk", "ogc", "scr", "ssc", "ssd", "ssv", "stv", "tsc", "tsg", "tsv", "usl", "vfb", "vfl"]:
@@ -76,6 +189,7 @@ def convertSoccer(team):
 		"ballymena": "ballymena united",
 		"stade brest": "brest",
 		"brighton & hove albion": "brighton",
+		"brighton and hove albion": "brighton",
 		"briton ferry llansawel": "briton ferry",
 		"burton albion": "burton",
 		"cambuur leeuwarden": "cambuur",
@@ -148,6 +262,7 @@ def convertSoccer(team):
 		"independiente (ecu)": "independiente del valle",
 		"instituto ac cordoba": "instituto",
 		"inter milan": "inter",
+		"internazionale": "inter",
 		"istra": "istra 1961",
 		"jagiellonia": "jagiellonia bialystock",
 		"regensburg": "jahn regensburg",
@@ -258,6 +373,7 @@ def convertSoccer(team):
 		"sumqayit sheher": "sumqayit",
 		"swindon town": "swindon",
 		"deportes tolima": "tolima",
+		"tottenham hotspur": "tottenham",
 		"tns": "the new saints",
 		"estac troyes": "troyes",
 		"tsc": "backa topola",
@@ -281,6 +397,7 @@ def convertSoccer(team):
 		"west bromwich": "west brom",
 		"west ham united": "west ham",
 		"wolverhampton": "wolves",
+		"wolverhampton wanderers": "wolves",
 		"wigan athletic": "wigan",
 		"wycombe wanderers": "wycombe",
 		"csd xelaju mc": "xelaju",

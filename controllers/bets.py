@@ -88,7 +88,7 @@ def bets_post_route():
 			team = away
 
 			if sport == "nfl":
-				tables = soup.findAll("table")[1:-2]
+				tables = soup.find_all("table")[1:-2]
 				for idx, table in enumerate(tables):
 					if idx % 2 == 0:
 						team = away
@@ -109,7 +109,7 @@ def bets_post_route():
 						shortHeader = title[:4]
 
 					cutoff = 2 if title == "defensive" else 1
-					for row in table.findAll("tr")[cutoff:-1]:
+					for row in table.find_all("tr")[cutoff:-1]:
 						try:
 							nameLink = row.find("a").get("href").split("/")
 						except:
@@ -118,7 +118,7 @@ def bets_post_route():
 						if player not in allStats[sport][team]:
 							allStats[sport][team][player] = {}
 
-						for td in row.findAll("td")[1:]:
+						for td in row.find_all("td")[1:]:
 							header = "_".join(td.get("class"))
 							if header == "car":
 								header = "rush_att"
@@ -164,7 +164,7 @@ def bets_post_route():
 				endCutoff = 5
 				if sport == "nhl":
 					endCutoff = 9
-				for tableIdx, table in enumerate(soup.findAll("table")[1:endCutoff]):
+				for tableIdx, table in enumerate(soup.find_all("table")[1:endCutoff]):
 					if sport == "nba":
 						if tableIdx == 2:
 							playerList = []
@@ -176,7 +176,7 @@ def bets_post_route():
 							team = home
 
 					playerIdx = 0
-					for row in table.findAll("tr")[:-2]:
+					for row in table.find_all("tr")[:-2]:
 						arr = [0,2] if sport == "nba" else [0,2,4,6]
 						if tableIdx in arr:
 							# PLAYERS
@@ -205,7 +205,7 @@ def bets_post_route():
 							firstTd = row.find("td").text.strip().lower()
 							if firstTd in ["min", "g", "sa"]:
 								headers = []
-								for td in row.findAll("td"):
+								for td in row.find_all("td"):
 									headers.append(td.text.strip().lower())
 								continue
 
@@ -215,7 +215,7 @@ def bets_post_route():
 								continue
 							playerIdx += 1
 							playerStats = {}
-							for tdIdx, td in enumerate(row.findAll("td")):
+							for tdIdx, td in enumerate(row.find_all("td")):
 								if td.text.lower().startswith("dnp-") or td.text.lower().startswith("has not"):
 									playerStats["min"] = 0
 									break

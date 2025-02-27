@@ -257,14 +257,14 @@ def write_averages():
 			call(["curl", "-k", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
-			for row in soup.findAll("tr"):
+			for row in soup.find_all("tr"):
 				try:
 					if "Regular Season" not in row.findPrevious("div", class_="Table__Title").text:
 						continue
 				except:
 					continue
 				if row.text.startswith("Averages"):
-					for idx, td in enumerate(row.findAll("td")[1:]):
+					for idx, td in enumerate(row.find_all("td")[1:]):
 						header = headers[idx]
 						if header in ["fg", "3pt", "ft"]:
 							made, att = map(float, td.text.strip().split("-"))
@@ -275,7 +275,7 @@ def write_averages():
 							averages[team][player][header] = val
 					averages[team][player]["gamesPlayed"] = gamesPlayed
 				else:
-					tds = row.findAll("td")
+					tds = row.find_all("td")
 					if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
 						date = str(datetime.datetime.strptime(tds[0].text.strip(), "%a %m/%d")).split(" ")[0][6:]
 						lastYearStats[team][player][date] = {}
@@ -315,7 +315,7 @@ def write_schedule(date):
 	with open(f"{prefix}static/basketballreference/scores.json") as fh:
 		scores = json.load(fh)
 
-	for table in soup.findAll("div", class_="ResponsiveTable"):
+	for table in soup.find_all("div", class_="ResponsiveTable"):
 		try:
 			date = table.find("div", class_="Table__Title").text.strip()
 		except:
@@ -327,14 +327,14 @@ def write_schedule(date):
 			scores[date] = {}
 
 		schedule[date] = []
-		for row in table.findAll("tr")[1:]:
-			tds = row.findAll("td")
+		for row in table.find_all("tr")[1:]:
+			tds = row.find_all("td")
 			if not tds[0].find("a"):
 				continue
-			awayTeam = tds[0].findAll("a")[-1].get("href").split("/")[-2]
+			awayTeam = tds[0].find_all("a")[-1].get("href").split("/")[-2]
 			if "TBD" in tds[1].text:
 				continue
-			homeTeam = tds[1].findAll("a")[-1].get("href").split("/")[-2]
+			homeTeam = tds[1].find_all("a")[-1].get("href").split("/")[-2]
 			score = tds[2].find("a").text.strip()
 			if "Postponed" in score:
 				continue
@@ -410,13 +410,13 @@ def write_rankings():
 	headers = ["pts","reb","ast","3ptm","stl","blk","to"]
 	rankings = {}
 	sortedRankings = {}
-	for row in soup.find("table").findAll("tr")[1:]:
+	for row in soup.find("table").find_all("tr")[1:]:
 		pos = row.get("class")[-1]
 		if pos not in allPos:
 			continue
 		if row.get("class")[0] != "GC-0":
 			continue
-		tds = row.findAll("td")
+		tds = row.find_all("td")
 		team = convertFProsTeam(tds[0].text.lower().strip())
 		if team not in rankings:
 			rankings[team] = {}
@@ -493,12 +493,12 @@ def writePlayerIds():
 
 		playerIds[team] = {}
 		roster[team] = {}
-		for table in soup.findAll("table"):
-			for row in table.find("tbody").findAll("tr"):
-				pid = row.findAll("td")[1].find("a").get("href").split("/")[-2]
-				player = parsePlayer(row.findAll("td")[1].find("a").text.lower())
+		for table in soup.find_all("table"):
+			for row in table.find("tbody").find_all("tr"):
+				pid = row.find_all("td")[1].find("a").get("href").split("/")[-2]
+				player = parsePlayer(row.find_all("td")[1].find("a").text.lower())
 				playerIds[team][player] = pid
-				roster[team][player] = row.findAll("td")[2].text.strip()
+				roster[team][player] = row.find_all("td")[2].text.strip()
 
 	with open(f"{prefix}static/basketballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)

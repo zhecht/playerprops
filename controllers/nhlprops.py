@@ -254,15 +254,15 @@ def writeRankings():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		headers = []
-		for hdr in soup.findAll("th"):
+		for hdr in soup.find_all("th"):
 			headers.append(hdr.text.lower().strip())
 
-		for row in soup.find("tbody").findAll("tr"):
+		for row in soup.find("tbody").find_all("tr"):
 			team = convertStatMuseTeam(row.find("td").text.lower().strip())
 			if team not in rankings:
 				rankings[team] = {}
 			rankings[team][timePeriod] = {}
-			for td, hdr in zip(row.findAll("td")[2:], headers[2:]):
+			for td, hdr in zip(row.find_all("td")[2:], headers[2:]):
 				rankings[team][timePeriod][hdr] = td.text.strip()
 
 	with open(f"static/nhl/rankings.json", "w") as fh:
@@ -1632,9 +1632,9 @@ def writeGoalieStats():
 	call(["curl", "-k", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
-	rows = soup.findAll("tr")
+	rows = soup.find_all("tr")
 	headers = []
-	for header in rows[1].findAll("th")[1:]:
+	for header in rows[1].find_all("th")[1:]:
 		headers.append(header.text.lower())
 
 	stats = {}
@@ -1642,7 +1642,7 @@ def writeGoalieStats():
 		if "thead" in tr.get("class", []):
 			continue
 		rowStats = {}
-		for hdr, td in zip(headers, tr.findAll("td")):
+		for hdr, td in zip(headers, tr.find_all("td")):
 			val = td.text
 			if "." in val:
 				val = float(val)
@@ -1761,19 +1761,19 @@ def writeLineups():
 
 	lineups = {}
 	expected = {"confirmed": {}, "expected": {}}
-	for box in soup.findAll("div", class_="lineup"):
+	for box in soup.find_all("div", class_="lineup"):
 		if "is-tools" in box.get("class") or "is-ad" in box.get("class"):
 			continue
 
-		away = convertDKTeam(box.findAll("div", class_="lineup__abbr")[0].text.lower())
-		home = convertDKTeam(box.findAll("div", class_="lineup__abbr")[1].text.lower())
+		away = convertDKTeam(box.find_all("div", class_="lineup__abbr")[0].text.lower())
+		home = convertDKTeam(box.find_all("div", class_="lineup__abbr")[1].text.lower())
 
-		for idx, lineupList in enumerate(box.findAll("ul", class_="lineup__list")):
+		for idx, lineupList in enumerate(box.find_all("ul", class_="lineup__list")):
 			team = away if idx == 0 else home
 			status = "confirmed" if "is-green" in lineupList.find("div", class_="dot").get("class") else "expected"
 			expected[status][team] = " ".join(lineupList.find("a").get("href").lower().split("/")[-1].split("-")[:-1])
 			title = ""
-			for li in lineupList.findAll("li")[1:]:
+			for li in lineupList.find_all("li")[1:]:
 				try:
 					if "lineup__title" in li.get("class"):
 						title = li.text.lower()
@@ -1823,12 +1823,12 @@ def writeOpportunities():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		headers = []
-		for th in soup.find("tr").findAll("th")[1:]:
+		for th in soup.find("tr").find_all("th")[1:]:
 			headers.append(th.text.strip().lower().replace(" ", ""))
 
-		for row in soup.findAll("tr")[1:]:
+		for row in soup.find_all("tr")[1:]:
 			rowStats = {}
-			for hdr, td in zip(headers, row.findAll("td")[1:]):
+			for hdr, td in zip(headers, row.find_all("td")[1:]):
 				val = td.text
 				try:
 					if "." in val:

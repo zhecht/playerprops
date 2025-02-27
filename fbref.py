@@ -123,15 +123,78 @@ async def writeStats(leagueArg, teamArg):
 
 	url = f"https://fbref.com{links[leagueArg][teamArg]}"
 	browser = await uc.start(no_sandbox=True)
+
+	if False:
+		stats["teamStats"] = {}
+		stats["teamStatsAgainst"] = {}
+
+		for type in ["shooting", "keeper", "passing", "passing_types", "defense"]:
+			for i in range(2):
+				key = "teamStats"
+				if i == 1:
+					key += "Against"
+					a = await page.query_selector_all(".switcher a")
+					await a[-1].mouse_click()
+					time.sleep(0.1)
+
+				link = links[leagueArg][teamArg]
+				firstLink = "/".join(link.split("/")[:-1])
+				url = f"https://fbref.com{firstLink}/2024-2025/matchlogs/all_comps/{type}/{link.split('/')[-1].replace('Stats', 'Match-Logs-All-Competitions')}"
+				page = await browser.get(url)
+				time.sleep(0.5)
+
+				try:
+					await page.wait_for(selector="#matchlogs_for")
+				except:
+					continue
+
+				table = await page.query_selector("#matchlogs_for")
+				tr = await table.query_selector_all("thead tr")
+				hdrs = await tr[-1].query_selector_all("th")
+				hdrs_ = []
+				for hdr in hdrs:
+					try:
+						statIdx = hdr.attributes.index("data-stat")
+					except:
+						continue
+					hdrs_.append(hdr.attributes[statIdx+1])
+				hdrs = hdrs_
+				rows = await table.query_selector_all("tbody tr")
+				for row in rows:
+					if row.children[0].children[0].tag != "a":
+						continue
+					for hdr, col in zip(hdrs, row.children):
+						if hdr in ["start_time", "comp", "round", "attendance", "captain", "formation", "opp formation", "match_report", "notes"]:
+							continue
+						if hdr in ["date", "dayofweek", "venue", "result", "goals_for", "goals_against", "opponent"] and type != "shooting":
+							continue
+						if hdr not in stats[key]:
+							stats[key][hdr] = []
+						#if type == "passing":
+						#	print(key, hdr, col.text_all)
+						#	exit()
+						stats[key][hdr].append(col.text_all)
+
+		for hdr in stats["teamStats"]:
+			stats["teamStats"][hdr] = ",".join(stats["teamStats"][hdr])
+			stats["teamStatsAgainst"][hdr] = ",".join(stats["teamStatsAgainst"][hdr])
+
+		with open(path, "w") as fh:
+			json.dump(stats, fh, indent=4)
+
+	#browser.stop()
+	#return
+
+	url = f"https://fbref.com{links[leagueArg][teamArg]}"
+	#browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
-
-	await page.wait_for(selector="th[data-stat=player]")
+	await page.wait_for(selector="#all_stats_standard")
 	players = await page.query_selector_all("#all_stats_standard th[data-stat=player]")
-
+	#print(url, len(players))
 	for playerIdx, player in enumerate(players[1:]):
 		# matches played
 		try:
-			if int(player.parent.children[4].text) < 10:
+			if int(player.parent.children[4].text) == 0:
 				continue
 		except:
 			continue
@@ -140,6 +203,12 @@ async def writeStats(leagueArg, teamArg):
 			continue
 		name = playerLink.split("/")[-1].lower().replace("-", " ")
 		player = parsePlayer(name)
+		if player in stats:
+			#continue
+			pass
+
+		#print(player)
+
 		if player not in stats:
 			stats[player] = {}
 		if player not in roster:
@@ -154,6 +223,9 @@ async def writeStats(leagueArg, teamArg):
 
 		with open(path, "w") as fh:
 			json.dump(stats, fh, indent=4)
+
+		with open("static/soccer/roster.json", "w") as fh:
+			json.dump(roster, fh, indent=4)
 
 		page = await browser.get(url)
 		await page.wait_for(selector="th[data-stat=player]")
@@ -195,6 +267,9 @@ if __name__ == '__main__':
 				for game in schedule[today][league]:
 					for team in game.split(" v "):
 						print(league, team)
+						if team == "milan":
+							#continue
+							pass
 						uc.loop().run_until_complete(writeStats(league, team))
 		else:
 			uc.loop().run_until_complete(writeStats(args.league, args.team))

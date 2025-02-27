@@ -265,7 +265,7 @@ def writeRedzone():
 
 		redzone[team] = {}
 		redzoneTotals[team] = {}
-		rows = soup.find("div", id="stats_redzone_team_data").findAll("tr")[::-1]
+		rows = soup.find("div", id="stats_redzone_team_data").find_all("tr")[::-1]
 		pos = ""
 		for row in rows:
 			txt = row.find("td").text.lower().strip()
@@ -275,7 +275,7 @@ def writeRedzone():
 			if "totals" in txt:
 				pos = txt.split(" ")[0]
 				redzoneTotals[team][pos] = []
-				for td in row.findAll("td")[1:-1]:
+				for td in row.find_all("td")[1:-1]:
 					redzoneTotals[team][pos].append(int(td.text))
 			else:
 				player = parsePlayer(txt)
@@ -283,7 +283,7 @@ def writeRedzone():
 					"pos": pos,
 					"looks": []
 				}
-				for td in row.findAll("td")[1:-1]:
+				for td in row.find_all("td")[1:-1]:
 					redzone[team][player]["looks"].append(int(td.text))
 
 	snaps = {}
@@ -295,7 +295,7 @@ def writeRedzone():
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		snaps[team] = {}
-		rows = soup.find("div", id="stats_snapcounts_data").findAll("tr")
+		rows = soup.find("div", id="stats_snapcounts_data").find_all("tr")
 		pos = "qb"
 		for row in rows:
 			txt = row.find("td").text.lower().strip()
@@ -311,7 +311,7 @@ def writeRedzone():
 					"tot": [],
 					"pct": []
 				}
-				for td in row.findAll("td")[1:-1]:
+				for td in row.find_all("td")[1:-1]:
 					if not td.find("div") or not td.find("div").text:
 						snaps[team][player]["tot"].append(0)
 						snaps[team][player]["pct"].append("0")
@@ -331,7 +331,7 @@ def writeRedzone():
 
 		targets[team] = {}
 		teamTargets[team] = {}
-		rows = soup.find("div", id="stats_targets_data").findAll("tr")[1:][::-1]
+		rows = soup.find("div", id="stats_targets_data").find_all("tr")[1:][::-1]
 		pos = "qb"
 		for row in rows:
 			txt = row.find("td").text.lower().strip()
@@ -339,7 +339,7 @@ def writeRedzone():
 			if "totals" in txt:
 				pos = txt.split(" ")[0]
 				teamTargets[team][pos] = []
-				for td in row.findAll("td")[1:-1]:
+				for td in row.find_all("td")[1:-1]:
 					teamTargets[team][pos].append(int(td.text))
 			else:
 				player = parsePlayer(txt)
@@ -347,7 +347,7 @@ def writeRedzone():
 					"pos": pos,
 					"tot": []
 				}
-				for td in row.findAll("td")[1:-1]:
+				for td in row.find_all("td")[1:-1]:
 					targets[team][player]["tot"].append(int(td.text))
 
 	with open(f"static/nfl/snaps.json", "w") as fh:
@@ -556,8 +556,8 @@ def writeRosters():
 		os.system(f"curl {url} -o {outfile}")
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
-		for div in soup.findAll("div", class_="TeamLinks__Links"):
-			team = div.findAll("a")[2].get("href").split("/")[-2]
+		for div in soup.find_all("div", class_="TeamLinks__Links"):
+			team = div.find_all("a")[2].get("href").split("/")[-2]
 			if team == "wsh":
 				team = "was"
 			teams.append(team)
@@ -577,13 +577,13 @@ def writeRosters():
 		roster[team] = {}
 		playerIds[team] = {}
 
-		for table in soup.findAll("table"):
-			for row in table.findAll("tr")[1:]:
-				nameLink = row.findAll("td")[1].find("a").get("href").split("/")
+		for table in soup.find_all("table"):
+			for row in table.find_all("tr")[1:]:
+				nameLink = row.find_all("td")[1].find("a").get("href").split("/")
 				fullName = parsePlayer(nameLink[-1].replace("-", " "))
 				playerId = int(nameLink[-2])
 				playerIds[team][fullName] = playerId
-				roster[team][fullName] = row.findAll("td")[2].text.strip()
+				roster[team][fullName] = row.find_all("td")[2].text.strip()
 				if fullName == "taysom hill":
 					roster[team][fullName] = "TE"
 
@@ -609,18 +609,18 @@ def writeSchedule(week):
 		scores = json.load(fh)
 
 	schedule[week] = []
-	for table in soup.findAll("div", class_="ResponsiveTable"):
+	for table in soup.find_all("div", class_="ResponsiveTable"):
 		if week not in boxscores:
 			boxscores[week] = {}
 		if week not in scores:
 			scores[week] = {}
 
 		seen = {}
-		for row in table.findAll("tr")[1:]:
-			tds = row.findAll("td")
+		for row in table.find_all("tr")[1:]:
+			tds = row.find_all("td")
 			try:
-				awayTeam = tds[0].findAll("a")[-1].get("href").split("/")[-2].replace("wsh", "was")
-				homeTeam = tds[1].findAll("a")[-1].get("href").split("/")[-2].replace("wsh", "was")
+				awayTeam = tds[0].find_all("a")[-1].get("href").split("/")[-2].replace("wsh", "was")
+				homeTeam = tds[1].find_all("a")[-1].get("href").split("/")[-2].replace("wsh", "was")
 			except:
 				continue
 

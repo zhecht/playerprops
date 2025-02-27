@@ -480,6 +480,7 @@ async def write365(sport=None, keep=None):
 		#urls = ["https://www.nj.bet365.com/?_h=RZ9RUwb5FXe3IH58lQH52Q%3D%3D&btsffd=1#/AC/B1/C1/D1002/G10236/J99/Q1/F^24/N5/", "https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
 		urls = ["https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
 		urls = ["https://www.nj.bet365.com"]
+		urls = ["https://www.nj.bet365.com/?_h=lW0GCdv4-5qJllzV4d_gPw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
 	elif sport == "ncaab":
 		urls = ["https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D48/E1453/F10/N1/", "https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D516/E181335/F516/N2/", "https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D48/E928/F40/N4/"]
 		#urls = ["https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D516/E181335/F516/N2/", "https://www.oh.bet365.com/?_h=aR_j-P35b_3WdK1mnHaXYQ%3D%3D&btsffd=1#/AC/B18/C21008290/D48/E928/F40/N4/"]
@@ -498,7 +499,7 @@ async def write365(sport=None, keep=None):
 		if reject:
 			await reject.mouse_click()
 
-		if sport == "soccer":
+		if False and sport == "soccer":
 			await page.wait_for(selector=".wn-PillItem")
 			img = await page.query_selector("img[alt='Upcoming Soccer']")
 			await img.parent.mouse_click()
@@ -594,10 +595,11 @@ async def write365(sport=None, keep=None):
 			elif sport == "soccer":
 				if prop in ["goalscorers", "player to score or assist", "player passes - under", "player to be booked"]:
 					continue
-				prop = prop.replace("player ", "").replace(" over/under", "").replace("shots on target", "sot").replace("goalkeeper saves", "saves")
+				prop = prop.replace("player ", "").replace(" over/under", "").replace("goalkeeper saves", "saves")
 				prop = f"player_{prop}"
-				if prop not in ["player_passes"]:
-					continue
+				if prop not in []:
+					#continue
+					pass
 			else:
 				if "milestones" in prop or (sport == "nfl" and "o/u" not in prop):
 					alt = True
@@ -1559,7 +1561,7 @@ async def writeMGM(sport=None, keep=None, league=None, tomorrow=None):
 		url = "https://sports.mi.betmgm.com/en/sports/soccer-4/betting/"
 		
 		l = ["argentina-38", "australia-60", "azerbaijan-77", "belgium-35", "bolivia-44", "colombia-45", "costa-rica-104", "croatia-50", "cyprus-58", "czech-republic-12", "ecuador-110", "europe-7", "england-14", "france-16", "germany-17", "guatemala-127", "honduras-132", "hungary-19", "india-134", "israel-62", "italy-20", "malta-159", "mexico-43", "netherlands-36", "northern-ireland-65", "poland-22", "portugal-37", "romania-24", "scotland-26", "serbia-231", "slovakia-51", "south-africa-197", "spain-28", "switzerland-30", "turkey-31", "ukraine-53"]
-		#l = l[l.index("belgium-35"):]
+		#l = l[l.index("europe-7"):]
 		urls = [url+x for x in l]
 
 	if not urls:
@@ -2297,7 +2299,7 @@ async def writeSoccerFD(keep, league, tomorrow):
 
 	leagues = [base+url]
 	leagues = ["argentinian-primera-division","australian-a-league-men's","austrian-bundesliga","azerbaijan-premier-league","belgian-first-division-a","bosnia-and-herzegovina---premier-league","bulgarian-a-pfg","colombian-primera-a","costa-rican-primera-division","croatian-1-hnl","cyprus---1st-division","czech-1-liga", "ecuador-serie-a","english-premier-league", "english-championship", "english-fa-cup", "english-football-league-cup","english-league-1", "english-league-2", "french-ligue-1", "french-ligue-2", "german-bundesliga", "german-bundesliga-2", "greek-super-league", "guatemalan-liga-nacional", "hungarian-nb-i", "fifa-world-cup", "uefa-nations-league", "international-friendlies", "uefa-champions-league", "uefa-europa-league", "fifa-club-world-cup", "uefa-europa-conference-league", "irish-premier-division", "italian-serie-a", "italian-serie-b", "italian-cup", "maltese-premier-league", "mexican-liga-mx", "dutch-eredivisie", "dutch-cup", "northern-irish-premiership", "polish-ekstraklasa", "portuguese-cup", "portuguese-primeira-liga", "romanian-liga-i", "scottish-premiership", "serbian-first-league", "serbian-super-league", "slovakian-superliga", "south-africa---premier-division", "spanish-la-liga", "spanish-segunda-division", "swiss-super-league", "turkish-super-league", "wales---premiership"]
-	#leagues = leagues[leagues.index("colombian-primera-a"):]
+	#leagues = leagues[leagues.index("uefa-champions-league"):]
 	if league:
 		leagues = [league]
 	browser = await uc.start(no_sandbox=True)
@@ -2472,6 +2474,10 @@ async def writeSoccerFD(keep, league, tomorrow):
 							prop = "home_total"
 						elif label.startswith("away team"):
 							prop = "away_total"
+					elif label.startswith("goalkeeper to make"):
+						mainLine = str(float(label.split(" ")[-4]) - 0.5)
+						prop = "player_saves"
+						continue
 					else:
 						continue
 
@@ -2644,7 +2650,7 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 
 		h1 = await page.query_selector("h1")
 		h1 = await h1.parent.query_selector("div")
-		await h1.mouse_click()
+		await h1.click()
 
 		await page.wait_for(selector="div[role=dialog]")
 		links = await page.query_selector_all("div[role=dialog] a")
@@ -3199,15 +3205,14 @@ async def writeSoccerDK(keep, league, tomorrow):
 
 		try:
 			await page.wait_for(selector="div[role=tablist]")
+			tablist = await page.query_selector("div[role=tablist]")
+			mainTabs = await tablist.query_selector_all("a")
 		except:
 			continue
 
-		tablist = await page.query_selector("div[role=tablist]")
-		mainTabs = await tablist.query_selector_all("a")
-
 		for mainIdx, mainTab in enumerate(mainTabs):
-			if mainTab.text.lower() not in ["game lines", "goalscorer props", "player shots", "player assists", "defense props", "corners"]:
-			#if mainTab.text.lower() not in ["game lines", "corners"]:
+			#if mainTab.text.lower() not in ["game lines", "goalscorer props", "player shots", "player assists", "defense props", "corners"]:
+			if mainTab.text.lower() not in ["defense props"]:
 				continue
 
 			await mainTab.click()
@@ -3260,10 +3265,16 @@ async def writeSoccerDK(keep, league, tomorrow):
 					prop = prop.replace(" ", "_")
 					if prop == "player_assists":
 						prop = "assist"
+				elif prop == "goalkeeper saves":
+					prop = "player_saves"
 				else:
 					continue
 
 				prop = f"{prefix}{prop}"
+
+				if prop != "player_saves":
+					#continue
+					pass
 
 				gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
 				for gameDiv in gameDivs:
@@ -3353,7 +3364,6 @@ async def writeSoccerDK(keep, league, tomorrow):
 						for odd in odds:
 							mostBtns = max(mostBtns, len(odd.parent.children))
 							#await odd.click()
-
 						for i in range(mostBtns):
 							odds = await gameDiv.query_selector_all(f"button[data-testid='sb-selection-picker__selection-{i}']")
 							#if i != 0:

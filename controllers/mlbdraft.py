@@ -56,7 +56,7 @@ def writeSavant():
 		percentiles[player] = {}
 
 		data = "{}"
-		for script in soup.findAll("script"):
+		for script in soup.find_all("script"):
 			if not script.string:
 				continue
 			if "serverVals" in script.string:
