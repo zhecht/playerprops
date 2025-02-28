@@ -2833,7 +2833,7 @@ def writeLineups(league=None):
 		with open(f"{prefix}static/soccer/lineups.json") as fh:
 			lineups = json.load(fh)
 
-	leagues = ["", "fran", "seri", "bund", "lmx"]
+	leagues = ["", "fran", "seri", "liga", "bund", "lmx"]
 	for league in leagues:
 		url = "https://www.rotowire.com/soccer/lineups.php"
 		if league:
@@ -3258,7 +3258,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 								if len(arr):
 									log = ",".join([str(x) for x in arr[-10:]])
 									if player:
-										minLog = ",".join(stats[p]["minutes"].split(",")[-10:])
+										minLog = ",".join(stats[p]["minutes"].split(",")[-5:])
 									logAgainst = ",".join([str(x) for x in arrAgainst[-10:]])
 									if i == 1:
 										hit = len([x for x in arr if int(x) < float(playerHandicap or handicap)]) * 100 / len(arr)

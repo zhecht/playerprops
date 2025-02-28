@@ -2,6 +2,10 @@ from flask import *
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
+try:
+	from shared import convertImpOdds, convertAmericanFromImplied
+except:
+	from controllers.shared import convertImpOdds, convertAmericanFromImplied
 import math
 import json
 import os
@@ -1391,7 +1395,6 @@ def writeOnlyGoals(date=None):
 	with open(f"{prefix}static/hockeyreference/parsed.json", "w") as fh:
 		json.dump(parsed, fh, indent=4)
 
-
 def parsePlayer(player):
 	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" sr", "").replace(" jr", "").replace(" iii", "").replace(" ii", "")
 	if player == "mikey eyssimont":
@@ -1404,6 +1407,8 @@ def parsePlayer(player):
 		return "matt boldy"
 	elif player == "cameron atkinson":
 		return "cam atkinson"
+	elif player == "nick paul":
+		return "nicholas paul"
 	return player
 
 def writeFanduelManual():
@@ -2925,18 +2930,18 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						if book and book != "-":
 							if book.split("/")[0] == "-":
 								continue
-							avgOver.append(convertDecOdds(int(book.split("/")[0])))
+							avgOver.append(convertImpOdds(int(book.split("/")[0])))
 							if "/" in book:
-								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
+								avgUnder.append(convertImpOdds(int(book.split("/")[1])))
 
 					if avgOver:
 						avgOver = float(sum(avgOver) / len(avgOver))
-						avgOver = convertAmericanOdds(avgOver)
+						avgOver = convertAmericanFromImplied(avgOver)
 					else:
 						avgOver = "-"
 					if avgUnder:
 						avgUnder = float(sum(avgUnder) / len(avgUnder))
-						avgUnder = convertAmericanOdds(avgUnder)
+						avgUnder = convertAmericanFromImplied(avgUnder)
 					else:
 						avgUnder = "-"
 
@@ -2945,10 +2950,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					else:
 						ou = f"{avgOver}/{avgUnder}"
 
-					if ou == "-/-" or ou.startswith("-/"):
+					if ou == "-/-" or ou.startswith("-/") or ou.startswith("0/"):
 						continue
 
-					if ou.endswith("/-"):
+					if ou.endswith("/-") or ou.endswith("/0"):
 						ou = ou.split("/")[0]
 						
 					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"

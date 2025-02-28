@@ -1969,7 +1969,7 @@ async def writeMGM(sport=None, keep=None, league=None, tomorrow=None):
 			json.dump(data, fh, indent=4)
 	browser.stop()
 
-async def writeNCAABFD(keep):
+async def writeNCAABFD(keep, tomorrow):
 	url = f"https://sportsbook.fanduel.com/navigation/ncaab"
 	if False:
 		url += "?tab=top-25"
@@ -2002,12 +2002,20 @@ async def writeNCAABFD(keep):
 
 		t = await links[linkIdx].query_selector("time")
 		#t = links[linkIdx].children[0].children[0].children[-1].children[0].children[-1]
-		if t and ("Mon" in t.text or "Tue" in t.text or "Wed" in t.text or "Thu" in t.text or "Fri" in t.text or "Sat" in t.text or "Sun" in t.text):
+		if t and not tomorrow and ("Mon" in t.text or "Tue" in t.text or "Wed" in t.text or "Thu" in t.text or "Fri" in t.text or "Sat" in t.text or "Sun" in t.text):
 			break
+
+		if tomorrow and t:
+			day = datetime.strftime(datetime.now() + timedelta(days=1), "%a")
+			#print(day, t.text)
+			if day not in t.text:
+				continue
+				pass
 
 		teams = await links[linkIdx].query_selector_all("span[role=text]")
 		if not teams:
 			continue
+		await links[linkIdx].scroll_into_view()
 		away = convertCollege(teams[0].text)
 		home = convertCollege(teams[1].text)
 		game = f"{away} @ {home}"
@@ -2313,7 +2321,7 @@ async def writeSoccerFD(keep, league, tomorrow):
 		print(league)
 		url = base+"/"+league
 		page = await browser.get(url)
-		time.sleep(1)
+		time.sleep(2)
 
 		await page.wait_for(selector="#main ul")
 
@@ -2342,7 +2350,6 @@ async def writeSoccerFD(keep, league, tomorrow):
 			t = await links[linkIdx].query_selector("time")
 			if not t:
 				continue
-
 
 			if tomorrow:
 				day = datetime.strftime(datetime.now() + timedelta(days=1), "%a")
@@ -2613,7 +2620,7 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 	url = f"https://sportsbook.fanduel.com/navigation/{sport}"
 
 	if sport == "ncaab":
-		await writeNCAABFD(keep)
+		await writeNCAABFD(keep, tomorrow)
 		exit()
 	elif sport == "soccer":
 		await writeSoccerFD(keep, league, tomorrow)

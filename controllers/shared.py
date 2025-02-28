@@ -48,6 +48,8 @@ def parsePlayer(player):
 		return "matt boldy"
 	elif player == "cameron atkinson":
 		return "cam atkinson"
+	elif player == "nick paul":
+		return "nicholas paul"
 	return player
 
 def convertMLBTeam(team):

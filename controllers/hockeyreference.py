@@ -53,6 +53,8 @@ def parsePlayer(player):
 		return "alex nylander"
 	elif player == "matthew boldy":
 		return "matt boldy"
+	elif player == "nick paul":
+		return "nicholas paul"
 	return player
 
 def write_stats(date):
