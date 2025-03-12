@@ -62,10 +62,11 @@ async def writeFDPage(tabName, page, data):
 			continue
 
 		line = prop = ""
-		if p in ["world_series", "league", "division"]:
+		if p in ["world_series", "league", "division", "team_wins"]:
 			player = convertMLBTeam(label[1])
 		elif label[0].startswith("player") or label[0].startswith("pitcher") or label[0].startswith("team to win"):
-			prop = f"{label[0].split(' ')[3]}_{p}"
+			line = str(float(label[0].split(' ')[3].replace("+", "")) - 0.5)
+			prop = p
 			player = parsePlayer(label[1])
 		elif label[0].endswith("leader 2025"):
 			prop = f"{p}_leader"
@@ -117,14 +118,14 @@ async def writeFD(sport, keep):
 
 	for tabIdx in range(len(tabs)):
 		tabName = tabs[tabIdx].text_all.lower()
-		if tabName in ["spring training", "awards"]:
+		if tabName in ["spring training", "awards", "tokyo series"]:
 			continue
 		if tabName not in ["divisions"]:
 			pass
 			#continue
 
-		if tabName != "world series":
-			await tabs[tabIdx].click()
+			#await tabs[tabIdx].mouse_click()
+		await tabs[tabIdx].click()
 		await writeFDPage(tabName, page, data)
 		nav = await page.query_selector_all("nav")
 		tabs = await nav[-1].query_selector_all("a")
@@ -146,7 +147,7 @@ async def writeDK(sport, keep):
 	for mainIdx in range(len(mainTabs)):
 		mainTab = mainTabs[mainIdx]
 		mainTabName = mainTab.text.lower()
-		if mainTabName in ["game lines", "awards"]:
+		if mainTabName in ["game lines", "awards", "start of season"]:
 			continue
 
 		# testing
@@ -168,6 +169,8 @@ async def writeDK(sport, keep):
 				prop = "world_series"
 			elif prop == "wins o/u":
 				prop = "team_wins"
+			#elif prop == "to win x+ games":
+			#	prop = "team_wins"
 			elif prop == "to make the playoffs y/n":
 				prop = "playoffs"
 			elif prop == "winner" and mainTabName == "divisions":
@@ -208,11 +211,21 @@ async def writeDK(sport, keep):
 				for btn in btns:
 					text = btn.text_all.split(" ")
 					odds = text[-1]
-					if prop in ["world_series", "league", "division"]:
+					if prop in ["world_series", "league", "division", "team_wins"]:
 						player = convertMLBTeam(" ".join(text[:-1]))
 					else:
 						player = parsePlayer(" ".join(text[:-1]))
-					data[prop][player] = odds.replace("\u2212", "-")
+
+					if "+_" in prop:
+						line = str(float(prop.split("+")[0]) - 0.5)
+						p = prop.split("+_")[-1]
+						if p not in data:
+							data[p] = {}
+						if player not in data[p]:
+							data[p][player] = {}
+						data[p][player][line] = odds.replace("\u2212", "-")
+					else:
+						data[prop][player] = odds.replace("\u2212", "-")
 
 		mainTabs = await page.query_selector_all(".sportsbook-categories-tablist a[role=tab]")
 	browser.stop()
@@ -235,27 +248,40 @@ async def writeESPN(sport, keep):
 	for mainIdx in range(len(mainTabs)):
 		mainTabName = mainTabs[mainIdx].text.lower()
 
-		if mainTabName != "to make the playoffs":
+		if mainTabName != "player specials":
 			continue
+			pass
 		
 		if mainIdx != 0:
 			await mainTabs[mainIdx].mouse_click()
-			time.sleep(0.5)
+			time.sleep(1)
 
 		details = await page.query_selector_all("details")
 		for detailIdx in range(len(details)):
 			detail = details[detailIdx]
 			prop = detail.children[0].children[0].text.lower()
-			team = ""
+			team = mainLine = ""
 
 			if prop[5:] == "regular season home runs":
 				prop = "hr"
+			elif prop.endswith("or more home runs"):
+				mainLine = str(float(prop.split(" ")[3]) - 0.5)
+				prop = "hr"
 			elif prop[5:] == "regular season strikeouts":
 				prop = "k"
+			elif prop.endswith("or more striekouts"):
+				mainLine = str(float(prop.split(" ")[3]) - 0.5)
+				prop = "k"
+			elif prop.endswith("or more stolen bases"):
+				mainLine = str(float(prop.split(" ")[3]) - 0.5)
+				prop = "sb"
 			elif prop == "to make playoffs":
 				prop = "playoffs"
 			elif mainTabName == "season wins":
-				team = convertMLBTeam(prop.split(" Season")[0])
+				if "markets" in prop:
+					team = convertMLBTeam(prop.split(" season")[0])
+				else:
+					mainLine = str(float(prop.split(" ")[3]) - 0.5)
 				prop = "team_wins"
 			else:
 				continue
@@ -274,10 +300,10 @@ async def writeESPN(sport, keep):
 
 			if btns[-1].text == "See All Lines":
 				await btns[-1].click()
-				await page.wait_for(selector="article")
-				modal = await page.query_selector("article")
+				await page.wait_for(selector=".modal")
+				modal = await page.query_selector(".modal")
 				btns = await modal.query_selector_all("button")
-				for i in range(0, len(btns), 3):
+				for i in range(1, len(btns), 3):
 					if prop == "playoffs":
 						player = convertMLBTeam(btns[i].text_all.split(" To ")[0])
 					else:
@@ -301,13 +327,28 @@ async def writeESPN(sport, keep):
 
 				btn = await page.query_selector(".modal--see-all-lines button")
 				await btn.click()
-			elif prop == "team_wins":
+			elif team and prop == "team_wins":
 				if team not in data[prop]:
 					data[prop][team] = {}
+
 				line = btns[0].text_all.split(" ")[1]
 				ou = f"{btns[1].text_all}/{btns[3].text_all}"
 				data[prop][team][line] = ou.replace("Even", "+100")
+			elif prop == "team_wins":
+				for btnIdx in range(0, len(btns), 2):
+					team = convertMLBTeam(btns[btnIdx].text_all)
+					ou = btns[btnIdx+1].text_all
+					if team not in data[prop]:
+						data[prop][team] = {}
 
+					data[prop][team][mainLine] = ou.replace("Even", "+100")
+			elif mainLine:
+				for btn in btns:
+					ou = btn.text_all.split(" ")[-1]
+					player = parsePlayer(" ".join(btn.text_all.split(" ")[:-1]))
+					if player not in data[prop]:
+						data[prop][player] = {}
+					data[prop][player][mainLine] = ou.replace("Even", "+100")
 
 	browser.stop()
 	with open(f"static/{sport}futures/espn.json", "w") as fh:
@@ -323,7 +364,7 @@ async def writeMGM(sport, keep):
 		with open(f"static/{sport}futures/mgm.json") as fh:
 			data = json.load(fh)
 
-	for url in urls[1:]:
+	for url in urls:
 		page = await browser.get(url)
 
 		await page.wait_for(selector="ms-option-panel")
@@ -356,13 +397,15 @@ async def writeMGM(sport, keep):
 			if not up:
 				up = await panel.query_selector(".clickable")
 				await up.click()
+				time.sleep(0.3)
 
 			show = await panel.query_selector(".show-more-less-button")
 			if show and show.text_all == "Show More":
-				await show.mouse_click()
+				await show.click()
 				await show.scroll_into_view()
 				panels = await page.query_selector_all("ms-option-panel")
 				panel = panels[panelIdx]
+				time.sleep(0.3)
 
 			teams = await panel.query_selector_all(".attribute-key")
 			odds = await panel.query_selector_all("ms-option")
@@ -411,23 +454,38 @@ async def write365(sport, keep):
 	]
 	browser = await uc.start(no_sandbox=False)
 
+	# E112265508, E112347081, E113646358, E112347082, E112347080
+	# HR, RBI, SB, K, H
+	urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112347080/F2/"]
+
+	# team wins
+	urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112662049/F2/"]
+
 	data = {}
 	if keep:
 		with open(f"static/{sport}futures/bet365.json") as fh:
 			data = json.load(fh)
 
-	for url in urls[2:]:
+	for url in urls:
 		page = await browser.get(url)
 
 		await page.wait_for(selector=".rcl-MarketGroupButton_TextWrapper")
 		dropdown = await page.query_selector(".rcl-MarketGroupButton_TextWrapper")
-		await dropdown.scroll_into_view()
-		await dropdown.mouse_click()
-		await page.wait_for(selector=".smd-DropDownItem")
-		tabs = await page.query_selector_all(".smd-DropDownItem")
+
+		if False:
+			await dropdown.scroll_into_view()
+			await dropdown.mouse_click()
+			#await dropdown.click()
+			await page.wait_for(selector=".smd-DropDownItem")
+			tabs = await page.query_selector_all(".smd-DropDownItem")
+
+		tabs = [None]
 
 		for tabIdx in range(len(tabs)):
-			tabName = tabs[tabIdx].text.lower()
+			if tabs[tabIdx] is None:
+				tabName = dropdown.text_all.lower()
+			else:
+				tabName = tabs[tabIdx].text.lower()
 			mainProp = ""
 			if tabName.endswith("milestones"):
 				mainProp = tabName.split(" ")[-2].replace("strikeouts", "k").replace("runs", "r").replace("in", "rbi").replace("bases", "sb")
@@ -449,14 +507,15 @@ async def write365(sport, keep):
 				continue
 
 			if "milestones" in tabName or mainProp not in ["sb"]:
-				continue
+				#continue
 				pass
 
 			print(tabIdx, tabName, mainProp)
 
-			#await tabs[tabIdx].scroll_into_view()
-			await tabs[tabIdx].mouse_click()
-			time.sleep(2)
+			if tabs[tabIdx] is not None:
+				#await tabs[tabIdx].scroll_into_view()
+				await tabs[tabIdx].mouse_click()
+				time.sleep(2)
 
 			reject = await page.query_selector(".ccm-CookieConsentPopup_Reject")
 			if reject:

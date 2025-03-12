@@ -9,7 +9,7 @@ import argparse
 import unicodedata
 import time
 
-from shared import convertImpOdds, convertAmericanFromImplied
+from shared import convertImpOdds, convertAmericanFromImplied, convertMLBTeam
 
 def strip_accents(text):
 	try:
@@ -259,15 +259,19 @@ def writePN(debug):
 	with open("static/mlbfutures/pn.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-def writeKambi():
+def writeKambi(keep = None):
 	outfile = "outfuture"
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/baseball/mlb/all/all/competitions.json?lang=en_US&market=US&client_id=2&channel_id=7&ncid=1710474292570"
+
+	res = {}
+	if keep:
+		with open("static/mlbfutures/kambi.json") as fh:
+			res = json.load(fh)
 
 	os.system(f"curl \"{url}\" -o {outfile}")
 	with open(outfile) as fh:
 		j = json.load(fh)
 
-	res = {}
 	playerMarkets = False
 	for event in j["events"]:
 		prop = event["event"]["name"].lower()
@@ -301,11 +305,16 @@ def writeKambi():
 			else:
 				team = convertTeam(prop.split(" markets")[0])
 			prop = "market"
+		elif prop.startswith("mlb milestones"):
+			prop = "milestones"
 		else:
+			#print(prop)
 			continue
 
-		#if prop not in ["market"]:
-		#	continue
+		#continue
+		if prop in ["milestones"]:
+			#continue
+			pass
 
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json?includeParticipants=true"
 		time.sleep(0.2)
@@ -322,6 +331,8 @@ def writeKambi():
 		for offerRow in j["betOffers"]:
 			outcomes = offerRow["outcomes"]
 			offerLabel = offerRow["criterion"]["label"].lower()
+			mainLine = ""
+
 			if "make the playoffs" in offerLabel:
 				prop = "playoffs"
 			elif "total matches won" in offerLabel:
@@ -340,6 +351,19 @@ def writeKambi():
 				prop = "k"
 			elif offerLabel.startswith("total wins by the pitcher"):
 				prop = "w"
+			elif offerLabel.startswith("team to win at least"):
+				mainLine = str(float(offerLabel.split(" ")[5].replace("+", "")) - 0.5)
+				prop =  "team_wins"
+			elif offerLabel.startswith("player to record"):
+				mainLine = str(float(offerLabel.split(" ")[3].replace("+", "")) - 0.5)
+				if offerLabel.endswith("strikeouts"):
+					prop = "k"
+				elif offerLabel.endswith("stolen bases"):
+					prop = "sb"
+				elif offerLabel.endswith("hits"):
+					prop = "h"
+				elif offerLabel.endswith("home runs"):
+					prop = "hr"
 
 			if prop not in res:
 				res[prop] = {}
@@ -352,27 +376,46 @@ def writeKambi():
 					except:
 						continue
 				elif prop == "team_wins":
+					if "oddsAmerican" not in outcome:
+						continue
+					if mainLine:
+						team = convertMLBTeam(outcome["participant"])
+						ou = outcome["oddsAmerican"]
+						line = mainLine
+					else:
+						ou = outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
+						line = str(outcome["line"] / 1000)
+
+					if team not in res[prop]:
+						res[prop][team] = {}
+					res[prop][team][line] = ou
+				elif not mainLine and prop in ["r", "rbi", "hr", "h", "sb", "k", "w"]:
+					if "line" not in outcome:
+						continue
 					line = str(outcome["line"] / 1000)
-					res[prop][team] = {
-						line: outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
-					}
-				elif prop in ["r", "rbi", "hr", "h", "sb", "k", "w"]:
-					line = str(outcome["line"] / 1000)
-					res[prop][player] = {
-						line: outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
-					}
+					ou = outcome["oddsAmerican"]+"/"+outcomes[i+1]["oddsAmerican"]
+					if player not in res[prop]:
+						res[prop][player] = {}
+					res[prop][player][line] = ou
 				elif prop in ["world_series", "league", "division"]:
 					team = convertTeam(outcome["participant"].lower())
 					res[prop][team] = outcome["oddsAmerican"]
 				else:
-					if "participant" not in outcome:
+					if "participant" not in outcome or "oddsAmerican" not in outcome:
 						continue
 					try:
 						last, first = outcome["participant"].lower().split(", ")
 						player = parsePlayer(f"{first} {last}")
 					except:
 						player = parsePlayer(outcome["participant"])
-					res[prop][player] = outcome["oddsAmerican"]
+
+					if player not in res[prop]:
+						res[prop][player] = {}
+
+					if mainLine:
+						res[prop][player][mainLine] = outcome["oddsAmerican"]
+					else:
+						res[prop][player] = outcome["oddsAmerican"]
 
 	with open("static/mlbfutures/kambi.json", "w") as fh:
 		json.dump(res, fh, indent=4)
@@ -392,14 +435,13 @@ def writeBV():
 			for eventRow in mainRow["events"]:
 				for marketRow in eventRow["displayGroups"][0]["markets"]:
 					prop = marketRow["description"].lower()
-					player = ""
+					player = mainLine = ""
 					if prop.split(" total ")[-1] in ["strikeouts", "wins", "hits", "home runs", "rbis", "stolen bases"]:
 						player = parsePlayer(prop.split(" total ")[0])
 						prop = prop.split(" total ")[-1].replace("strikeouts", "k").replace("wins", "w").replace("hits", "h").replace("home runs", "hr").replace("rbis", "rbi").replace("runs scored", "r").replace("stolen bases", "sb")
 					elif "to record" in prop and "+ regular season" in prop:
-						l = prop.split(" ")[3]
+						mainLine = str(float(prop.split(" ")[3].replace("+", "")) - 0.5)
 						prop = prop.split(" season ")[-1].replace("strikeouts", "k").replace("wins", "w").replace("hits", "h").replace("home runs", "hr").replace("rbis", "rbi").replace("runs scored", "r").replace("stolen bases", "sb")
-						prop = f"{l}_{prop}"
 					elif prop.endswith(" era"):
 						player = parsePlayer(prop.split(" - ")[-1].split(" era")[0])
 						prop = "era"
@@ -433,7 +475,7 @@ def writeBV():
 						res[prop] = {}
 
 					skip = 2
-					if prop in ["world_series", "league", "division", "cy_young", "mvp", "roty"] or "leader" in prop or "+_" in prop:
+					if prop in ["world_series", "league", "division", "cy_young", "mvp", "roty"] or "leader" in prop or mainLine:
 						skip = 1
 					outcomes = marketRow["outcomes"]
 					for i in range(0, len(outcomes), skip):
@@ -448,11 +490,16 @@ def writeBV():
 								line: ou
 							}
 						elif skip == 1:
-							if prop in ["cy_young", "mvp", "roty"] or "leader" in prop or "+_" in prop:
+							if prop in ["cy_young", "mvp", "roty"] or "leader" in prop or mainLine:
 								team = parsePlayer(outcome["description"].split(" (")[0])
 							else:
 								team = convertTeam(outcome["description"])
-							res[prop][team] = ou
+							if mainLine:
+								if team not in res[prop]:
+									res[prop][team] = {}
+								res[prop][team][mainLine] = ou
+							else:
+								res[prop][team] = ou
 						elif prop == "playoffs":
 							team = convertTeam(eventRow["description"].split(" to ")[0])
 							res[prop][team] = ou
@@ -860,7 +907,7 @@ def writeCZ():
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/futures?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "outfuture"
 
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: ca03c7f1-89ef-41b4-9d5a-23d376a9d536:EgoAhBwN2IMVAQAA:iqZwB7GrudZbY1v7j5sVlG7+Jp0Bd2J0a1FkpikAXUxcCEBGywH463Y94SGhiOFkIlC38ntLBaYv6NMl7G2X6tdjEvabml6pwFDifCH7fH3KXy3aCFcDAwwN0OwuyfM1Nzw448NMBjJEdA9thG5sZmGjrwHnv9gtq4l9uk2GqE9swhMUoJTzRBd9Ap2s2i6Cs/8LjcBzMHTI7FSnb2QPvN43iWp7hO8tFu4+mL2zys345fvP8bErx8Ym6DQ=' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: aabc0e07-b7c5-4f52-b7e9-e6ec2ae46b6e:EwoAhRt7yI4iAAAA:CSXCzImg98beHhhr9AJO3VTufZ4dTWmm/RMp/CZ0HWuVaj6n2BOC3edg5AQFeGe/JvFKz1U5qBWJnFLQ20OLjMrPD15x4DnP/+1241WpbVBg5otE8fOJ2+21aMGeT2B9STMI2RuCGlPTVbwYttEoBBpHQnDIgFRTOeGMWnlnI+C5z/iowdaTIBnFULPUagSFL2jc2Srs6PC+anDwvW1xLP5tit8Jw5zoe42sNqNQxf90ocB6fLVAz9h9fHw=' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -911,6 +958,12 @@ def writeCZ():
 				prop = "triple_leader"
 			elif prop == "total home runs":
 				prop = "hr"
+			elif prop == "total rbi":
+				prop = "rbi"
+			elif prop == "total stolen bases":
+				prop = "sb"
+			elif prop == "total wins":
+				prop = "w"
 			else:
 				continue
 
@@ -919,7 +972,7 @@ def writeCZ():
 
 			selections = market["selections"]
 			skip = 1
-			if prop in ["team_wins", "playoffs", "hr"]:
+			if prop in ["team_wins", "playoffs", "hr", "rbi", "sb", "w"]:
 				skip = 2
 			for i in range(0, len(selections), skip):
 				try:
@@ -937,7 +990,7 @@ def writeCZ():
 					else:
 						team = parsePlayer(selections[i]["name"].replace("|", ""))
 					res[prop][team] = ou
-				elif prop in ["hr"]:
+				elif prop in ["hr", "sb", "w", "rbi"]:
 					player = parsePlayer(event["name"].replace("|", "").split(" 2025")[0])
 					line = str(market["line"])
 					if player not in res[prop]:
@@ -1345,6 +1398,7 @@ if __name__ == '__main__':
 	parser.add_argument("--ev", action="store_true")
 	parser.add_argument("--summary", action="store_true")
 	parser.add_argument("-u", "--update", action="store_true")
+	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--prop", help="Prop")
@@ -1357,7 +1411,7 @@ if __name__ == '__main__':
 	if args.mgm:
 		writeMGM()
 	if args.kambi:
-		writeKambi()
+		writeKambi(args.keep)
 	if args.bv:
 		writeBV()
 	if args.cz:

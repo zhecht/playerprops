@@ -6,7 +6,7 @@ import unicodedata
 import nodriver as uc
 import argparse
 
-from controllers.shared import convertSoccer, parsePlayer, strip_accents
+from controllers.shared import convertSoccer, parsePlayer, strip_accents, convertMLBTeam
 from datetime import datetime, timedelta
 
 def convertCollege(team):
@@ -2625,6 +2625,9 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 	elif sport == "soccer":
 		await writeSoccerFD(keep, league, tomorrow)
 		exit()
+	elif sport == "mlb":
+		url += "?tab=tokyo-series"
+		pass
 
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
@@ -2675,6 +2678,9 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 		elif sport == "ncaab":
 			away = convertCollege(teams[0].text)
 			home = convertCollege(teams[1].text)
+		elif sport == "mlb":
+			away = convertMLBTeam(teams[0].text)
+			home = convertMLBTeam(teams[1].text)
 
 		game = f"{away} @ {home}"
 
@@ -2731,6 +2737,9 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 		elif sport == "ncaab":
 			away = convertCollege(away)
 			home = convertCollege(home)
+		elif sport == "mlb":
+			away = convertMLBTeam(away)
+			home = convertMLBTeam(home)
 		game = f"{away} @ {home}"
 
 		data[game] = {}
@@ -2748,6 +2757,9 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 			elif sport in ["nba", "ncaab"]:
 				if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense"]:
 				#if tab.text.lower() not in ["player combos"]:
+					continue
+			elif sport == "mlb":
+				if tab.text.lower() not in ["batter props"]:
 					continue
 			else:
 				if tab.text.lower() not in ["popular", "td scorer props", "passing props", "receiving props", "rushing props"]:
@@ -2883,6 +2895,16 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 					prop = label.split("alternate total ")[-1].split("alt ")[-1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("threes", "3ptm").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replace(" ", "_")
 				elif " - passing + rushing yds" in label:
 					prop = "pass+rush"
+				elif sport == "mlb":
+					skip = 1
+					if label == "to hit a home run":
+						prop = "hr"
+					elif label == "to record a hit":
+						prop = "h"
+					#elif label == "to record 2+ hit":
+					#	prop = "2+h"
+					else:
+						continue
 				elif sport in ["nba", "ncaab"]:
 					if label.startswith("to score") and label.endswith("points"):
 						prop = "pts"
@@ -3140,9 +3162,11 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 						if mainLine:
 							player = parsePlayer(fields[1])
 							line = mainLine
-						elif prop == "sacks" or prop == "def_int":
+						elif prop == "sacks" or prop == "def_int" or prop == "h":
 							player = parsePlayer(fields[1].split(" to Record")[0].split(" (")[0])
 							line = "0.5"
+						elif prop == "hr":
+							player = parsePlayer(fields[1].split(" to Record")[0].split(" (")[0])
 						else:
 							line = fields[x].lower().replace(fullPlayer+" ", "").split(" ")[0].replace("+", "")
 							line = str(float(line) - 0.5)
@@ -3152,7 +3176,11 @@ async def writeFD(sport=None, keep=None, league=None, tomorrow=None):
 							data[game][prop][player] = {}
 						if line in data[game][prop][player]:
 							continue
-						data[game][prop][player][line] = odds
+
+						if prop == "hr":
+							data[game][prop][player] = odds
+						else:
+							data[game][prop][player][line] = odds
 					elif prop == "pass+rush":
 						player = parsePlayer(fields[0].split(" (")[0].split(" -")[0])
 						if player not in data[game][prop]:
@@ -3448,6 +3476,8 @@ async def writeDK(sport=None, keep=None, propArg=None, league=None, tomorrow=Non
 	elif sport == "soccer":
 		await writeSoccerDK(keep, league, tomorrow)
 		exit()
+	elif sport == "mlb":
+		url = "https://sportsbook.draftkings.com/leagues/baseball/mlb"
 	else:
 		url = "https://sportsbook.draftkings.com/leagues/football/nfl"
 
@@ -3478,6 +3508,9 @@ async def writeDK(sport=None, keep=None, propArg=None, league=None, tomorrow=Non
 		elif sport == "nhl":
 			if mainTab.text.lower().strip() not in ["game lines", "goalscorer", "shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]:
 			#if mainTab.text.lower().strip() not in ["shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]:
+				continue
+		elif sport == "mlb":
+			if mainTab.text.lower().strip() not in [""]:
 				continue
 		else:
 			if mainTab.text.lower().strip() not in ["td scorers", "passing props", "rushing props", "receiving props", "d/st props"]:

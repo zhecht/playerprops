@@ -1,8 +1,11 @@
-
+from flask import *
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
-from shared import convertSoccer, convertImpOdds, convertAmericanFromImplied
+try:
+	from shared import convertSoccer, convertImpOdds, convertAmericanFromImplied
+except:
+	from controllers.shared import convertSoccer, convertImpOdds, convertAmericanFromImplied
 import math
 import json
 import os
@@ -11,6 +14,8 @@ import argparse
 import unicodedata
 import time
 from twilio.rest import Client
+
+soccerprops_blueprint = Blueprint('soccerprops', __name__, template_folder='views')
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -65,6 +70,17 @@ def parsePlayer(player):
 	elif player == "savio":
 		return "savinho"
 	return player
+
+@soccerprops_blueprint.route('/soccerprops')
+def props_route():
+	with open("static/soccer/ev.json") as fh:
+		dataIn = json.load(fh)
+	data = []
+	for key in dataIn:
+		if dataIn[key]["player"]:
+			data.append(dataIn[key])
+	#print(data[0])
+	return render_template("soccerprops.html", data=data)
 
 def parseTeam(player):
 	return strip_accents(player).lower().replace(".", "").replace("'", "").replace(" ", "-")
@@ -3280,6 +3296,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 								else:
 									lineupStatus = ""
 
+						implied = 0
+						if line > 0:
+							implied = 100 / (line + 100)
+						else:
+							implied = -line / (-line + 100)
+						implied = round(implied * 100)
+
 						evData[key]["lineupStatus"] = lineupStatus
 						evData[key]["game"] = game
 						evData[key]["team"] = team
@@ -3301,6 +3324,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, singles=None, doub
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
+						evData[key]["implied"] = implied
 
 	with open(f"static/soccer/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
@@ -3334,12 +3358,6 @@ def printEV(propArg):
 	for row in sorted(data, reverse=True):
 		if row[-1]["prop"] not in ["atgs", "score_or_assist", "team_fgs", "header"]:
 			continue
-		implied = 0
-		if row[-1]["line"] > 0:
-			implied = 100 / (row[-1]["line"] + 100)
-		else:
-			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
-		implied *= 100
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
@@ -3348,7 +3366,7 @@ def printEV(propArg):
 		teamGame = row[-1]["team"]
 		if not teamGame:
 			teamGame = row[-1]["game"]
-		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), f"{round(implied)}%", teamGame, row[-1]["player"], row[-1]["prop"], ou]
+		arr = [row[0], row[-1].get("pn_ev", "-"), str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), f"{row[-1]['implied']}%", teamGame, row[-1]["player"], row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -3368,12 +3386,6 @@ def printEV(propArg):
 	for row in sorted(data, reverse=True):
 		if "player_" not in row[-1]["prop"] and row[-1]["prop"] not in ["assist"]:
 			continue
-		implied = 0
-		if row[-1]["line"] > 0:
-			implied = 100 / (row[-1]["line"] + 100)
-		else:
-			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
-		implied *= 100
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
@@ -3382,7 +3394,7 @@ def printEV(propArg):
 		teamGame = row[-1]["team"]
 		if not teamGame:
 			teamGame = row[-1]["game"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), f"{round(implied)}%", teamGame, row[-1]["handicap"].title(), row[-1]["prop"].replace("player_", ""), ou]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), f"{row[-1]['implied']}%", teamGame, row[-1]["handicap"].title(), row[-1]["prop"].replace("player_", ""), ou]
 		for book in ["fd", "dk", "365", "cz", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
@@ -3407,18 +3419,12 @@ def printEV(propArg):
 	for row in sorted(data, reverse=True):
 		if "player_" in row[-1]["prop"] or row[-1]["prop"] in ["atgs", "team_fgs", "assist", "score_or_assist", "header"]:
 			continue
-		implied = 0
-		if row[-1]["line"] > 0:
-			implied = 100 / (row[-1]["line"] + 100)
-		else:
-			implied = -1*row[-1]["line"] / (-1*row[-1]["line"] + 100)
-		implied *= 100
 		ou = ("u" if row[-1]["under"] else "o")+" "
 		if row[-1]["player"]:
 			ou += row[-1]["playerHandicap"]
 		else:
 			ou += row[-1]["handicap"]
-		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), f"{round(implied)}%", row[-1]["game"], row[-1]["prop"], ou]
+		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].replace("kambi", "br").upper(), f"{row[-1]['implied']}%", row[-1]["game"], row[-1]["prop"], ou]
 		for book in ["fd", "dk", "mgm", "365", "cz", "pn", "kambi", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
