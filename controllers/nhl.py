@@ -3001,6 +3001,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/nhl/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
+	with open(f"{prefix}static/nhl/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh, indent=4)
+
 def sortEV(propArg):
 	with open(f"{prefix}static/nhl/ev.json") as fh:
 		evData = json.load(fh)
