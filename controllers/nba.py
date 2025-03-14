@@ -3842,9 +3842,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["odds"] = l
 						evData[key]["player"] = player
 						evData[key]["confirmed"] = confirmed
-						j = {b: o for o, b in zip(l, books)}
-						j[evBook] = maxOU
-						evData[key]["bookOdds"] = j
+						bookOdds = {b: o for o, b in zip(l, books)}
+						bookOdds[evBook] = maxOU
+						evData[key]["bookOdds"] = bookOdds
 						
 
 						if player:
@@ -3863,7 +3863,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"avgMin": 0 if not projMin else round(projMin),
 								"isAway": isAway,
 								"gameLine": gameLine,
-								"bookOdds": {b:o for o, b in zip(l, books)}
+								"bookOdds": bookOdds
 							}
 							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total10Over", "total10OverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits", "awayHomeSplitsPerMin", "winLossSplitsPerMin", "confirmed"]:
 								j[x] = evData[key][x]
