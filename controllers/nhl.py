@@ -2859,10 +2859,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 								o = val
 								ou = val
 
-							if not o or o == "-" or "odds" in o.lower():
+							if not o or o == "-" or "odds" in o.lower() or "." in o:
 								continue
 
-							#print(prop, player, o)
+							#print(prop, player, book, o)
 							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
