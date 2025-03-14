@@ -424,6 +424,7 @@ def writeEV():
 				#devig(evData, player, ou, highest)
 				pass
 			
+			evData[player]["player"] = player
 			evData[player]["game"] = game
 			evData[player]["book"] = evBook
 			evData[player]["line"] = highest
@@ -432,6 +433,9 @@ def writeEV():
 
 	with open("static/dailyev/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
+
+	with open("static/dailyev/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh, indent=4)
 
 def printEV():
 	with open(f"static/dailyev/ev.json") as fh:
