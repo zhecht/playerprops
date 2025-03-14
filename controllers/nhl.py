@@ -1947,7 +1947,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 		return
 
 	if "/" not in ou:
-		u = 1.10 - impliedOver
+		u = 1.07 - impliedOver
 		if u >= 1:
 			#print(player, ou, finalOdds, impliedOver)
 			return
