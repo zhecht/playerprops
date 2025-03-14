@@ -147,7 +147,7 @@ async def writeDK(sport, keep):
 	for mainIdx in range(len(mainTabs)):
 		mainTab = mainTabs[mainIdx]
 		mainTabName = mainTab.text.lower()
-		if mainTabName in ["game lines", "awards", "start of season"]:
+		if mainTabName in ["game lines", "awards", "start of season", "quick sgp"]:
 			continue
 
 		# testing
@@ -293,6 +293,8 @@ async def writeESPN(sport, keep):
 			if prop not in data:
 				data[prop] = {}
 
+			#print(prop)
+
 			btns = await detail.query_selector_all("button")
 			if not btns:
 				print(team)
@@ -301,6 +303,7 @@ async def writeESPN(sport, keep):
 			if btns[-1].text == "See All Lines":
 				await btns[-1].click()
 				await page.wait_for(selector=".modal")
+				time.sleep(1)
 				modal = await page.query_selector(".modal")
 				btns = await modal.query_selector_all("button")
 				for i in range(1, len(btns), 3):
@@ -348,6 +351,7 @@ async def writeESPN(sport, keep):
 					player = parsePlayer(" ".join(btn.text_all.split(" ")[:-1]))
 					if player not in data[prop]:
 						data[prop][player] = {}
+					#print(prop, player, mainLine)
 					data[prop][player][mainLine] = ou.replace("Even", "+100")
 
 	browser.stop()
@@ -456,10 +460,10 @@ async def write365(sport, keep):
 
 	# E112265508, E112347081, E113646358, E112347082, E112347080
 	# HR, RBI, SB, K, H
-	urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112347080/F2/"]
+	urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112347082/F2/"]
 
 	# team wins
-	urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112662049/F2/"]
+	#urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112662049/F2/"]
 
 	data = {}
 	if keep:

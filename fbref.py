@@ -37,7 +37,7 @@ async def writeMatches(date=None):
 			if "home_team" in td.attributes:
 				homeLink = td.children[0]
 			elif "away_team" in td.attributes:
-				awayLink = td.children[0]
+				awayLink = td.children[-1]
 				break
 
 		try:

@@ -338,9 +338,9 @@ def writeCZ(date=None, token=None):
 				prop = "ml"
 			elif prop == "60 minutes betting":
 				prop = "3-way"
-			elif prop == "player to score a goal":
+			elif prop == "player to score a goal" or prop == "anytime goal scorer":
 				prop = "atgs"
-			elif prop == "first goalscorer":
+			elif prop == "first goalscorer" or prop == "first goal scorer":
 				prop = "fgs"
 			elif "total saves" in prop:
 				player = parsePlayer(prop.split(" total saves")[0])
@@ -348,6 +348,9 @@ def writeCZ(date=None, token=None):
 			elif "total shots" in prop:
 				player = parsePlayer(prop.split(" total shots")[0])
 				prop = "sog"
+			elif "total assists" in prop:
+				player = parsePlayer(prop.split(" total assists")[0])
+				prop = "ast"
 			elif "blocked shots" in prop:
 				player = parsePlayer(prop.split(" blocked shots")[0])
 				prop = "bs"
@@ -371,6 +374,7 @@ def writeCZ(date=None, token=None):
 			elif "puck line" in prop:
 				prop = "spread"
 			else:
+				#print(prop)
 				continue
 
 			prop = f"{prefix}{prop}"
@@ -379,7 +383,7 @@ def writeCZ(date=None, token=None):
 				res[game][prop] = {}
 
 			selections = market["selections"]
-			skip = 1 if prop in ["fgs", "atgs", "ast", "pts", "pp_pts"] else 2
+			skip = 1 if prop in ["fgs", "atgs", "pts", "pp_pts"] else 2
 			if prop == "3-way":
 				skip = 3
 			mainLine = ""
@@ -398,11 +402,11 @@ def writeCZ(date=None, token=None):
 				elif "3-way" in prop:
 					res[game][prop] = f"{selections[0]['price']['a']}/{selections[-1]['price']['a']}"
 				elif prop in ["atgs", "fgs"]:
-					player = parsePlayer(selections[i]["name"].replace("|", ""))
+					player = parsePlayer(selections[i]["name"].replace("|", "").strip())
 					res[game][prop][player] = ou
-				elif prop in ["pts", "ast", "pp_pts"]:
+				elif prop in ["pts", "pp_pts"]:
 					line = str(float(market["name"].split(" ")[5][1:]) - 0.5)
-					player = parsePlayer(selections[i]["name"].replace("|", ""))
+					player = parsePlayer(selections[i]["name"].replace("|", "").strip())
 					if player not in res[game][prop]:
 						res[game][prop][player] = {}
 					res[game][prop][player][line] = ou
@@ -429,7 +433,7 @@ def writeCZ(date=None, token=None):
 						line = str(float(market["line"]))
 					except:
 						line = "0.5"
-					res[game][prop][player] = {
+					res[game][prop][player.strip()] = {
 						line: ou
 					}
 
