@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Daily Dingers</title>
+	<script type="text/javascript" src="/static/js/tabulator.min.js"></script>
+	<link href="/static/css/tabulator.min.css" rel="stylesheet">
+</head>
+<body>
+	<nav>
+		<a href="/" onclick="event.preventDefault(); route('/');">Home</a>
+		<a href="/daily-dingers" onclick="event.preventDefault(); route('/daily-dingers');">Daily Dingers</a>
+	</nav>
+	<div>
+		Dingers
+	</div>
+	<div id="table"></div>
+	<script type="text/javascript">
+		function renderTable() {
+			TABLE = new Tabulator("#table", {
+				tooltipsHeader: true,
+				ajaxURL: "https://raw.githubusercontent.com/zhecht/playerprops/main/static/dailyev/evArr.json",
+				initialSort: [
+					{column: "ev", dir: "desc"},
+				],
+				columns: [
+					//{title: "Confirmed", field: "confirmed", formatter:"tickCross", width: 30, hozAlign: "center"},
+					{title: "EV", field: "ev", hozAlign: "center", width: 50, sorter: "number"},
+					{title: "Book", field: "book", hozAlign: "center", width: 70},
+					{title: "Player", field: "player", headerFilter: "input"},
+				]
+			});
+		}
+	</script>
+</body>
+</html>

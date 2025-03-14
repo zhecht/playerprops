@@ -380,10 +380,32 @@ def writeEV():
 	with open(f"static/dailyev/odds.json") as fh:
 		data = json.load(fh)
 
+	with open(f"static/baseballreference/bvp.json") as fh:
+		bvp = json.load(fh)
+
+	with open(f"static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"static/mlbprops/lineups.json") as fh:
+		lineups = json.load(fh)
+
 	evData = {}
 
 	for game in data:
+		away, home = map(str, game.split(" @ "))
 		for player in data[game]:
+			opp = away
+			team = home
+			if player in roster[away]:
+				opp = home
+				team = away
+
+			try:
+				pitcher = lineups[opp]["pitching"]
+				bvpStats = bvp[team][player+' v '+pitcher]
+			except:
+				pitcher = ""
+
 			avgOver = []
 			avgUnder = []
 			highest = 0

@@ -3863,7 +3863,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								"avgMin": 0 if not projMin else round(projMin),
 								"isAway": isAway,
 								"gameLine": gameLine,
-								"bookOdds": ", ".join([f"{b}: {o}" for o, b in zip(l, books)])
+								"bookOdds": {b:o for o, b in zip(l, books)}
 							}
 							for x in ["prop", "team", "opp", "totalOver", "totalOverPerMin", "total10Over", "total10OverPerMin", "total15Over", "total15OverPerMin", "lastYearTotal", "ev", "imp", "awayHomeSplits", "winLossSplits", "awayHomeSplitsPerMin", "winLossSplitsPerMin", "confirmed"]:
 								j[x] = evData[key][x]
