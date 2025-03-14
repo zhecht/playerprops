@@ -5,6 +5,8 @@ import os
 import random
 import time
 import nodriver as uc
+import threading
+import multiprocessing
 
 from bs4 import BeautifulSoup as BS
 from controllers.shared import *
@@ -83,13 +85,13 @@ async def writeESPN():
 	page = await browser.get(url)
 
 
-async def write365():
+async def write365(data, browser):
 	book = "365"
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
-
+	close = False
+	if not browser:
+		close = True
+		browser = await uc.start(no_sandbox=True)
 	url = "https://www.oh.bet365.com/?_h=uvJ7Snn5ImZN352O9l7rPQ%3D%3D&btsffd=1#/AC/B16/C20525425/D43/E160301/F43/N2/"
-	browser = await uc.start(no_sandbox=False)
 	page = await browser.get(url)
 
 	await page.wait_for(selector=".srb-MarketSelectionButton-selected")	
@@ -119,18 +121,16 @@ async def write365():
 			#data[game][player].setdefault(book, "-/")
 			data[game][player][book] += "/"+odds
 
-	browser.stop()
-
-	with open(f"static/dailyev/odds.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-
-async def writeDK():
+	if close:
+		browser.stop()
+	
+async def writeDK(data, browser):
 	book = "dk"
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
-
+	close = False
+	if not browser:
+		close = True
+		browser = await uc.start(no_sandbox=True)
 	url = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
-	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
 
 	await page.wait_for(selector=".sportsbook-event-accordion__wrapper")
@@ -148,21 +148,20 @@ async def writeDK():
 			data[game].setdefault(player, {})
 			data[game][player][book] = ou
 
-	browser.stop()
+	if close:
+		browser.stop()
 
-	with open(f"static/dailyev/odds.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-
-async def writeMGM(keep=None):
+async def writeMGM(data, browser):
 	book = "mgm"
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
+	close = False
+	if not browser:
+		close = True
+		browser = await uc.start(no_sandbox=True)
 
 	game = "lad @ chc"
 	data.setdefault(game, {})
 
 	url = "https://sports.mi.betmgm.com/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-16837607"
-	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
 
 	await page.wait_for(selector=".event-details-pills-list")
@@ -189,10 +188,8 @@ async def writeMGM(keep=None):
 		data[game].setdefault(player, {})
 		data[game][player][book] = ou
 
-	browser.stop()
-		
-	with open(f"static/dailyev/odds.json", "w") as fh:
-		json.dump(data, fh, indent=4)
+	if close:
+		browser.stop()
 
 async def writeFDPage(data, page):
 	book = "fd"
@@ -231,13 +228,12 @@ async def writeFDPage(data, page):
 		data[game].setdefault(player, {})
 		data[game][player][book] = labelSplit[-1]
 
-async def writeFD(keep=None):
-
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
-
+async def writeFD(data, browser):
+	close = False
+	if not browser:
+		close = True
+		browser = await uc.start(no_sandbox=True)
 	url = f"https://sportsbook.fanduel.com/navigation/mlb"
-	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
 
 	await page.wait_for(selector="span[role=link]")
@@ -250,10 +246,8 @@ async def writeFD(keep=None):
 
 	await writeFDPage(data, page)
 
-	browser.stop()
-
-	with open(f"static/dailyev/odds.json", "w") as fh:
-		json.dump(data, fh, indent=4)
+	if close:
+		browser.stop()
 
 async def writeCZ(token=None):
 	outfile = "outDingersCZ"
@@ -265,11 +259,9 @@ async def writeCZ(token=None):
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
-def writeKambi():
+def writeKambi(data):
 	book = "kambi"
 	outfile = "outDailyKambi"
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
 
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/baseball/mlb/all/all/matches.json?lang=en_US&market=US"
 	os.system(f"curl -k \"{url}\" -o {outfile}")
@@ -459,10 +451,62 @@ def printEV():
 	with open("static/dailyev/ev.csv", "w") as fh:
 		fh.write(output)
 
+sharedData = {}
+def runThread(book):
+	uc.loop().run_until_complete(writeOne(book))
+
+def writeAll():
+
+	threads = []
+	for b in ["fd", "dk", "365", "mgm", "kambi"]:
+		thread = threading.Thread(target=runThread, args=(b,))
+		threads.append(thread)
+		thread.start()
+
+	for thread in threads:
+		thread.join()
+
+	data = {}
+	for book in sharedData:
+		for game in sharedData[book]:
+			for player in sharedData[book][game]:
+				data.setdefault(game, {})
+				data[game].setdefault(player, {})
+				data[game][player][book] = sharedData[book][game][player][book]
+
+	with open(f"static/dailyev/odds.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+	writeEV()
+	printEV()
+
+async def writeOne(book):
+	#with open(f"static/dailyev/odds.json") as fh:
+	#	data = json.load(fh)
+	data = {}
+
+	browser = await uc.start(no_sandbox=True)
+	if book == "fd":
+		await writeFD(data, browser)
+	elif book == "dk":
+		await writeDK(data, browser)
+	elif book == "365":
+		await write365(data, browser)
+	elif book == "mgm":
+		await writeMGM(data, browser)
+	elif book == "kambi":
+		writeKambi(data)
+
+	browser.stop()
+	sharedData[book] = data
+	#with open(f"static/dailyev/odds.json", "w") as fh:
+	#	json.dump(data, fh, indent=4)
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--sport")
 	parser.add_argument("--token")
+	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--date", "-d")
 	parser.add_argument("--print", "-p", action="store_true")
 	parser.add_argument("--update", "-u", action="store_true")
@@ -482,31 +526,27 @@ if __name__ == '__main__':
 	if args.feed:
 		uc.loop().run_until_complete(writeFeed(args.date))
 	elif args.fd:
-		uc.loop().run_until_complete(writeFD())
+		uc.loop().run_until_complete(writeOne("fd"))
 	elif args.mgm:
-		uc.loop().run_until_complete(writeMGM())
+		uc.loop().run_until_complete(writeOne("mgm"))
 	elif args.dk:
-		uc.loop().run_until_complete(writeDK())
+		uc.loop().run_until_complete(writeOne("dk"))
 	elif args.bet365:
-		uc.loop().run_until_complete(write365())
+		uc.loop().run_until_complete(writeOne("365"))
 	elif args.espn:
-		uc.loop().run_until_complete(writeESPN())
+		uc.loop().run_until_complete(writeOne("espn"))
 	elif args.cz:
 		uc.loop().run_until_complete(writeCZ(args.token))
 	elif args.kambi:
 		writeKambi()
 
 	if args.update:
-		uc.loop().run_until_complete(writeFD())
-		uc.loop().run_until_complete(writeMGM())
-		uc.loop().run_until_complete(writeDK())
-		uc.loop().run_until_complete(write365())
-		writeKambi()
-
-		writeEV()
-		printEV()
+		writeAll()
 
 	if args.ev:
 		writeEV()
 	if args.print:
 		printEV()
+
+	if args.commit:
+		commitChanges()

@@ -1,4 +1,14 @@
 import unicodedata
+import git
+
+def commitChanges():
+	repo = git.Repo(".")
+	repo.git.add(A=True)
+	repo.index.commit("test")
+
+	origin = repo.remote(name="origin")
+	origin.push()
+	print("Successful commit")
 
 def convertImpOdds(odds):
 	if odds == 0:
