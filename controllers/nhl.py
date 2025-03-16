@@ -138,7 +138,7 @@ def getPropData(date=None, teams=""):
 	with open(f"static/hockeyreference/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	with open("static/nhl/fanduelLines.json") as fh:
+	with open("static/nhl/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open("static/nhl/draftkings.json") as fh:
@@ -158,7 +158,7 @@ actionNetworkBookIds = {
 
 def writeActionNetwork(dateArg = None):
 
-	with open(f"{prefix}static/nhl/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nhl/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	teamGame = {}
@@ -1907,7 +1907,7 @@ def writeFanduel():
 									handicap: ou
 								}
 	
-	with open(f"static/nhl/fanduelLines.json", "w") as fh:
+	with open(f"static/nhl/fanduel.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
@@ -2663,7 +2663,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	#with open(f"{prefix}static/nhl/pointsbet.json") as fh:
 	#	pbLines = json.load(fh)
 
-	with open(f"{prefix}static/nhl/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nhl/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/nhl/draftkings.json") as fh:
@@ -2776,6 +2776,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 				totalSplits = ""
 				if player:
 					convertedProp = prop.replace("sog", "s").replace("ast", "a").replace("saves", "sv").replace("atgs", "g")
+					print(prop, game)
 					away, home = map(str, game.split(" @ "))
 					team = away
 					name = player
@@ -2859,6 +2860,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 								o = val
 								ou = val
 
+							o = str(o or '')
 							if not o or o == "-" or "odds" in o.lower() or "." in o:
 								continue
 

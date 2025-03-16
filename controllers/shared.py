@@ -1,3 +1,4 @@
+from collections import defaultdict
 import unicodedata
 import git
 
@@ -9,6 +10,37 @@ def commitChanges():
 	origin = repo.remote(name="origin")
 	origin.push()
 	print("Successful commit")
+
+def nested_dict():
+	return defaultdict(nested_dict)
+
+def convert_to_dict(d):
+	if isinstance(d, defaultdict):
+		d = {k: convert_to_dict(v) for k,v in d.items()}
+	return d
+
+def merge_dicts(d1, d2):
+	for k,v in d2.items():
+		#print(k,k in d1,d1.get(k, None) is dict, v is dict)
+		if k in d1 and isinstance(d1[k], dict) and isinstance(v, dict):
+			merge_dicts(d1[k], v)
+		elif k in d1 and isinstance(v, str):
+			if "/" in d1[k]:
+				o,u = map(int, d1[k].split("/"))
+			else:
+				o,u = d1[k],""
+			o = max(int(o), int(v.split("/")[0]))
+			if "/" in v:
+				if "/" in u:
+					u = max(int(u), int(v.split("/")[-1]))
+				else:
+					u = v.split("/")[-1]
+			if u:
+				d1[k] = f"{o}/{u}"
+			else:
+				d1[k] = str(o)
+		else:
+			d1[k] = v
 
 def convertImpOdds(odds):
 	if odds == 0:

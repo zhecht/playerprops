@@ -85,7 +85,7 @@ def getmarch_route():
 	with open(f"{prefix}static/ncaab/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
-	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+	with open(f"{prefix}static/ncaab/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
@@ -1916,7 +1916,7 @@ def writeFanduel():
 									player = parsePlayer(" ".join(runners[i]["runnerName"].split(" ")[:-1]))
 									lines[game][prop][player] = f"{handicap} {ou}"
 	
-	with open(f"static/ncaab/fanduelLines.json", "w") as fh:
+	with open(f"static/ncaab/fanduel.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
@@ -2407,7 +2407,7 @@ def bvParlay():
 	with open(f"{prefix}static/ncaab/pointsbet.json") as fh:
 		pbLines = json.load(fh)
 
-	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+	with open(f"{prefix}static/ncaab/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
@@ -2540,7 +2540,7 @@ def writePlayer(player, propArg):
 	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
 		dkLines = json.load(fh)
 
-	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+	with open(f"{prefix}static/ncaab/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/ncaab/bovada.json") as fh:
@@ -2624,7 +2624,7 @@ def writePlayers(keep=None):
 	with open(f"{prefix}static/ncaab/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
 
-	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+	with open(f"{prefix}static/ncaab/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/ncaab/caesars.json") as fh:
@@ -2716,7 +2716,7 @@ def writeDaily():
 	with open(f"{prefix}static/ncaab/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
-	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+	with open(f"{prefix}static/ncaab/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
@@ -2759,7 +2759,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/ncaab/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
-	with open(f"{prefix}static/ncaab/fanduelLines.json") as fh:
+	with open(f"{prefix}static/ncaab/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/ncaab/draftkings.json") as fh:

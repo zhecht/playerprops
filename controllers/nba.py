@@ -1823,7 +1823,7 @@ def writeFanduel():
 									lines[game][prop][player] = {}
 								lines[game][prop][player][handicap] = ou
 	
-	with open(f"static/nba/fanduelLines.json", "w") as fh:
+	with open(f"static/nba/fanduel.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
 def averageOdds(odds):
@@ -2791,7 +2791,7 @@ def bvParlay():
 	with open(f"{prefix}static/nba/pointsbet.json") as fh:
 		pbLines = json.load(fh)
 
-	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nba/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/nba/draftkings.json") as fh:
@@ -2968,7 +2968,7 @@ def writePlayer(player, propArg):
 	with open(f"{prefix}static/nba/draftkings.json") as fh:
 		dkLines = json.load(fh)
 
-	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nba/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/nba/bovada.json") as fh:
@@ -3125,7 +3125,7 @@ def writeRanks(teamArg=None):
 	with open(f"{prefix}static/nba/espn.json") as fh:
 		espn = json.load(fh)
 
-	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nba/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/nba/draftkings.json") as fh:
@@ -3323,7 +3323,7 @@ def writeDaily():
 	with open(f"{prefix}static/nba/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
-	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nba/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/nba/draftkings.json") as fh:
@@ -3379,7 +3379,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nba/pointsbet.json") as fh:
 		pbLines = json.load(fh)
 
-	with open(f"{prefix}static/nba/fanduelLines.json") as fh:
+	with open(f"{prefix}static/nba/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/nba/draftkings.json") as fh:
@@ -3612,6 +3612,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					for book in lines:
 						lineData = lines[book]
+						#if book == "dk" and "+" in prop:
+						#	continue
 						if game in lineData and prop in lineData[game]:
 
 							if type(lineData[game][prop]) is str:
