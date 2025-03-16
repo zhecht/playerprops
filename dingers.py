@@ -317,7 +317,7 @@ def writeKambi(data):
 	with open(f"static/dailyev/odds.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-async def writeFeed(date):
+async def writeFeed(date, loop):
 	if not date:
 		date = str(datetime.now())[:10]
 	url = f"https://baseballsavant.mlb.com/gamefeed?date={date}"
@@ -336,18 +336,26 @@ async def writeFeed(date):
 	time.sleep(1)
 	"""
 
-	html = await page.get_content()
+	with open("static/dailyev/feed_times.json") as fh:
+		times = json.load(fh)
+
+	i = 0
+	while True:
+		html = await page.get_content()
+		with open(f"static/dailyev/feed.html", "w") as fh:
+			fh.write(html)
+		parseFeed(times)
+		i += 1
+		if not loop:
+			break
+		time.sleep(1)
+		if i >= 10:
+			commitChanges()
+			i = 0
 
 	browser.stop()
 
-	with open(f"static/dailyev/feed.html", "w") as fh:
-		fh.write(html)
-
-	parseFeed()
-
-def parseFeed():
-	with open("static/dailyev/feed_times.json") as fh:
-		times = json.load(fh)
+def parseFeed(times):
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
 	data = {}
 	for div in soup.find_all("div", class_="game-container"):
@@ -561,11 +569,12 @@ if __name__ == '__main__':
 	parser.add_argument("--feed", action="store_true")
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--ev", action="store_true")
+	parser.add_argument("--loop", action="store_true")
 
 	args = parser.parse_args()
 
 	if args.feed:
-		uc.loop().run_until_complete(writeFeed(args.date))
+		uc.loop().run_until_complete(writeFeed(args.date, args.loop))
 	elif args.fd:
 		uc.loop().run_until_complete(writeOne("fd"))
 	elif args.mgm:
