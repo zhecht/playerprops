@@ -473,6 +473,26 @@ def write_totals():
 
 	write_curr_year_averages()
 
+def writeYearByYear():
+	outfile = "outYearByYear"
+	url = "https://www.baseball-reference.com/leagues/majors/bat.shtml"
+	call(["curl", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	table = soup.find("table", id="teams_standard_batting_totals")
+	data = []
+	for row in table.find_all("tr")[1:]:
+		tds = row.find_all("td")
+		if not tds:
+			continue
+		j = {"year": row.find("th").text}
+		for td in tds:
+			j[td.get("data-stat").lower()] = td.text
+		data.append(j)
+	
+	with open("static/mlb/year_by_year.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
 	outfile = "outmlb3"
@@ -1836,6 +1856,7 @@ if __name__ == "__main__":
 	parser.add_argument("--ph", help="baseball reference pinch hits", action="store_true")
 	parser.add_argument("-e", "--end", help="End Week", type=int)
 	parser.add_argument("-w", "--week", help="Week", type=int)
+	parser.add_argument("--year", help="Year by Year Avg", action="store_true")
 
 	args = parser.parse_args()
 
@@ -1846,6 +1867,9 @@ if __name__ == "__main__":
 	if not date:
 		date = datetime.datetime.now()
 		date = str(date)[:10]
+
+	if args.year:
+		writeYearByYear()
 
 	if args.averages:
 		writeYears()
