@@ -356,6 +356,8 @@ def parseFeed():
 		game = f"{away} @ {home}"
 		data[game] = []
 		table = div.find("div", class_="mini-ev-table")
+		if not table:
+			continue
 		for tr in table.find("tbody").find_all("tr"):
 			tds = tr.find_all("td")
 			player = parsePlayer(tds[1].text.strip())
