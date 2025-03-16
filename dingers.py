@@ -365,7 +365,7 @@ def parseFeed():
 		for tr in table.find("tbody").find_all("tr"):
 			tds = tr.find_all("td")
 			player = parsePlayer(tds[1].text.strip())
-			img = tds[0].find("img").get("src").split("/")[-1][:-4]
+			img = tds[0].find("img").get("src")
 			if tds[4].text.strip() != "Home Run":
 				#continue
 				pass
