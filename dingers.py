@@ -346,6 +346,8 @@ async def writeFeed(date):
 	parseFeed()
 
 def parseFeed():
+	with open("static/dailyev/feed_times.json") as fh:
+		times = json.load(fh)
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
 	data = {}
 	for div in soup.find_all("div", class_="game-container"):
@@ -355,28 +357,39 @@ def parseFeed():
 		home = convertMLBTeam(home.text.strip())
 		game = f"{away} @ {home}"
 		data[game] = []
+		if game not in times:
+			times[game] = {}
 		table = div.find("div", class_="mini-ev-table")
 		if not table:
 			continue
 		for tr in table.find("tbody").find_all("tr"):
 			tds = tr.find_all("td")
 			player = parsePlayer(tds[1].text.strip())
+			img = tds[0].find("img").get("src").split("/")[-1][:-4]
 			if tds[4].text.strip() != "Home Run":
 				#continue
 				pass
 
+			pa = tds[2].text.strip()
+			dt = times[game].get(pa, str(datetime.now()))
+			times[game][pa] = dt
 			j = {
 				"player": player,
-				"hr/park": tds[-1].text.strip()
+				"hr/park": tds[-1].text.strip(),
+				"pa": pa,
+				"dt": dt,
+				"img": img
 			}
-			i = 2
-			for hdr in ["pa", "in", "result", "evo", "la", "dist"]:
+			i = 3
+			for hdr in ["in", "result", "evo", "la", "dist"]:
 				j[hdr] = tds[i].text.strip()
 				i += 1
 			data[game].append(j)
 
 	with open("static/dailyev/feed.json", "w") as fh:
 		json.dump(data, fh, indent=4)
+	with open("static/dailyev/feed_times.json", "w") as fh:
+		json.dump(times, fh, indent=4)
 
 def writeEV():
 	with open(f"static/dailyev/odds.json") as fh:
