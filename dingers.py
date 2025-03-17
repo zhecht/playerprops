@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup as BS
 from controllers.shared import *
 from datetime import datetime, timedelta
 
+lock = threading.Lock()
+
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
 	impliedOver = impliedUnder = 0
 	over = int(ou.split("/")[0])
@@ -552,15 +554,6 @@ def writeAll():
 	for thread in threads:
 		thread.join()
 
-	data = nested_dict()
-	for book in sharedData:
-		for game in sharedData[book]:
-			for player in sharedData[book][game]:
-				data[game][player][book] = sharedData[book][game][player][book]
-
-	with open(f"static/dailyev/odds.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-
 	writeEV()
 	printEV()
 
@@ -584,11 +577,12 @@ async def writeOne(book):
 		writeKambi(data)
 
 	browser.stop()
-	with open(f"static/dailyev/odds.json") as fh:
-		old = json.load(fh)
-	merge_dicts(old, data)
-	with open(f"static/dailyev/odds.json", "w") as fh:
-		json.dump(old, fh, indent=4)
+	with lock:
+		with open(f"static/dailyev/odds.json") as fh:
+			old = json.load(fh)
+		merge_dicts(old, data)
+		with open(f"static/dailyev/odds.json", "w") as fh:
+			json.dump(old, fh, indent=4)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()

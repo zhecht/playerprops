@@ -31,8 +31,8 @@ def merge_dicts(d1, d2):
 				o,u = d1[k],""
 			o = max(int(o), int(v.split("/")[0]))
 			if "/" in v:
-				if "/" in u:
-					u = max(int(u), int(v.split("/")[-1]))
+				if "/" in str(u):
+					u = max(int(u.split("/")[-1]), int(v.split("/")[-1]))
 				else:
 					u = v.split("/")[-1]
 			if u:
