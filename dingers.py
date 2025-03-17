@@ -101,15 +101,18 @@ async def writeESPN(data, browser):
 	html = await page.get_content()
 	soup = BS(html, "lxml")
 
-	for article in soup.find("details").find_all("article"):
-		player = parsePlayer(article.find("header").text)
-		last = player.split(" ")
-		p = player[0][0]+". "+last[-1]
-		player = players.get(p, player)
+	for detail in soup.find_all("details"):
+		if not detail.text.startswith("Player Total Home Runs Hit"):
+			continue
+		for article in detail.find_all("article"):
+			player = parsePlayer(article.find("header").text)
+			last = player.split(" ")
+			p = player[0][0]+". "+last[-1]
+			player = players.get(p, player)
 
-		over = article.find("button").find_all("span")[-1].text
-		under = article.find_all("button")[-1].find_all("span")[-1].text
-		data[game][player][book] = over+"/"+under
+			over = article.find("button").find_all("span")[-1].text
+			under = article.find_all("button")[-1].find_all("span")[-1].text
+			data[game][player][book] = over+"/"+under
 
 	if close:
 		browser.stop()
@@ -165,7 +168,7 @@ async def writeDK(data, browser):
 
 	await page.wait_for(selector=".sportsbook-event-accordion__wrapper")
 	gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
-	for gameDiv in gameDivs[:1]:
+	for gameDiv in gameDivs:
 		game = gameDiv.children[0].children[1].text_all
 		away, home = map(str, game.replace(" at ", " @ ").split(" @ "))
 		game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
