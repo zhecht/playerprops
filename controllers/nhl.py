@@ -2872,7 +2872,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 									pass
 									#continue
 								o = "-"
-								ou = f"{val}/-"
+								ou = f"{val}"
 
 							o = str(o or '')
 							if not o or "odds" in o.lower() or "." in o:
@@ -2888,13 +2888,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						continue
 
 					# if under but 
-
+					unders = [s.split("/")[-1] for s in odds if "/" in s]
 					if i == 1:
-						unders = [s.split("/")[-1] for s in odds if "/" in s and not s.endswith("/-")]
 						if not unders:
 							continue
 
-					print(game, prop, handicap, highestOdds, books, odds)
+					#print(game, prop, handicap, highestOdds, books, odds)
 
 					pn = ""
 					try:
@@ -2944,10 +2943,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
 					line += addArg
-					
-					# 
-					#l.remove(maxOU)
-					#books.remove(evBook)
+
+					# if no unders other than ev book, use that
+					if len(unders) == 1 and "/" in maxOU and unders[0] == maxOU.split("/")[1]:
+						bookIdx = l.index(maxOU)
+						l[bookIdx] = "-/"+maxOU.split("/")[-1]
+					else:
+						l.remove(maxOU)
+						books.remove(evBook)
 					
 					if pn:
 						books.append("pn")
@@ -2956,12 +2959,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					avgOver = []
 					avgUnder = []
 					for book in l:
-						if book and book != "-":
-							if book.split("/")[0] == "-":
-								continue
+						if book.split("/")[0] != "-":
 							avgOver.append(convertImpOdds(int(book.split("/")[0])))
-							if "/" in book and book.split("/")[1] != "-":
-								avgUnder.append(convertImpOdds(int(book.split("/")[1])))
+						if "/" in book and book.split("/")[1] != "-":
+							avgUnder.append(convertImpOdds(int(book.split("/")[1])))
 
 					if avgOver:
 						avgOver = float(sum(avgOver) / len(avgOver))
