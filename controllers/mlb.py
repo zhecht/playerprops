@@ -2969,6 +2969,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
+	with open(f"{prefix}static/mlb/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh)
+
 def sortEV(propArg=""):
 	with open(f"{prefix}static/mlb/ev.json") as fh:
 		evData = json.load(fh)

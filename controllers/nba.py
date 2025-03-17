@@ -3877,6 +3877,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nba/html.json", "w") as fh:
 		json.dump(htmlData, fh, indent=4)
 
+	with open(f"{prefix}static/nba/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh)
+
 def get_suffix(num):
 	if num >= 11 and num <= 13:
 		return "th"

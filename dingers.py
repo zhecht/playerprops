@@ -487,6 +487,9 @@ def writeEV():
 	with open("static/dailyev/evArr.json", "w") as fh:
 		json.dump([value for key, value in evData.items()], fh, indent=4)
 
+	with open("static/mlb/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh, indent=4)
+
 def printEV():
 	with open(f"static/dailyev/ev.json") as fh:
 		evData = json.load(fh)
@@ -520,12 +523,10 @@ def writeAll():
 	for thread in threads:
 		thread.join()
 
-	data = {}
+	data = nested_dict()
 	for book in sharedData:
 		for game in sharedData[book]:
 			for player in sharedData[book][game]:
-				data.setdefault(game, {})
-				data[game].setdefault(player, {})
 				data[game][player][book] = sharedData[book][game][player][book]
 
 	with open(f"static/dailyev/odds.json", "w") as fh:

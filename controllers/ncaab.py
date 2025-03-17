@@ -2668,15 +2668,15 @@ def writePlayers(keep=None):
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
 			hdrs = []
-			for td in soup.find("thead").find_all("th")[1:]:
-				hdrs.append(td.text.lower())
+			for td in soup.find("thead").find_all("th"):
+				hdrs.append(td.text.lower().replace("date", "dt"))
 
 			playerStats = {}
 			for tbody in soup.find("div", class_="gamelog").find_all("tbody"):
 				for row in tbody.find_all("tr"):
 					if "note-row" in row.get("class") or "totals_row" in row.get("class"):
 						continue
-					for td, hdr in zip(row.find_all("td")[1:], hdrs):
+					for td, hdr in zip(row.find_all("td"), hdrs):
 						val = td.text
 						if hdr == "opp":
 							val = "A" if "@" in val else "H"
@@ -2848,7 +2848,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				player = handicaps[(handicap, playerHandicap)]
 
 				totalGames = totalOver = total5Over = total10Over = 0
-				totalSplits = ""
+				totalSplits = awayHomeSplits = ""
 				team = ""
 				if player:
 					try:
@@ -2868,6 +2868,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							arr = stats[team][player].get(prop, "")
 
 						if arr and playerHandicap:
+							awayHomeSplits = stats[team][player]["opp"]
+							dtSplits = stats[team][player]["dt"]
 							totalGames = len(stats[team][player]["min"].split(","))
 							#print(player, team, prop, arr)
 							totalOver = [x for x in arr.split(",") if int(x) > float(playerHandicap)]
@@ -3039,6 +3041,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["total5Over"] = total5Over
 						evData[key]["total10Over"] = total10Over
 						evData[key]["totalSplits"] = totalSplits
+						evData[key]["awayHomeSplits"] = awayHomeSplits
+						evData[key]["dtSplits"] = dtSplits
 						evData[key]["game"] = team if team else game
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
@@ -3057,6 +3061,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	with open(f"{prefix}static/ncaab/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
+
+	with open(f"{prefix}static/ncaab/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh)
 
 def sortEV():
 	with open(f"{prefix}static/ncaab/ev.json") as fh:
