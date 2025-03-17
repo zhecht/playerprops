@@ -2861,23 +2861,32 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 								ou = val.split(" ")[-1]
 							except:
 								if i == 1:
-									continue
-								o = val
-								ou = val
+									pass
+									#continue
+								o = "-"
+								ou = f"{val}/-"
 
 							o = str(o or '')
-							if not o or o == "-" or "odds" in o.lower() or "." in o:
+							if not o or "odds" in o.lower() or "." in o:
 								continue
 
 							#print(prop, player, book, o)
-							highestOdds.append(int(o.replace("+", "")))
+							if o != "-":
+								highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 
 					if len(books) < 2:
 						continue
 
-					#print(game, prop, handicap, highestOdds, books, odds)
+					# if under but 
+
+					if i == 1:
+						unders = [s.split("/")[-1] for s in odds if "/" in s and not s.endswith("/-")]
+						if not unders:
+							continue
+
+					print(game, prop, handicap, highestOdds, books, odds)
 
 					pn = ""
 					try:
@@ -2906,7 +2915,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							try:
 								maxOdds.append(int(odds.split("/")[i]))
 							except:
-								maxOdds.append(-10000)
+								#maxOdds.append(-100000)
+								pass
 
 						if not maxOdds:
 							continue
@@ -2929,6 +2939,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					line += addArg
 					#line += 100
 					#print(maxOU in l, maxOU, l)
+					#print(player, prop, i, books, l)
 					l.remove(maxOU)
 					books.remove(evBook)
 					if pn:
@@ -2942,7 +2953,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							if book.split("/")[0] == "-":
 								continue
 							avgOver.append(convertImpOdds(int(book.split("/")[0])))
-							if "/" in book:
+							if "/" in book and book.split("/")[1] != "-":
 								avgUnder.append(convertImpOdds(int(book.split("/")[1])))
 
 					if avgOver:
