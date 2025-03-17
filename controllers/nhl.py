@@ -2773,10 +2773,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 				# last year stats
 				lastTotalOver = lastTotalGames = 0
 				totalOver = total10Over = totalGames = 0
-				totalSplits = ""
+				totalSplits = dtSplits = winLossSplits = awayHomeSplits = ""
 				if player:
 					convertedProp = prop.replace("sog", "s").replace("ast", "a").replace("saves", "sv").replace("atgs", "g")
-					print(prop, game)
+					#print(prop, game)
 					away, home = map(str, game.split(" @ "))
 					team = away
 					name = player
@@ -2807,6 +2807,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 								playerSplits[hdr] += ","+splits[team][name][hdr]
 						else:
 							playerSplits = splits[team][name]
+
+						dtSplits = playerSplits["dt"]
+						winLossSplits = playerSplits["winLoss"]
+						awayHomeSplits = playerSplits["awayHome"]
 
 						if convertedProp in playerSplits:
 							minArr = playerSplits["toi"].split(",")
@@ -2984,6 +2988,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						evData[key]["totalOver"] = totalOver
 						evData[key]["total10Over"] = total10Over
 						evData[key]["totalSplits"] = totalSplits
+						evData[key]["dtSplits"] = dtSplits
+						evData[key]["winLossSplits"] = winLossSplits
+						evData[key]["awayHomeSplits"] = awayHomeSplits
 						evData[key]["game"] = game
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
@@ -3004,7 +3011,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 		json.dump(evData, fh, indent=4)
 
 	with open(f"{prefix}static/nhl/evArr.json", "w") as fh:
-		json.dump([value for key, value in evData.items()], fh, indent=4)
+		json.dump([value for key, value in evData.items()], fh)
 
 def sortEV(propArg):
 	with open(f"{prefix}static/nhl/ev.json") as fh:

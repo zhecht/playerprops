@@ -228,6 +228,9 @@ def writeSplits():
 					splits[team][player]["winLoss"] = []
 				if "awayHome" not in splits[team][player]:
 					splits[team][player]["awayHome"] = []
+				if "dt" not in splits[team][player]:
+					splits[team][player]["dt"] = []
+				splits[team][player]["dt"].append(date)
 				splits[team][player]["awayHome"].append(awayHome)
 				splits[team][player]["winLoss"].append(winLoss)
 
