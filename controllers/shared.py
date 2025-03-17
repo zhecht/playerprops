@@ -91,12 +91,17 @@ def parsePlayer(player):
 		return "marc casado"
 	elif player == "jay dasilva":
 		return "jay da silva"
+	# NHL
 	elif player == "matthew boldy":
 		return "matt boldy"
 	elif player == "cameron atkinson":
 		return "cam atkinson"
 	elif player == "nick paul":
 		return "nicholas paul"
+	# MLB
+	elif player == "kike hernandez" or player == "e hernandez":
+		return "enrique hernandez"
+
 	return player
 
 def convertMLBTeam(team):

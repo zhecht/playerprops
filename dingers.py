@@ -472,6 +472,9 @@ def writeEV():
 			highest = 0
 			evBook = ""
 			books = data[game][player].keys()
+
+			if len(books) < 2:
+				continue
 			oddsArr = []
 			for book in books:
 				odds = data[game][player][book]
