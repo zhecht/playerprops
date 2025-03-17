@@ -2942,14 +2942,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 						line = maxOdds
 
-					#line = int(line) + 100
 					line = convertAmericanOdds(1 + (convertDecOdds(int(line)) - 1) * boost)
 					line += addArg
-					#line += 100
-					#print(maxOU in l, maxOU, l)
-					#print(player, prop, i, books, l)
-					l.remove(maxOU)
-					books.remove(evBook)
+					
+					# 
+					#l.remove(maxOU)
+					#books.remove(evBook)
+					
 					if pn:
 						books.append("pn")
 						l.append(pn)
