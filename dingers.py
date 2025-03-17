@@ -165,7 +165,7 @@ async def writeDK(data, browser):
 
 	await page.wait_for(selector=".sportsbook-event-accordion__wrapper")
 	gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
-	for gameDiv in gameDivs:
+	for gameDiv in gameDivs[:1]:
 		game = gameDiv.children[0].children[1].text_all
 		away, home = map(str, game.replace(" at ", " @ ").split(" @ "))
 		game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
@@ -580,7 +580,7 @@ async def writeOne(book):
 	with lock:
 		with open(f"static/dailyev/odds.json") as fh:
 			old = json.load(fh)
-		merge_dicts(old, data)
+		merge_dicts(old, data, forceReplace=True)
 		with open(f"static/dailyev/odds.json", "w") as fh:
 			json.dump(old, fh, indent=4)
 

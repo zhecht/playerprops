@@ -19,19 +19,24 @@ def convert_to_dict(d):
 		d = {k: convert_to_dict(v) for k,v in d.items()}
 	return d
 
-def merge_dicts(d1, d2):
+def merge_dicts(d1, d2, forceReplace=False):
 	for k,v in d2.items():
 		#print(k,k in d1,d1.get(k, None) is dict, v is dict)
 		if k in d1 and isinstance(d1[k], dict) and isinstance(v, dict):
-			merge_dicts(d1[k], v)
+			merge_dicts(d1[k], v, forceReplace)
 		elif k in d1 and isinstance(v, str):
 			if "/" in d1[k]:
 				o,u = map(int, d1[k].split("/"))
 			else:
 				o,u = d1[k],""
-			o = max(int(o), int(v.split("/")[0]))
+
+			if forceReplace:
+				o = int(v.split("/")[0])
+			else:
+				o = max(int(o), int(v.split("/")[0]))
+
 			if "/" in v:
-				if "/" in str(u):
+				if "/" in str(u) and not forceReplace:
 					u = max(int(u.split("/")[-1]), int(v.split("/")[-1]))
 				else:
 					u = v.split("/")[-1]
