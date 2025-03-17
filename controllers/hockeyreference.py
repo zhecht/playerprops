@@ -390,6 +390,20 @@ def writeTeamTTOI():
 	with open(f"{prefix}static/hockeyreference/ttoi.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
+def writeLogos(sport="nhl"):
+	url = f"https://www.espn.com/{sport}/standings"
+	outfile = "outnhl"
+	os.system(f"curl {url} -o {outfile}")
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	for logo in soup.select(".Table .Logo"):
+		team = logo.get("alt").lower()
+		url = f"https://a.espncdn.com/combiner/i?img=/i/teamlogos/{sport}/500/{team}.png"
+		path = f"/mnt/c/Users/zhech/Documents/dailyev/logos/{sport}"
+		if not os.path.exists(path):
+			os.mkdir(path)
+		os.system(f"curl '{url}' -o /mnt/c/Users/zhech/Documents/dailyev/logos/{sport}/{team}.png")
+
 def writePlayerIds():
 
 	playerIds = {}
@@ -558,11 +572,13 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
 	parser.add_argument("-d", "--date", help="Date")
+	parser.add_argument("--sport")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--ids", help="IDs", action="store_true")
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
+	parser.add_argument("--logos", action="store_true")
 	parser.add_argument("--splits", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
 	parser.add_argument("--stats", help="Stats", action="store_true")
@@ -601,3 +617,5 @@ if __name__ == "__main__":
 		write_stats(date)
 		writeRankings()
 		writeTeamTTOI()
+	elif args.logos:
+		writeLogos(args.sport)

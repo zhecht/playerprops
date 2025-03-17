@@ -190,6 +190,68 @@ def convertMGMTeam(team):
 		return "wsh"
 	return team
 
+def convertSavantLogoId(logoId):
+	if logoId == "120":
+		return "wsh"
+	elif logoId == "141":
+		return "tor"
+	elif logoId == "140":
+		return "tex"
+	elif logoId == "139":
+		return "tb"
+	elif logoId == "138":
+		return "stl"
+	elif logoId == "137":
+		return "sf"
+	elif logoId == "136":
+		return "sea"
+	elif logoId == "135":
+		return "sd"
+	elif logoId == "134":
+		return "pit"
+	elif logoId == "143":
+		return "phi"
+	elif logoId == "133":
+		return "ath"
+	elif logoId == "147":
+		return "nyy"
+	elif logoId == "121":
+		return "nym"
+	elif logoId == "142":
+		return "min"
+	elif logoId == "158":
+		return "mil"
+	elif logoId == "146":
+		return "mia"
+	elif logoId == "119":
+		return "lad"
+	elif logoId == "108":
+		return "laa"
+	elif logoId == "118":
+		return "kc"
+	elif logoId == "117":
+		return "hou"
+	elif logoId == "116":
+		return "det"
+	elif logoId == "145":
+		return "chw"
+	elif logoId == "115":
+		return "col"
+	elif logoId == "114":
+		return "cle"
+	elif logoId == "113":
+		return "cin"
+	elif logoId == "112":
+		return "chc"
+	elif logoId == "111":
+		return "bos"
+	elif logoId == "110":
+		return "bal"
+	elif logoId == "109":
+		return "ari"
+	elif logoId == "144":
+		return "atl"
+
 def convertSoccer(team):
 	team = team.lower().replace("-", " ").replace(".", "").replace("/", " ").replace("'", "")
 	team = team.replace("munchen", "munich").replace(" utd", " united").replace(" city", "").replace(" town", "").replace(" county", "").replace(" rovers", "")

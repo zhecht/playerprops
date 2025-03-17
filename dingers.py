@@ -104,7 +104,7 @@ async def writeESPN(data, browser):
 		last = player.split(" ")
 		p = player[0][0]+". "+last[-1]
 		player = players.get(p, player)
-		
+
 		over = article.find("button").find_all("span")[-1].text
 		under = article.find_all("button")[-1].find_all("span")[-1].text
 		data[game][player][book] = over+"/"+under
