@@ -75,14 +75,42 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	evData[player][f"implied"] = implied
 	evData[player][f"ev"] = ev
 
-async def writeESPN():
+async def writeESPN(data, browser):
 	book = "espn"
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
+	close = False
+	if not browser:
+		close = True
+		browser = await uc.start(no_sandbox=True)
 
-	url = "https://www.oh.bet365.com/?_h=uvJ7Snn5ImZN352O9l7rPQ%3D%3D&btsffd=1#/AC/B16/C20525425/D43/E160301/F43/N2/"
-	browser = await uc.start(no_sandbox=False)
+	with open(f"static/dailyev/odds.json") as fh:
+		oldData = json.load(fh)
+	players = {}
+	for game in oldData:
+		for player in oldData[game]:
+			last = player.split(" ")
+			p = player[0][0]+". "+last[-1]
+			players[p] = player
+
+	url = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/6a1344e6-8f85-4272-a1bf-9bb6f3f7527c/section/player_props"
+	game = "lad @ chc"
 	page = await browser.get(url)
+	await page.wait_for(selector="div[data-testid='away-team-card']")
+
+	html = await page.get_content()
+	soup = BS(html, "lxml")
+
+	for article in soup.find("details").find_all("article"):
+		player = parsePlayer(article.find("header").text)
+		last = player.split(" ")
+		p = player[0][0]+". "+last[-1]
+		player = players.get(p, player)
+		
+		over = article.find("button").find_all("span")[-1].text
+		under = article.find_all("button")[-1].find_all("span")[-1].text
+		data[game][player][book] = over+"/"+under
+
+	if close:
+		browser.stop()
 
 
 async def write365(data, browser):
@@ -257,7 +285,7 @@ async def writeCZ(token=None):
 		exit()
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {token}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 def writeKambi(data):
 	book = "kambi"
@@ -479,6 +507,7 @@ def writeEV():
 			evData[player]["book"] = evBook
 			evData[player]["line"] = highest
 			evData[player]["avg"] = ou
+			evData[player]["prop"] = "hr"
 			evData[player]["bookOdds"] = {b: o for b, o in zip(books, oddsArr)}
 
 	with open("static/dailyev/ev.json", "w") as fh:
@@ -538,7 +567,7 @@ def writeAll():
 async def writeOne(book):
 	#with open(f"static/dailyev/odds.json") as fh:
 	#	data = json.load(fh)
-	data = {}
+	data = nested_dict()
 
 	browser = await uc.start(no_sandbox=True)
 	if book == "fd":
@@ -549,13 +578,17 @@ async def writeOne(book):
 		await write365(data, browser)
 	elif book == "mgm":
 		await writeMGM(data, browser)
+	elif book == "espn":
+		await writeESPN(data, browser)
 	elif book == "kambi":
 		writeKambi(data)
 
 	browser.stop()
-	sharedData[book] = data
-	#with open(f"static/dailyev/odds.json", "w") as fh:
-	#	json.dump(data, fh, indent=4)
+	with open(f"static/dailyev/odds.json") as fh:
+		old = json.load(fh)
+	merge_dicts(old, data)
+	with open(f"static/dailyev/odds.json", "w") as fh:
+		json.dump(old, fh, indent=4)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
@@ -606,3 +639,17 @@ if __name__ == '__main__':
 
 	if args.commit:
 		commitChanges()
+
+	if False:
+		with open("static/mlb/caesars.json") as fh:
+			cz = json.load(fh)
+		with open("static/mlb/pinnacle.json") as fh:
+			pn = json.load(fh)
+		with open("static/dailyev/odds.json") as fh:
+			data = json.load(fh)
+
+		for book, d in zip(["cz", "pn"], [cz, pn]):
+			for game in d:
+				if "hr" in d[game]:
+					for player in d[game]["hr"]:
+						pass
