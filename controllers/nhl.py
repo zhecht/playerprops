@@ -1083,7 +1083,9 @@ def writeMGM(date=None):
 	with open("static/nhl/mgm.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-def writeKambi():
+def writeKambi(date=None):
+	if not date:
+		date = str(datetime.now())[:10]
 	data = {}
 	outfile = f"outnhl.json"
 
@@ -1139,6 +1141,12 @@ def writeKambi():
 
 		with open(outfile) as fh:
 			j = json.load(fh)
+
+		if not j["betOffers"] or "closed" not in j["betOffers"][0]:
+			continue
+
+		if str(datetime.strptime(j["betOffers"][0]["closed"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5))[:10] != date:
+			continue
 
 		i = 0
 		for betOffer in j["betOffers"]:
@@ -3209,7 +3217,7 @@ if __name__ == '__main__':
 		writeDK(args.date)
 
 	if args.kambi:
-		writeKambi()
+		writeKambi(args.date)
 
 	if args.pn:
 		writePinnacle(args.date)
@@ -3225,7 +3233,7 @@ if __name__ == '__main__':
 		print("pn")
 		writePinnacle(args.date)
 		print("kambi")
-		writeKambi()
+		writeKambi(args.date)
 		#print("dk")
 		#writeDK(args.date)
 		print("cz")
