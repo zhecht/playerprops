@@ -637,7 +637,7 @@ if __name__ == '__main__':
 	if args.commit:
 		commitChanges()
 
-	if False:
+	if True:
 		with open("static/mlb/caesars.json") as fh:
 			cz = json.load(fh)
 		with open("static/mlb/pinnacle.json") as fh:
@@ -649,4 +649,9 @@ if __name__ == '__main__':
 			for game in d:
 				if "hr" in d[game]:
 					for player in d[game]["hr"]:
-						pass
+						data.setdefault(game, {})
+						data[game].setdefault(player, {})
+						data[game][player][book] = d[game]["hr"][player]["0.5"]
+
+		with open("static/dailyev/odds.json", "w") as fh:
+			json.dump(data, fh, indent=4)
