@@ -3219,6 +3219,7 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
+	writeESPNTeams()
 
 	if args.action:
 		writeActionNetwork(args.date)
@@ -3275,5 +3276,3 @@ if __name__ == '__main__':
 
 	if args.player:
 		writePlayer(args.player, args.prop)
-
-	writeESPNTeams()
