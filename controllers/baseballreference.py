@@ -991,7 +991,9 @@ def writeRoster():
 		playerIds = json.load(fh)
 
 	roster = {}
-	for team in os.listdir(f"{prefix}static/baseballreference/"):
+	teams = os.listdir(f"{prefix}static/baseballreference/")
+	#teams = ["chc", "lad"]
+	for team in teams:
 
 		if team.endswith(".json"):
 			continue

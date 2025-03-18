@@ -2599,6 +2599,47 @@ def readGamelogHomers():
 		print(year, hrPerGame, "HR/G")
 		print("\t"+out)
 
+def parseESPN(espnLines, noespn=None):
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"static/mlb/espn.json") as fh:
+		espn = json.load(fh)
+
+	players = {}
+	for team in roster:
+		players[team] = {}
+		for player in roster[team]:
+			first = player.split(" ")[0][0]
+			last = player.split(" ")[-1]
+			#if team == "hou" and player == "jeff green":
+			#	continue
+			players[team][f"{first} {last}"] = player
+
+	if not noespn:
+		for game in espn:
+			espnLines[game] = {}
+			for prop in espn[game]:
+				if prop == "ml":
+					espnLines[game][prop] = espn[game][prop]
+				elif prop in ["total", "spread"]:
+					espnLines[game][prop] = espn[game][prop].copy()
+				else:
+					espnLines[game][prop] = {}
+					away, home = map(str, game.split(" @ "))
+					for p in espn[game][prop]:
+						if p not in players[away] and p not in players[home]:
+							continue
+						if p in players[away]:
+							player = players[away][p]
+						else:
+							player = players[home][p]
+						
+						if type(espn[game][prop][p]) is str:
+							espnLines[game][prop][player] = espn[game][prop][p]
+						else:
+							espnLines[game][prop][player] = espn[game][prop][p].copy()
+
 def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 
 	if not boost:
@@ -2631,9 +2672,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	with open(f"{prefix}static/mlb/espn.json") as fh:
-		espnLines = json.load(fh)
-
 	with open(f"{prefix}static/baseballreference/splits.json") as fh:
 		splits = json.load(fh)
 
@@ -2647,6 +2685,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	lastYear = year - 1
 	with open(f"{prefix}static/mlbprops/stats/{lastYear}.json") as fh:
 		lastYearStats = json.load(fh)
+
+	espnLines = {}
+	parseESPN(espnLines, noespn=None)
 
 	lines = {
 		"pn": pnLines,
