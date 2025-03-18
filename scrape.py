@@ -2942,7 +2942,7 @@ async def writeFD(sport):
 						else:
 							data[game][prop][line] += "/"+odds
 					elif "total" in prop:
-						if prop in ["away_total", "home_total"]:
+						if prop in ["away_total", "home_total", "f5_total"]:
 							line = fields[-2].split(" ")[-1].replace("(", "").replace(")", "")
 						else:
 							line = fields[-2].split(" ")[0]
