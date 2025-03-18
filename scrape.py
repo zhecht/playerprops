@@ -2593,6 +2593,10 @@ async def writeFD(sport):
 		navs = await page.query_selector_all("nav")
 		tabs = await navs[-1].query_selector_all("a")
 
+		h1 = await page.query_selector("h1")
+		fullGame = h1.text.lower().replace(" odds", "")
+		awayFull, homeFull = map(str, fullGame.split(" @ "))
+
 		for tabIdx in range(len(tabs)):
 			try:
 				tab = tabs[tabIdx]
@@ -2608,8 +2612,8 @@ async def writeFD(sport):
 				#if tab.text.lower() not in ["player combos"]:
 					continue
 			elif sport == "mlb":
-				if tab.text.lower() not in ["batter props", "pitcher props"]:
-				#if tab.text.lower() not in ["first 5 innings"]:
+				#if tab.text.lower() not in ["popular", "batter props"]:
+				if tab.text.lower() not in ["popular", "batter props"]:
 					continue
 			else:
 				if tab.text.lower() not in ["popular", "td scorer props", "passing props", "receiving props", "rushing props"]:
@@ -2665,7 +2669,22 @@ async def writeFD(sport):
 				elif label.endswith("run line"):
 					prop = "spread"
 				elif label.endswith("total runs"):
-					prop = "total"
+					if label == f"{awayFull} total runs":
+						prop = "away_total"
+						continue
+					elif label == f"{awayFull} alt. total runs":
+						prop = "away_total"
+						skip = 1
+						alt = True
+					elif label == f"{homeFull} total runs":
+						prop = "home_total"
+						continue
+					elif label == f"{homeFull} alt. total runs":
+						prop = "home_total"
+						skip = 1
+						alt = True
+					else:
+						prop = "total"
 				elif label == "alternate puck line":
 					skip = 1
 					prop = "spread"
@@ -2678,13 +2697,18 @@ async def writeFD(sport):
 					prop = "k"
 					skip = 1
 					alt = True
+				elif label == "1st inning over/under 0.5 runs":
+					prop = "rfi"
 				elif sport == "mlb" and (label.startswith("to hit") or label.startswith("to record")):
+					if label.startswith("to hit first"):
+						continue
 					mainLine = "0.5"
 					if label.startswith("to hit a"):
 						prop = label.split(" ")[-1].replace("run", "hr")
 					elif label.startswith("to record a"):
 						prop = label.split(" ")[-1].replace("hit", "h").replace("run", "r").replace("base", "sb")
 					else:
+						#print(label)
 						mainLine = str(float(label.split("+")[0].split(" ")[-1]) - 0.5)
 						prop = label.split(" ")[-1].replace("hits", "h").replace("runs", "r").replace("rbis", "rbi").replace("bases", "tb")
 					skip = 1
@@ -2833,7 +2857,8 @@ async def writeFD(sport):
 					el = await div.children[-1].query_selector("div[aria-label='Show more']")
 					if el:
 						await el.click()
-					#await div.wait_for("div[aria-label='Show less']")
+						#await div.wait_for(selector="div[aria-label='Show less']")
+						#print(prop, div.text_all)
 
 				btns = await div.query_selector_all("div[role=button]")
 				bs = []
@@ -2879,7 +2904,12 @@ async def writeFD(sport):
 
 					labelIdx = btn.attributes.index("aria-label") + 1
 					label = btn.attributes[labelIdx]
+					#print(label)
 					if "Show more" in label or "Show less" in label or "unavailable" in label:
+						continue
+
+					if prop == "rfi":
+						data[game][prop] = label.split(", ")[-1]+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
 						continue
 
 					try:
@@ -2913,10 +2943,17 @@ async def writeFD(sport):
 							data[game][prop][line] += "/"+odds
 					elif "total" in prop:
 						if prop in ["away_total", "home_total"]:
-							line = fields[-2].split(" ")[-1]
+							line = fields[-2].split(" ")[-1].replace("(", "").replace(")", "")
 						else:
 							line = fields[-2].split(" ")[0]
-						data[game][prop][line] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
+						ou = odds
+						if alt and line in data[game][prop]:
+							#print(prop, line, ou)
+							data[game][prop][line] += "/"+ou
+						else:
+							if skip == 2:
+								ou += "/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
+							data[game][prop][line] = ou
 					elif prop == "kicking_pts":
 						player = parsePlayer(arrow.text.lower().split(" total ")[0])
 						data[game][prop][player][fields[2]] = odds + "/" + btns[i+1].attributes[labelIdx].split(", ")[3]
