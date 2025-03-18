@@ -21,6 +21,10 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
+try:
+	from shared import convertImpOdds, convertAmericanFromImplied
+except:
+	from controllers.shared import convertImpOdds, convertAmericanFromImplied
 
 def convertFDTeam(team):
 	team = team.lower().replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "ath").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
@@ -2652,7 +2656,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 		"bv": bvLines,
 		"dk": dkLines,
 		"cz": czLines,
-		"espn": espnLines
+		"espn": espnLines,
+		"365": bet365Lines
 	}
 
 	with open(f"{prefix}static/mlb/ev.json") as fh:
@@ -2664,38 +2669,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	for game in fdLines:
 		away, home = map(str, game.split(" @ "))
 		teamGame[away] = teamGame[home] = game
-
-	lines["bet365"] = {}
-	for team in bet365Lines:
-		if team not in teamGame:
-			continue
-		game = teamGame[team]
-		if game not in lines["bet365"]:
-			lines["bet365"][game] = {"hr": {}}
-		for player in bet365Lines[team]:
-			lines["bet365"][game]["hr"][player] = bet365Lines[team][player]
-
-	#for prop in ["k", "single", "double", "sb", "h"]:
-	for prop in ["k", "h", "tb", "r", "rbi", "sb", "single", "outs"]:
-		with open(f"static/mlbprops/bet365_{prop}s.json") as fh:
-			bet365 = json.load(fh)
-		for team in bet365:
-			try:
-				game = teamGame[team]
-			except:
-				continue
-			if game not in lines["bet365"]:
-				lines["bet365"][game] = {prop: {}}
-			if prop not in lines["bet365"][game]:
-				lines["bet365"][game][prop] = {}
-
-			for player in bet365[team]:
-				if prop in ["rbi", "r"]:
-					lines["bet365"][game][prop][player] = {
-						"0.5": bet365[team][player]
-					}
-				else:
-					lines["bet365"][game][prop][player] = bet365[team][player]
 
 	for game in fdLines:
 		if "gm2" in game:
@@ -2784,8 +2757,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 								ou = val.split(" ")[-1]
 							except:
 								if i == 1:
-									continue
-								o = val
+									pass
+								o = "-"
 								ou = val
 
 							if not o or o == "-":
@@ -2797,6 +2770,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 					if len(books) < 2:
 						continue
+
+					unders = [s.split("/")[-1] for s in odds if "/" in s]
+					if i == 1:
+						if not unders:
+							continue
 
 					splitsDisplay = []
 					team = opp = ""
@@ -2894,8 +2872,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						implied = -1*line / (-1*line + 100)
 					implied *= 100
 
-					l.remove(maxOU)
-					books.remove(evBook)
+					# if no unders other than ev book, use that
+					if len(unders) == 1 and "/" in maxOU and unders[0] == maxOU.split("/")[1]:
+						bookIdx = l.index(maxOU)
+						l[bookIdx] = "-/"+maxOU.split("/")[-1]
+					else:
+						l.remove(maxOU)
+						books.remove(evBook)
+
 					if pn:
 						books.append("pn")
 						l.append(pn)
@@ -2903,19 +2887,19 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					avgOver = []
 					avgUnder = []
 					for book in l:
-						if book and book != "-":
-							avgOver.append(convertDecOdds(int(book.split("/")[0])))
-							if "/" in book and book.split("/")[1] != "-":
-								avgUnder.append(convertDecOdds(int(book.split("/")[1])))
+						if book.split("/")[0] != "-":
+							avgOver.append(convertImpOdds(int(book.split("/")[0])))
+						if "/" in book and book.split("/")[1] != "-":
+							avgUnder.append(convertImpOdds(int(book.split("/")[1])))
 
 					if avgOver:
 						avgOver = float(sum(avgOver) / len(avgOver))
-						avgOver = convertAmericanOdds(avgOver)
+						avgOver = convertAmericanFromImplied(avgOver)
 					else:
 						avgOver = "-"
 					if avgUnder:
 						avgUnder = float(sum(avgUnder) / len(avgUnder))
-						avgUnder = convertAmericanOdds(avgUnder)
+						avgUnder = convertAmericanFromImplied(avgUnder)
 					else:
 						avgUnder = "-"
 
@@ -2924,10 +2908,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					else:
 						ou = f"{avgOver}/{avgUnder}"
 
-					if ou == "-/-" or ou.startswith("-/"):
+					if ou == "-/-" or ou.startswith("-/") or ou.startswith("0/"):
 						continue
 
-					if ou.endswith("/-"):
+					if ou.endswith("/-") or ou.endswith("/0"):
 						ou = ou.split("/")[0]
 
 					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"

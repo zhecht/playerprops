@@ -108,15 +108,15 @@ def parsePlayer(player):
 def convertMLBTeam(team):
 	team = team.lower().replace(".", "")
 	t = team.replace(" ", "")[:3]
-	if t == "chi":
-		if "cubs" in team:
-			return "chc"
+	if "cubs" in team:
+		return "chc"
+	elif t == "chi":
 		return "chw"
 	elif t in ["kan", "kcr"]:
 		return "kc"
+	elif "dodgers" in team:
+		return "lad"
 	elif t == "los":
-		if "dodgers" in team:
-			return "lad"
 		return "laa"
 	elif t == "new":
 		if "yankees" in team:
