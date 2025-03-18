@@ -393,6 +393,40 @@ async def writeFeed(date, loop):
 
 	browser.stop()
 
+def parseESPN(espnLines):
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"static/mlb/espn.json") as fh:
+		espn = json.load(fh)
+
+	players = {}
+	for team in roster:
+		players[team] = {}
+		for player in roster[team]:
+			first = player.split(" ")[0][0]
+			last = player.split(" ")[-1]
+			players[team][f"{first} {last}"] = player
+
+	for game in espn:
+		espnLines[game] = {}
+		for prop in espn[game]:
+			if prop == "hr":
+				espnLines[game][prop] = {}
+				away, home = map(str, game.split(" @ "))
+				for p in espn[game][prop]:
+					if p not in players[away] and p not in players[home]:
+						continue
+					if p in players[away]:
+						player = players[away][p]
+					else:
+						player = players[home][p]
+					
+					if type(espn[game][prop][p]) is str:
+						espnLines[game][prop][player] = espn[game][prop][p]
+					else:
+						espnLines[game][prop][player] = espn[game][prop][p].copy()
+
 def parseFeed(times):
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
 	data = {}
@@ -661,6 +695,16 @@ if __name__ == '__main__':
 							data[game][player][book] = d[game]["hr"][player]["0.5"]
 						else:
 							data[game][player][book] = d[game]["hr"][player]
+
+		espn = {}
+		parseESPN(espn)
+
+		for game in espn:
+			if "hr" in espn[game]:
+				for player in espn[game]["hr"]:
+					data.setdefault(game, {})
+					data[game].setdefault(player, {})
+					data[game][player]["espn"] = espn[game]["hr"][player]["0.5"]
 
 		with open("static/dailyev/odds.json", "w") as fh:
 			json.dump(data, fh, indent=4)
