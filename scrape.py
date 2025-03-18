@@ -820,13 +820,67 @@ async def getESPNLinks(sport, tomorrow):
 
 		eventId = div.id.split("|")[1]
 		#print(game, f"{url}/event/{eventId}")
-		games[game] = f"{url}/event/{eventId}"
+		games[game] = f"{url}/event/{eventId}/section/player_props"
+		if sport == "mlb":
+			games[game+"-game-props"] = f"{url}/event/{eventId}/section/game_props"
 
 	browser.stop()
 	return games
 
 def runESPN(sport):
 	uc.loop().run_until_complete(writeESPN(sport))
+
+async def writeESPNGamePropsHTML(data, html, sport, game, playersMap):
+	soup = BS(html, "lxml")
+
+	homeFull = soup.select("div[data-testid=home-team-card]")[0].find("h2").text.lower()
+	awayFull = soup.select("div[data-testid=away-team-card]")[0].find("h2").text.lower()
+
+	for detail in soup.find_all("details"):
+		prop = detail.find("h2").text.lower()
+
+		pre = ""
+		if "1st 5" in prop:
+			pre = "f5_"
+
+		if "3-way" in prop:
+			continue
+
+		if "moneyline" in prop:
+			prop = "ml"
+		elif "run line" in prop:
+			prop = "spreada"
+		elif prop == "inning total runs":
+			prop = "rfi"
+		elif "total runs" in prop:
+			if "exact" in prop or "/" in prop:
+				continue
+			if awayFull in prop:
+				prop = "away_total"
+			elif homeFull in prop:
+				prop = "home_total"
+			else:
+				prop = "total"
+		else:
+			continue
+
+		prop = f"{pre}{prop}"
+
+		#print(prop)
+
+		btns = detail.find_all("button")
+		for idx in range(0, len(btns), 2):
+			ou = btns[idx].find_all("span")[-1].text
+			#print(prop, ou)
+			ou += "/"+btns[idx+1].find_all("span")[-1].text
+			ou = ou.replace("Even", "+100")
+
+			if "ml" in prop or prop in ["rfi"]:
+				data[game][prop] = ou
+			else:
+				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
+				data[game][prop][line] = ou
+
 
 async def writeESPNFromHTML(data, html, sport, game, playersMap):
 	soup = BS(html, "lxml")
@@ -939,531 +993,14 @@ async def writeESPN(sport):
 			q.task_done()
 			continue
 
-		tabs = await page.query_selector_all("button[data-testid=tablist-carousel-tab]")
-		for tabIdx in range(len(tabs)):
-			arr = ["player props"]
-			if sport in ["soccer"]:
-				arr.append("lines")
-				arr.append("game props")
-			if sport in ["ncaaf", "nfl"]:
-				arr.append('td scorers')
+		await page.wait_for(selector="details")
 
-			if tabs[tabIdx].text_all.lower() not in arr:
-				continue
-
-			await tabs[tabIdx].click()
-			#print(tabIdx, tabs[tabIdx].text_all)
-			await page.wait_for(selector=f"button[data-testid=tablist-carousel-tab]:nth-of-type({tabIdx+1})[aria-selected=true]")
-			time.sleep(0.75)
-			playersMap = {}
-			html = await page.get_content()
+		playersMap = {}
+		html = await page.get_content()
+		if game.endswith("-game-props"):
+			await writeESPNGamePropsHTML(data, html, sport, game.replace("-game-props", ""), playersMap)
+		else:
 			await writeESPNFromHTML(data, html, sport, game, playersMap)
-			continue
-
-			details = await page.query_selector_all("details")
-			players = {}
-			fullProp = ""
-			for detailIdx in range(len(details)):
-				detail = details[detailIdx]
-				#await detail.scroll_into_view()
-				prop = detail.children[0].children[0]
-				try:
-					prop = prop.text.lower()
-					fullProp = prop
-				except:
-					print(game, "skip")
-					continue
-
-				#print(prop)
-
-				prefix = ""
-				hp = ""
-				if "half" in prop:
-					hp = "h"
-				elif "period" in prop:
-					hp = "p"
-				elif "quarter" in prop:
-					hp = "q"
-
-				if "first" in prop or "1st" in prop:
-					prefix = f"1{hp}_"
-				elif "second" in prop or "2nd" in prop:
-					prefix = f"2{hp}_"
-				elif "third" in prop or "3rd" in prop:
-					prefix = f"3{hp}_"
-				elif "fourth" in prop or "4th" in prop:
-					prefix = f"4{hp}_"
-
-				skip = 2
-				columns = True
-				player = mainLine = ""
-
-				if "moneyline" in prop:
-					if "3-way" in prop:
-						prop = "3ml"
-						skip = 3
-					else:
-						prop = "ml"
-				elif prop in ["match spread", "2-way handicap", "game spread", "1st half spread", "1st period - spread"]:
-					prop = "spread"
-				elif prop in ["total points", "total goals", "1st half total", "1st period - total goals"]:
-					prop = "total"
-				elif sport == "nhl" and prop.endswith("total goals (excl ot)"):
-					team = convert365NHLTeam(prop.split(" total ")[0])
-					if team == game.split(" @ ")[0]:
-						prop = "away_total"
-					elif team == game.split(" @ ")[-1]:
-						prop = "home_total"
-					else:
-						continue
-				elif prop == "to score a touchdown":
-					prop = "attd"
-					skip = 3
-				elif prop == "player total touchdowns":
-					prop = "attd"
-					skip = 1
-				elif "first goalscorer" in prop:
-					prop = "fgs"
-					skip = 1
-				elif prop == "anytime goalscorer" or prop == "anytime goal scorer":
-					if sport == "soccer":
-						continue
-					prop = "atgs"
-					skip = 1
-				elif prop == "player to score a header":
-					prop = "header"
-					skip = 1
-				elif prop == "total shots":
-					prop = "game_shots"
-					skip = 1
-				elif prop == "total tackles":
-					prop = "game_tackles"
-					skip = 1
-				elif prop == "total passes":
-					prop = "game_passes"
-					skip = 1
-				elif prop == "total shots on target":
-					prop = "game_shots_on_target"
-					skip = 1
-				elif sport == "soccer" and tabs[tabIdx].text_all.lower() == "game props" and (prop.endswith("total shots on target") or prop.endswith("total shots") or prop.endswith("total tackles") or prop.endswith("total passes")):
-					skip = 1
-					suffix = prop.split(" total ")[-1].replace(" ", "_")
-
-					if convertSoccer(prop.split(" total ")[0]) == game.split(" v ")[0]:
-						prop = "home"
-					elif convertSoccer(prop.split(" total ")[0]) == game.split(" v ")[-1]:
-						prop = "away"
-					else:
-						continue
-
-					prop = f"{prop}_{suffix}"
-				elif sport == "soccer" and tabs[tabIdx].text_all.lower() == "player props":
-					if (prop.endswith("total shots on target") or prop.endswith("total shots") or prop.endswith("total tackles") or prop.endswith("total passes")):
-						player = parsePlayer(prop.split(" total ")[0])
-						prop = prop.split(" total ")[-1].replace(" ", "_")
-						prop = f"player_{prop}"
-						skip = 1
-					else:
-						continue
-				elif sport == "soccer" and (prop == "player 1+ assists" or prop == "player 2+ assists"):
-					mainLine = str(float(prop.split(" ")[1].replace("+", "")) - 0.5)
-					prop = "assist"
-					skip = 1
-				elif prop.startswith("1st") and prop.endswith("goalscorer"):
-					prop = "fgs"
-					if prop != "1st goalscorer":
-						prop = "team_fgs"
-						#continue
-					skip = 1
-				elif prop == "both teams to score":
-					prop = "btts"
-				elif prop == "draw no bet":
-					prop = "dnb"
-				elif sport == "soccer" and prop.endswith("total goals"):
-					team = convertSoccer(prop.split(" total")[0])
-					if team == game.split(" v ")[0]:
-						prop = "home_total"
-					elif team == game.split(" v ")[-1]:
-						prop = "away_total"
-					else:
-						continue
-				elif "corners" in prop:
-					if "minutes" in prop:
-						continue
-					if convertSoccer(prop.split(" team")[0].split(" total")[0].split("half ")[-1]) == game.split(" v ")[0]:
-						prop = "home_corners"
-					elif convertSoccer(prop.split(" team")[0].split(" total")[0].split("half ")[-1]) == game.split(" v ")[-1]:
-						prop = "away_corners"
-					elif prop.endswith("total corners"):
-						prop = "corners"
-					else:
-						continue
-				elif sport == "soccer":
-					#if prop.endswith("total goals"):
-					#	prop = "total"
-					continue
-				elif prop == "player total goals":
-					prop = "atgs"
-					skip = 3
-				elif prop == "player total shots on goal":
-					prop = "sog"
-				elif prop == "player saves":
-					prop = "saves"
-					skip = 3
-				elif prop == "player points":
-					prop = "pts"
-				elif prop.startswith("longest"):
-					prop = prop.replace("reception", "rec").replace("pass completion", "pass").replace(" ", "_")
-					skip = 1
-				elif prop == "player total points":
-					prop = "pts"
-					skip = 1
-				elif prop == "player total rebounds":
-					prop = "reb"
-					skip = 1
-				elif prop == "player total assists":
-					prop = "ast"
-					skip = 1
-					if sport in ["nhl"]:
-						skip = 3
-				elif sport in ["nba", "ncaab"] and prop.startswith("player"):
-					if "first" in prop or "1st" in prop:
-						continue
-					ou = False
-					if "o/u" in prop:
-						ou = True
-					prop = prop.replace("player total ", "").replace(" o/u", "").replace("player to record a ", "").replace(", ", "+").replace(" and ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("3-pointers attempted", "3pta").replace("free throws made", "ftm").replace("field goals made", "fgm").replace("field goals attempted", "fga").replace("turnovers", "to").replace(" + ", "+").replace(" ", "_")
-					if ou and sport == "ncaab" or (sport == "nba" and ("+" in prop or prop in ["to", "3ptm"])):
-						skip = 3
-					elif ou:
-						skip = 2
-					elif sport in ["ncaab", "nba"]:
-						skip = 1
-
-					if prop in ["3pta", "fgm", "fga", "ftm"]:
-						continue
-				elif sport == "ncaab" and " total " in prop:
-					if "/" in prop:
-						continue
-					team = convertCollege(prop.split(" total ")[0])
-					if team == game.split(" @ ")[0]:
-						prop = "away_total"
-					elif team == game.split(" @ ")[1]:
-						prop = "home_total"
-					else:
-						columns = False
-						player = parsePlayer(prop.split(" total ")[0])
-						prop = prop.split(" total ")[-1].replace(", ", "+").replace(" and ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("turnovers", "to").replace(" ", "_")
-						skip = 1
-				elif prop == "player total blocked shots":
-					prop = "bs"
-					skip = 3
-				elif "first touchdown scorer" in prop:
-					if "power hour" in prop:
-						continue
-					if prop != "first touchdown scorer":
-						prop = "team_ftd"
-					else:
-						prop = "ftd"
-					skip = 1
-					if sport == "ncaaf":
-						skip = 3
-				elif prop.startswith("1st half touchdown scorer"):
-					player = parsePlayer(prop.split("(")[1].split(")")[0])
-					last = player.split(" ")
-					player = player.split(" ")[0][0]+" "+last[-1]
-					prop = "1h_attd"
-					skip = 1
-					if sport == "ncaaf":
-						skip = 3
-				elif "(" in prop and "(o/u)" not in prop:
-					if "1st half" in prop or "1st quarter" in prop or "range" in prop or "(excl ot)" in prop:
-						continue
-					player = parsePlayer(prop.split("(")[1].split(")")[0])
-					last = player.split(" ")
-					player = player.split(" ")[0][0]+" "+last[-1]
-					prop = prop.split(" (")[0].replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("completions", "cmp").replace("completion", "cmp").replace("completed passes", "pass_cmp").replace("yards", "yd").replace("touchdown scorer", "attd").replace("touchdowns", "td").replace("tds", "td").replace(" ", "_")
-					if "+" in prop:
-						prop = prop.split("_")[0]
-					elif prop == "longest_pass_cmp":
-						prop = "longest_pass"
-					skip = 1
-					if prop == "int":
-						skip = 3
-				elif sport != "nhl" and prop.startswith("player"):
-					if prop == "player total sacks" or prop == "player total defensive interceptions" or "1st half" in prop or "1st quarter" in prop:
-						continue
-					prop = prop.replace("player total ", "").replace("player ", "").replace(" + ", "+").replace(" (o/u)", "").replace("points", "pts").replace("field goals made", "fgm").replace("extra pts made", "xpm").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("interceptions", "int").replace("completions", "cmp").replace("completion", "cmp").replace("yards", "yd").replace("touchdowns", "td").replace("tds", "td").replace("assists", "ast").replace("defensive", "def").replace(" ", "_")
-					if prop == "def_tackles+ast":
-						prop = "tackles+ast"
-					elif "+" in prop:
-						prop = prop.split("_")[0]
-					elif prop == "longest_pass_cmp":
-						prop = "longest_pass"
-					elif prop == "def_int":
-						skip = 1
-				elif prop == "rushing + receiving yards":
-					prop = "rush+rec"
-					skip = 1
-				elif sport == "nfl" and prop.startswith("total"):
-					prop = prop.replace("total ", "").replace(" + ", "+").replace("passing", "pass").replace("rushing", "rush").replace("receptions", "rec").replace("reception", "rec").replace("receiving", "rec").replace("attempts", "att").replace("interceptions thrown", "int").replace("interceptions", "int").replace("completions", "cmp").replace("completion", "cmp").replace("yards", "yd").replace("touchdowns", "td").replace("tds", "td").replace("assists", "ast").replace("defensive", "def").replace(" ", "_")
-					if "_" in prop and "+" in prop:
-						prop = prop.split("_")[0]
-					elif prop == "completed_passes":
-						prop = "pass_cmp"
-					elif prop == "passes_attempted":
-						prop = "pass_att"
-
-					if prop.endswith("_"):
-						prop = prop[:-1]
-					skip = 1
-				else:
-					continue
-
-				prop = f"{prefix}{prop}"
-
-				if prop == "1_fgs":
-					prop = "fgs"
-
-				if prop in ["1h_attd", "2h_attd"]:
-					continue
-
-				if prop == "ast+reb":
-					prop = "reb+ast"
-
-				#print(prop, skip, fullProp)
-
-				if "open" not in detail.attributes:
-					summary = detail.children[0]
-					await summary.click()
-					time.sleep(0.5)
-					#await detail.wait_for(selector="button")
-
-				data.setdefault(game, {})
-
-				if prop not in data[game]:
-					data[game][prop] = {}
-
-				# seeAllLines
-				if sport == "ncaab" and prop in ["total", "spread"]:
-
-					btns = await detail.query_selector_all("button")
-					if btns[-1].text == "See All Lines":
-						await btns[-1].click()
-						await page.wait_for(selector="article")
-						modal = await page.query_selector("article")
-						btns = await modal.query_selector_all("button")
-						for i in range(0, len(btns), 2):
-							if "pk" in btns[i].text_all:
-								continue
-							try:
-								line = str(float(btns[i].text_all.split(" ")[-2]))
-							except:
-								continue
-							ou = f"{btns[i].text_all.split(' ')[-1]}/{btns[i+1].text_all.split(' ')[-1]}"
-							data[game][prop][line] = ou.replace("Even", "+100")
-
-						btn = await page.query_selector(".modal--see-all-lines button")
-						await btn.click()
-						continue
-
-				sections = [detail]
-				if prop == "tackles+ast" or prop == "int":
-					sections = await detail.query_selector_all("div[aria-label='']")
-
-				for section in sections:
-					btns = await section.query_selector_all("button")
-					
-					for btnIdx in range(0, len(btns), skip):
-						if btns[btnIdx].text == "See All Lines":
-							continue
-						if "disabled" in btns[btnIdx].attributes and skip != 3:
-							continue
-						if "carousel-arrow" in btns[btnIdx].attributes:
-							continue
-						ou = ""
-						i = btnIdx
-						if sport != "nfl" and skip == 3 and prop not in ["3ml"]:
-							i += 1
-						if i >= len(btns):
-							continue
-
-						try:
-							ou = btns[i].text_all.split(" ")[-1]
-						except:
-							continue
-						if skip != 1:
-							try:
-								ou += "/"+btns[i+1].text_all.split(" ")[-1]
-							except:
-								pass
-
-						#print(prop, ou)
-
-						ou = ou.replace("Even", "+100")
-						if "ml" in prop or prop in ["btts", "dnb"]:
-							if prop == "3ml":
-								under = await btns[i+2].query_selector_all("span")
-								data[game][prop] = ou+"/"+under[1].text
-							else:
-								data[game][prop] = ou
-						elif "ftd" in prop:
-							player = await btns[btnIdx].query_selector("span")
-							player = parsePlayer(player.text)
-							last = player.split(" ")
-							try:
-								player = player.split(" ")[0][0]+" "+last[-1]
-							except:
-								continue
-							data[game][prop][player] = ou
-						elif prop.startswith("player_"):
-							line = await btns[btnIdx].query_selector("span")
-							if not line:
-								continue
-							line = str(float(line.text.replace("+", "")) - 0.5)
-							if player not in data[game][prop]:
-								data[game][prop][player] = {}
-							data[game][prop][player][line] = ou
-						elif sport == "soccer" and tabs[tabIdx].text_all.lower() == "game props" and skip == 1:
-							line = await btns[btnIdx].query_selector("span")
-							line = line.text.split(" ")[-1]
-							data[game][prop][line] = ou
-						elif sport == "soccer" and skip == 1:
-							player = await btns[btnIdx].query_selector("span")
-							player = parsePlayer(player.text)
-							if mainLine:
-								if player not in data[game][prop]:
-									data[game][prop][player] = {}
-								data[game][prop][player][mainLine] = ou
-							else:
-								data[game][prop][player] = ou
-						elif sport == "soccer" and skip == 2:
-							line = await btns[btnIdx].query_selector("span")
-							line = line.text.split(" ")[-1]
-							data[game][prop][line] = ou
-						elif sport == "nhl" and prop in ["atgs", "fgs"]:
-							player = btns[btnIdx].text.split(" Total")[0]
-							player = parsePlayer(player)
-							if prop == "atgs":
-								last = player.split(" ")
-								p = player.split(" ")[0][0]+" "+last[-1]
-								players[p] = player
-							data[game][prop][player] = ou
-						elif sport in ["nfl"] and skip == 1 or (sport in ["ncaab", "nba"] and skip == 1 and columns):
-							#print(btns[btnIdx])
-							player = btns[btnIdx].parent.parent.children[0]
-
-							if not player:
-								continue
-							player = parsePlayer(player.text)
-							if sport not in ["ncaab"]:
-								last = player.split(" ")
-								player = player.split(" ")[0][0]+" "+last[-1]
-							if player not in data[game][prop]:
-								data[game][prop][player] = {}
-							line = btns[btnIdx].parent.attributes
-							if "id" not in line:
-								continue
-							idIdx = line.index("id")
-							line = str(float(line[idIdx+1].split("-")[-1].replace("+","")) - 0.5)
-							#print(prop, player, line, ou)
-							data[game][prop][player][line] = ou
-						elif skip == 2:
-							player = btns[btnIdx].parent.parent.parent.parent.children[0].children[0].text
-							player = parsePlayer(player)
-							if sport not in ["ncaab"]:
-								last = player.split(" ")
-								player = player.split(" ")[0][0]+" "+last[-1]
-							if sport in ["nhl"] and player in players:
-								player = players[player]
-							line = btns[btnIdx].text_all.split(" ")[1]
-							#print(prop, player, line, ou)
-							if player not in data[game][prop]:
-								data[game][prop][player] = {}
-							data[game][prop][player][line] = ou
-						elif skip == 3:
-							player = btns[btnIdx].text_all.lower().split(" total ")[0]
-							player = parsePlayer(player)
-							if sport not in ["ncaab", "nhl"]:
-								last = player.split(" ")
-								player = player.split(" ")[0][0]+" "+last[-1]
-
-							#print(prop, player, btns[btnIdx+1].text_all)
-							line = btns[btnIdx+1].text_all.split(" ")[1]
-							ou = btns[btnIdx+1].text_all.split(" ")[-1]+"/"+btns[btnIdx+2].text_all.split(" ")[-1]
-							#print(prop, player, line, ou)
-							if player not in data[game][prop]:
-								data[game][prop][player] = {}
-							data[game][prop][player][line] = ou.replace("Even", "+100")
-						elif prop in ["bs"]:
-							player = btns[btnIdx].text.split(" Total")[0]
-							line = await btns[btnIdx+1].query_selector("span")
-							line = line.text.split(" ")[1]
-							player = parsePlayer(player)
-							if player not in data[game][prop]:
-								data[game][prop][player] = {}
-							data[game][prop][player][line] = ou
-						elif prop == "def_int":
-							player = await btns[btnIdx].query_selector("span")
-							player = parsePlayer(player.text)
-							last = player.split(" ")
-							player = player.split(" ")[0][0]+" "+last[-1]
-							data[game][prop][player] = {}
-							data[game][prop][player]["0.5"] = ou
-						else:
-							line = ""
-							if prop not in ["double_double", "triple_double"]:
-								line = await btns[i].query_selector("span")
-								if not line:
-									continue
-								line = line.text
-								try:
-									if "spread" in prop:
-										line = line.split(" ")[-1].replace("+", "")
-									elif "+" in line:
-										line = str(float(line.replace("+", "")) - 0.5)
-									else:
-										line = line.split(" ")[1]
-								except:
-									continue
-
-							if "total" in prop or "spread" in prop:
-								data[game][prop][line] = ou
-								continue
-
-							if skip == 2 and prop not in ["tackles+ast"]:
-								p = await btns[btnIdx].parent.parent.parent.query_selector("header")
-								if p:
-									player = parsePlayer(p.text)
-								last = player.split(" ")
-								try:
-									player = player.split(" ")[0][0]+" "+last[-1]
-								except:
-									continue
-							elif sport in ["nba", "ncaab", "nhl"] and skip == 3:
-								player = parsePlayer(btns[btnIdx].text.lower().split(" total ")[0].split(" to record")[0])
-								if sport == "nba":
-									last = player.split(" ")
-									player = player.split(" ")[0][0]+" "+last[-1]
-
-							if player in players:
-								player = players[player]
-							if player not in data[game][prop]:
-								data[game][prop][player] = {}
-
-							if prop in ["double_double", "triple_double"]:
-								data[game][prop][player] = ou
-							elif sport == "nfl" and line in data[game][prop][player]:
-								try:
-									over = int(data[game][prop][player][line])
-								except:
-									continue
-								if "/" in ou and over > int(ou.split("/")[0]):
-									data[game][prop][player][line] = str(over)+"/"+ou.split("/")[-1]
-								else:
-									data[game][prop][player][line] = ou
-							else:
-								data[game][prop][player][line] = ou
 
 		updateData(file, data)
 		q.task_done()
