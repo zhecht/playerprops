@@ -486,6 +486,11 @@ async def get365Links(sport, keep):
 		ids = ["E181378", "E181444", "E181445", "E181446", "E181379", "E181447", "E181380", "E181448", "E181381", "E181382", "E181383", "E181384", "E181449", "E181387", "E181388", "E181389", "E181390", "E181391"]
 		for prop, id in zip(props, ids):
 			res[prop] = f"https://www.oh.bet365.com/?_h=k5LhKHD5XJf0TyAaSmzA0A%3D%3D&btsffd=1#/AC/B18/C20604387/D43/{id}/F43/N43/"
+	elif sport == "mlb":
+		props = ["er-o/u", "h_allowed-o/u", "outs-o/u", "k-o/u", "k", "bb_allowed-o/u", "h-o/u", "h", "hr-o/u", "hr", "r-o/u", "rbi-o/u", "rbi", "r", "sb-o/u", "tb-o/u", "tb", "h+r+rbi-o/u", "h+r+rbi"]
+		ids = ["E160296", "E160295", "E160297", "E160293", "E163122", "E163108", "E163109", "E163117", "E160301", "E163118", "E160303", "E163110", "E163120", "E163121", "E160304", "E160302", "E163119", "E163218", "E163225"]
+		for prop, id in zip(props, ids):
+			res[prop] = f"https://www.oh.bet365.com/?_h=dn1Bimn5kFJPXUXuSQmXSQ%3D%3D&btsffd=1#/AC/B16/C20525425/D43/{id}/F43/N2/"
 	elif sport == "soccer":
 		#urls = ["https://www.nj.bet365.com/?_h=RZ9RUwb5FXe3IH58lQH52Q%3D%3D&btsffd=1#/AC/B1/C1/D1002/G10236/J99/Q1/F^24/N5/", "https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
 		urls = ["https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
@@ -523,6 +528,9 @@ async def write365FromHTML(data, html, sport, prop):
 		elif sport == "ncaab":
 			away = convertCollege(away)
 			home = convertCollege(home)
+		elif sport == "mlb":
+			away = convertMLBTeam(away)
+			home = convertMLBTeam(home)
 		game = f"{away} {sep} {home}"
 
 		players = gameDiv.find_all("div", class_="srb-ParticipantLabelWithTeam_Name")
@@ -757,6 +765,8 @@ async def getESPNLinks(sport, tomorrow):
 		url = "https://espnbet.com/sport/football/organization/united-states/competition/ncaaf"
 	elif sport == "nhl":
 		url = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl"
+	elif sport == "mlb":
+		url = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb"
 	elif sport in ["nba", "ncaab"]:
 		url = f"https://espnbet.com/sport/basketball/organization/united-states/competition/{sport}"
 
@@ -781,7 +791,10 @@ async def getESPNLinks(sport, tomorrow):
 		if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%b %d") not in div.text_all:
 			break
 
-		if sport == "nfl":
+		if sport == "mlb":
+			away = convertMLBTeam(teams[i].text)
+			home = convertMLBTeam(teams[i+1].text)
+		elif sport == "nfl":
 			away = convert365Team(teams[i].text)
 			home = convert365Team(teams[i+1].text)
 		elif sport == "nhl":
@@ -828,10 +841,11 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 				skip = 2
 			prop = prop.replace(" o/u", "")
 
-		if prop.startswith("first quarter"):
+		if prop.startswith("first "):
 			continue
 
-		prop = prop.replace("player total ", "").replace("player ", "").replace(" o/u", "").replace("to record a ", "").replace(", ", "+").replace(" and ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("3-pointers attempted", "3pta").replace("free throws made", "ftm").replace("field goals made", "fgm").replace("field goals attempted", "fga").replace("first goalscorer", "fgs").replace("turnovers", "to").replace("shots on goal", "sog").replace("goals", "atgs").replace(" + ", "+").replace(" ", "_")
+		prop = prop.replace("player total ", "").replace("player ", "").replace("pitcher total ", "").replace("pitcher ", "").replace(" o/u", "").replace("to record a ", "").replace(", ", "+").replace(" and ", "+").replace(" + ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("3-pointers attempted", "3pta").replace("free throws made", "ftm").replace("field goals made", "fgm").replace("field goals attempted", "fga").replace("first goalscorer", "fgs").replace("turnovers", "to").replace("shots on goal", "sog").replace("goals", "atgs").replace("strikeouts", "k").replace("home runs hit", "hr").replace("hits", "h").replace("stolen bases", "sb").replace("bases", "tb").replace("rbis", "rbi").replace("earned runs allowed", "er").replace("runs scored", "r").replace("runs", "r").replace("singles hit", "singles").replace("doubles hit", "doubles").replace("walks", "bb").replace("outs recorded", "outs").replace("to record win", "win")
+		prop = prop.replace(" ", "_")
 		if prop == "double-double":
 			prop = "double_double"
 		elif prop == "triple-double":
@@ -845,7 +859,11 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 		elif prop == "3_pointers_made":
 			prop = "3ptm"
 
-		if sport == "nhl" and prop in ["atgs", "ast"]:
+		if sport == "mlb":
+			skip = 2
+			if prop == "win":
+				skip = 3
+		elif sport == "nhl" and prop in ["atgs", "ast"]:
 			skip = 3
 		elif sport == "nhl" and prop in ["pts", "sog"]:
 			skip = 2
@@ -873,7 +891,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 				if skip == 2:
 					player = btns[idx].find_previous("header").text.lower()
 				else:
-					player = btns[idx].text.lower().split(" total")[0]
+					player = btns[idx].text.lower().split(" total")[0].split(" to record")[0]
 
 				if sport not in ["ncaab", "nhl"] or len(player.split(" ")[0]) < 3:
 					last = player.split(" ")
@@ -891,7 +909,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 				except:
 					print(game, prop, player)
 
-				if prop in ["atgs"]:
+				if prop in ["atgs", "win"]:
 					data[game][prop][player] = f"{o}/{u}"
 				else:
 					try:
@@ -1452,7 +1470,7 @@ async def writeESPN(sport):
 
 	browser.stop()
 
-async def getMGMLinks(sport=None):
+async def getMGMLinks(sport=None, tomorrow=None):
 	if not sport:
 		sport = "nfl"
 	url = "https://sports.mi.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35"
@@ -1463,6 +1481,8 @@ async def getMGMLinks(sport=None):
 		url = "https://sports.mi.betmgm.com/en/sports/hockey-12/betting/usa-9/nhl-34"
 	elif sport == "nba":
 		url = "https://sports.mi.betmgm.com/en/sports/basketball-7/betting/usa-9/nba-6004"
+	elif sport == "mlb":
+		url = "https://sports.mi.betmgm.com/en/sports/baseball-23/betting/usa-9/mlb-75"
 	elif sport == "ncaab":
 		url = "https://sports.mi.betmgm.com/en/sports/basketball-7/betting/usa-9/ncaa-264"
 	elif sport == "soccer":
@@ -1489,7 +1509,11 @@ async def getMGMLinks(sport=None):
 				link = ps[pIdx].parent.parent.parent.parent.parent.parent.parent.parent.parent
 			t = [x for x in link.parent.parent.children if x.tag != "#comment"][0]
 			if "starting" not in t.text_all.lower() and "today" not in t.text_all.lower():
-				continue
+				if tomorrow:
+					if "tomorrow" not in t.text_all.lower():
+						continue
+				else:
+					continue
 
 			away = ps[pIdx].text_all.strip()
 			home = ps[pIdx+1].text_all.strip()
@@ -1505,6 +1529,9 @@ async def getMGMLinks(sport=None):
 			elif sport == "soccer":
 				away = convertSoccer(away)
 				home = convertSoccer(home)
+			elif sport == "mlb":
+				away = convertMLBTeam(away)
+				home = convertMLBTeam(home)
 			else:
 				away = convertMGMTeam(away)
 				home = convertMGMTeam(home)
@@ -1535,14 +1562,16 @@ async def writeMGMFromHTML(data, html, sport, game):
 			prop = "ast"
 		elif prop == "player points":
 			prop = "pts"
+		elif prop.startswith("batter") or prop.startswith("pitcher"):
+			prop = prop.replace("batter ", "").replace("pitcher ", "").replace("hits", "h").replace("earned runs", "er").replace("rbis", "rbi").replace("home runs", "hr").replace("total bases", "tb").replace("strikeouts", "k").replace("runs", "r").replace("stolen bases", "sb").replace("h+r+rbis", "h+r+rbi").replace(" ", "_")
 
 		lines = panel.find_all("div", class_="name")
 		odds = panel.find_all("div", class_="value")
 		if prop == "game lines":
 			data[game]["ml"] = odds[2].text+"/"+odds[-1].text
-			line = lines[0].text.strip().replace("+", "")
+			line = str(float(lines[0].text.strip().replace("+", "")))
 			data[game]["spread"][line] = odds[0].text+"/"+odds[3].text
-			line = lines[1].text.strip().replace("+", "").split(" ")[-1]
+			line = str(float(lines[1].text.strip().replace("+", "").split(" ")[-1]))
 			data[game]["total"][line] = odds[1].text+"/"+odds[4].text
 		elif prop in ["fgs", "atgs"]:
 			for player, o in zip(lines, odds):
@@ -1550,10 +1579,16 @@ async def writeMGMFromHTML(data, html, sport, game):
 				data[game][prop][player] = o.text
 		else:
 			players = panel.find_all("div", class_="player-props-player-name")
+			odds = panel.find_all("ms-option")
 			for idx, player in enumerate(players):
 				player = parsePlayer(player.text.strip())
+				if idx*2 >= len(lines):
+					continue
 				line = lines[idx*2].text.strip().split(" ")[-1]
-				data[game][prop][player][line] = odds[idx*2].text+"/"+odds[idx*2+1].text
+				ou = odds[idx*2].select(".value")[0].text
+				if odds[idx*2+1].select(".value"):
+					ou += "/"+odds[idx*2+1].select(".value")[0].text
+				data[game][prop][player][line] = ou
 
 async def writeMGM(sport):
 	file = f"static/{sport}/mgm.json"
@@ -1673,6 +1708,8 @@ async def writeMGM(sport):
 				elif prop.startswith("alternate player"):
 					prop = prop.split(" ")[-1].replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("three-pointers", "3ptm")
 					alt = True
+				elif prop.startswith("batter") or prop.startswith("pitcher"):
+					prop = prop
 				else:
 					continue
 
@@ -1681,6 +1718,8 @@ async def writeMGM(sport):
 
 				#if "total" not in prop:
 				#	continue
+
+				await panel.scroll_into_view()
 
 				up = await panel.query_selector("svg[title=theme-up]")
 				if not up:
@@ -1884,7 +1923,7 @@ async def writeMGM(sport):
 
 	browser.stop()
 
-async def getFDLinks(sport):
+async def getFDLinks(sport, tomorrow):
 	games = {}
 	url = f"https://sportsbook.fanduel.com/navigation/{sport}"
 	browser = await uc.start(no_sandbox=True)
@@ -1896,7 +1935,9 @@ async def getFDLinks(sport):
 	for link in links:
 		if link.text_all == "More wagers":
 			t = link.parent.parent.children[0].children[-1]
-			if t.tag != "time" or len(t.text.split(" ")) > 2:
+			if t.tag != "time" or (not tomorrow and len(t.text.split(" ")) > 2):
+				continue
+			if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%a") != t.text.split(" ")[0]:
 				continue
 			url = ""
 			if sport in ["ncaab", "nba"]:
@@ -1993,7 +2034,6 @@ async def writeNCAABFD():
 				continue
 			await page.wait_for(selector="div[data-test-id=ArrowAction]")
 
-			#if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense", "half", "team props"]:
 			if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense"]:
 				continue
 
@@ -2568,7 +2608,8 @@ async def writeFD(sport):
 				#if tab.text.lower() not in ["player combos"]:
 					continue
 			elif sport == "mlb":
-				if tab.text.lower() not in ["batter props"]:
+				if tab.text.lower() not in ["batter props", "pitcher props"]:
+				#if tab.text.lower() not in ["first 5 innings"]:
 					continue
 			else:
 				if tab.text.lower() not in ["popular", "td scorer props", "passing props", "receiving props", "rushing props"]:
@@ -2611,16 +2652,41 @@ async def writeFD(sport):
 				elif "fourth" in label or "4th" in label:
 					prefix = f"4{hp}_"
 
+				if label.startswith("first 5 innings"):
+					prefix = "f5_"
+
 				if label == "game lines":
 					prop = "lines"
 				elif "moneyline (3 way)" in label:
 					prop = "3ml"
 					skip = 3
+				elif "money line" in label:
+					prop = "ml"
+				elif label.endswith("run line"):
+					prop = "spread"
+				elif label.endswith("total runs"):
+					prop = "total"
 				elif label == "alternate puck line":
 					skip = 1
 					prop = "spread"
 				elif label == "any time goal scorer":
 					prop = "atgs"
+					skip = 1
+				elif label == "player strikeouts":
+					prop = "k"
+				elif label.endswith("- alt strikeouts"):
+					prop = "k"
+					skip = 1
+					alt = True
+				elif sport == "mlb" and (label.startswith("to hit") or label.startswith("to record")):
+					mainLine = "0.5"
+					if label.startswith("to hit a"):
+						prop = label.split(" ")[-1].replace("run", "hr")
+					elif label.startswith("to record a"):
+						prop = label.split(" ")[-1].replace("hit", "h").replace("run", "r").replace("base", "sb")
+					else:
+						mainLine = str(float(label.split("+")[0].split(" ")[-1]) - 0.5)
+						prop = label.split(" ")[-1].replace("hits", "h").replace("runs", "r").replace("rbis", "rbi").replace("bases", "tb")
 					skip = 1
 				elif label.endswith("total goals"):
 					team = convertNHLTeam(label.split(" total")[0])
@@ -2703,16 +2769,6 @@ async def writeFD(sport):
 					prop = label.split("alternate total ")[-1].split("alt ")[-1].replace("passing", "pass").replace("rushing", "rush").replace("receiving", "rec").replace("total receptions", "rec").replace("receptions", "rec").replace("reception", "rec").replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("threes", "3ptm").replace("yds", "yd").replace("tds", "td").replace(" + ", "+").replace(" ", "_")
 				elif " - passing + rushing yds" in label:
 					prop = "pass+rush"
-				elif sport == "mlb":
-					skip = 1
-					if label == "to hit a home run":
-						prop = "hr"
-					elif label == "to record a hit":
-						prop = "h"
-					#elif label == "to record 2+ hit":
-					#	prop = "2+h"
-					else:
-						continue
 				elif sport in ["nba", "ncaab"]:
 					if label.startswith("to score") and label.endswith("points"):
 						prop = "pts"
@@ -2835,6 +2891,11 @@ async def writeFD(sport):
 
 					if prop == "3ml":
 						data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]+"/"+btns[i+2].attributes[labelIdx].split(", ")[-1]
+					elif "ml" in prop:
+						data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
+					elif "spread" in prop and sport == "mlb":
+						line = str(float(fields[-2]))
+						data[game][prop][line] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
 					elif "spread" in prop:
 						line = fields[-2].split(" ")[-1]
 						team = convertNHLTeam(fields[-2].replace(f" {line}", ""))
@@ -2953,16 +3014,25 @@ async def writeFD(sport):
 							x = 1
 						elif "+" not in fields[0]:
 							x = 1
-						if mainLine:
+
+						if prop == "hr":
+							player = parsePlayer(fields[1].split(" to Record")[0].split(" (")[0])
+						elif mainLine:
 							player = parsePlayer(fields[1])
 							line = mainLine
 						elif prop == "sacks" or prop == "def_int" or prop == "h":
 							player = parsePlayer(fields[1].split(" to Record")[0].split(" (")[0])
 							line = "0.5"
-						elif prop == "hr":
-							player = parsePlayer(fields[1].split(" to Record")[0].split(" (")[0])
+						elif prop == "k" and alt:
+							l = fields[0]
+							if "+" not in fields[0]:
+								l = fields[1]
+							p = " ".join(l.split("+")[0].split(" ")[:-1])
+							player = parsePlayer(p)
+							line = str(float(l.split("+")[0].split(" ")[-1]) - 0.5)
 						else:
 							line = fields[x].lower().replace(fullPlayer+" ", "").split(" ")[0].replace("+", "")
+							#print(prop, fields)
 							line = str(float(line) - 0.5)
 
 						player = player.split(" (")[0]
@@ -3289,11 +3359,15 @@ async def getDKLinks(sport):
 		elif sport == "nhl":
 			away = convert365NHLTeam(away)
 			home = convert365NHLTeam(home)
+		elif sport == "mlb":
+			away = convertMLBTeam(away)
+			home = convertMLBTeam(home)
 		else:
 			away = convert365Team(away)
 			home = convert365Team(home)
 		game = f"{away} @ {home}"
-		games.append(game)
+		if game not in games:
+			games.append(game)
 
 	browser.stop()
 
@@ -3304,6 +3378,8 @@ async def getDKLinks(sport):
 
 	if sport in ["nba", "ncaab"]:
 		tabs = ["game lines", "player points", "player combos", "player rebounds", "player assists", "player threes", "player defense"]
+	elif sport in ["mlb"]:
+		tabs = ["batter props", "pitcher props"]
 	elif sport == "nhl":
 		tabs = ["game lines", "goalscorer", "shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]
 		#tabs = ["game lines"]
@@ -3322,6 +3398,20 @@ async def getDKLinks(sport):
 				for game in games:
 					res[f"{game}-{key}"] = f"{url}&subcategory={key.replace('+','-+-')}"
 			for key in ["pts+reb+ast", "pts+reb", "pts+ast", "ast+reb"]:
+				res[key] = f"{url}&subcategory={key.replace('+','-+-')}-o/u"
+			continue
+		elif tab == "batter props":
+			for key in ["home-runs", "hits", "total-bases", "rbis"]:
+				#for game in games:
+				res[f"{key}"] = f"{url}&subcategory={key.replace('+','-+-')}"
+			for key in ["hits", "total-bases", "rbis", "hits+runs+rbis", "runs", "stolen-bases", "singles", "doubles"]:
+				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-+-')}-o/u"
+			continue
+		elif tab == "pitcher props":
+			for key in ["strikeouts-thrown", "to-record-a-win", "hits-allowed", "walks-allowed"]:
+				#for game in games:
+				res[f"{key}"] = f"{url}&subcategory={key.replace('+','-+-')}"
+			for key in ["strikeouts-thrown", "hits-allowed", "walks-allowed", "earned-runs-allowed", "outs-recorded"]:
 				res[key] = f"{url}&subcategory={key.replace('+','-+-')}-o/u"
 			continue
 		# OU just needs 1 thread
@@ -3347,6 +3437,7 @@ async def writeDKFromHTML(data, html, sport, prop):
 		divs = soup.select(".sportsbook-event-accordion__wrapper")
 
 	#print(len(divs))
+	gamesSeen = {}
 	for idx in range(0, len(divs), skip):
 		gameDiv = divs[idx]
 		if gameDiv.find("svg", class_="sportsbook__icon--live"):
@@ -3369,12 +3460,17 @@ async def writeDKFromHTML(data, html, sport, prop):
 		elif sport == "nhl":
 			away = convert365NHLTeam(away)
 			home = convert365NHLTeam(home)
+		elif sport == "mlb":
+			away = convertMLBTeam(away)
+			home = convertMLBTeam(home)
 		else:
 			away = convert365Team(away)
 			home = convert365Team(home)
 		game = f"{away} @ {home}"
+		if game in gamesSeen:
+			continue
+		gamesSeen[game] = True
 
-		#print(game)
 		if prop == "game_lines":
 			tds = gameDiv.select("td")
 			tds2 = divs[idx+1].select("td")
@@ -3398,10 +3494,11 @@ async def writeDK(sport):
 	while True:
 		data = nested_dict()
 		(game, url) = q.get()
-		#print(game, url)
+		print(game)
 		mainTab = game
 		if url is None:
 			browser.stop()
+			print(f"done {url}")
 			q.task_done()
 			return
 
@@ -3412,6 +3509,7 @@ async def writeDK(sport):
 		try:
 			await page.wait_for(selector=c)
 		except:
+			print(f"done {url}")
 			q.task_done()
 			continue
 
@@ -3437,36 +3535,19 @@ async def writeDK(sport):
 		elif "2nd half" in prop:
 			prefix = "2h_"
 
-		#print(prop, url)
-		if "halves" in url:
-			if "team totals" in prop:
-				if "odd/even" in prop:
-					q.task_done()
-					continue
-				prop = f"team_total"
-			else:
-				q.task_done()
-				continue
-		elif "team-props" in url:
-			if prop in ["team totals", "alt team totals"]:
-				prop = "team_total"
-			else:
-				q.task_done()
-				continue
-		else:
-			prop = prop.split(" (")[0].replace("player ", "").replace("alternate ", "").replace("alt ", "").replace("puck line", "spread").replace("interceptions", "int").replace("passing", "pass").replace("receiving", "rec").replace("rushing", "rush").replace("attempts", "att").replace("receptions", "rec").replace("reception", "rec").replace("completions", "pass_cmp").replace("completion", "cmp").replace("tds", "td").replace("yards", "yd").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("threes", "3ptm").replace("blocks", "blk").replace("turnovers", "to").replace("steals", "stl").replace("shots on goal", "sog").replace("goalscorer", "atgs").replace("goalie props", "saves").replace(" + ", "+").replace(" ", "_")
-			if prop == "double-double":
-				prop = "double_double"
-			elif prop == "triple-double":
-				prop = "triple_double"
-			elif prop == "ast+reb":
-				prop = "reb+ast"
-			elif sport == "nhl" and prop == "blk":
-				prop = "bs"
-			elif prop == "rush+rec_yd":
-				prop = "rush+rec"
+		prop = prop.split(" (")[0].replace(" + ", "+").replace("player ", "").replace("alternate ", "").replace("alt ", "").replace("puck line", "spread").replace("interceptions", "int").replace("passing", "pass").replace("receiving", "rec").replace("rushing", "rush").replace("attempts", "att").replace("receptions", "rec").replace("reception", "rec").replace("completions", "pass_cmp").replace("completion", "cmp").replace("tds", "td").replace("yards", "yd").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("threes", "3ptm").replace("blocks", "blk").replace("turnovers", "to").replace("steals", "stl").replace("shots on goal", "sog").replace("goalscorer", "atgs").replace("goalie props", "saves").replace("home runs", "hr").replace("total bases", "tb").replace("rbis", "rbi").replace("hits", "h").replace("runs", "r").replace("stolen bases", "sb").replace("strikeouts thrown", "k").replace("to record a win", "win").replace("walks", "bb").replace("earned r allowed", "er").replace("outs recorded", "outs").replace(" ", "_")
+		if prop == "double-double":
+			prop = "double_double"
+		elif prop == "triple-double":
+			prop = "triple_double"
+		elif prop == "ast+reb":
+			prop = "reb+ast"
+		elif sport == "nhl" and prop == "blk":
+			prop = "bs"
+		elif prop == "rush+rec_yd":
+			prop = "rush+rec"
 
-		#print(prop)
+		#print(mainTab, prop)
 
 		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines"]:
 			time.sleep(0.5)
@@ -3474,6 +3555,7 @@ async def writeDK(sport):
 			await writeDKFromHTML(data, html, sport, prop)
 			browser.stop()
 			updateData(file, data)
+			print(f"done {url}")
 			q.task_done()
 			continue
 
@@ -3486,6 +3568,7 @@ async def writeDK(sport):
 			sel = ".sportsbook-table__body tr"
 			rowSkip = 2
 		gameDivs = await page.query_selector_all(sel)
+		gamesSeen = {}
 		#print(prop, len(gameDivs))
 		for gameIdx in range(0, len(gameDivs), rowSkip):
 			gameDiv = gameDivs[gameIdx]
@@ -3525,11 +3608,18 @@ async def writeDK(sport):
 			elif sport == "nhl":
 				away = convert365NHLTeam(away)
 				home = convert365NHLTeam(home)
+			elif sport == "mlb":
+				away = convertMLBTeam(away)
+				home = convertMLBTeam(home)
 			else:
 				away = convert365Team(away)
 				home = convert365Team(home)
 
 			game = f"{away} @ {home}"
+
+			if game in gamesSeen:
+				continue
+			gamesSeen[game] = True
 
 			if " @ " in singleGame and game != singleGame:
 				continue
@@ -3624,7 +3714,7 @@ async def writeDK(sport):
 					over = btns[i].text_all.split(" ")[-1].replace("\u2212", "-")
 					under = btns[i+1].text_all.split(" ")[-1].replace("\u2212", "-")
 					data[game][prop][line] = f"{over}/{under}"
-			elif sport == "ncaab" or (sport in ["nba", "nhl"] and skip == 1):
+			elif sport == "ncaab" or (sport in ["nba", "nhl", "mlb"] and skip == 1):
 				"""
 				odds = await gameDiv.query_selector_all(".sb-selection-picker__selection--focused")
 				players = await gameDiv.query_selector_all(".side-rail-name")
@@ -3728,11 +3818,13 @@ async def writeDK(sport):
 							data[game][prop][player][line] += "/"+under.text.replace("\u2212", "-")
 
 		updateData(file, data)
+		print(f"done {url}")
 		q.task_done()
 
 	browser.stop()
 
 def updateData(file, data):
+	#print(data.keys())
 	if data:
 		with lock:
 			with open(file) as fh:
@@ -3763,10 +3855,11 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(get365Links(args.sport, args.keep))
 		runThreads("bet365", args.sport, games, args.threads, args.keep)
 	if args.fd:
-		games = uc.loop().run_until_complete(getFDLinks(args.sport))
+		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow))
 		#games = {}
 		#games["vgk @ det"] = "/ice-hockey/nhl/vegas-golden-knights-@-detroit-red-wings-34126907"
-		runThreads("fanduel", args.sport, games, args.threads)
+		totThreads = min(args.threads, len(games))
+		runThreads("fanduel", args.sport, games, totThreads)
 
 	if args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(args.sport, args.tomorrow or args.tmrw))
@@ -3775,7 +3868,7 @@ if __name__ == '__main__':
 		runThreads("espn", args.sport, games, args.threads)
 
 	if args.mgm:
-		games = uc.loop().run_until_complete(getMGMLinks(args.sport))
+		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))
 		#games = {}
 		#games["vgk @ det"] = "/en/sports/events/vegas-golden-knights-at-detroit-red-wings-17082663"
 		runThreads("mgm", args.sport, games, args.threads)

@@ -654,7 +654,10 @@ if __name__ == '__main__':
 					for player in d[game]["hr"]:
 						data.setdefault(game, {})
 						data[game].setdefault(player, {})
-						data[game][player][book] = d[game]["hr"][player]["0.5"]
+						if book == "pn":
+							data[game][player][book] = d[game]["hr"][player]["0.5"]
+						else:
+							data[game][player][book] = d[game]["hr"][player]
 
 		with open("static/dailyev/odds.json", "w") as fh:
 			json.dump(data, fh, indent=4)

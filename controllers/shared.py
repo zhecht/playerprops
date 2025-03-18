@@ -73,6 +73,7 @@ def strip_accents(text):
 
 def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iv", "").replace(" iii", "").replace(" ii", "")
+	player = player.split(" (")[0]
 	if player == "jadeney":
 		return "jaden ivey"
 	elif player == "ivanan":

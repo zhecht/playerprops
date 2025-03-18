@@ -439,7 +439,7 @@ def writeCZ(date=None, token=None):
 			elif prop == "player to hit a home run":
 				prop = "hr"
 			elif market["templateName"].lower().split(" ")[0] in ["|batter|", "|pitcher|"]:
-				player = parsePlayer(market["name"].split("|")[1])
+				player = parsePlayer(market["name"].replace("|", "").split(" - ")[0])
 				if "total runs scored" in prop:
 					prop = "r"
 				elif "total bases" in prop:
@@ -1057,7 +1057,7 @@ def arb(bookArg="fd"):
 	freebets = 100
 	res = []
 	for sport in ["nba", "nhl", "mlb"]:
-		with open(f"static/{sport}/fanduelLines.json") as fh:
+		with open(f"static/{sport}/fanduel.json") as fh:
 			fdLines = json.load(fh)
 
 		with open(f"static/{sport}/draftkings.json") as fh:
@@ -1792,7 +1792,7 @@ def writeFanduel():
 
 								lines[game][prop][player][handicap] = ou
 	
-	with open(f"static/mlb/fanduelLines.json", "w") as fh:
+	with open(f"static/mlb/fanduel.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
 def writeFanduelManual():
@@ -2603,7 +2603,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
 		action = json.load(fh)
 
-	with open(f"{prefix}static/mlbprops/bet365.json") as fh:
+	with open(f"{prefix}static/mlb/bet365.json") as fh:
 		bet365Lines = json.load(fh)
 
 	with open(f"{prefix}static/mlb/kambi.json") as fh:
@@ -2618,7 +2618,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/mgm.json") as fh:
 		mgmLines = json.load(fh)
 
-	with open(f"{prefix}static/mlb/fanduelLines.json") as fh:
+	with open(f"{prefix}static/mlb/fanduel.json") as fh:
 		fdLines = json.load(fh)
 
 	with open(f"{prefix}static/mlb/draftkings.json") as fh:
@@ -3157,7 +3157,7 @@ if __name__ == '__main__':
 		#with open(f"{prefix}static/mlb/bet365.json") as fh:
 		#	bet365Lines = json.load(fh)
 
-		with open(f"{prefix}static/mlb/fanduelLines.json") as fh:
+		with open(f"{prefix}static/mlb/fanduel.json") as fh:
 			fdLines = json.load(fh)
 
 		#with open(f"{prefix}static/mlb/bovada.json") as fh:
