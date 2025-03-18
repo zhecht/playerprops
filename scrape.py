@@ -75,6 +75,7 @@ def convertCollege(team):
 		"sam houston": "sam houston state",
 		"southern": "southern university",
 		"s dakota state": "south dakota state",
+		"saint marys ca": "saint marys",
 		"saint thomas mn": "st thomas",
 		"st thomas mn": "st thomas",
 		"st thomas minnesota": "st thomas",
@@ -1068,50 +1069,81 @@ async def getMGMLinks(sport=None, tomorrow=None):
 
 	browser = await uc.start(no_sandbox=True)
 	games = {}
+	data = nested_dict()
 	for url in urls:
-		page = await browser.get(url)
-		await page.wait_for(selector=".grid-info-wrapper")
-		ps = await page.query_selector_all(".participant")
+		
 
-		for pIdx in range(0, len(ps), 2):
-			link = ps[pIdx].parent.parent.parent.parent.parent.parent.parent.parent.parent
-			if link.tag != "a":
-				link = ps[pIdx].parent.parent.parent.parent.parent.parent.parent
-			t = [x for x in link.parent.parent.children if x.tag != "#comment"][0]
-			if "starting" not in t.text_all.lower() and "today" not in t.text_all.lower():
-				if tomorrow:
-					if "tomorrow" not in t.text_all.lower():
-						continue
+		tabs = [""]
+		#march madness
+		if sport == "ncaab":
+			tabs.extend(["thursday", "friday"])
+		
+		for tab in tabs:
+			page = await browser.get(url)
+			await page.wait_for(selector=".grid-info-wrapper")
+
+			if tab:
+				ts = await page.query_selector_all("#main-view .ds-tab-header-item")
+				for t in ts:
+					if tab == t.text_all.strip().lower():
+						await t.click()
+						time.sleep(1)
+						break
+
+			html = await page.get_content()
+			soup = BS(html, "lxml")
+
+			ps = soup.select(".participant")
+			for pIdx in range(0, len(ps), 2):
+				link = ps[pIdx].find_previous("a")
+				t = link.parent.parent.find("ms-event-timer")
+
+				if "starting" not in t.text.lower() and "today" not in t.text.lower():
+					if tomorrow:
+						if "tomorrow" not in t.text.lower():
+							continue
+					else:
+						pass
+						#continue
+
+				away = ps[pIdx].text.strip()
+				home = ps[pIdx+1].text.strip()
+				if sport.startswith("ncaa"):
+					away = convertCollege(away)
+					home = convertCollege(home)
+				elif sport == "nhl":
+					away = convertMGMNHLTeam(away)
+					home = convertMGMNHLTeam(home)
+				elif sport == "nba":
+					away = convertMGMNBATeam(away)
+					home = convertMGMNBATeam(home)
+				elif sport == "soccer":
+					away = convertSoccer(away)
+					home = convertSoccer(home)
+				elif sport == "mlb":
+					away = convertMLBTeam(away)
+					home = convertMLBTeam(home)
 				else:
-					pass
-					continue
+					away = convertMGMTeam(away)
+					home = convertMGMTeam(home)
 
-			away = ps[pIdx].text_all.strip()
-			home = ps[pIdx+1].text_all.strip()
-			if sport.startswith("ncaa"):
-				away = convertCollege(away)
-				home = convertCollege(home)
-			elif sport == "nhl":
-				away = convertMGMNHLTeam(away)
-				home = convertMGMNHLTeam(home)
-			elif sport == "nba":
-				away = convertMGMNBATeam(away)
-				home = convertMGMNBATeam(home)
-			elif sport == "soccer":
-				away = convertSoccer(away)
-				home = convertSoccer(home)
-			elif sport == "mlb":
-				away = convertMLBTeam(away)
-				home = convertMLBTeam(home)
-			else:
-				away = convertMGMTeam(away)
-				home = convertMGMTeam(home)
+				sep = "v" if sport == "soccer" else "@"
+				game = f"{away} {sep} {home}"
+				games[game] = link.get("href")+"?market=-1"
 
-			sep = "v" if sport == "soccer" else "@"
-			game = f"{away} {sep} {home}"
-			games[game] = link.href+"?market=-1"
+				btns = link.parent.parent.find_all("ms-option")
+				data[game]["ml"] = btns[4].text+"/"+btns[-1].text
+
+				line = str(float(btns[0].find("div", class_="option-name").text))
+				data[game]["spread"][line] = btns[0].find("div", class_="option-value").text+"/"+btns[1].find("div", class_="option-value").text
+
+				line = str(float(btns[2].find("div", class_="option-name").text.strip().split(" ")[-1]))
+				data[game]["total"][line] = btns[2].find("div", class_="option-value").text+"/"+btns[3].find("div", class_="option-value").text
 
 	browser.stop()
+
+	with open(f"static/{sport}/mgm.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 	return games
 
 def runMGM(sport):
@@ -1496,28 +1528,26 @@ async def writeMGM(sport):
 
 async def getFDLinks(sport, tomorrow):
 	games = {}
+	data = {}
 	url = f"https://sportsbook.fanduel.com/navigation/{sport}"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
 
 	await page.wait_for(selector="span[role=link]")
-	links = await page.query_selector_all("span[role=link]")
+	html = await page.get_content()
+	soup = BS(html, "lxml")
+	links = soup.select("span[role=link]")
 
 	for link in links:
-		if link.text_all == "More wagers":
-			t = link.parent.parent.children[0].children[-1]
-			if t.tag != "time" or (not tomorrow and len(t.text.split(" ")) > 2):
+		if link.text == "More wagers":
+			t = link.find_previous("a").find("time")
+			if not t or (not tomorrow and len(t.text.split(" ")) > 2):
 				continue
 				pass
 			if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%a") != t.text.split(" ")[0]:
 				continue
-			url = ""
-			if sport in ["ncaab", "nba"]:
-				url = link.parent.href
-				game = " ".join(link.parent.href.split("/")[-1].split("-")[:-1])
-			else:
-				url = link.parent.parent.parent.href
-				game = " ".join(link.parent.parent.parent.href.split("/")[-1].split("-")[:-1])
+			url = link.find_previous("a").get("href")
+			game = " ".join(url.split("/")[-1].split("-")[:-1])
 			away, home = map(str, game.split(" @ "))
 			if sport == "nfl":
 				away = convertTeam(away)
@@ -1538,6 +1568,8 @@ async def getFDLinks(sport, tomorrow):
 			games[game] = url
 
 	browser.stop()
+	with open(f"static/{sport}/fanduel.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 	return games
 
 def runThreads(book, sport, games, totThreads, keep=False):
@@ -3037,6 +3069,7 @@ async def writeDKFromHTML(data, html, sport, prop):
 	if prop == "game_lines":
 		skip = 2
 		divs = soup.find("tbody", class_="sportsbook-table__body").find_all("tr")
+		#divs = soup.select(".sportsbook-table__body tr")
 	else:
 		divs = soup.select(".sportsbook-event-accordion__wrapper")
 
@@ -3459,23 +3492,25 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(get365Links(args.sport, args.keep))
 		runThreads("bet365", args.sport, games, args.threads, args.keep)
 	if args.fd:
-		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow))
 		#games = {}
 		#games["vgk @ det"] = "/ice-hockey/nhl/vegas-golden-knights-@-detroit-red-wings-34126907"
+		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow or args.tmrw))
 		totThreads = min(args.threads, len(games))
-		runThreads("fanduel", args.sport, games, totThreads)
+		runThreads("fanduel", args.sport, games, totThreads, keep=True)
 
 	if args.espn:
-		games = uc.loop().run_until_complete(getESPNLinks(args.sport, args.tomorrow or args.tmrw))
 		#games = {}
 		#games["vgk @ det"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/381a07af-75f9-4bef-ae27-d9305981f79d"
-		runThreads("espn", args.sport, games, args.threads, keep=True)
+		games = uc.loop().run_until_complete(getESPNLinks(args.sport, args.tomorrow or args.tmrw))
+		totThreads = min(args.threads, len(games))
+		runThreads("espn", args.sport, games, totThreads, keep=True)
 
 	if args.mgm:
-		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))
 		#games = {}
 		#games["vgk @ det"] = "/en/sports/events/vegas-golden-knights-at-detroit-red-wings-17082663"
-		runThreads("mgm", args.sport, games, args.threads)
+		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))
+		totThreads = min(args.threads, len(games))
+		runThreads("mgm", args.sport, games, totThreads, keep=True)
 
 	if args.dk:
 		games = uc.loop().run_until_complete(getDKLinks(args.sport))

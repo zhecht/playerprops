@@ -1280,9 +1280,10 @@ def writeKambi(date, march):
 		away, home = event["event"]["awayName"].lower(), event["event"]["homeName"].lower()
 		games = []
 		for team in [away, home]:
-			t = convertTeam(team)
+			t = team
 			if t.startswith("("):
-				t = t.split(") ")[-1]
+				t = ") ".join(t.split(") ")[1:])
+			t = convertTeam(t)
 			fullTeam[t] = team
 			games.append(t)
 		game = " @ ".join(games)
@@ -1296,8 +1297,8 @@ def writeKambi(date, march):
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'arizona @ utah': 1020207806}
-	#data['arizona @ utah'] = {}
+	#eventIds = {'drake @ missouri': 1023156158}
+	#data['drake @ missouri'] = {}
 
 	for game in eventIds:
 		away, home = map(str, game.split(" @ "))
@@ -1343,7 +1344,7 @@ def writeKambi(date, march):
 
 			if label.split(" -")[0] == "total points":
 				label = "total"
-			elif label.split(" -")[0] == "handicap":
+			elif label.split(" -")[0] == "handicap" or label == "point spread - including overtime":
 				label = "spread"
 			elif "total points by" in label:
 				team = convertTeam(label.split(" by ")[-1].split(" - ")[0])
@@ -1351,7 +1352,7 @@ def writeKambi(date, march):
 					label = "away_total"
 				else:
 					label = "home_total"
-			elif label == "including overtime":
+			elif label == "including overtime" or label == "moneyline - including overtime":
 				label = "ml"
 			elif "double-double" in label:
 				label = "double-double"
@@ -1364,6 +1365,7 @@ def writeKambi(date, march):
 				if "&" in label:
 					continue
 			else:
+				#print(label)
 				continue
 
 			label = f"{prefix}{label}"
