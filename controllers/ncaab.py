@@ -308,24 +308,35 @@ def convertTeam(team):
 	}
 	return trans.get(team, team)
 
-def writeESPNTeams():
-	url = "https://www.espn.com/mens-college-basketball/schedule/_/date/20250318"
+def writeESPNTeams(date):
+	if not date:
+		date = str(datetime.now())[:10].replace("-", "")
+	url = f"https://www.espn.com/mens-college-basketball/schedule/_/date/{date}"
 	outfile = "outncaab"
 	os.system(f"curl {url} -o {outfile}")
-	soup = BS(open(outfile, 'rb').read(), "lxml")
+	soup = BS(open(outfile, 'rb').read(), "html.parser")
 
-	js = "{}"
-	for script in soup.find_all("script"):
-		if "window['__CONFIG__']=" in script.text:
-			m = re.search(r"window['__CONFIG__']={(.*?)};", script.text)
-			if m:
-				js = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
-				js = f"{{{js}}}"
-				break
-	js = eval(js)
+	script_tag = soup.find('script', string=lambda t: t and 'window[\'__espnfitt__\']' in t)
+	if not script_tag:
+		return
 
-	with open("out", "w") as fh:
-		json.dump(js, fh, indent=4)
+	content = script_tag.string
+	j = content.split("window['__espnfitt__']=")[-1].rstrip(";")
+	data = json.loads(j)
+
+	with open("static/ncaab/espnTeams.json") as fh:
+		teams = json.load(fh)
+
+	for eventId in data["page"]["content"]["events"]:
+		for event in data["page"]["content"]["events"][eventId]:
+			for competitor in event["competitors"]:
+				team = competitor["displayName"].replace(" "+competitor["shortDisplayName"], "")
+				team = convertTeam(team)
+				teams[team] = competitor["abbrev"].lower()
+
+	with open("static/ncaab/espnTeams.json", "w") as fh:
+		json.dump(teams, fh, indent=4)
+
 
 def writeESPNTeamIds():
 	url = f"https://www.espn.com/mens-college-basketball/standings"
@@ -2829,6 +2840,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/ncaab/ev.json") as fh:
 		evData = json.load(fh)
 
+	with open("static/ncaab/espnTeams.json") as fh:
+		espnTeams = json.load(fh)
+
 	evData = {}
 
 	teamGame = {}
@@ -2890,7 +2904,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				player = handicaps[(handicap, playerHandicap)]
 
 				totalGames = totalOver = total5Over = total10Over = 0
-				totalSplits = awayHomeSplits = ""
+				totalSplits = awayHomeSplits = dtSplits = ""
 				team = ""
 				if player:
 					try:
@@ -2910,6 +2924,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							arr = stats[team][player].get(prop, "")
 
 						if arr and playerHandicap:
+							dtSplits = stats[team][player]["dt"]
 							awayHomeSplits = stats[team][player]["opp"]
 							dtSplits = stats[team][player]["dt"]
 							totalGames = len(stats[team][player]["min"].split(","))
@@ -2964,6 +2979,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 							if not o or o == "-":
 								continue
+
 							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
@@ -3085,7 +3101,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["awayHomeSplits"] = awayHomeSplits
 						evData[key]["dtSplits"] = dtSplits
-						evData[key]["game"] = team if team else game
+						evData[key]["game"] = game
+						evData[key]["team"] = team
+						evData[key]["teamId"] = espnTeams.get(team, "")
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
 						evData[key]["books"] = books
@@ -3200,6 +3218,7 @@ if __name__ == '__main__':
 	parser.add_argument("--kenpom", action="store_true")
 	parser.add_argument("--march", action="store_true")
 	parser.add_argument("--keep", action="store_true")
+	parser.add_argument("--teams", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--token")
@@ -3219,7 +3238,8 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
-	writeESPNTeams()
+	if args.teams:
+		writeESPNTeams(args.date)
 
 	if args.action:
 		writeActionNetwork(args.date)

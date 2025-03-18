@@ -831,15 +831,18 @@ async def getESPNLinks(sport, tomorrow):
 
 		btn = article.select("button[data-type=AWAY_SPREAD]")[0]
 		line = str(float(btn.find("span").text.split(" ")[-1]))
-		data[game]["spread"][line] = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=HOME_SPREAD]")[0].find_all("span")[-1].text
+		ou = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=HOME_SPREAD]")[0].find_all("span")[-1].text
+		data[game]["spread"][line] = ou.replace("Even", "+100")
 
 		btn = article.select("button[data-type=OVER]")[0]
 		line = str(float(btn.find("span").text.split(" ")[-1]))
-		data[game]["total"][line] = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=UNDER]")[0].find_all("span")[-1].text
+		ou = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=UNDER]")[0].find_all("span")[-1].text
+		data[game]["total"][line] = ou.replace("Even", "+100")
 
 		mlO = article.select("button[data-type=AWAY_MONEYLINE]")[0].text
 		mlU = article.select("button[data-type=HOME_MONEYLINE]")[0].text
-		data[game]["ml"] = f"{mlO}/{mlU}"
+		if mlO != "--":
+			data[game]["ml"] = f"{mlO}/{mlU}".replace("Even", "+100")
 
 		eventId = div.id.split("|")[1]
 		if sport == "ncaab":
