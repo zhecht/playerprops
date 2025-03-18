@@ -2627,6 +2627,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/mlb/espn.json") as fh:
+		espnLines = json.load(fh)
+
 	with open(f"{prefix}static/baseballreference/splits.json") as fh:
 		splits = json.load(fh)
 
@@ -2648,7 +2651,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 		"fd": fdLines,
 		"bv": bvLines,
 		"dk": dkLines,
-		"cz": czLines
+		"cz": czLines,
+		"espn": espnLines
 	}
 
 	with open(f"{prefix}static/mlb/ev.json") as fh:

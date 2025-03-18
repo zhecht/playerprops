@@ -524,8 +524,8 @@ def writeEV():
 	with open("static/dailyev/evArr.json", "w") as fh:
 		json.dump([value for key, value in evData.items()], fh, indent=4)
 
-	with open("static/mlb/evArr.json", "w") as fh:
-		json.dump([value for key, value in evData.items()], fh, indent=4)
+	#with open("static/mlb/evArr.json", "w") as fh:
+	#	json.dump([value for key, value in evData.items()], fh, indent=4)
 
 def printEV():
 	with open(f"static/dailyev/ev.json") as fh:
