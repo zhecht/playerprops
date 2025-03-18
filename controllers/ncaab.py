@@ -2905,13 +2905,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 				totalGames = totalOver = total5Over = total10Over = 0
 				totalSplits = awayHomeSplits = dtSplits = ""
-				team = ""
+				team = opp = ""
 				if player:
 					try:
 						if player in stats[away]:
 							team = away
+							opp = home
 						elif player in stats[home]:
 							team = home
+							opp = away
 					except:
 						#continue
 						pass
@@ -3104,6 +3106,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["game"] = game
 						evData[key]["team"] = team
 						evData[key]["teamId"] = espnTeams.get(team, "")
+						evData[key]["oppTeamId"] = espnTeams.get(opp, "")
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
 						evData[key]["books"] = books
