@@ -770,6 +770,9 @@ async def getESPNLinks(sport, tomorrow):
 	elif sport in ["nba", "ncaab"]:
 		url = f"https://espnbet.com/sport/basketball/organization/united-states/competition/{sport}"
 
+	if sport == "ncaab":
+		url += "-championship"
+
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
 
@@ -780,6 +783,11 @@ async def getESPNLinks(sport, tomorrow):
 	except:
 		pass
 
+	html = await page.get_content()
+	soup = BS(html, "lxml")
+	teamsBS = soup.select("article .text-primary")
+
+	data = nested_dict()
 	games = {}
 	for i in range(0, len(teams), 2):
 		div = teams[i].parent.parent.parent.parent.parent.parent
@@ -789,6 +797,7 @@ async def getESPNLinks(sport, tomorrow):
 			break
 			pass
 		if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%b %d") not in div.text_all:
+			pass
 			break
 
 		if sport == "mlb":
@@ -818,13 +827,32 @@ async def getESPNLinks(sport, tomorrow):
 		sep = "v" if sport == "soccer" else "@"
 		game = f"{away} {sep} {home}"
 
+		article = teamsBS[i].find_previous("article")
+
+		btn = article.select("button[data-type=AWAY_SPREAD]")[0]
+		line = str(float(btn.find("span").text.split(" ")[-1]))
+		data[game]["spread"][line] = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=HOME_SPREAD]")[0].find_all("span")[-1].text
+
+		btn = article.select("button[data-type=OVER]")[0]
+		line = str(float(btn.find("span").text.split(" ")[-1]))
+		data[game]["total"][line] = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=UNDER]")[0].find_all("span")[-1].text
+
+		mlO = article.select("button[data-type=AWAY_MONEYLINE]")[0].text
+		mlU = article.select("button[data-type=HOME_MONEYLINE]")[0].text
+		data[game]["ml"] = f"{mlO}/{mlU}"
+
 		eventId = div.id.split("|")[1]
-		#print(game, f"{url}/event/{eventId}")
-		games[game] = f"{url}/event/{eventId}/section/player_props"
+		if sport == "ncaab":
+			games[game] = f"{url}/event/{eventId}/section/player-props"
+		else:
+			games[game] = f"{url}/event/{eventId}/section/player_props"
+
 		if sport == "mlb":
 			games[game+"-game-props"] = f"{url}/event/{eventId}/section/game_props"
 
 	browser.stop()
+	with open(f"static/{sport}/espn.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 	return games
 
 def runESPN(sport):
@@ -993,7 +1021,10 @@ async def writeESPN(sport):
 			q.task_done()
 			continue
 
-		await page.wait_for(selector="details")
+		try:
+			await page.wait_for(selector="details")
+		except:
+			continue
 
 		playersMap = {}
 		html = await page.get_content()
@@ -1040,16 +1071,16 @@ async def getMGMLinks(sport=None, tomorrow=None):
 		ps = await page.query_selector_all(".participant")
 
 		for pIdx in range(0, len(ps), 2):
-			if sport == "ncaab":
+			link = ps[pIdx].parent.parent.parent.parent.parent.parent.parent.parent.parent
+			if link.tag != "a":
 				link = ps[pIdx].parent.parent.parent.parent.parent.parent.parent
-			else:
-				link = ps[pIdx].parent.parent.parent.parent.parent.parent.parent.parent.parent
 			t = [x for x in link.parent.parent.children if x.tag != "#comment"][0]
 			if "starting" not in t.text_all.lower() and "today" not in t.text_all.lower():
 				if tomorrow:
 					if "tomorrow" not in t.text_all.lower():
 						continue
 				else:
+					pass
 					continue
 
 			away = ps[pIdx].text_all.strip()
@@ -1474,6 +1505,7 @@ async def getFDLinks(sport, tomorrow):
 			t = link.parent.parent.children[0].children[-1]
 			if t.tag != "time" or (not tomorrow and len(t.text.split(" ")) > 2):
 				continue
+				pass
 			if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%a") != t.text.split(" ")[0]:
 				continue
 			url = ""
@@ -1546,6 +1578,7 @@ def runNCAABFD():
 	uc.loop().run_until_complete(writeNCAABFD())
 
 async def writeNCAABFD():
+	file = f"static/ncaab/fanduel.json"
 	browser = await uc.start(no_sandbox=True)
 	while True:
 		data = {}
@@ -1787,13 +1820,7 @@ async def writeNCAABFD():
 						data[game][prop].setdefault(player, {})
 						data[game][prop][player][line] = ou
 	
-		with lock:
-			with open(file) as fh:
-				d = json.load(fh)
-
-			d[game] = data[game].copy()
-			with open(file, "w") as fh:
-				json.dump(d, fh, indent=4)
+		updateData(file, data)
 		q.task_done()
 	browser.stop()
 
@@ -3439,7 +3466,7 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(getESPNLinks(args.sport, args.tomorrow or args.tmrw))
 		#games = {}
 		#games["vgk @ det"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/381a07af-75f9-4bef-ae27-d9305981f79d"
-		runThreads("espn", args.sport, games, args.threads)
+		runThreads("espn", args.sport, games, args.threads, keep=True)
 
 	if args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))

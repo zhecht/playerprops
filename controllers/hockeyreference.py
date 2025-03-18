@@ -391,18 +391,29 @@ def writeTeamTTOI():
 		json.dump(res, fh, indent=4)
 
 def writeLogos(sport="nhl"):
-	url = f"https://www.espn.com/{sport}/standings"
+	path = sport
+	if sport == "ncaab":
+		path = "mens-college-basketball"
+	url = f"https://www.espn.com/{path}/standings"
 	outfile = "outnhl"
 	os.system(f"curl {url} -o {outfile}")
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	for logo in soup.select(".Table .Logo"):
-		team = logo.get("alt").lower()
-		url = f"https://a.espncdn.com/combiner/i?img=/i/teamlogos/{sport}/500/{team}.png"
+		teamName = logo.get("alt").lower()
+		if sport == "ncaab":
+			team = logo.parent.get("href").split("/")[-2]
+		else:
+			team = teamName
+		
+		url = f"https://a.espncdn.com/combiner/i?img=/i/teamlogos/{sport.replace('ncaab', 'ncaa')}/500/{team}.png"
 		path = f"/mnt/c/Users/zhech/Documents/dailyev/logos/{sport}"
 		if not os.path.exists(path):
 			os.mkdir(path)
-		os.system(f"curl '{url}' -o /mnt/c/Users/zhech/Documents/dailyev/logos/{sport}/{team}.png")
+		
+		if not os.path.exists(f"{path}/{teamName}.png"):
+			#print(teamName)
+			os.system(f"curl '{url}' -o '{path}/{teamName}.png'")
 
 def writePlayerIds():
 

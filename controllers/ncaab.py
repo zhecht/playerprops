@@ -308,6 +308,48 @@ def convertTeam(team):
 	}
 	return trans.get(team, team)
 
+def writeESPNTeams():
+	url = "https://www.espn.com/mens-college-basketball/schedule/_/date/20250318"
+	outfile = "outncaab"
+	os.system(f"curl {url} -o {outfile}")
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	js = "{}"
+	for script in soup.find_all("script"):
+		if "window['__CONFIG__']=" in script.text:
+			m = re.search(r"window['__CONFIG__']={(.*?)};", script.text)
+			if m:
+				js = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+				js = f"{{{js}}}"
+				break
+	js = eval(js)
+
+	with open("out", "w") as fh:
+		json.dump(js, fh, indent=4)
+
+def writeESPNTeamIds():
+	url = f"https://www.espn.com/mens-college-basketball/standings"
+	outfile = "outncaab"
+	os.system(f"curl {url} -o {outfile}")
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	for logo in soup.select(".Table .Logo"):
+		teamId = logo.get("alt").lower()
+		#team = 
+		if sport == "ncaab":
+			team = logo.parent.get("href").split("/")[-2]
+		else:
+			team = teamName
+		
+		url = f"https://a.espncdn.com/combiner/i?img=/i/teamlogos/{sport.replace('ncaab', 'ncaa')}/500/{team}.png"
+		path = f"/mnt/c/Users/zhech/Documents/dailyev/logos/{sport}"
+		if not os.path.exists(path):
+			os.mkdir(path)
+		
+		if not os.path.exists(f"{path}/{teamName}.png"):
+			#print(teamName)
+			os.system(f"curl '{url}' -o '{path}/{teamName}.png'")
+
 def strip_accents(text):
 	try:
 		text = unicode(text, 'utf-8')
@@ -3233,3 +3275,5 @@ if __name__ == '__main__':
 
 	if args.player:
 		writePlayer(args.player, args.prop)
+
+	writeESPNTeams()

@@ -194,7 +194,7 @@ async def writeMGM(data, browser):
 	game = "lad @ chc"
 	data.setdefault(game, {})
 
-	url = "https://sports.mi.betmgm.com/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-16837607"
+	url = "https://sports.mi.betmgm.com/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-17080709"
 	page = await browser.get(url)
 
 	await page.wait_for(selector=".event-details-pills-list")
@@ -304,8 +304,11 @@ def writeKambi(data):
 
 	eventIds = {}
 	for event in j["events"]:
-		game = event["event"]["name"]
-		away, home = map(str, game.split(" @ "))
+		game = event["event"]["name"].lower()
+		if " vs " in game:
+			away, home = map(str, game.split(" vs "))
+		else:
+			away, home = map(str, game.split(" @ "))
 		game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
 		if game in eventIds:
 			continue
