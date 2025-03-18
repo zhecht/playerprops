@@ -3106,6 +3106,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["game"] = game
 						evData[key]["awayTeamId"] = espnTeams.get(away, "")
 						evData[key]["homeTeamId"] = espnTeams.get(home, "")
+						evData[key]["gameId"] = f"{evData[key]['awayTeamId']} @ {evData[key]['homeTeamId']}"
 						evData[key]["team"] = team
 						evData[key]["teamId"] = espnTeams.get(team, "")
 						evData[key]["prop"] = prop
