@@ -4014,9 +4014,9 @@ def writeMatchups():
 	with open("static/nba/matchups.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-
-def sortEV():
-	writeDaily()
+def sortEV(noDaily=False):
+	if not noDaily:
+		writeDaily()
 
 	with open(f"{prefix}static/nba/ev.json") as fh:
 		evData = json.load(fh)
@@ -4155,6 +4155,7 @@ if __name__ == '__main__':
 	parser.add_argument("--threesday", action="store_true", help="3sday")
 	parser.add_argument("--injuries", action="store_true", help="injuries")
 	parser.add_argument("--leaders", action="store_true", help="leaders")
+	parser.add_argument("--no-daily", action="store_true")
 	parser.add_argument("--sgp", action="store_true", help="SGP")
 	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("--insurance", action="store_true")
@@ -4255,7 +4256,7 @@ if __name__ == '__main__':
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
 
 	if args.print:
-		sortEV()
+		sortEV(args.no_daily)
 
 	if args.player:
 		writePlayer(args.player, args.prop)

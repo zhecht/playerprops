@@ -1550,7 +1550,7 @@ async def getFDLinks(sport, tomorrow):
 
 	for link in links:
 		if link.text == "More wagers":
-			t = link.find_previous("a").find("time")
+			t = link.find_previous("a").parent.find("time")
 			if not t or (not tomorrow and len(t.text.split(" ")) > 2):
 				continue
 				pass
@@ -3505,6 +3505,7 @@ if __name__ == '__main__':
 		#games = {}
 		#games["vgk @ det"] = "/ice-hockey/nhl/vegas-golden-knights-@-detroit-red-wings-34126907"
 		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow or args.tmrw))
+		#print(games)
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", args.sport, games, totThreads, keep=True)
 
