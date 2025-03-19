@@ -3163,9 +3163,9 @@ if __name__ == '__main__':
 		writeKambi(args.date)
 		#print("mgm")
 		#writeMGM(args.date)
-		if not args.skipdk:
-			print("dk")
-			writeDK(args.date, args.prop)
+		#if not args.skipdk:
+		#	print("dk")
+		#	writeDK(args.date, args.prop)
 		#writeBPP(args.date)
 		#writeActionNetwork(args.date)
 		print("cz")
