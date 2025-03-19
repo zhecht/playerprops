@@ -2746,7 +2746,7 @@ def writePlayers(keep=None):
 							val = val.split(" ")[-1]
 							dt = datetime.strptime(f"{val}/{currYear}", "%m/%d/%Y")
 							# if date would be in future relative to last date
-							if years and dt < years[-1]:
+							if years and dt > years[-1]:
 								currYear -= 1
 								dt = datetime.strptime(f"{val}/{currYear}", "%m/%d/%Y")
 							years.append(dt)
