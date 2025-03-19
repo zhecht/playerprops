@@ -29,6 +29,9 @@ def run(sport):
 				subprocess.Popen(["python", f"controllers/{sport}.py", f"--{book}"], stdout=f, stderr=f)
 		# CZ
 
+		if sport == "nba":
+			subprocess.Popen(["python", f"controllers/{sport}.py", f"--minutes"])
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--threads", type=int, default=7)

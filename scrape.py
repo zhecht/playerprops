@@ -967,6 +967,11 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 			lines = [str(float(x.text.replace("+", "")) - 0.5) for x in detail.find("tr").find_all("th")]
 			for row in detail.find("tbody").find_all("tr"):
 				player = parsePlayer(row.find("th").text)
+				if sport not in ["ncaab", "nhl"]:
+					last = player.split(" ")
+					player = player.split(" ")[0][0]+" "+last[-1]
+				if player in playersMap:
+					player = playersMap[player]
 				for idx, td in enumerate(row.find_all("td")):
 					if td.text == "--":
 						continue

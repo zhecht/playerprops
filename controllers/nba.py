@@ -3071,7 +3071,7 @@ def writeMinutes():
 	with open(f"{prefix}static/nba/rotoTeams.json") as fh:
 		rotoTeams = json.load(fh)
 
-	outfile = "outnba2"
+	outfile = "outnbaMinutes"
 	minutes = {}
 	for team in rotoTeams:
 		url = f"https://www.rotowire.com/basketball/ajax/get-projected-minutes.php?team={team.upper()}"
