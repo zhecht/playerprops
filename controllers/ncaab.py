@@ -11,6 +11,11 @@ import unicodedata
 import time
 from twilio.rest import Client
 
+try:
+	from shared import nested_dict
+except:
+	from controllers.shared import nested_dict 
+
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
 	# if on linux aka prod
@@ -2772,7 +2777,7 @@ def writePlayers(keep=None):
 				playerStats["reb+ast"].append(str(int(reb)+int(ast)))
 
 			for hdr in playerStats:
-				stats[team][player][hdr] = ",".join(playerStats[hdr])
+				stats[team][player][hdr] = ",".join(playerStats[hdr][::-1])
 	
 	with open(f"{prefix}static/ncaab/stats.json", "w") as fh:
 		json.dump(stats, fh)
