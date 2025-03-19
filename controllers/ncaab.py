@@ -2955,7 +2955,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							total5Over = round(len(total5Over) * 100 / min(totalGames, 5))
 							total10Over = [x for x in arr.split(",")[:10] if int(x) > float(playerHandicap)]
 							total10Over = round(len(total10Over) * 100 / min(totalGames, 10))
-							totalSplits = ",".join(arr.split(",")[:10][::-1])
+							totalSplits = ",".join(arr.split(",")[::-1])
 
 				for i in range(2):
 					highestOdds = []
