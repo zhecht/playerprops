@@ -1132,13 +1132,14 @@ async def getMGMLinks(sport=None, tomorrow=None):
 				games[game] = link.get("href")+"?market=-1"
 
 				btns = link.parent.parent.find_all("ms-option")
-				data[game]["ml"] = btns[4].text+"/"+btns[-1].text
+				if len(btns) == 6:
+					data[game]["ml"] = btns[4].text+"/"+btns[-1].text
 
-				line = str(float(btns[0].find("div", class_="option-name").text))
-				data[game]["spread"][line] = btns[0].find("div", class_="option-value").text+"/"+btns[1].find("div", class_="option-value").text
+					line = str(float(btns[0].find("div", class_="option-name").text))
+					data[game]["spread"][line] = btns[0].find("div", class_="option-value").text+"/"+btns[1].find("div", class_="option-value").text
 
-				line = str(float(btns[2].find("div", class_="option-name").text.strip().split(" ")[-1]))
-				data[game]["total"][line] = btns[2].find("div", class_="option-value").text+"/"+btns[3].find("div", class_="option-value").text
+					line = str(float(btns[2].find("div", class_="option-name").text.strip().split(" ")[-1]))
+					data[game]["total"][line] = btns[2].find("div", class_="option-value").text+"/"+btns[3].find("div", class_="option-value").text
 
 	browser.stop()
 
@@ -1205,7 +1206,11 @@ async def writeMGM(sport):
 			break
 
 		page = await browser.get("https://sports.mi.betmgm.com"+url)
-		await page.wait_for(selector=".event-details-pills-list")
+		try:
+			await page.wait_for(selector=".event-details-pills-list")
+		except:
+			q.task_done()
+			continue
 		#tabs = await page.query_selector_all(".event-details-pills-list button")
 		#pages = ["All"]
 		#if sport == "soccer":
@@ -3509,6 +3514,8 @@ if __name__ == '__main__':
 		#games = {}
 		#games["vgk @ det"] = "/en/sports/events/vegas-golden-knights-at-detroit-red-wings-17082663"
 		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))
+		games = {}
+		games["lad @ chc"] = "/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-17080709"
 		totThreads = min(args.threads, len(games))
 		runThreads("mgm", args.sport, games, totThreads, keep=True)
 
