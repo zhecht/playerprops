@@ -3511,11 +3511,9 @@ if __name__ == '__main__':
 		runThreads("espn", args.sport, games, totThreads, keep=True)
 
 	if args.mgm:
-		#games = {}
-		#games["vgk @ det"] = "/en/sports/events/vegas-golden-knights-at-detroit-red-wings-17082663"
 		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))
-		games = {}
-		games["lad @ chc"] = "/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-17080709"
+		#games = {}
+		#games["lad @ chc"] = "/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-17080709"
 		totThreads = min(args.threads, len(games))
 		runThreads("mgm", args.sport, games, totThreads, keep=True)
 

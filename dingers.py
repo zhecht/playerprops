@@ -170,6 +170,8 @@ async def writeDK(data, browser):
 	gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
 	for gameDiv in gameDivs:
 		game = gameDiv.children[0].children[1].text_all
+		if " @ " not in game and " at " not in game:
+			continue
 		away, home = map(str, game.replace(" at ", " @ ").split(" @ "))
 		game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
 		data.setdefault(game, {})

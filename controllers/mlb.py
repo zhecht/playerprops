@@ -127,6 +127,46 @@ def convertAmericanOdds(avg):
 		avg = -100 / (avg - 1)
 	return round(avg)
 
+def writeDaily():
+	with open(f"{prefix}static/mlb/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/fanduel.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	espnLines = {}
+	parseESPN(espnLines, noespn=None)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"dk": dkLines,
+		"cz": czLines,
+		"espn": espnLines,
+		"365": bet365Lines
+	}
+
+	date = str(datetime.now())[:10]
+	with open(f"static/mlb/lines/{date}.json", "w") as fh:
+		json.dump(lines, fh)
+
 def writeESPN():
 	js = """
 
@@ -3004,6 +3044,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 def sortEV(propArg=""):
 	with open(f"{prefix}static/mlb/ev.json") as fh:
 		evData = json.load(fh)
+
+	writeDaily()
 
 	data = []
 	for player in evData:
