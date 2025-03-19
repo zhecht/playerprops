@@ -186,7 +186,7 @@ def writeSplits():
 				if stats[player].get("min", 0) == 0:
 					continue
 				if player not in splits[team]:
-					splits[team][player] = {}
+					splits[team][player] = {"dt": []}
 
 				if "winLoss" not in splits[team][player]:
 					splits[team][player]["winLoss"] = []
@@ -194,6 +194,7 @@ def writeSplits():
 					splits[team][player]["awayHome"] = []
 				splits[team][player]["awayHome"].append(awayHome)
 				splits[team][player]["winLoss"].append(winLoss)
+				splits[team][player]["dt"].append(date)
 
 				for header in stats[player]:
 					if header not in splits[team][player]:

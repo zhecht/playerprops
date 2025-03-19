@@ -3506,6 +3506,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				total15Over = total15OverPerMin = 0
 				total10Over = total10OverPerMin = 0
 				totalSplits = []
+				dtSplits = []
 				totalSplitsPerMin = []
 				avgMin = []
 				winLossSplits = [0,0]
@@ -3521,7 +3522,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						t = home
 
 					team = t
-
 					playerSplits = {}
 					if player in trades:
 						for hdr in splits[trades[player]][player]:
@@ -3537,6 +3537,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					minArr = playerSplits.get("min", "").split(",")
 					winLossArr = playerSplits.get("winLoss", "").split(",")
 					awayHomeArr = playerSplits.get("awayHome", "").split(",")
+					dtSplits = playerSplits.get("dt", "")
 
 					totalSplits = playerSplits.get(prop, "")
 					if len(minArr) > 1 and prop in playerSplits:
@@ -3822,6 +3823,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["total15OverPerMin"] = total15OverPerMin
 						evData[key]["total10Over"] = total10Over
 						evData[key]["total10OverPerMin"] = total10OverPerMin
+						evData[key]["dtSplits"] = dtSplits
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["totalSplitsPerMin"] = ",".join(totalSplitsPerMin)
 						evData[key]["lastYearTotal"] = lastTotalOver

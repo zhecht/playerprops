@@ -414,6 +414,7 @@ def writeLogos(sport="nhl"):
 		if not os.path.exists(f"{path}/{teamName}.png"):
 			#print(teamName)
 			os.system(f"curl '{url}' -o '{path}/{teamName}.png'")
+			time.sleep(0.2)
 
 def writePlayerIds():
 
