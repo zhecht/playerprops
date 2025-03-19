@@ -94,8 +94,14 @@ def getmarch_route():
 	with open(f"{prefix}static/ncaab/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	with open(f"{prefix}static/ncaab/fdMarch.json") as fh:
+	with open(f"{prefix}static/ncaab/fanduel.json") as fh:
 		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/espn.json") as fh:
+		espnLines = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -104,20 +110,19 @@ def getmarch_route():
 		"fd": fdLines,
 		"dk": dkLines,
 		"cz": czLines,
-		"fd": fdLines
+		"fd": fdLines,
+		"espn": espnLines,
+		"bet365": bet365Lines
 	}
 
 	matchups = {}
 	mls = {}
 	for book in lines:
 		for game in lines[book]:
-			if book != "fd" and "ml" not in lines[book][game]:
+			if "ml" not in lines[book][game]:
 				continue
 			away, home = map(str, game.split(" @ "))
-			if book == "fd":
-				ml = lines[book][game]
-			else:
-				ml = lines[book][game]["ml"]
+			ml = lines[book][game]["ml"]
 
 			if away not in mls:
 				mls[away] = {}
@@ -2727,6 +2732,8 @@ def writePlayers(keep=None):
 				hdrs.append(td.text.lower().replace("date", "dt"))
 
 			playerStats = {}
+			currYear = datetime.now().year
+			years = []
 			for tbody in soup.find("div", class_="gamelog").find_all("tbody"):
 				for row in tbody.find_all("tr"):
 					if "note-row" in row.get("class") or "totals_row" in row.get("class"):
@@ -2735,6 +2742,15 @@ def writePlayers(keep=None):
 						val = td.text
 						if hdr == "opp":
 							val = "A" if "@" in val else "H"
+						elif hdr == "dt":
+							val = val.split(" ")[-1]
+							dt = datetime.strptime(f"{val}/{currYear}", "%m/%d/%Y")
+							# if date would be in future relative to last date
+							if years and dt < years[-1]:
+								currYear -= 1
+								dt = datetime.strptime(f"{val}/{currYear}", "%m/%d/%Y")
+							years.append(dt)
+							val = str(dt)[:10]
 						elif hdr == "result":
 							try:
 								val = td.find("div", class_="ResultCell").text
