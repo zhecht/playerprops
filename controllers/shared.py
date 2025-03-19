@@ -59,9 +59,11 @@ def convertImpOdds(odds):
 def convertAmericanFromImplied(odds):
 	if odds == 0:
 		return 0
-	if odds > 0:
-		return round((100 / odds) - 100)
-	return round(-100 / (odds / (1 - odds)))
+	if odds >= 0.5:
+		odds = -(odds / (1 - odds)) * 100
+	else:
+		odds = ((1 - odds) / odds) * 100
+	return round(odds)
 
 def strip_accents(text):
 	try:
