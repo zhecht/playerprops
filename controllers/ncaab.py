@@ -3069,7 +3069,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							opp = home if i == 0 else away
 
 						teamStats = stats.get(team, {})
-						totalSplits = teamStats.get("team", {}).get("team_total", "")
+						if "team" in teamStats:
+							totalSplits = teamStats.get("team_total", "")
+							dtSplits = teamStats.get("dt", "")
+							awayHomeSplits = teamStats.get("awayHome", "")
 
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
