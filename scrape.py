@@ -1082,8 +1082,8 @@ async def getMGMLinks(sport=None, tomorrow=None):
 
 		tabs = [""]
 		#march madness
-		if sport == "ncaab":
-			tabs.extend(["thursday", "friday"])
+		#if sport == "ncaab":
+		#	tabs.extend(["thursday", "friday"])
 		
 		for tab in tabs:
 			page = await browser.get(url)
