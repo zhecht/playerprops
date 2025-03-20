@@ -2968,6 +2968,17 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					books = []
 					odds = []
 
+					if not player:
+						if prop.startswith("away"):
+							team = away
+							opp = home
+						elif prop.startswith("home"):
+							team = home
+							opp = away
+						else:
+							team = away if i == 0 else home
+							opp = home if i == 0 else away
+
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
 						total5Over = 100 - total5Over
