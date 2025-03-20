@@ -3069,8 +3069,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							opp = home if i == 0 else away
 
 						teamStats = stats.get(team, {})
-						if "team" in teamStats:
+						if "team" in teamStats and handicap.strip():
 							totalSplits = teamStats["team"].get("team_total", "")
+							if totalSplits:
+								arr = [x for x in totalSplits.split(",") if int(x) > float(handicap)]
+								if i == 1:
+									[x for x in totalSplits.split(",") if int(x) < float(handicap)]
+								totalOver = round(len(arr) * 100 / len(totalSplits))
 							dtSplits = teamStats["team"].get("dt", "")
 							awayHomeSplits = teamStats["team"].get("awayHome", "")
 
