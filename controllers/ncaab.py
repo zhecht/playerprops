@@ -2725,7 +2725,8 @@ def writePlayers(keep=None):
 			if player not in stats[team]:
 				stats[team][player] = {}
 			elif keep:
-				continue
+				#continue
+				pass
 
 			url = f"https://www.espn.com/mens-college-basketball/player/gamelog/_/id/{players[team][player]}"
 			time.sleep(0.3)

@@ -1342,7 +1342,7 @@ async def writeMGM(sport):
 				#if "total" not in prop:
 				#	continue
 
-				await panel.scroll_into_view()
+				#await panel.scroll_into_view()
 
 				up = await panel.query_selector("svg[title=theme-up]")
 				if not up:
@@ -2972,7 +2972,7 @@ async def writeDKFromHTML(data, html, sport, prop):
 		elif sport == "ncaab":
 			btns = gameDiv.select(".sb-selection-picker__selection--focused")
 			for btnIdx, btn in enumerate(btns):
-				player = parsePlayer(btn.find_previous("ul").text.split("new!")[0])
+				player = parsePlayer(btn.find_previous("ul").text.lower().split("new!")[0])
 				line = str(float(btn.find("span").text[:-1]) - 0.5)
 				data[game][prop][player][line] = btn.find_all("span")[-1].text
 		else:
