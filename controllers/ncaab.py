@@ -321,7 +321,7 @@ def convertTeam(team):
 def writeESPNTeams(date):
 	if not date:
 		date = str(datetime.now())[:10].replace("-", "")
-	url = f"https://www.espn.com/mens-college-basketball/schedule/_/date/{date}"
+	url = f"https://www.espn.com/mens-college-basketball/schedule/_/date/{date.replace('-', '')}"
 	outfile = "outncaab"
 	os.system(f"curl {url} -o {outfile}")
 	soup = BS(open(outfile, 'rb').read(), "html.parser")
@@ -342,7 +342,15 @@ def writeESPNTeams(date):
 			for competitor in event["competitors"]:
 				team = competitor["displayName"].replace(" "+competitor["shortDisplayName"], "")
 				team = convertTeam(team)
-				teams[team] = competitor["abbrev"].lower()
+				j = {
+					"id": competitor["id"],
+					"full": competitor["displayName"].lower(),
+					"abbrev": competitor["abbrev"].lower(),
+					"team": team
+				}
+				teams[team] = j
+				teams[competitor["id"]] = j
+				teams[competitor["abbrev"].lower()] = j
 
 	with open("static/ncaab/espnTeams.json", "w") as fh:
 		json.dump(teams, fh, indent=4)
@@ -2601,6 +2609,65 @@ def bvParlay():
 	with open("static/ncaab/bvParlays.csv", "w") as fh:
 		fh.write(output)
 
+def writeTeamStats(stats, soup, espnTeams, team):
+	teamKeys = ["dt", "awayHome", "opp", "winLoss", "total", "team_total", "team_total_against", "overtime"]
+	if team not in stats:
+		stats[team] = {}
+
+	if not soup.find("table", class_="Table"):
+		return
+
+	stats[team]["team"] = {}
+	for k in teamKeys:
+		stats[team]["team"][k] = ""
+	years = []
+	currYear = datetime.now().year
+	# reverse to have most recent on top to decipher YEAR
+	rows = soup.select("span[data-testid=symbol]")[::-1]
+	for symbol in rows:
+		row = symbol.find_previous("tr")
+		tds = row.find_all("td")
+		date = tds[0].text.split(", ")[-1]
+		dt = datetime.strptime(f"{date} {currYear}", "%b %d %Y")
+		# if date would be in future relative to last date
+		if years and dt > years[-1]:
+			currYear -= 1
+			dt = datetime.strptime(f"{date} {currYear}", "%b %d %Y")
+		years.append(dt)
+
+		stats[team]["team"]["dt"] += f",{str(dt)[:10]}"
+		awayHome = 'H' if tds[1].find('span').text == 'vs' else 'A'
+		stats[team]["team"]["awayHome"] += f",{awayHome}"
+		a = tds[1].find_all("a")
+		if a:
+			opp = a[-1].get("href").split("/")[-2]
+		else:
+			opp = convertTeam(tds[1].find_all("span")[-1].text.strip())
+		opp = espnTeams.get(opp, {}).get("abbrev", opp)
+		stats[team]["team"]["opp"] += f",{opp}"
+		winLoss = symbol.text
+		stats[team]["team"]["winLoss"] += f",{winLoss}"
+		
+		score = tds[2].find("a").text.strip().split(" ")[0]
+		overtime = tds[2].find("a").text.strip().replace(f"{score} ", "")
+		wScore, lScore = map(int, score.split("-"))
+		stats[team]["team"]["total"] += f",{wScore+lScore}"
+		teamTotal = wScore if winLoss == "W" else lScore
+		teamTotalAgainst = lScore if winLoss == "W" else wScore
+		stats[team]["team"]["team_total"] += f",{teamTotal}"
+		stats[team]["team"]["team_total_against"] += f",{teamTotalAgainst}"
+		overtime = ""
+		if " " in tds[2].find("a").text.strip():
+			overtime = tds[2].find("a").text.strip().split(" ")[-1]
+		stats[team]["team"]["overtime"] += f",{overtime}"
+
+
+	for k in teamKeys:
+		# remove leading comma
+		arr = stats[team]["team"][k][1:]
+		stats[team]["team"][k] = ",".join(arr.split(",")[::-1])
+
+
 def writePlayer(player, propArg):
 	with open(f"{prefix}static/ncaab/draftkings.json") as fh:
 		dkLines = json.load(fh)
@@ -2649,13 +2716,21 @@ def writePlayer(player, propArg):
 
 					print(book, lines[book][game][prop][p])
 
-def writePlayers(keep=None):
+def writePlayers(date, keep=None):
+	if not date:
+		date = str(datetime.now())[:10]
 
 	with open(f"{prefix}static/ncaab/playerIds.json") as fh:
 		playerIds = json.load(fh)
 
-	url = "https://www.espn.com/mens-college-basketball/scoreboard/_/seasontype/2/group/50"
-	outfile = "outncaab2"
+	with open(f"{prefix}static/ncaab/stats.json") as fh:
+		stats = json.load(fh)
+
+	with open(f"{prefix}static/ncaab/espnTeams.json") as fh:
+		espnTeams = json.load(fh)
+
+	url = f"https://www.espn.com/mens-college-basketball/scoreboard/_/seasontype/2/group/50?date={date.replace('-', '')}"
+	outfile = "outNcaabPlayers"
 	os.system(f"curl -k \"{url}\" -o {outfile}")
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -2665,15 +2740,33 @@ def writePlayers(keep=None):
 		id = div.find("a").get("href").split("/")[-2]
 		teamIds[team] = id
 
+	if False:
+		for team in teamIds:
+			if teamIds[team] != "130": #mich
+				#continue
+				pass
+			url = f"https://www.espn.com/mens-college-basketball/team/schedule/_/id/{teamIds[team]}"
+			print(url)
+			time.sleep(0.2)
+			os.system(f"curl -k \"{url}\" -o {outfile}")
+			soup = BS(open(outfile, 'rb').read(), "lxml")
+
+			writeTeamStats(stats, soup, espnTeams, team)
+
+		with open("static/ncaab/stats.json", "w") as fh:
+			json.dump(stats, fh)
+
+		if False:
+			exit()
 
 	for team in teamIds:
 		if team in playerIds:
 			continue
 
-		print(team)
 		playerIds[team] = {}
+		print(team)
 		url = f"https://www.espn.com/mens-college-basketball/team/roster/_/id/{teamIds[team]}"
-		time.sleep(0.3)
+		time.sleep(0.2)
 		os.system(f"curl -k \"{url}\" -o {outfile}")
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -2712,11 +2805,6 @@ def writePlayers(keep=None):
 								players[team][player] = playerIds[team][player]
 							except:
 								pass
-
-	stats = {}
-	if keep:
-		with open(f"{prefix}static/ncaab/stats.json") as fh:
-			stats = json.load(fh)
 
 	for team in players:
 		if team not in stats:
@@ -2968,6 +3056,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					books = []
 					odds = []
 
+					# game logs for team-stats (ML, Total, Spread)
 					if not player:
 						if prop.startswith("away"):
 							team = away
@@ -2978,6 +3067,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						else:
 							team = away if i == 0 else home
 							opp = home if i == 0 else away
+
+						teamStats = stats.get(team, {})
+						totalSplits = teamStats.get("team", {}).get("team_total", "")
 
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
@@ -3023,7 +3115,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 					if len(books) < 2:
 						if player:
-							print(game, player, prop, playerHandicap)
+							pass
+							#print(game, player, prop, playerHandicap)
 						continue
 
 					if prop in ["spread", "total"] and len(books) < 3:
@@ -3139,11 +3232,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["awayHomeSplits"] = awayHomeSplits
 						evData[key]["dtSplits"] = dtSplits
 						evData[key]["game"] = game
-						evData[key]["awayTeamId"] = espnTeams.get(away, "")
-						evData[key]["homeTeamId"] = espnTeams.get(home, "")
+						evData[key]["awayTeamId"] = espnTeams.get(away, {}).get("abbrev", "")
+						evData[key]["homeTeamId"] = espnTeams.get(home, {}).get("abbrev", "")
 						evData[key]["gameId"] = f"{evData[key]['awayTeamId']} @ {evData[key]['homeTeamId']}"
 						evData[key]["team"] = team
-						evData[key]["teamId"] = espnTeams.get(team, "")
+						evData[key]["teamId"] = espnTeams.get(team, {}).get("abbrev", "")
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
 						evData[key]["books"] = books
@@ -3315,7 +3408,7 @@ if __name__ == '__main__':
 		writeMatchups()
 
 	if args.players:
-		writePlayers(args.keep)
+		writePlayers(args.date, args.keep)
 
 	if args.kenpom:
 		writeKenpom()
