@@ -2949,6 +2949,8 @@ def parseESPN(espnLines, noespn=None):
 					espnLines[game][prop] = {}
 					away, home = map(str, game.split(" @ "))
 					for p in espn[game][prop]:
+						if len(p.split(" ")[0]) > 1:
+							continue
 						if p == "j jadeney":
 							player = "jaden ivey"
 						else:

@@ -967,7 +967,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 			lines = [str(float(x.text.replace("+", "")) - 0.5) for x in detail.find("tr").find_all("th")]
 			for row in detail.find("tbody").find_all("tr"):
 				player = parsePlayer(row.find("th").text)
-				if sport not in ["ncaab", "nhl"]:
+				if sport not in ["ncaab", "nhl"] and "." in row.find("th").text:
 					last = player.split(" ")
 					player = player.split(" ")[0][0]+" "+last[-1]
 				if player in playersMap:
@@ -984,11 +984,12 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 				else:
 					player = btns[idx].text.lower().split(" total")[0].split(" to record")[0]
 
-				if sport not in ["ncaab", "nhl"] or len(player.split(" ")[0]) < 3:
+				if "." in player:
 					last = player.split(" ")
 					player = player.split(" ")[0][0]+" "+last[-1]
-				if player in playersMap:
-					player = playersMap[player]
+				
+					if player in playersMap:
+						player = playersMap[player]
 				player = parsePlayer(player)
 				i = idx
 				if skip == 3:
@@ -998,7 +999,8 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 					o = btns[i].find_all("span")[-1].text.replace("Even", "+100")
 					u = btns[i+1].find_all("span")[-1].text.replace("Even", "+100")
 				except:
-					print(game, prop, player)
+					#print(game, prop, player)
+					pass
 
 				if prop in ["atgs", "win"]:
 					data[game][prop][player] = f"{o}/{u}"
@@ -1109,7 +1111,7 @@ async def getMGMLinks(sport=None, tomorrow=None):
 							continue
 					else:
 						pass
-						#continue
+						continue
 
 				away = ps[pIdx].text.strip()
 				home = ps[pIdx+1].text.strip()
@@ -1138,13 +1140,15 @@ async def getMGMLinks(sport=None, tomorrow=None):
 
 				btns = link.parent.parent.find_all("ms-option")
 				if len(btns) == 6:
-					data[game]["ml"] = btns[4].text+"/"+btns[-1].text
+					try:
+						data[game]["ml"] = btns[4].text+"/"+btns[-1].text
+						line = str(float(btns[0].find("div", class_="option-name").text))
+						data[game]["spread"][line] = btns[0].find("div", class_="option-value").text+"/"+btns[1].find("div", class_="option-value").text
 
-					line = str(float(btns[0].find("div", class_="option-name").text))
-					data[game]["spread"][line] = btns[0].find("div", class_="option-value").text+"/"+btns[1].find("div", class_="option-value").text
-
-					line = str(float(btns[2].find("div", class_="option-name").text.strip().split(" ")[-1]))
-					data[game]["total"][line] = btns[2].find("div", class_="option-value").text+"/"+btns[3].find("div", class_="option-value").text
+						line = str(float(btns[2].find("div", class_="option-name").text.strip().split(" ")[-1]))
+						data[game]["total"][line] = btns[2].find("div", class_="option-value").text+"/"+btns[3].find("div", class_="option-value").text
+					except:
+						pass
 
 	browser.stop()
 
@@ -1161,22 +1165,23 @@ async def writeMGMFromHTML(data, html, sport, game):
 
 	for panel in panels:
 		prop = panel.find("span", class_="market-name").text.lower()
+		alt = False
 		if prop == "anytime goalscorer":
 			prop = "atgs"
 		elif prop == "first goalscorer":
 			prop = "fgs"
-		elif prop == "player shots":
-			prop = "sog"
-		elif prop == "player assists":
-			prop = "ast"
-		elif prop == "player points":
-			prop = "pts"
+		elif prop.startswith("player") or prop.startswith("alternate player"):
+			if prop.startswith("alternate"):
+				alt = True
+			prop = prop.replace("player total ", "").replace("player ", "").replace("alternate ", "").replace("attempts", "att").replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("three-pointers", "3ptm").replace("steals", "stl").replace("blocks", "blk").replace("shots", "sog").replace(" + ", "+").replace(" ", "_")
 		elif prop.startswith("batter") or prop.startswith("pitcher"):
 			prop = prop.replace("batter ", "").replace("pitcher ", "").replace("hits", "h").replace("earned runs", "er").replace("rbis", "rbi").replace("home runs", "hr").replace("total bases", "tb").replace("strikeouts", "k").replace("runs", "r").replace("stolen bases", "sb").replace("h+r+rbis", "h+r+rbi").replace(" ", "_")
 
 		lines = panel.find_all("div", class_="name")
 		odds = panel.find_all("div", class_="value")
 		if prop == "game lines":
+			if len(odds) != 6:
+				continue
 			data[game]["ml"] = odds[2].text+"/"+odds[-1].text
 			line = str(float(lines[0].text.strip().replace("+", "")))
 			data[game]["spread"][line] = odds[0].text+"/"+odds[3].text
@@ -1187,16 +1192,20 @@ async def writeMGMFromHTML(data, html, sport, game):
 				player = parsePlayer(player.text.strip())
 				data[game][prop][player] = o.text
 		else:
-			players = panel.find_all("div", class_="player-props-player-name")
+			if sport == "nba":
+				players = panel.find_all("div", class_="title")
+			else:
+				players = panel.find_all("div", class_="player-props-player-name")
 			odds = panel.find_all("ms-option")
 			for idx, player in enumerate(players):
 				player = parsePlayer(player.text.strip())
-				if idx*2 >= len(lines):
+				i = idx if alt else idx*2
+				if i >= len(lines):
 					continue
-				line = lines[idx*2].text.strip().split(" ")[-1]
-				ou = odds[idx*2].select(".value")[0].text
-				if odds[idx*2+1].select(".value"):
-					ou += "/"+odds[idx*2+1].select(".value")[0].text
+				line = lines[i].text.strip().split(" ")[-1]
+				ou = odds[i].select(".value")[0].text
+				if not alt and odds[i+1].select(".value"):
+					ou += "/"+odds[i+1].select(".value")[0].text
 				data[game][prop][player][line] = ou
 
 async def writeMGM(sport):
@@ -1348,189 +1357,10 @@ async def writeMGM(sport):
 					await show.click()
 					await show.scroll_into_view()
 					time.sleep(0.75)
-
-
-				html = await page.get_content()
-				await writeMGMFromHTML(data, html, sport, game)
 				continue
 
-				if alt:
-					lis = await panel.query_selector_all("li")
-					for liIdx, li in enumerate(lis):
-						#a = await li.query_selector("a")
-						await li.click()
-						try:
-							await page.wait_for(selector=f".option-group-column:nth-child({groupIdx+1}) ms-option-panel:nth-child({panelIdx+1}) li:nth-child({liIdx+1}).ds-tab-selected")
-						except:
-							continue
-
-						line = str(float(li.text.replace("+", "")) - 0.5)
-						if prop not in data:
-							data[prop] = {}
-
-						players = await panel.query_selector_all(".attribute-key")
-						odds = await panel.query_selector_all("ms-option")
-						for playerIdx, player in enumerate(players):
-							player = parsePlayer(player.text.split(" (")[0].strip())
-							if player not in data[prop]:
-								data[prop][player] = {}
-							over = await odds[playerIdx].query_selector(".value")
-							if not over:
-								continue
-							if line not in data[prop][player]:
-								data[prop][player][line] = over.text
-
-				elif multProps:
-					mainProp = prop
-					lis = await panel.query_selector_all("li")
-					for liIdx, li in enumerate(lis):
-						await li.click()
-						try:
-							await page.wait_for(selector=f".option-group-column:nth-child({groupIdx+1}) ms-option-panel:nth-child({panelIdx+1}) li:nth-child({liIdx+1}).ds-tab-selected")
-							# from .active
-						except:
-							continue
-						if sport == "soccer" or mainProp in ["total"]:
-							prefix = ""
-							if "half" in li.text.lower():
-								if "1st" in li.text:
-									prefix = "1h_"
-								elif "2nd" in li.text:
-									prefix = "2h_"
-							elif "period" in li.text.lower():
-								if "1st" in li.text:
-									prefix = "1p_"
-								elif "2nd" in li.text:
-									prefix = "2p_"
-								elif "3rd" in li.text:
-									prefix = "3p_"
-							prop = f"{prefix}{mainProp}"
-						else:
-							prop = li.text.lower().strip().replace("receiving", "rec").replace("rushing", "rush").replace("passing", "pass").replace("yards", "yd").replace("receptions made", "rec").replace("reception", "rec").replace("extra points made", "xp").replace("points", "pts").replace("field goals made", "fgm").replace("points", "pts").replace("longest pass completion", "longest_pass").replace("completions", "cmp").replace("completion", "cmp").replace("attempts", "att").replace("touchdowns", "td").replace("assists", "ast").replace("defensive interceptions", "def_int").replace("interceptions thrown", "int").replace(" ", "_")
-							if prop == "rush+rec_yd":
-								prop = "rush+rec"
-							elif prop == "pass+rush_yd":
-								prop = "pass+rush"
-
-							if "1st" in prop:
-								continue
-
-						if prop not in data:
-							data[prop] = {}
-
-						players = await panel.query_selector_all(".attribute-key")
-						odds = await panel.query_selector_all("ms-option")
-						for playerIdx, player in enumerate(players):
-							#print(prop, player.text)
-							over = await odds[playerIdx*2].query_selector(".value")
-							under = await odds[playerIdx*2+1].query_selector(".value")
-							if not over:
-								continue
-							ou = over.text
-							if under:
-								ou += "/"+under.text
-							if sport == "soccer" or mainProp in ["total"]:
-								line = str(float(player.text.strip().replace(",", ".")))
-								data[prop][line] = ou
-							else:
-								player = parsePlayer(player.text.split(" (")[0].strip())
-								if player not in data[prop]:
-									data[prop][player] = {}
-								line = await odds[playerIdx*2].query_selector(".name")
-								if not line:
-									continue
-								line = line.text.strip().split(" ")[-1]
-							
-								data[prop][player][line] = ou
-
-				elif sport == "nba":
-					players = await panel.query_selector_all(".attribute-key")
-					odds = await panel.query_selector_all(".option-pick")
-					for playerIdx, player in enumerate(players):
-						player = parsePlayer(player.text.split(" (")[0].strip())
-						try:
-							line = await odds[playerIdx*2].query_selector(".name")
-							line = line.text.strip().split(" ")[-1]
-						except:
-							continue
-						
-						try:
-							ov = await odds[playerIdx*2].query_selector(".value")
-							un = await odds[playerIdx*2+1].query_selector(".value")
-						except:
-							continue
-						if ov:
-							ou = ov.text
-							if un:
-								ou += "/"+un.text
-							if prop in ["double_double", "triple_double"]:
-								data[prop][player] = ou
-							else:
-								if player not in data[prop]:
-									data[prop][player] = {}
-								data[prop][player][line] = ou
-				elif prop in ["pts", "ast", "reb", "sog", "bs", "3ptm", "saves"]:
-					players = await panel.query_selector_all(".attribute-key")
-					odds = await panel.query_selector_all(".option")
-					for playerIdx, player in enumerate(players):
-						player = parsePlayer(player.text.split(" (")[0].strip())
-						over = odds[playerIdx*2]
-						under = odds[playerIdx*2+1]
-						try:
-							line = over.text_all.strip().split(" ")[1]
-							ou = over.text_all.split(" ")[-1]+"/"+under.text_all.split(" ")[-1]
-						except:
-							continue
-						data[prop][player] = {
-							line: ou
-						}
-				else:
-					odds = await panel.query_selector_all(".option")
-					players = await panel.query_selector_all(".attribute-key")
-					skip = 1
-					for playerIdx in range(0, len(players), skip):
-						player = players[playerIdx]
-						#print(prop, player)
-						if prop in ["atgs", "attd", "2+td", "3+td", "ftd", "fgs", "team_ftd", "team_fgs"]:
-							odd = odds[playerIdx]
-						else:
-							#print(prop, player)
-							odd = odds[playerIdx*2]
-						try:
-							val = await odd.query_selector(".value")
-						except:
-							continue
-						if not val:
-							continue
-
-						if "total" in prop:
-							line = str(float(player.text.strip()))
-							try:
-								under = await odds[playerIdx*2+1].query_selector(".value")
-								if not under:
-									continue
-							except:
-								continue
-							ou = val.text+"/"+under.text
-							data[prop][line] = ou
-							continue
-
-						player = parsePlayer(player.text.split(" (")[0].strip())
-						if "defense" in player and sport == "nfl":
-							player = player.split(" ")[0]
-
-						if prop in ["attd", "ftd", "2+td", "3+td", "team_ftd", "atgs", "fgs"]:
-							ou = val.text
-							if sport == "soccer":
-								try:
-									val = await odds[playerIdx*3].query_selector(".value")
-									if not val:
-										continue
-									ou = val.text
-								except:
-									continue
-							data[prop][player] = ou
-
+		html = await page.get_content()
+		await writeMGMFromHTML(data, html, sport, game)
 		updateData(file, data)
 		q.task_done()
 
@@ -3012,6 +2842,7 @@ async def getDKLinks(sport):
 			away = convert365Team(away)
 			home = convert365Team(home)
 		game = f"{away} @ {home}"
+
 		if game not in games:
 			games.append(game)
 
@@ -3037,28 +2868,29 @@ async def getDKLinks(sport):
 			for key in ["blocks", "steals"]:
 				res[key] = f"{url}&subcategory={key}"
 			for key in ["blocks", "steals", "steals+blocks", "turnovers"]:
-				res[key] = f"{url}&subcategory={key.replace('+','-+-')}-o/u"
+				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-%2B-')}-o/u"
 			continue
 		elif tab == "player combos":
 			for key in ["pts+reb+ast", "pts+reb", "pts+ast"]:
 				for game in games:
-					res[f"{game}-{key}"] = f"{url}&subcategory={key.replace('+','-+-')}"
+					res[f"{game}-{key}"] = f"{url}&subcategory={key.replace('+','-%2B-')}"
+				#res[f"{key}"] = f"{url}&subcategory={key.replace('+','-%2B-')}"
 			for key in ["pts+reb+ast", "pts+reb", "pts+ast", "ast+reb"]:
-				res[key] = f"{url}&subcategory={key.replace('+','-+-')}-o/u"
+				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-%2B-')}-o/u"
 			continue
 		elif tab == "batter props":
 			for key in ["home-runs", "hits", "total-bases", "rbis"]:
 				#for game in games:
 				res[f"{key}"] = f"{url}&subcategory={key.replace('+','-+-')}"
 			for key in ["hits", "total-bases", "rbis", "hits+runs+rbis", "runs", "stolen-bases", "singles", "doubles"]:
-				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-+-')}-o/u"
+				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-%2B-')}-o/u"
 			continue
 		elif tab == "pitcher props":
 			for key in ["strikeouts-thrown", "to-record-a-win", "hits-allowed", "walks-allowed"]:
 				#for game in games:
-				res[f"{key}"] = f"{url}&subcategory={key.replace('+','-+-')}"
+				res[f"{key}"] = f"{url}&subcategory={key.replace('+','-%2B-')}"
 			for key in ["strikeouts-thrown", "hits-allowed", "walks-allowed", "earned-runs-allowed", "outs-recorded"]:
-				res[key] = f"{url}&subcategory={key.replace('+','-+-')}-o/u"
+				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-%2B-')}-o/u"
 			continue
 		# OU just needs 1 thread
 		if tab in ["shots on goal", "points", "assists", "player points", "player rebounds", "player assists", "player threes"]:
@@ -3145,7 +2977,7 @@ async def writeDK(sport):
 		mainTab = game
 		if url is None:
 			browser.stop()
-			print(f"done {url}")
+			print(f"d1one {url}")
 			q.task_done()
 			return
 
@@ -3156,7 +2988,7 @@ async def writeDK(sport):
 		try:
 			await page.wait_for(selector=c)
 		except:
-			print(f"done {url}")
+			print(f"d2one {mainTab}")
 			q.task_done()
 			continue
 
@@ -3202,7 +3034,7 @@ async def writeDK(sport):
 			await writeDKFromHTML(data, html, sport, prop)
 			browser.stop()
 			updateData(file, data)
-			print(f"done {url}")
+			print(f"done3 {mainTab}")
 			q.task_done()
 			continue
 
@@ -3361,7 +3193,7 @@ async def writeDK(sport):
 					over = btns[i].text_all.split(" ")[-1].replace("\u2212", "-")
 					under = btns[i+1].text_all.split(" ")[-1].replace("\u2212", "-")
 					data[game][prop][line] = f"{over}/{under}"
-			elif sport == "ncaab" or (sport in ["nba", "nhl", "mlb"] and skip == 1):
+			elif sport == "ncaab" or skip == 1:
 				"""
 				odds = await gameDiv.query_selector_all(".sb-selection-picker__selection--focused")
 				players = await gameDiv.query_selector_all(".side-rail-name")
@@ -3383,7 +3215,12 @@ async def writeDK(sport):
 					odds = await gameDiv.query_selector_all(f"button[data-testid='sb-selection-picker__selection-{i}']")
 					#if i != 0:
 					for odd in odds:
-						await odd.click()
+						try:
+							await odd.click()
+						except:
+							pass
+
+					#time.sleep(1)
 
 					odds = await gameDiv.query_selector_all(f"button[data-testid='sb-selection-picker__selection-{i}']")
 
@@ -3465,7 +3302,7 @@ async def writeDK(sport):
 							data[game][prop][player][line] += "/"+under.text.replace("\u2212", "-")
 
 		updateData(file, data)
-		print(f"done {url}")
+		print(f"done4 {mainTab}")
 		q.task_done()
 
 	browser.stop()
@@ -3498,11 +3335,11 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
+	games = {}
 	if args.bet365:
 		games = uc.loop().run_until_complete(get365Links(args.sport, args.keep))
 		runThreads("bet365", args.sport, games, args.threads, args.keep)
 	if args.fd:
-		#games = {}
 		#games["vgk @ det"] = "/ice-hockey/nhl/vegas-golden-knights-@-detroit-red-wings-34126907"
 		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow or args.tmrw))
 		#print(games)
@@ -3510,8 +3347,7 @@ if __name__ == '__main__':
 		runThreads("fanduel", args.sport, games, totThreads, keep=True)
 
 	if args.espn:
-		#games = {}
-		#games["vgk @ det"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/381a07af-75f9-4bef-ae27-d9305981f79d"
+		#games["chi @ phx"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/nba/event/e8ef21b5-1703-41c5-a037-6a39af36d355/section/player_props"
 		games = uc.loop().run_until_complete(getESPNLinks(args.sport, args.tomorrow or args.tmrw))
 		totThreads = min(args.threads, len(games))
 		runThreads("espn", args.sport, games, totThreads, keep=True)
@@ -3525,5 +3361,6 @@ if __name__ == '__main__':
 
 	if args.dk:
 		games = uc.loop().run_until_complete(getDKLinks(args.sport))
-		runThreads("draftkings", args.sport, games, args.threads, args.keep)
+		#games["chi @ phx-pts+ast"] = "https://sportsbook.draftkings.com/leagues/basketball/nba?category=player-combos&subcategory=pts-%2B-ast"
+		runThreads("draftkings", args.sport, games, min(args.threads, len(games)), args.keep)
 

@@ -15,18 +15,27 @@ from datetime import datetime, timedelta
 q = queue.Queue()
 lock = threading.Lock()
 
-def run(sport):
+def run(sport, date, tmrw):
+	extraArgs = []
+	nextDay = str(datetime.datetime.now() + datetime.timedelta(days=1))[:10]
 	if sport == "dinger":
 		writeAll()
 	else:
 		books = ["fd", "dk", "mgm", "espn", "bet365"]
 		for book in books:
+			cmd = ["python", "scrape.py", f"--{book}", "--sport", sport]
+			if tmrw:
+				cmd.append("--tmrw")
 			with open(f"outRun{sport}{book}.log", "w") as f:
-				subprocess.Popen(["python", "scrape.py", f"--{book}", "--sport", sport], stdout=f, stderr=f)
+				subprocess.Popen(cmd, stdout=f, stderr=f)
 		books = ["pn", "kambi"]
 		for book in books:
-			with open(f"outRun{sport}{book}.log", "w") as f:
-				subprocess.Popen(["python", f"controllers/{sport}.py", f"--{book}"], stdout=f, stderr=f)
+			cmd = ["python", f"controllers/{sport}.py", f"--{book}"]
+			if tmrw:
+				cmd.extend(["-d", nextDay])
+			elif date:
+				cmd.extend(["-d", date])
+			subprocess.Popen(cmd)
 		# CZ
 
 		if sport == "nba":
@@ -37,9 +46,12 @@ if __name__ == '__main__':
 	parser.add_argument("--threads", type=int, default=7)
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--sport")
+	parser.add_argument("-d", "--date")
+	parser.add_argument("--tomorrow", action="store_true")
+	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("-u", "--update", action="store_true")
 
 	args = parser.parse_args()
 
 	if args.sport:
-		run(args.sport)
+		run(args.sport, args.date, args.tmrw or args.tomorrow)
