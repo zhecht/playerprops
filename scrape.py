@@ -840,10 +840,13 @@ async def getESPNLinks(sport, tomorrow):
 		ou = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=UNDER]")[0].find_all("span")[-1].text
 		data[game]["total"][line] = ou.replace("Even", "+100")
 
-		mlO = article.select("button[data-type=AWAY_MONEYLINE]")[0].text
-		mlU = article.select("button[data-type=HOME_MONEYLINE]")[0].text
-		if mlO != "--":
-			data[game]["ml"] = f"{mlO}/{mlU}".replace("Even", "+100")
+		try:
+			mlO = article.select("button[data-type=AWAY_MONEYLINE]")[0].text
+			mlU = article.select("button[data-type=HOME_MONEYLINE]")[0].text
+			if mlO != "--":
+				data[game]["ml"] = f"{mlO}/{mlU}".replace("Even", "+100")
+		except:
+			pass
 
 		eventId = div.id.split("|")[1]
 		if sport == "ncaab":
@@ -2979,11 +2982,12 @@ async def writeDK(sport):
 			q.task_done()
 			return
 
-		page = await browser.get(url)
+		
 		c = ".sportsbook-event-accordion__wrapper"
 		if game == "game lines":
 			c = ".sportsbook-table__body tr"
 		try:
+			page = await browser.get(url)
 			await page.wait_for(selector=c)
 		except:
 			print(f"d2one {mainTab}")
