@@ -3507,7 +3507,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				totalGames = totalOver = totalOverPerMin = 0
 				total15Over = total15OverPerMin = 0
 				total10Over = total10OverPerMin = 0
-				totalSplits = []
+				totalSplits = ""
 				dtSplits = ""
 				totalSplitsPerMin = []
 				avgMin = []
