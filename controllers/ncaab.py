@@ -3070,7 +3070,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 						teamStats = stats.get(team, {})
 						if "team" in teamStats and handicap.strip():
-							totalSplits = teamStats["team"].get("team_total", "")
+							teamProp = ""
+							if prop.startswith("away_total") or prop.startswith("home_total"):
+								teamProp = "team_total"
+							elif prop.endswith("total"):
+								teamProp = "total"
+							totalSplits = teamStats["team"].get(teamProp, "")
 							if totalSplits:
 								sp = totalSplits.split(",")
 								arr = [x for x in sp if int(x) > float(handicap)]
