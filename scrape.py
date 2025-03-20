@@ -2854,8 +2854,10 @@ async def getDKLinks(sport):
 	res = {}
 	tabs = []
 
-	if sport in ["nba", "ncaab"]:
+	if sport == "nba":
 		tabs = ["game lines", "player points", "player combos", "player rebounds", "player assists", "player threes", "player defense"]
+	elif sport == "ncaab":
+		tabs = ["game lines", "player points", "player rebounds", "player assists", "player threes"]
 	elif sport in ["mlb"]:
 		tabs = ["batter props", "pitcher props"]
 	elif sport == "nhl":
@@ -2871,6 +2873,12 @@ async def getDKLinks(sport):
 			for key in ["blocks", "steals", "steals+blocks", "turnovers"]:
 				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-%2B-')}-o/u"
 			continue
+		elif sport == "ncaab" and tab != "game lines" and tab.startswith("player"):
+			res[tab] = url
+			continue
+			#for game in games:
+			#	t = tab.replace('player ', '').replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("threes", "3ptm")
+			#	res[f"{game}-{t}"] = f"{url}"
 		elif tab == "player combos":
 			for key in ["pts+reb+ast", "pts+reb", "pts+ast"]:
 				for game in games:
@@ -2961,6 +2969,12 @@ async def writeDKFromHTML(data, html, sport, prop):
 			data[game]["spread"][line] = f"{tds[0].find_all('span')[-1].text}/{tds2[0].find_all('span')[-1].text}".replace("\u2212", "-")
 			line = str(float(tds[1].find("span", class_="sportsbook-outcome-cell__line").text))
 			data[game]["total"][line] = f"{tds[1].find_all('span')[-1].text}/{tds2[1].find_all('span')[-1].text}".replace("\u2212", "-")
+		elif sport == "ncaab":
+			btns = gameDiv.select(".sb-selection-picker__selection--focused")
+			for btnIdx, btn in enumerate(btns):
+				player = parsePlayer(btn.find_previous("ul").text.split("new!")[0])
+				line = str(float(btn.find("span").text[:-1]) - 0.5)
+				data[game][prop][player][line] = btn.find_all("span")[-1].text
 		else:
 			for row in gameDiv.select(".sportsbook-table__body tr"):
 				player = parsePlayer(row.select(".sportsbook-row-name")[0].text)
@@ -3030,13 +3044,13 @@ async def writeDK(sport):
 
 		#print(mainTab, prop)
 
-		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines"]:
-			time.sleep(0.5)
+		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines"] or sport == "ncaab":
+			time.sleep(0.15)
 			html = await page.get_content()
 			await writeDKFromHTML(data, html, sport, prop)
+			print(f"done3 {mainTab}")
 			browser.stop()
 			updateData(file, data)
-			print(f"done3 {mainTab}")
 			q.task_done()
 			continue
 
@@ -3363,6 +3377,6 @@ if __name__ == '__main__':
 
 	if args.dk:
 		games = uc.loop().run_until_complete(getDKLinks(args.sport))
-		#games["chi @ phx-pts+ast"] = "https://sportsbook.draftkings.com/leagues/basketball/nba?category=player-combos&subcategory=pts-%2B-ast"
+		#games["mcneese @ clemson-pts"] = "https://sportsbook.draftkings.com/leagues/basketball/ncaab?category=player-points"
 		runThreads("draftkings", args.sport, games, min(args.threads, len(games)), args.keep)
 
