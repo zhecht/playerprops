@@ -17,7 +17,7 @@ lock = threading.Lock()
 
 def run(sport, date, tmrw):
 	extraArgs = []
-	nextDay = str(datetime.datetime.now() + datetime.timedelta(days=1))[:10]
+	nextDay = str(datetime.now() + timedelta(days=1))[:10]
 	if sport == "dinger":
 		writeAll()
 	else:
@@ -35,7 +35,8 @@ def run(sport, date, tmrw):
 				cmd.extend(["-d", nextDay])
 			elif date:
 				cmd.extend(["-d", date])
-			subprocess.Popen(cmd)
+			with open(f"outRun{sport}{book}.log", "w") as f:
+				subprocess.Popen(cmd, stdout=f, stderr=f)
 		# CZ
 
 		if sport == "nba":
