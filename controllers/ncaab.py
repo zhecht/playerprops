@@ -3070,9 +3070,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 						teamStats = stats.get(team, {})
 						if "team" in teamStats:
-							totalSplits = teamStats.get("team_total", "")
-							dtSplits = teamStats.get("dt", "")
-							awayHomeSplits = teamStats.get("awayHome", "")
+							totalSplits = teamStats["team"].get("team_total", "")
+							dtSplits = teamStats["team"].get("dt", "")
+							awayHomeSplits = teamStats["team"].get("awayHome", "")
 
 					if totalOver and i == 1:
 						totalOver = 100 - totalOver
