@@ -1078,8 +1078,6 @@ async def getMGMLinks(sport=None, tomorrow=None):
 	games = {}
 	data = nested_dict()
 	for url in urls:
-		
-
 		tabs = [""]
 		#march madness
 		#if sport == "ncaab":
