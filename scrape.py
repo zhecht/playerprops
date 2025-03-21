@@ -1174,6 +1174,7 @@ async def writeMGMFromHTML(data, html, sport, game):
 		elif prop.startswith("player") or prop.startswith("alternate player"):
 			if prop.startswith("alternate"):
 				alt = True
+				continue
 			prop = prop.replace("player total ", "").replace("player ", "").replace("alternate ", "").replace("attempts", "att").replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("three-pointers", "3ptm").replace("steals", "stl").replace("blocks", "blk").replace("shots", "sog").replace(" + ", "+").replace(" ", "_")
 		elif prop.startswith("batter") or prop.startswith("pitcher"):
 			prop = prop.replace("batter ", "").replace("pitcher ", "").replace("hits", "h").replace("earned runs", "er").replace("rbis", "rbi").replace("home runs", "hr").replace("total bases", "tb").replace("strikeouts", "k").replace("runs", "r").replace("stolen bases", "sb").replace("h+r+rbis", "h+r+rbi").replace(" ", "_")
@@ -1193,8 +1194,8 @@ async def writeMGMFromHTML(data, html, sport, game):
 				player = parsePlayer(player.text.strip())
 				data[game][prop][player] = o.text
 		else:
-			if sport == "nba":
-				players = panel.find_all("div", class_="title")
+			if sport == "nba" and alt:
+				players = panel.find_all("span", class_="title")
 			else:
 				players = panel.find_all("div", class_="player-props-player-name")
 			odds = panel.find_all("ms-option")
@@ -1204,7 +1205,10 @@ async def writeMGMFromHTML(data, html, sport, game):
 				if i >= len(lines):
 					continue
 				line = lines[i].text.strip().split(" ")[-1]
-				ou = odds[i].select(".value")[0].text
+				vals = odds[i].select(".value")
+				if not vals:
+					continue
+				ou = vals[0].text
 				if not alt and odds[i+1].select(".value"):
 					ou += "/"+odds[i+1].select(".value")[0].text
 				data[game][prop][player][line] = ou
@@ -2887,6 +2891,10 @@ async def getDKLinks(sport):
 			for key in ["pts+reb+ast", "pts+reb", "pts+ast", "ast+reb"]:
 				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-%2B-')}-o/u"
 			continue
+		elif sport == "nba" and tab.startswith("player"):
+			for game in games:
+				res[f"{game}-{tab}"] = url
+			continue
 		elif tab == "batter props":
 			for key in ["home-runs", "hits", "total-bases", "rbis"]:
 				#for game in games:
@@ -3249,7 +3257,6 @@ async def writeDK(sport):
 				#el = await page.query_selector("div[data-testid='betslip-header-clear-all-button']")
 				#if el:
 				#	await el.click()
-
 			elif skip == 1 or alt:
 				divs = await gameDiv.query_selector_all(".component-29")
 				for div in divs:
@@ -3370,8 +3377,7 @@ if __name__ == '__main__':
 
 	if args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))
-		#games = {}
-		#games["lad @ chc"] = "/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-17080709"
+		#games["tor @ gs"] = "/en/sports/events/toronto-raptors-at-golden-state-warriors-17110301"
 		totThreads = min(args.threads, len(games))
 		runThreads("mgm", args.sport, games, totThreads, keep=True)
 
