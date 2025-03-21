@@ -2936,6 +2936,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/ncaab/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/ncaab/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
 	with open(f"{prefix}static/ncaab/stats.json") as fh:
 		stats = json.load(fh)
 
@@ -2946,7 +2949,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		"fd": fdLines,
 		"espn": espnLines,
 		"dk": dkLines,
-		"cz": czLines
+		"cz": czLines,
+		"365": bet365Lines
 	}
 
 	with open(f"{prefix}static/ncaab/ev.json") as fh:
