@@ -3148,7 +3148,7 @@ def writeRanks(teamArg=None):
 		"mgm": mgmLines,
 		"fd": fdLines,
 		"espn": espnLines,
-		"bet365": bet365,
+		"365": bet365,
 		"dk": dkLines,
 		"cz": czLines
 	}
@@ -3164,9 +3164,6 @@ def writeRanks(teamArg=None):
 
 			for prop in lines[book][game]:
 				if prop not in ["pts", "reb", "ast", "stl", "blk", "to"]:
-					continue
-
-				if book == "bet365" and prop == "pts":
 					continue
 
 				for player in lines[book][game][prop]:
@@ -3348,7 +3345,7 @@ def writeDaily():
 		"dk": dkLines,
 		"cz": czLines,
 		"espn": espnLines,
-		"bet365": bet365Lines
+		"365": bet365Lines
 	}
 
 	date = str(datetime.now())[:10]
@@ -3437,7 +3434,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		"dk": dkLines,
 		"cz": czLines,
 		"espn": espnLines,
-		"bet365": bet365Lines
+		"365": bet365Lines
 	}
 
 	with open(f"{prefix}static/nba/ev.json") as fh:
@@ -4072,7 +4069,7 @@ def sortEV(noDaily=False):
 			continue
 		ou = ("u" if row[-1]["under"] else "o")+" "+row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR"), f"{round(row[-1]['imp'])}%", row[-1]["game"].upper(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bet365", "pn", "kambi", "cz", "espn"]:
+		for book in ["fd", "dk", "mgm", "365", "pn", "kambi", "cz", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -4095,7 +4092,7 @@ def sortEV(noDaily=False):
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR").replace("BET365", "365"), f"{round(row[-1]['imp'])}%", row[-1]["game"].upper(), row[-1]['team'].upper(), player.title(), row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bet365", "pn", "kambi", "cz", "espn"]:
+		for book in ["fd", "dk", "mgm", "365", "pn", "kambi", "cz", "espn"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
