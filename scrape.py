@@ -3103,6 +3103,10 @@ async def writeDKFromHTML(data, html, sport, prop):
 				player = parsePlayer(btn.find_previous("ul").text.lower().split("new!")[0])
 				line = str(float(btn.find("span").text[:-1]) - 0.5)
 				data[game][prop][player][line] = btn.find_all("span")[-1].text
+		elif prop in ["atgs"]:
+			for btn in gameDiv.select(".outcomes")[-1].select("div[role=button]"):
+				player = parsePlayer(btn.get("aria-label").strip())
+				data[game][prop][player] = btn.text.strip()
 		else:
 			for row in gameDiv.select(".sportsbook-table__body tr"):
 				player = parsePlayer(row.select(".sportsbook-row-name")[0].text)
@@ -3172,7 +3176,7 @@ async def writeDK(sport):
 
 		#print(mainTab, prop)
 
-		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines"] or sport == "ncaab":
+		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines", "goalscorer"] or sport == "ncaab":
 			time.sleep(0.15)
 			html = await page.get_content()
 			await writeDKFromHTML(data, html, sport, prop)
@@ -3504,7 +3508,8 @@ if __name__ == '__main__':
 		runThreads("mgm", args.sport, games, totThreads, keep=True)
 
 	if args.dk:
-		games = uc.loop().run_until_complete(getDKLinks(args.sport))
+		#games = uc.loop().run_until_complete(getDKLinks(args.sport))
 		#games["mcneese @ clemson-pts"] = "https://sportsbook.draftkings.com/leagues/basketball/ncaab?category=player-points"
+		games["goalscorer"] = "https://sportsbook.draftkings.com/leagues/hockey/nhl?category=goalscorer"
 		runThreads("draftkings", args.sport, games, min(args.threads, len(games)), args.keep)
 
