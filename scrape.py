@@ -533,11 +533,12 @@ async def write365FromHTML(data, html, sport, prop):
 				data[g][p] = ml.get("aria-label").split(" ")[-1]
 
 			p = f"{pre}spread"
-			line = str(float(spreadLabel.split(" ")[-3]))
-			if str(float(line)*-1) in data[g][p]:
-				data[g][p][str(float(line)*-1)] += "/"+spreadLabel.split(" ")[-1]
-			else:	
-				data[g][p][line] = spreadLabel.split(" ")[-1]
+			if not spread.get("aria-disabled"):
+				line = str(float(spreadLabel.split(" ")[-3]))
+				if str(float(line)*-1) in data[g][p]:
+					data[g][p][str(float(line)*-1)] += "/"+spreadLabel.split(" ")[-1]
+				else:
+					data[g][p][line] = spreadLabel.split(" ")[-1]
 
 			p = f"{pre}total"
 			line = str(float(totalLabel.split(" ")[-3]))
