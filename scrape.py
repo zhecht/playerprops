@@ -3508,8 +3508,7 @@ if __name__ == '__main__':
 		runThreads("mgm", args.sport, games, totThreads, keep=True)
 
 	if args.dk:
-		#games = uc.loop().run_until_complete(getDKLinks(args.sport))
-		#games["mcneese @ clemson-pts"] = "https://sportsbook.draftkings.com/leagues/basketball/ncaab?category=player-points"
-		games["goalscorer"] = "https://sportsbook.draftkings.com/leagues/hockey/nhl?category=goalscorer"
+		games = uc.loop().run_until_complete(getDKLinks(args.sport))
+		#games["goalscorer"] = "https://sportsbook.draftkings.com/leagues/hockey/nhl?category=goalscorer"
 		runThreads("draftkings", args.sport, games, min(args.threads, len(games)), args.keep)
 
