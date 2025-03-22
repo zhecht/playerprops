@@ -856,7 +856,7 @@ async def getESPNLinks(sport, tomorrow):
 			pass
 		if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%b %d") not in div.text_all:
 			pass
-			break
+			continue
 
 		if sport == "mlb":
 			away = convertMLBTeam(teams[i].text)
@@ -1152,7 +1152,7 @@ async def getMGMLinks(sport=None, tomorrow=None):
 		tabs = [""]
 		#march madness
 		if sport == "ncaab":
-			tabs.extend(["friday"])
+			tabs.extend(["saturday"])
 		
 		for tab in tabs:
 			page = await browser.get(url)

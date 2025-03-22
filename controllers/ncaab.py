@@ -2740,7 +2740,7 @@ def writePlayers(date, keep=None):
 		id = div.find("a").get("href").split("/")[-2]
 		teamIds[team] = id
 
-	if False:
+	if True:
 		for team in teamIds:
 			if teamIds[team] != "130": #mich
 				#continue
@@ -2914,6 +2914,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	if not boost:
 		boost = 1
+
+	with open(f"updated.json") as fh:
+		updated = json.load(fh)
+	updated["ncaab"] = str(datetime.now())
+	with open(f"updated.json", "w") as fh:
+		json.dump(updated, fh, indent=4)
 
 	with open(f"{prefix}static/ncaab/kambi.json") as fh:
 		kambiLines = json.load(fh)

@@ -2685,6 +2685,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	if not boost:
 		boost = 1
 
+	with open(f"updated.json") as fh:
+		updated = json.load(fh)
+	updated["mlb"] = str(datetime.now())
+	with open(f"updated.json", "w") as fh:
+		json.dump(updated, fh, indent=4)
+
 	with open(f"{prefix}static/mlb/actionnetwork.json") as fh:
 		action = json.load(fh)
 
