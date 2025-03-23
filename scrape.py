@@ -597,6 +597,8 @@ async def write365FromHTML(data, html, sport, prop):
 			continue
 		elif prop.endswith("team-totals"):
 			btns = gameDiv.select(".gl-Market div[role=button]")
+			if not btns:
+				continue
 			line = btns[0].get("aria-label").split(" ")[-3]
 			data[game][f"{pre}away_total"][line] = btns[0].get("aria-label").split(" ")[-1]+"/"+btns[1].get("aria-label").split(" ")[-1]
 			line = btns[2].get("aria-label").split(" ")[-3]
