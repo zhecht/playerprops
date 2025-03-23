@@ -3149,6 +3149,7 @@ async def getDKLinks(sport):
 		if tab in ["shots on goal", "points", "assists"]:
 			for game in games:
 				res[f"{game}-{category}"] = url
+			continue
 		res[tab] = url
 	return res
 
