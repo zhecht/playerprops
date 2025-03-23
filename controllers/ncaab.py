@@ -1365,8 +1365,9 @@ def writeKambi(date, march):
 			elif label.split(" -")[0] == "handicap" or label == "point spread - including overtime":
 				label = "spread"
 			elif "total points by" in label:
-				team = convertTeam(label.split(" by ")[-1].split(" - ")[0])
-				if team.startswith(awayFull):
+				team = label.split(" by ")[-1].split(" - ")[0]
+				team = convertTeam(team)
+				if convertTeam(awayFull) == convertTeam(team):
 					label = "away_total"
 				else:
 					label = "home_total"
@@ -3138,7 +3139,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							if not o or o == "-":
 								continue
 
-							print(book, ou)
 							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
@@ -3250,7 +3250,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							devig(evData, key, pn, line, prop=prop, sharp=True)
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
-							print(key)
+							#print(key)
 							continue
 						if float(evData[key]["ev"]) > 0:
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)

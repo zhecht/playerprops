@@ -498,8 +498,8 @@ async def get365Links(sport, keep):
 		urls = ["https://www.nj.bet365.com"]
 		urls = ["https://www.nj.bet365.com/?_h=lW0GCdv4-5qJllzV4d_gPw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
 	elif sport == "ncaab":
-		props = ["game-lines", "1st-half", "alternate-spread", "alternative-total"]
-		ids = ["D48/E1453/F10/N0/", "D48/E928/F40/N0/", "D47/E181285/F47/N0/", "D47/E181286/F47/N0/"]
+		props = ["game-lines", "1st-half", "alternate-spread", "alternative-total", "team-totals", "alternative-team-totals", "1st-half-team-totals"]
+		ids = ["D48/E1453/F10/N0/", "D48/E928/F40/N0/", "D47/E181285/F47/N0/", "D47/E181286/F47/N0/", "D516/E181335/F516/N2/", "D516/E181005/F516/N2/", "D706/E181159/F706/N4/"]
 		for prop, id in zip(props, ids):
 			res[prop] = f"https://www.oh.bet365.com/?_h=uIqVxgT5FXe3HZt4UKzGkA%3D%3D&btsffd=1#/AC/B18/C21008290/{id}"
 	return res
@@ -511,10 +511,11 @@ async def write365FromHTML(data, html, sport, prop):
 	soup = BS(html, "lxml")
 	#with open("out.html", "w") as fh:
 	#	fh.write(html)
+	pre = ""
+	if "1st-half" in prop:
+		pre = "1h_"
+
 	if prop == "game-lines" or prop == "1st-half":
-		pre = ""
-		if prop == "1st-half":
-			pre = "1h_"
 		teams = soup.select(".scb-ParticipantFixtureDetailsHigherBasketball_Team")
 		spreads = soup.select(".gl-Market_General:nth-of-type(2) div[role=button]")
 		totals = soup.select(".gl-Market_General:nth-of-type(3) div[role=button]")
@@ -533,7 +534,7 @@ async def write365FromHTML(data, html, sport, prop):
 				data[g][p] = ml.get("aria-label").split(" ")[-1]
 
 			p = f"{pre}spread"
-			if not spread.get("aria-disabled"):
+			if spread.get("aria-disabled") != "true":
 				line = str(float(spreadLabel.split(" ")[-3]))
 				if str(float(line)*-1) in data[g][p]:
 					data[g][p][str(float(line)*-1)] += "/"+spreadLabel.split(" ")[-1]
@@ -541,11 +542,12 @@ async def write365FromHTML(data, html, sport, prop):
 					data[g][p][line] = spreadLabel.split(" ")[-1]
 
 			p = f"{pre}total"
-			line = str(float(totalLabel.split(" ")[-3]))
-			if line in data[g][p]:
-				data[g][p][line] += "/"+totalLabel.split(" ")[-1]
-			else:	
-				data[g][p][line] = totalLabel.split(" ")[-1]
+			if total.get("aria-disabled") != "true":
+				line = str(float(totalLabel.split(" ")[-3]))
+				if line in data[g][p]:
+					data[g][p][line] += "/"+totalLabel.split(" ")[-1]
+				else:	
+					data[g][p][line] = totalLabel.split(" ")[-1]
 		return
 
 	for gameDiv in soup.select(".gl-MarketGroupPod"):
@@ -579,6 +581,26 @@ async def write365FromHTML(data, html, sport, prop):
 				overLabel = over.get("aria-label")
 				line = str(float(overLabel.split(" ")[-3]))
 				data[game][prop][line] = f"{overLabel.split(' ')[-1]}/{under.get('aria-label').split(' ')[-1]}"
+			continue
+		elif prop == "alternative-team-totals":
+			lines = gameDiv.select(".gl-Market_General:nth-of-type(1) div[role=button]")
+			overs = gameDiv.select(".gl-Market_General:nth-of-type(2) div[role=button]")
+			unders = gameDiv.select(".gl-Market_General:nth-of-type(3) div[role=button]")
+			for line, over, under in zip(lines, overs, unders):
+				data[game]["away_total"][line.text] = f"{over.text}/{under.text}"
+
+			lines = gameDiv.select(".gl-Market_General:nth-of-type(4) div[role=button]")
+			overs = gameDiv.select(".gl-Market_General:nth-of-type(5) div[role=button]")
+			unders = gameDiv.select(".gl-Market_General:nth-of-type(6) div[role=button]")
+			for line, over, under in zip(lines, overs, unders):
+				data[game]["home_total"][line.text] = f"{over.text}/{under.text}"
+			continue
+		elif prop.endswith("team-totals"):
+			btns = gameDiv.select(".gl-Market div[role=button]")
+			line = btns[0].get("aria-label").split(" ")[-3]
+			data[game][f"{pre}away_total"][line] = btns[0].get("aria-label").split(" ")[-1]+"/"+btns[1].get("aria-label").split(" ")[-1]
+			line = btns[2].get("aria-label").split(" ")[-3]
+			data[game][f"{pre}home_total"][line] = btns[2].get("aria-label").split(" ")[-1]+"/"+btns[3].get("aria-label").split(" ")[-1]
 			continue
 		elif prop == "total" or prop == "alternative-total":
 			lines = gameDiv.select(".gl-Market_General:nth-of-type(1) .srb-ParticipantLabelCentered_Name")
@@ -681,9 +703,9 @@ async def write365(sport):
 			if prop == "alternative spread":
 				alt = False
 			prop = "spread"
-		elif prop.endswith("team totals"):
-			prop = "team_total"
-		elif "totals" in prop or prop == "alternative total":
+		elif prop.endswith("team-totals"):
+			prop = prop
+		elif prop == "alternative total":
 			prop = "total"
 		elif prop == "1st half" or prop == "game lines":
 			prop = "lines"
@@ -986,16 +1008,20 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				data[game][prop][line] = ou
 
 
-async def writeESPNFromHTML(data, html, sport, game, playersMap):
+async def writeESPNFromHTML(data, html, sport, game):
 	soup = BS(html, "lxml")
-
-	for detail in soup.find_all("details"):
+	#with open("out.html", "w") as fh:
+	#	fh.write(html)
+	playersMap = {}
+	for detail in soup.find_all("details")[::-1]:
 		prop = detail.find("h2").text.lower()
 		skip = 1
 		prop = prop.replace("-", " ")
 		if "o/u" in prop:
 			skip = 3
 			if sport == "nba" and " and " not in prop:
+				skip = 2
+			elif sport == "ncaab" and prop == "player total points o/u":
 				skip = 2
 			prop = prop.replace(" o/u", "")
 
@@ -1047,7 +1073,15 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 				for idx, td in enumerate(row.find_all("td")):
 					if td.text == "--":
 						continue
-					data[game][prop][player][lines[idx]] = td.text.replace("Even", "+100")
+					ou = td.text.replace("Even", "+100")
+					line = lines[idx]
+					if line in data[game][prop][player]:
+						over, under = map(str, data[game][prop][player][line].split("/"))
+						if int(over) > int(ou):
+							ou = over
+						else:
+							ou = f"{ou}/{under}"
+					data[game][prop][player][line] = f"{ou}"
 		else:
 			btns = detail.find_all("button")
 			for idx in range(0, len(btns), skip):
@@ -1062,6 +1096,10 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 				
 					if player in playersMap:
 						player = playersMap[player]
+				elif sport == "ncaab":
+					last = player.split(" ")
+					p = player.split(" ")[0][0]+" "+last[-1]
+					playersMap[parsePlayer(p)] = parsePlayer(player)
 				player = parsePlayer(player)
 				i = idx
 				if skip == 3:
@@ -1073,6 +1111,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 				except:
 					#print(game, prop, player)
 					pass
+					continue
 
 				if prop in ["atgs", "win"]:
 					data[game][prop][player] = f"{o}/{u}"
@@ -1085,6 +1124,8 @@ async def writeESPNFromHTML(data, html, sport, game, playersMap):
 						over = data[game][prop][player][line].split("/")[0]
 						if int(over) > int(o):
 							o = over
+
+					#print(prop, player, line, o, u)
 					data[game][prop][player][line] = f"{o}/{u}"
 
 async def writeESPN(sport):
@@ -1111,11 +1152,10 @@ async def writeESPN(sport):
 			continue
 
 		html = await page.get_content()
-		playersMap = {}
 		if game.endswith("-game-props") or game.endswith("-lines"):
 			await writeESPNGamePropsHTML(data, html, sport, game.replace("-game-props", "").replace("-lines", ""))
 		else:
-			await writeESPNFromHTML(data, html, sport, game, playersMap)
+			await writeESPNFromHTML(data, html, sport, game)
 
 		updateData(file, data)
 		q.task_done()
@@ -2956,7 +2996,6 @@ async def getDKLinks(sport):
 		tabs = ["game lines", "player points", "player combos", "player rebounds", "player assists", "player threes", "player defense"]
 	elif sport == "ncaab":
 		tabs = ["game lines", "player points", "player rebounds", "player assists", "player threes", "player combos"]
-		#tabs = ["game lines"]
 	elif sport in ["mlb"]:
 		tabs = ["batter props", "pitcher props"]
 	elif sport == "nhl":
@@ -2974,8 +3013,11 @@ async def getDKLinks(sport):
 			continue
 		elif sport == "ncaab" and tab != "game lines" and tab.startswith("player"):
 			if tab == "player combos":
-				for key in ["pts+reb+ast", "pts+reb", "pts+ast"]:
+				#for key in ["pts+reb+ast", "pts+reb", "pts+ast"]:
+				for key in ["pts+reb+ast"]:
 					res[f"{key}"] = f"{url}&subcategory={key.replace('+','-%2B-')}"
+					pass
+				continue
 			res[tab] = url
 			continue
 			#for game in games:
@@ -3121,20 +3163,18 @@ async def writeDK(sport):
 	while True:
 		data = nested_dict()
 		(game, url) = q.get()
-		print(game)
+		#print(game)
 		mainTab = game
 		if url is None:
-			browser.stop()
 			#print(f"d1one {url}")
 			q.task_done()
 			break
 
-		
+		page = await browser.get(url)
 		c = ".sportsbook-event-accordion__wrapper"
 		if game == "game lines":
 			c = ".sportsbook-table__body tr"
 		try:
-			page = await browser.get(url)
 			await page.wait_for(selector=c)
 		except:
 			#print(f"d2one {mainTab}")
@@ -3177,12 +3217,10 @@ async def writeDK(sport):
 
 		#print(mainTab, prop)
 
-		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines", "goalscorer"] or sport == "ncaab":
-			time.sleep(0.15)
+		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines", "goalscorer"]:
+			#time.sleep(0.15)
 			html = await page.get_content()
 			await writeDKFromHTML(data, html, sport, prop)
-			print(f"done3 {mainTab}")
-			browser.stop()
 			updateData(file, data)
 			q.task_done()
 			continue
@@ -3375,7 +3413,7 @@ if __name__ == '__main__':
 		runThreads("fanduel", args.sport, games, totThreads, keep=True)
 
 	if args.espn:
-		#games["chi @ phx"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/nba/event/e8ef21b5-1703-41c5-a037-6a39af36d355/section/player_props"
+		#games["ole miss @ iowa state"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/ncaab-championship/event/eab40ca8-b46e-4a85-abbd-f573bf54f523/section/player-props"
 		games = uc.loop().run_until_complete(getESPNLinks(args.sport, args.tomorrow or args.tmrw))
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", args.sport, games, totThreads, keep=True)
@@ -3389,6 +3427,6 @@ if __name__ == '__main__':
 
 	if args.dk:
 		games = uc.loop().run_until_complete(getDKLinks(args.sport))
-		#games["goalscorer"] = "https://sportsbook.draftkings.com/leagues/hockey/nhl?category=goalscorer"
+		#games["pts+reb+ast"] = "https://sportsbook.draftkings.com/leagues/basketball/ncaab?category=player-combos&subcategory=pts-%2B-reb-%2B-ast"
 		runThreads("draftkings", args.sport, games, min(args.threads, len(games)), args.keep)
 
