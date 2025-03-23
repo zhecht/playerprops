@@ -2871,7 +2871,7 @@ def writePlayers(date, keep=None):
 	with open(f"{prefix}static/ncaab/stats.json", "w") as fh:
 		json.dump(stats, fh)
 
-def writeDaily():
+def writeDaily(date):
 	with open(f"{prefix}static/ncaab/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
@@ -2906,7 +2906,8 @@ def writeDaily():
 		"cz": czLines
 	}
 
-	date = str(datetime.now())[:10]
+	if not date:
+		date = str(datetime.now())[:10]
 	with open(f"static/ncaab/lines/{date}.json", "w") as fh:
 		json.dump(lines, fh)
 
@@ -3137,6 +3138,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							if not o or o == "-":
 								continue
 
+							print(book, ou)
 							highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
@@ -3286,14 +3288,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/ncaab/evArr.json", "w") as fh:
 		json.dump([value for key, value in evData.items()], fh)
 
-def sortEV():
+def sortEV(date):
 	with open(f"{prefix}static/ncaab/ev.json") as fh:
 		evData = json.load(fh)
 
 	#with open(f"static/ncaab/totals.json") as fh:
 	#	totals = json.load(fh)
 
-	writeDaily()
+	writeDaily(date)
 
 	data = []
 	for player in evData:
@@ -3453,7 +3455,7 @@ if __name__ == '__main__':
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
 
 	if args.print:
-		sortEV()
+		sortEV(args.date)
 
 	if args.player:
 		writePlayer(args.player, args.prop)

@@ -1107,6 +1107,7 @@ async def writeESPN(sport):
 		try:
 			await page.wait_for(selector="details")
 		except:
+			q.task_done()
 			continue
 
 		html = await page.get_content()
@@ -1153,7 +1154,7 @@ async def getMGMLinks(sport=None, tomorrow=None):
 		tabs = [""]
 		#march madness
 		if sport == "ncaab":
-			tabs.extend(["saturday"])
+			tabs.extend(["sunday"])
 		
 		for tab in tabs:
 			page = await browser.get(url)
@@ -3124,9 +3125,9 @@ async def writeDK(sport):
 		mainTab = game
 		if url is None:
 			browser.stop()
-			print(f"d1one {url}")
+			#print(f"d1one {url}")
 			q.task_done()
-			return
+			break
 
 		
 		c = ".sportsbook-event-accordion__wrapper"
@@ -3136,7 +3137,7 @@ async def writeDK(sport):
 			page = await browser.get(url)
 			await page.wait_for(selector=c)
 		except:
-			print(f"d2one {mainTab}")
+			#print(f"d2one {mainTab}")
 			q.task_done()
 			continue
 
@@ -3251,97 +3252,7 @@ async def writeDK(sport):
 			if " @ " in singleGame and game != singleGame:
 				continue
 
-			if prop == "game" or prop == "1st_half":
-				btns = await gameDiv.query_selector_all("div[role=button]")
-				if len(btns) < 3:
-					continue
-				homeBtns = await gameDivs[gameIdx+1].query_selector_all("div[role=button]")
-				p = "1h_ml" if prop == "1st_half" else "ml"
-				data[game][p] = (btns[-1].text+"/"+homeBtns[-1].text).replace("\u2212", "-")
-				#spread
-				spans = await btns[0].query_selector_all("span")
-				under = await homeBtns[0].query_selector_all("span")
-				line = str(float(spans[0].text_all.replace("+", "")))
-				p = "1h_spread" if prop == "1st_half" else "spread"
-				data[game][p] = {
-					line: (spans[-1].text+"/"+under[-1].text).replace("\u2212", "-")
-				}
-				#total
-				under = await homeBtns[1].query_selector_all("span")
-				line = str(float(btns[1].text_all.split(" ")[-2]))
-				p = "1h_total" if prop == "1st_half" else "total"
-				data[game][p] = {
-					line: (btns[1].text_all.split(" ")[-1]+"/"+homeBtns[1].text_all.split(" ")[-1]).replace("\u2212", "-")
-				}
-			elif prop == "atgs":
-				divs = await gameDiv.query_selector_all(".component-18")
-				if "anytime goalscorer" not in divs[-1].text_all.lower():
-					continue
-				btns = await divs[-1].query_selector_all("div[role=button]")
-				for btn in btns:
-					odds = await btn.query_selector(".sportsbook-odds")
-					if not odds:
-						continue
-					attrIdx = btn.attributes.index("aria-label")
-					player = parsePlayer(btn.attributes[attrIdx+1].strip())
-					data[game][prop][player] = odds.text.replace("\u2212", "-")
-			elif "team_total" in prop:
-				for div in gameDiv.children[-1].children:
-					t = div.text_all.lower()
-					if sport == "ncaab":
-						team = convertCollege(t.replace("alternate ", "").split(":")[0].split(" total points")[0])
-					else:
-						team = convert365NHLTeam(t.split(":")[0])
-
-					pre = ""
-					if "1st half" in t:
-						pre = "1h_"
-					if "2nd half" in t:
-						pre = "2h_"
-
-					p = "home_total"
-					if team == game.split(" @ ")[0]:
-						p = "away_total"
-
-					p = f"{pre}{p}"
-					btns = div.children[-1].children
-					for i in range(0, len(btns), 2):
-						ou = btns[i].text_all.split(" ")[-1]+"/"+btns[i+1].text_all.split(" ")[-1]
-						line = btns[i].text_all.split(" ")[-2]
-						data[game][p][line] = ou.replace("\u2212", "-")
-			elif "attd" in prop:
-				divs = await gameDiv.query_selector_all(".component-18")
-				if len(divs) < 2:
-					continue
-				if "anytime td scorer" not in divs[-2].text_all.lower():
-					continue
-				btns = await divs[-2].query_selector_all("div[role=button]")
-				for btn in btns:
-					odds = await btn.query_selector(".sportsbook-odds")
-					if not odds:
-						continue
-					attrIdx = btn.attributes.index("aria-label")
-					player = parsePlayer(btn.attributes[attrIdx+1].strip().split(" (")[0])
-					#print(player, odds.text)
-					data[game]["attd"][player] = odds.text.replace("\u2212", "-")
-			elif mainTab == "player not to score":
-				btns = await gameDiv.query_selector_all("ul div[role=button]")
-				for btn in btns:
-					odds = await btn.query_selector(".sportsbook-odds")
-					if not odds:
-						continue
-					attrIdx = btn.attributes.index("aria-label")
-					player = parsePlayer(btn.attributes[attrIdx+1].strip())
-					if player in data[game]["attd"] and "/" not in data[game]["attd"][player]:
-						data[game]["attd"][player] += "/"+odds.text.replace("\u2212", "-")
-			elif prop in ["spread", "total"]:
-				btns = await gameDiv.query_selector_all(f".view-more div[role=button]")
-				for i in range(0, len(btns), 2):
-					line = str(float(btns[i].text_all.split(" ")[-2].replace("+", "")))
-					over = btns[i].text_all.split(" ")[-1].replace("\u2212", "-")
-					under = btns[i+1].text_all.split(" ")[-1].replace("\u2212", "-")
-					data[game][prop][line] = f"{over}/{under}"
-			elif sport == "ncaab" or skip == 1:
+			if sport == "ncaab" or skip == 1:
 				"""
 				odds = await gameDiv.query_selector_all(".sb-selection-picker__selection--focused")
 				players = await gameDiv.query_selector_all(".side-rail-name")
@@ -3381,37 +3292,6 @@ async def writeDK(sport):
 				#el = await page.query_selector("div[data-testid='betslip-header-clear-all-button']")
 				#if el:
 				#	await el.click()
-			elif skip == 1 or alt:
-				divs = await gameDiv.query_selector_all(".component-29")
-				for div in divs:
-					player = await div.query_selector("p")
-					if not player:
-						continue
-					player = parsePlayer(player.text_all.lower().split(" alt ")[0].split(" points")[0].split(" rebounds")[0].split(" assists")[0].split(" three")[0].split(" blocks")[0].split(" steals")[0].split(" alternate")[0])
-
-					outcomes = await div.query_selector_all("div[role=button]")
-					for outcomeIdx in range(0, len(outcomes), skip):
-						outcome = outcomes[outcomeIdx]
-						spans = await outcome.query_selector_all("span")
-						if len(spans) == 0:
-							continue
-						if skip == 1:
-							try:
-								line = str(float(spans[0].text.replace("+", "")) - 0.5)
-							except:
-								continue
-						else:
-							line = await outcome.query_selector(".sportsbook-outcome-cell__line")
-							if not line:
-								continue
-							line = line.text
-
-						odds = spans[-1].text.replace("\u2212", "-")
-						data[game][prop][player][line] = odds
-						if skip == 2:
-							under = await outcomes[outcomeIdx+1].query_selector(".sportsbook-odds")
-							if under:
-								data[game][prop][player][line] += "/"+under.text.replace("\u2212", "-")
 			else:
 				rows = await gameDiv.query_selector_all(".sportsbook-table__body tr")
 				for row in rows:
