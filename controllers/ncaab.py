@@ -12,9 +12,9 @@ import time
 from twilio.rest import Client
 
 try:
-	from shared import nested_dict
+	from shared import nested_dict, merge_dicts
 except:
-	from controllers.shared import nested_dict 
+	from controllers.shared import nested_dict, merge_dicts
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -2947,8 +2947,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/ncaab/bet365.json") as fh:
 		bet365Lines = json.load(fh)
 
+	with open(f"{prefix}static/ncaab/betrivers.json") as fh:
+		brLines = json.load(fh)
+
 	with open(f"{prefix}static/ncaab/stats.json") as fh:
 		stats = json.load(fh)
+
+	merge_dicts(kambiLines, brLines)
 
 	lines = {
 		"pn": pnLines,

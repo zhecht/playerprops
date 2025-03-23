@@ -837,6 +837,91 @@ def getCountry(league):
 		return "wales"
 	return league
 
+async def getBRLinks(sport, tmrw):
+	url = "https://mi.betrivers.com/?page=sportsbook&group=1000093654&type=matches"
+	browser = await uc.start(no_sandbox=True)
+	page = await browser.get(url)
+
+	res = {}
+	await page.wait_for(selector="article")
+	html = await page.get_content()
+	soup = BS(html, "lxml")
+	for event in soup.select("button[data-testid$=more-bets-button]"):
+		eventId = event.get("data-testid").split("-")[1]
+		article = event.find_previous("article")
+		label = article.find("div").get("aria-label").lower()
+		game = label.split(", ")[0]
+		date = label.split(", ")[1]
+		if "today" not in date and not tmrw:
+			continue
+		elif tmrw:
+			continue
+		away, home = map(str, game.split(" vs "))
+		if away.startswith("("):
+			away = ") ".join(away.split(") ")[1:])
+		if home.startswith("("):
+			home = ") ".join(home.split(") ")[1:])
+
+		if sport == "ncaab":
+			away = convertCollege(away)
+			home = convertCollege(home)
+
+		game = f"{away} @ {home}"
+		res[game] = f"https://mi.betrivers.com/?page=sportsbook#event/{eventId}"
+		
+	browser.stop()
+	return res
+
+async def writeBR(sport):
+	file = f"static/{sport}/betrivers.json"
+	browser = await uc.start(no_sandbox=True)
+	while True:
+		data = nested_dict()
+		(game, url) = q.get()
+
+		if url is None:
+			q.task_done()
+			break
+
+		page = await browser.get(url)
+
+		await page.wait_for(selector=".KambiBC-outcomes-list")
+		lis = await page.query_selector_all(".KambiBC-bet-offer-category:not(.KambiBC-expanded) header")
+		for li in lis:
+			await li.click()
+		
+		html = await page.get_content()
+		await writeBRFromHTML(data, html, sport, game)
+		updateData(file, data)
+		q.task_done()
+
+	browser.stop()
+
+
+async def writeBRFromHTML(data, html, sport, game):
+	soup = BS(open("out.html"), "lxml")
+	for li in soup.select(".KambiBC-bet-offer-category"):
+		prop = li.find("header").text.strip().lower()
+
+		if prop.startswith("player"):
+			prop = prop.replace("player ", "").replace("points", "pts").replace("threes", "3ptm").replace("assists", "ast").replace("rebounds", "reb")
+		elif prop in ["most popular", "game", "half time"]:
+			continue
+
+		subcats = li.select(".KambiBC-bet-offer-subcategory")
+		for sub in subcats:
+			line = str(float(sub.find("h3").text.split("+")[0]) - 0.5)
+			players = sub.select(".KambiBC-outcomes-list__label-main")
+			odds = sub.select("button")
+
+			for player, o in zip(players, odds):
+				last, first = player.text.split(", ")
+				player = parsePlayer(f"{first} {last}")
+				data[game][prop][player][line] = o.text
+
+def runBR(sport):
+	return uc.loop().run_until_complete(writeBR(sport))
+
 async def getESPNLinks(sport, tomorrow):
 	if not sport:
 		sport = "nfl"
@@ -1565,6 +1650,8 @@ def runThreads(book, sport, games, totThreads, keep=False):
 			thread = threading.Thread(target=runDK, args=(sport,))
 		elif book == "espn":
 			thread = threading.Thread(target=runESPN, args=(sport,))
+		elif book == "betrivers":
+			thread = threading.Thread(target=runBR, args=(sport,))
 		elif book == "bet365":
 			thread = threading.Thread(target=run365, args=(sport,))
 		thread.start()
@@ -3385,6 +3472,7 @@ def updateData(file, data):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--bet365", action="store_true")
+	parser.add_argument("--br", action="store_true")
 	parser.add_argument("--fd", action="store_true")
 	parser.add_argument("--espn", action="store_true")
 	parser.add_argument("--mgm", action="store_true")
@@ -3405,6 +3493,9 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(get365Links(args.sport, args.keep))
 		#games["alternative-total"] = "https://www.oh.bet365.com/?_h=uIqVxgT5FXe3HZt4UKzGkA%3D%3D&btsffd=1#/AC/B18/C21008290/D47/E181286/F47/N0/"
 		runThreads("bet365", args.sport, games, min(args.threads, len(games)), args.keep)
+	if args.br:
+		games = uc.loop().run_until_complete(getBRLinks(args.sport, args.tomorrow or args.tmrw))
+		runThreads("betrivers", args.sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
 		#games["vgk @ det"] = "/ice-hockey/nhl/vegas-golden-knights-@-detroit-red-wings-34126907"
 		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow or args.tmrw))
