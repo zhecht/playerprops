@@ -1157,7 +1157,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 		"dk": dkLines,
 		"pn": pnLines,
 		"cz": czLines,
-		"bet365": bet365Lines,
+		"365": bet365Lines,
 		"circa": circaLines,
 		"espn": espnLines
 	}
@@ -1384,7 +1384,7 @@ def printEV():
 		else:
 			ou += row[-1]["handicap"]
 		arr = [row[0], str(row[-1]["line"])+" "+row[-1]["book"].upper().replace("KAMBI", "BR").replace("BET", ""), f"{round(row[-1]['imp'])}%", player, row[-1]["prop"], ou]
-		for book in ["fd", "dk", "mgm", "bv", "cz", "kambi", "pn", "bet365", "espn", "circa"]:
+		for book in ["fd", "dk", "mgm", "bv", "cz", "kambi", "pn", "365", "espn", "circa"]:
 			o = str(row[-1]["bookOdds"].get(book, "-"))
 			if o.startswith("+"):
 				o = "'"+o
@@ -1468,7 +1468,7 @@ if __name__ == '__main__':
 			"bv": bvLines,
 			"dk": dkLines,
 			"pn": pnLines,
-			"bet365": bet365Lines,
+			"365": bet365Lines,
 			"circa": circaLines
 		}
 
