@@ -9,7 +9,8 @@ from controllers.shared import *
 from datetime import datetime, timedelta
 
 async def writeFDPage(tabName, page, data):
-	await page.wait_for(selector="div[data-test-id=ArrowAction]")
+	#await page.wait_for(selector="div[data-test-id=ArrowAction]")
+	await page.wait_for(selector="div[role=button]")
 
 	if tabName in ["world series", "league winners"]:
 		arrows = []
@@ -118,13 +119,14 @@ async def writeFD(sport, keep):
 
 	for tabIdx in range(len(tabs)):
 		tabName = tabs[tabIdx].text_all.lower()
-		if tabName in ["spring training", "awards", "tokyo series"]:
+		if tabName in ["games", "spring training", "awards"]:
 			continue
 		if tabName not in ["divisions"]:
 			pass
 			#continue
 
 			#await tabs[tabIdx].mouse_click()
+		print(tabName)
 		await tabs[tabIdx].click()
 		await writeFDPage(tabName, page, data)
 		nav = await page.query_selector_all("nav")
@@ -147,8 +149,10 @@ async def writeDK(sport, keep):
 	for mainIdx in range(len(mainTabs)):
 		mainTab = mainTabs[mainIdx]
 		mainTabName = mainTab.text.lower()
-		if mainTabName in ["game lines", "awards", "start of season", "quick sgp"]:
+		if mainTabName in ["game lines", "series props", "awards", "start of season", "quick sgp"]:
 			continue
+
+		print(mainTabName)
 
 		# testing
 		if mainTabName != "team wins":
@@ -447,20 +451,15 @@ async def writeMGM(sport, keep):
 		json.dump(data, fh, indent=4)
 
 async def write365(sport, keep):
-	# can't scroll on dropdown, so split up
-	urls = [
-		# milestones
-		"https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E114330547/F2/",
-		# team_wins, playoffs
-		"https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112662049/F2/",
-		# players hits
-		"https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112347080/F2/"
-	]
 	browser = await uc.start(no_sandbox=False)
 
 	# E112265508, E112347081, E113646358, E112347082, E112347080
 	# HR, RBI, SB, K, H
-	urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112347082/F2/"]
+	urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112347080/F2/"]
+
+	# Milestones
+	# E114485752, E114697449, E114696522, E114486791, E115896845
+	urls = ["https://www.oh.bet365.com/?_h=N-Ejb9j5XJf0TwmJjL1fKA%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E115896845/F2/"]
 
 	# team wins
 	#urls = ["https://www.oh.bet365.com/?_h=r87CLpn5DwBruz4SjYRYyQ%3D%3D&btsffd=1#/AC/B16/C20934240/D1/E112662049/F2/"]
@@ -532,12 +531,29 @@ async def write365(sport, keep):
 					for div in divs:
 						await div.scroll_into_view()
 						await div.mouse_click()
-						time.sleep(round(random.uniform(0.9, 1.25), 2))
+						#await el.scroll_into_view()
+						#time.sleep(round(random.uniform(0.9, 1.25), 2))
+				time.sleep(0.5)
+				for c in ["src-FixtureSubGroupWithShowMore_Closed", "src-FixtureSubGroup_Closed", "src-HScrollFixtureSubGroupWithBottomBorder_Closed", "suf-CompetitionMarketGroupButton_Text[aria-expanded=false]"]:
+					divs = await page.query_selector_all("."+c)
+
+					for div in divs:
+						await div.scroll_into_view()
+						await div.mouse_click()
+
+				time.sleep(0.5)
+				for c in ["src-FixtureSubGroupWithShowMore_Closed", "src-FixtureSubGroup_Closed", "src-HScrollFixtureSubGroupWithBottomBorder_Closed", "suf-CompetitionMarketGroupButton_Text[aria-expanded=false]"]:
+					divs = await page.query_selector_all("."+c)
+
+					for div in divs:
+						await div.scroll_into_view()
+						await div.mouse_click()
 
 				links = await page.query_selector_all(".msl-ShowMore_Link")
 
 				for el in links:
 					await el.scroll_into_view()
+					#time.sleep(round(random.uniform(0.9, 1.25), 2))
 					await el.mouse_click()
 					time.sleep(round(random.uniform(0.9, 1.25), 2))
 
@@ -561,20 +577,23 @@ async def write365(sport, keep):
 				divs = await page.query_selector_all(".gl-MarketGroupPod")
 				for div in divs:
 					if "milestones" in tabName:
-						line = div.children[0].text_all.split(" ")[2].replace("Record", "").replace("Hit", "").replace("\u00a0", "")
-						prop = f"{line}_{mainProp}"
+						txt = div.children[0].text_all.lower().replace("\xa0", " ")
+						line = str(float(txt.split("+")[0].split(" ")[-1]) - 0.5)
+						prop = txt.split("+ ")[-1].split(" - ")[0].split(" ")[-1].replace("hits", "h").replace("in", "rbi").replace("runs", "hr").replace("bases", "sb").replace("strikeouts", "k")
 					else:
 						prop = mainProp
 
 					if prop not in data:
 						data[prop] = {}
+
 					btns = await div.children[-1].query_selector_all("div[role=button]")
-					if prop in ["k", "hr", "h", "sb", "rbi"]:
+					if "milestones" not in tabName and prop in ["k", "hr", "h", "sb", "rbi"]:
 						player = div.children[0].children[0].children[0].text_all.split(" - ")[-1]
 						player = parsePlayer(player)
 						if player not in data[prop]:
 							data[prop][player] = {}
 
+						#print(player, btns[0].children[-1].text)
 						ou = btns[0].children[-1].text+"/"+btns[1].children[-1].text
 						line = btns[0].children[0].text.split(" ")[-1]
 						data[prop][player][line] = ou
@@ -587,7 +606,12 @@ async def write365(sport, keep):
 							player = convertMLBTeam(btn.children[0].text)
 						else:
 							player = parsePlayer(btn.children[0].text)
-						data[prop][player] = btn.children[-1].text
+
+						if "milestones" in tabName:
+							data[prop].setdefault(player, {}) 
+							data[prop][player][line] = btn.children[-1].text
+						else:
+							data[prop][player] = btn.children[-1].text
 
 			with open(f"static/{sport}futures/bet365.json", "w") as fh:
 				json.dump(data, fh, indent=4)

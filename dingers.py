@@ -5,6 +5,7 @@ import os
 import random
 import time
 import nodriver as uc
+import subprocess
 import threading
 import multiprocessing
 
@@ -588,6 +589,49 @@ sharedData = {}
 def runThread(book):
 	uc.loop().run_until_complete(writeOne(book))
 
+
+def writeLineups(date):
+	if not date:
+		date = str(datetime.now())[:10]
+	url = f"https://www.mlb.com/starting-lineups/{date}"
+	result = subprocess.run(["curl", url], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+	soup = BS(result.stdout, "html.parser")
+
+	pitchers = {}
+	for table in soup.find_all("div", class_="starting-lineups__matchup"):
+		player = parsePlayer(table.find("a").text.strip())
+
+	data = {}
+	for table in soup.select(".starting-lineups__matchup"):
+		for idx, which in enumerate(["away", "home"]):
+			try:
+				team = table.find("div", class_=f"starting-lineups__teams--{which}-head").text.strip().split(" ")[0].lower().replace("az", "ari").replace("cws", "chw")
+			except:
+				continue
+
+			if team in data:
+				continue
+			
+			pitcher = parsePlayer(table.find_all("div", class_="starting-lineups__pitcher-name")[idx].text.strip())
+			data[team] = {"pitcher": pitcher, "batters": []}
+			for player in table.find("ol", class_=f"starting-lineups__team--{which}").find_all("li"):
+				try:
+					player = parsePlayer(player.find("a").text.strip())
+				except:
+					player = parsePlayer(player.text)
+
+				data[team]["batters"].append(player)
+
+	#for row in plays:
+	#	if row[-1] in data and len(data[row[-1]]) > 1:
+	#		if row[0] not in data[row[-1]]:
+	#			print(row[0], "SITTING!!")
+
+	with open(f"static/mlb/lineups.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+
 def writeAll():
 
 	threads = []
@@ -648,6 +692,7 @@ if __name__ == '__main__':
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--ev", action="store_true")
 	parser.add_argument("--loop", action="store_true")
+	parser.add_argument("--lineups", action="store_true")
 
 	args = parser.parse_args()
 
@@ -667,6 +712,9 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeCZ(args.token))
 	elif args.kambi:
 		writeKambi()
+
+	if args.lineups:
+		writeLineups(args.date)
 
 	if args.update:
 		writeAll()

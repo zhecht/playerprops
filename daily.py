@@ -3,6 +3,7 @@ import time
 import json
 import nodriver as uc
 import argparse
+import subprocess
 import threading
 import queue
 from bs4 import BeautifulSoup as BS
@@ -54,7 +55,7 @@ def writeSchedule(sport, date):
 
 			j = {
 				"game": f"{awayTeam} @ {homeTeam}",
-				"link": href,
+				"link": "https://www.espn.com"+href,
 				"score": score,
 				"start": start
 			}
@@ -62,6 +63,17 @@ def writeSchedule(sport, date):
 
 	with open(f"static/{sport}/schedule.json", "w") as fh:
 		json.dump(schedule, fh, indent=4)
+
+def getPlayType(sport, play):
+	txt = play["txt"].lower()
+	if sport == "mlb":
+		if "single" in txt:
+			return "1b"
+		elif "double" in txt:
+			return "2b"
+		elif "triple" in txt:
+			return "3b"
+	return ""
 
 def writeStats(sport, date):
 	if not date:
@@ -73,8 +85,103 @@ def writeStats(sport, date):
 		print("Not in Schedule")
 		exit()
 
+	stats = nested_dict()
+	outfile = "outDailyStats"
 	for gameData in schedule[date]:
-		pass
+		result = subprocess.run(["curl", gameData["link"]], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		soup = BS(result.stdout, "html.parser")
+
+		script_tag = soup.find('script', string=lambda t: t and 'window[\'__espnfitt__\']' in t)
+		if not script_tag:
+			return
+
+		content = script_tag.string
+		j = content.split("window['__espnfitt__']=")[-1].rstrip(";")
+		data = json.loads(j)
+
+		try:
+			boxscore = data["page"]["content"]["gamepackage"]["bxscr"]
+			plays = data["page"]["content"]["gamepackage"]["plys"]
+		except:
+			continue
+
+		playData = {}
+		for play in plays:
+			playData[play["id"]] = play
+
+		awayTeam, homeTeam = map(str, gameData["game"].split(" @ "))
+		for team, teamStats in zip([awayTeam, homeTeam], boxscore):
+			for pos, posStats in zip(["h", "p"], teamStats["stats"]):
+				for playerStats in posStats["athlts"]:
+					player = parsePlayer(playerStats["athlt"]["dspNm"])
+
+					for play in playerStats.get("plys", []):
+						p = getPlayType(sport, playData[play])
+						if p:
+							stats[team][player][p] = stats[team][player].get(p, 0) + 1
+					
+					for k, v in zip(posStats["lbls"], playerStats["stats"]):
+						k = k.lower()
+						if k == "k" and pos == "h":
+							k = "so"
+						if "-" in k:
+							k1,k2 = map(str, k.split("-"))
+							v1,v2 = map(int, v.split("-"))
+							stats[team][player][k1] = v1
+							stats[team][player][k2] = v2
+						elif "." in v:
+							stats[team][player][k] = float(v)
+							if k == "ip":
+								stats[team][player]["outs"] = int(float(v))*3 + int(str(v).split(".")[-1])
+						else:
+							if k in ["h", "bb", "hr"] and pos == "p":
+								k += "_allowed"
+							stats[team][player][k] = int(v)
+
+				if sport == "mlb" and pos == "h":
+					for team in stats:
+						for player in stats[team]:
+							if stats[team][player].get("ip"):
+								continue
+							tb = 0
+							#for k in ["1b", "2b", "3b", "hr", "h", "r", "rbi"]:
+							for k in ["1b", "2b", "3b", "hr"]:
+								if k not in stats[team][player]:
+									stats[team][player][k] = 0
+							pStats = stats[team][player]
+							stats[team][player]["tb"] = pStats["1b"] + pStats["2b"] + pStats["3b"] + pStats["hr"]
+							stats[team][player]["h+r+rbi"] = pStats["h"] + pStats["r"] + pStats["rbi"]
+
+
+	for team in stats:
+		path = f"static/splits/{sport}/{team}.json"
+
+		teamStats = {}
+		if os.path.exists(path):
+			with open(path) as fh:
+				teamStats = json.load(fh)
+
+		for player in stats[team]:
+			if player not in teamStats:
+				teamStats[player] = {"dt": []}
+
+			try:
+				dtIdx = teamStats[player]["dt"].index(date)
+			except:
+				dtIdx = -1
+				teamStats[player]["dt"].append(date)
+			
+			for key in stats[team][player]:
+				if key not in teamStats[player]:
+					teamStats[player][key] = []
+
+				if dtIdx == -1:
+					teamStats[player][key].append(stats[team][player][key])
+				else:
+					teamStats[player][key][dtIdx] = stats[team][player][key]
+
+		with open(path, "w") as fh:
+			json.dump(teamStats, fh)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
@@ -84,6 +191,8 @@ if __name__ == '__main__':
 	parser.add_argument("--sport")
 	parser.add_argument("-u", "--update", action="store_true")
 	parser.add_argument("--run", action="store_true")
+	parser.add_argument("--schedule", action="store_true")
+	parser.add_argument("--stats", action="store_true")
 
 	args = parser.parse_args()
 
@@ -94,3 +203,7 @@ if __name__ == '__main__':
 	if args.update:
 		writeSchedule(args.sport, args.date)
 		writeStats(args.sport, args.date)
+	elif args.stats:
+		writeStats(args.sport, args.date)
+	elif args.schedule:
+		writeSchedule(args.sport, args.date)

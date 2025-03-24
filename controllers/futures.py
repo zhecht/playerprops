@@ -907,7 +907,7 @@ def writeCZ():
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/futures?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "outfuture"
 
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: de4321ac-2800-48a6-9de2-beaaa3f10801:EgoAiB0JtgWaAQAA:CWMYNxy77NSgEWBye0TGp3f4TVOtBUXIZHFx5sGNvRajJ4nK7bcFqaOYwxcrIvmD/t5ZDhQ+LASZFCZ+QC8vYox7hKdoGvCGtil++pbR5PgFR1epf0PWf97InQEotGRCJbWBkMwaUZiR9a8ldCZWO2GbAwFZQ3DpqgiVrdigamYI+u/Rtj9v3e9oglzVCxVQ7NFWDMc/4b2y9uZoXMAPoOx1rvCDScJlwZ1EQIHBuDHrq5Hq2+N8S6S4xkw=' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.9.0' -H 'x-aws-waf-token: 29e44a76-d37d-4f53-a078-7f3f5fd18f64:EgoAv+FwiS0KAwAA:lidCSh6DHS2jQXLHJhmXT7IxByX0tt7VUovBwB2Tleu6kfdc/kmOsxTHRYLeY/74ee43RWK5VakQ7kXnZD/0J8QclDR3T2OSpl/qm2SwucamQCDWddgeL5x9I2kEw+M8r6ogbJqAs3y5XOo8+TPEwwUcE9I+edVP2cPnkj40Zj2mmr4mTy7P0nX64WlV1jjuTIWgQGdDCdws7TUoWN10GzaihAP6Vo+tzAnL1+dpXyDsWP4bLe9VFl/BfOg=' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -1348,6 +1348,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 
 	with open("static/mlbfutures/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
+
+	with open("static/mlbfutures/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh)
 
 def printEV():
 	with open(f"static/mlbfutures/ev.json") as fh:

@@ -2048,6 +2048,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	mult = impliedOver / (impliedOver + impliedUnder)
 	add = impliedOver - (impliedOver+impliedUnder-1) / 2
 
+	print(x, mult, add)
 	evs = []
 	for method in [x, mult, add]:
 		ev = method * profit + (1-method) * -1 * bet
@@ -3464,3 +3465,5 @@ if __name__ == '__main__':
 
 	if args.player:
 		writePlayer(args.player, args.prop)
+
+	#devig({}, "test", "-115/-115", 115, "hr")
