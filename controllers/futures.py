@@ -1113,6 +1113,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None):
 	if not boost:
 		boost = 1
 
+	with open(f"updated.json") as fh:
+		updated = json.load(fh)
+	updated["mlbfutures"] = str(datetime.now())
+	with open(f"updated.json", "w") as fh:
+		json.dump(updated, fh, indent=4)
+
 	with open(f"static/mlbfutures/kambi.json") as fh:
 		kambiLines = json.load(fh)
 
