@@ -791,10 +791,10 @@ async def writeWeather(date):
 			if not tds:
 				tds = row.select(".gametime-hour")
 			
-			weather[game][hdr] = [x.text.strip().replace("\u00b0", "") for x in tds]
+			weather[game][hdr] = [x.text.strip().replace("\u00b0", "") for x in tds][1]
 			if hdr == "wind dir":
 				transform = row.find("img").get("style").split("; ")[-1]
-				weather[game]["transform"] = [x.get("style").split("; ")[-1] for x in row.select(".gametime-hour img:nth-of-type(1)")]
+				weather[game]["transform"] = [x.get("style").split("; ")[-1] for x in row.select(".gametime-hour img:nth-of-type(1)")][1]
 
 
 	with open("static/dailyev/weather.json", "w") as fh:
