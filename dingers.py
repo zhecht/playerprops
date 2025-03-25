@@ -490,6 +490,12 @@ def writeEV():
 	with open(f"static/mlbprops/lineups.json") as fh:
 		lineups = json.load(fh)
 
+	with open(f"updated.json") as fh:
+		updated = json.load(fh)
+	updated["dingers"] = str(datetime.now())
+	with open(f"updated.json", "w") as fh:
+		json.dump(updated, fh, indent=4)
+
 	evData = {}
 
 	for game in data:
@@ -501,11 +507,13 @@ def writeEV():
 				opp = home
 				team = away
 
+			bvp = ""
 			try:
-				pitcher = lineups[opp]["pitching"]
+				pitcher = lineups[opp]["pitcher"]
 				bvpStats = bvp[team][player+' v '+pitcher]
+				bvp = f"{bvpStats['h']}-{bvpStats['ab']} {bvpStats['hr']} HR"
 			except:
-				pitcher = ""
+				pass
 
 			avgOver = []
 			avgUnder = []
@@ -513,7 +521,7 @@ def writeEV():
 			evBook = ""
 			books = data[game][player].keys()
 
-			if len(books) < 2:
+			if "fd" not in books:
 				continue
 			oddsArr = []
 			for book in books:
@@ -556,6 +564,7 @@ def writeEV():
 			evData[player]["line"] = highest
 			evData[player]["avg"] = ou
 			evData[player]["prop"] = "hr"
+			evData[player]["bvp"] = bvp
 			evData[player]["bookOdds"] = {b: o for b, o in zip(books, oddsArr)}
 
 	with open("static/dailyev/ev.json", "w") as fh:
