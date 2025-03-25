@@ -651,7 +651,7 @@ def writeEV():
 			try:
 				pitcher = lineups[opp]["pitcher"]
 				bvpStats = bvpData[team][player+' v '+pitcher]
-				bvp = f"{bvpStats['h']}-{bvpStats['ab']} {bvpStats['hr']} HR"
+				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 			except:
 				pass
 

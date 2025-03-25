@@ -1678,35 +1678,57 @@ def writeTrades():
 	with open("t", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-async def writePH(player):
+async def writePH(playerArg):
 	with open(f"{prefix}static/baseballreference/referenceIds.json") as fh:
 		referenceIds = json.load(fh)
 
 	with open(f"{prefix}static/baseballreference/ph.json") as fh:
 		ph = json.load(fh)
 
-	team = "lad"
-	player = "max muncy"
-
-	pid = referenceIds[team][player]
-	url = f"https://www.baseball-reference.com{pid}"
+	with open("static/dailyev/odds.json") as fh:
+		odds = json.load(fh)
 
 	browser = await uc.start(no_sandbox=True)
-	page = await browser.get(url)
-	await page.wait_for(selector="#appearances tbody tr")
-	html = await page.get_content()
-	soup = BS(html, "lxml")
-	for row in soup.select("#appearances tbody tr"):
-		if row.get("class") and "spacer" in row.get("class"):
-			continue
-		year = row.find("th").text
-		g = row.select("td[data-stat=games_all]")[0].text
-		gs = row.select("td[data-stat=games_started_all]")[0].text
-		ph[team].setdefault(player, {})
-		ph[team][player].setdefault(year, {})
-		ph[team][player][year]["ph"] = int(row.select("td[data-stat=games_at_ph]")[0].text or 0)
-		ph[team][player][year]["g"] = int(g or 0)
-		ph[team][player][year]["gs"] = int(gs or 0)
+	for game in odds:
+		away, home = map(str, game.split(" @ "))
+		for player in odds[game]:
+			if player in referenceIds[away]:
+				team = away
+			elif player in referenceIds[home]:
+				team = home
+			else:
+				continue
+			if team in ph and player in ph[team]:
+				continue
+			pid = referenceIds[team][player]
+			url = f"https://www.baseball-reference.com{pid}"
+
+			page = await browser.get(url)
+			await page.wait_for(selector="#appearances tbody tr")
+			html = await page.get_content()
+			soup = BS(html, "lxml")
+			for row in soup.select("#appearances tbody tr"):
+				if row.get("class") and "spacer" in row.get("class"):
+					continue
+				year = row.find("th").text
+				#print(player, year)
+				try:
+					g = row.select("td[data-stat=games_all]")[0].text
+				except:
+					continue
+				gs = row.select("td[data-stat=games_started_all]")[0].text
+				ph.setdefault(team, {})
+				ph[team].setdefault(player, {})
+				ph[team][player].setdefault(year, {})
+				phs = row.select("td[data-stat=games_at_ph]")
+				if not phs:
+					continue
+				ph[team][player][year]["ph"] = int(phs[0].text or 0)
+				ph[team][player][year]["g"] = int(g or 0)
+				ph[team][player][year]["gs"] = int(gs or 0)
+
+			with open(f"{prefix}static/baseballreference/ph.json", "w") as fh:
+				json.dump(ph, fh, indent=4)
 
 	browser.stop()
 	with open(f"{prefix}static/baseballreference/ph.json", "w") as fh:
