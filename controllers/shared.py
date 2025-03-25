@@ -1,4 +1,5 @@
 from collections import defaultdict
+import nodriver as uc
 import unicodedata
 import git
 
@@ -10,6 +11,18 @@ def commitChanges():
 	origin = repo.remote(name="origin")
 	origin.push()
 	print("Successful commit")
+
+async def writeCZToken():
+	url = f"https://sportsbook.caesars.com/us/mi/bet/"
+	browser = await uc.start(no_sandbox=True)
+	page = await browser.get(url)
+	await page.wait_for(selector=".eventContainer")
+	cookies = await browser.cookies.get_all()
+	for cookie in cookies:
+		if cookie.name == "aws-waf-token":
+			with open("token", "w") as fh:
+				fh.write(cookie.value)
+			break
 
 def nested_dict():
 	return defaultdict(nested_dict)
@@ -525,3 +538,67 @@ def convertSoccer(team):
 		"pec zwolle": "zwolle"
 	}
 	return j.get(team, team)
+
+def convertMGMMLBTeam(team):
+	team = team.lower()
+	if team == "diamondbacks":
+		return "ari"
+	elif team == "braves":
+		return "atl"
+	elif team == "orioles":
+		return "bal"
+	elif team == "red sox":
+		return "bos"
+	elif team == "cubs":
+		return "chc"
+	elif team == "white sox":
+		return "chw"
+	elif team == "reds":
+		return "cin"
+	elif team == "guardians":
+		return "cle"
+	elif team == "rockies":
+		return "col"
+	elif team == "tigers":
+		return "det"
+	elif team == "astros":
+		return "hou"
+	elif team == "royals":
+		return "kc"
+	elif team == "angels":
+		return "laa"
+	elif team == "dodgers":
+		return "lad"
+	elif team == "marlins":
+		return "mia"
+	elif team == "brewers":
+		return "mil"
+	elif team == "twins":
+		return "min"
+	elif team == "mets":
+		return "nym"
+	elif team == "yankees":
+		return "nyy"
+	elif team == "athletics":
+		return "ath"
+	elif team == "phillies":
+		return "phi"
+	elif team == "pirates":
+		return "pit"
+	elif team == "padres":
+		return "sd"
+	elif team == "giants":
+		return "sf"
+	elif team == "mariners":
+		return "sea"
+	elif team == "cardinals":
+		return "stl"
+	elif team == "rays":
+		return "tb"
+	elif team == "rangers":
+		return "tex"
+	elif team == "blue jays":
+		return "tor"
+	elif team == "nationals":
+		return "wsh"
+	return team

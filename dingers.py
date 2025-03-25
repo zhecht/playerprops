@@ -3,6 +3,7 @@ import json
 import math
 import os
 import random
+import queue
 import time
 import nodriver as uc
 import subprocess
@@ -13,6 +14,7 @@ from bs4 import BeautifulSoup as BS
 from controllers.shared import *
 from datetime import datetime, timedelta
 
+q = queue.Queue()
 lock = threading.Lock()
 
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
@@ -78,46 +80,73 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	evData[player][f"implied"] = implied
 	evData[player][f"ev"] = ev
 
-async def writeESPN(data, browser):
-	book = "espn"
-	close = False
-	if not browser:
-		close = True
-		browser = await uc.start(no_sandbox=True)
-
-	with open(f"static/dailyev/odds.json") as fh:
-		oldData = json.load(fh)
-	players = {}
-	for game in oldData:
-		for player in oldData[game]:
-			last = player.split(" ")
-			p = player[0][0]+". "+last[-1]
-			players[p] = player
-
-	url = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/6a1344e6-8f85-4272-a1bf-9bb6f3f7527c/section/player_props"
-	game = "lad @ chc"
+async def getESPNLinks(date):
+	browser = await uc.start(no_sandbox=True)
+	url = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb"
 	page = await browser.get(url)
-	await page.wait_for(selector="div[data-testid='away-team-card']")
-
+	await page.wait_for(selector="article")
 	html = await page.get_content()
-	soup = BS(html, "lxml")
 
-	for detail in soup.find_all("details"):
-		if not detail.text.startswith("Player Total Home Runs Hit"):
+	games = {}
+	soup = BS(html, "html.parser")
+	for article in soup.select("article"):
+		if " @ " not in article.get("aria-label"):
 			continue
-		for article in detail.find_all("article"):
-			player = parsePlayer(article.find("header").text)
-			last = player.split(" ")
-			p = player[0][0]+". "+last[-1]
-			player = players.get(p, player)
+		if datetime.strftime(datetime.strptime(date, "%Y-%m-%d"), "%b %d") not in article.text:
+			continue
 
-			over = article.find("button").find_all("span")[-1].text
-			under = article.find_all("button")[-1].find_all("span")[-1].text
-			data[game][player][book] = over+"/"+under
+		away, home = map(str, article.get("aria-label").split(" @ "))
+		eventId = article.find("div").find("div").get("id").split("|")[1]
+		away, home = convertMLBTeam(away), convertMLBTeam(home)
+		game = f"{away} @ {home}"
+		games[game] = f"{url}/event/{eventId}/section/player_props"
 
-	if close:
-		browser.stop()
+	browser.stop()
+	return games
 
+def runESPN(rosters):
+	uc.loop().run_until_complete(writeESPN(rosters))
+
+async def writeESPN(rosters):
+	book = "espn"
+	browser = await uc.start(no_sandbox=True)
+
+	while True:
+		data = nested_dict()
+		(game, url) = q.get()
+		if url is None:
+			q.task_done()
+			break
+
+		playerMap = {}
+		away, home = map(str, game.split(" @ "))
+		for team in [away, home]:
+			for player in rosters.get(team, {}):
+				last = player.split(" ")
+				p = player[0][0]+". "+last[-1]
+				playerMap[p] = player
+
+		page = await browser.get(url)
+		await page.wait_for(selector="div[data-testid='away-team-card']")
+		html = await page.get_content()
+		soup = BS(html, "html.parser")
+
+		for detail in soup.find_all("details"):
+			if not detail.text.startswith("Player Total Home Runs Hit"):
+				continue
+			for article in detail.find_all("article"):
+				player = parsePlayer(article.find("header").text)
+				last = player.split(" ")
+				p = player[0][0]+". "+last[-1]
+				player = playerMap.get(p, player)
+
+				over = article.find("button").find_all("span")[-1].text
+				under = article.find_all("button")[-1].find_all("span")[-1].text
+				data[game][player][book] = over+"/"+under
+
+		updateData(data)
+		q.task_done()
+	browser.stop()
 
 async def write365(data, browser):
 	book = "365"
@@ -187,45 +216,93 @@ async def writeDK(data, browser):
 	if close:
 		browser.stop()
 
-async def writeMGM(data, browser):
-	book = "mgm"
-	close = False
-	if not browser:
-		close = True
-		browser = await uc.start(no_sandbox=True)
-
-	game = "lad @ chc"
-	data.setdefault(game, {})
-
-	url = "https://sports.mi.betmgm.com/en/sports/events/los-angeles-dodgers-at-chicago-cubs-neutral-venu-17080709"
+async def getMGMLinks(date):
+	browser = await uc.start(no_sandbox=True)
+	url = "https://sports.mi.betmgm.com/en/sports/baseball-23/betting/usa-9/mlb-75"
 	page = await browser.get(url)
+	await page.wait_for(selector="ms-prematch-timer")
+	html = await page.get_content()
 
-	await page.wait_for(selector=".event-details-pills-list")
-	panel = await page.query_selector(".option-group-column:nth-of-type(2) .option-panel")
-	show = await panel.query_selector(".show-more-less-button")
-	if show:
-		await show.click()
-		await show.scroll_into_view()
-		time.sleep(0.5)
+	games = {}
+	soup = BS(html, "html.parser")
+	for t in soup.select("ms-prematch-timer"):
+		if "Today" in t.text or "Starting" in t.text:
+			d = str(datetime.now())[:10]
+		elif "Tomorrow" in t.text:
+			d = str(datetime.now() + timedelta(days=1))[:10]
+		else:
+			m,d,y = map(int, t.text.split(" ")[0].split("/"))
+			d = f"20{y}-{m:02}-{d:02}"
 
-	players = await panel.query_selector_all(".attribute-key")
-	odds = await panel.query_selector_all("ms-option")
-
-	for idx, player in enumerate(players):
-		player = parsePlayer(player.text.strip().split(" (")[0])
-		over = await odds[idx*2].query_selector(".value")
-		under = await odds[idx*2+1].query_selector(".value")
-		if not over:
+		if d != date:
 			continue
-		ou = over.text
-		if under:
-			ou += "/"+under.text
 
-		data[game].setdefault(player, {})
-		data[game][player][book] = ou
+		parent = t.find_previous("ms-six-pack-event")
+		a = parent.find("a")
+		teams = parent.select(".participant")
+		away, home = convertMGMMLBTeam(teams[0].text.strip()), convertMGMMLBTeam(teams[1].text.strip())
+		game = f"{away} @ {home}"
+		games[game] = "https://sports.betmgm.com"+a.get("href")
 
-	if close:
-		browser.stop()
+	browser.stop()
+	return games
+
+def runMGM():
+	uc.loop().run_until_complete(writeMGM())
+
+async def writeMGM():
+	book = "mgm"
+	browser = await uc.start(no_sandbox=True)
+
+	while True:
+		data = nested_dict()
+
+		(game, url) = q.get()
+		if url is None:
+			q.task_done()
+			break
+
+		page = await browser.get(url)
+		await page.wait_for(selector=".event-details-pills-list")
+
+		show = await page.query_selector(".option-group-column:nth-of-type(2) .option-panel .show-more-less-button")
+		if show:
+			await show.click()
+
+		html = await page.get_content()
+		soup = BS(html, "html.parser")
+		panel = soup.select(".option-group-column:nth-of-type(2) .option-panel")[0]
+		if panel.select(".market-name")[0].text.strip() != "Batter home runs":
+			q.task_done()
+			continue
+		players = panel.select(".attribute-key")
+		odds = panel.select("ms-option")
+
+		for i, player in enumerate(players):
+			player = parsePlayer(player.text.strip().split(" (")[0])
+			over = odds[i*2].select(".value")
+			under = odds[i*2+1].select(".value")
+			if not over:
+				continue
+			ou = over[0].text
+			if under:
+				ou += "/"+under[0].text
+
+			data[game][player][book] = ou
+
+		updateData(data)
+		q.task_done()
+
+	browser.stop()
+
+def updateData(data):
+	file = "static/dailyev/odds.json"
+	with lock:
+		with open(file) as fh:
+			d = json.load(fh)
+		merge_dicts(d, data, forceReplace=True)
+		with open(file, "w") as fh:
+			json.dump(d, fh, indent=4)
 
 async def writeFDPage(data, page):
 	book = "fd"
@@ -285,25 +362,75 @@ async def writeFD(data, browser):
 	if close:
 		browser.stop()
 
-async def writeCZ(token=None):
+async def writeCZ(date, token=None):
+	book = "cz"
 	outfile = "outDingersCZ"
-	if not token:
-		url = f"https://sportsbook.caesars.com/us/mi/bet/"
-		browser = await uc.start(no_sandbox=True)
-		exit()
+	if False and not token:
+		await writeCZToken()
+
+	with open("token") as fh:
+		token = fh.read()
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {token}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {token}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	try:
+		with open(outfile) as fh:
+			data = json.load(fh)
+	except:
+		await writeCZToken()
+		with open("token") as fh:
+			token = fh.read()
+		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {token}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
-def writeKambi(data):
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	games = []
+	for event in data["competitions"][0]["events"]:
+		if str(datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+			continue
+			pass
+		games.append(event["id"])
+
+	res = nested_dict()
+	for gameId in games:
+		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
+		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {token}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
+		if "@" not in game:
+			continue
+		away, home = map(str, game.split(" @ "))
+		game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
+		
+		for market in data["markets"]:
+			if "name" not in market or market["active"] == False:
+				continue
+			prop = market["name"].lower().replace("|", "").split(" (")[0]
+			if prop != "player to hit a home run":
+				continue
+
+			for selection in market["selections"]:
+				try:
+					ou = str(selection["price"]["a"])
+				except:
+					continue
+				player = parsePlayer(selection["name"].replace("|", ""))
+				res[game][player][book] = ou
+
+	updateData(res)
+
+
+def writeKambi(date):
 	book = "kambi"
 	outfile = "outDailyKambi"
 
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/baseball/mlb/all/all/matches.json?lang=en_US&market=US"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
+	os.system(f"curl -s \"{url}\" -o {outfile}")
 	
 	with open(outfile) as fh:
 		j = json.load(fh)
+
+	data = nested_dict()
 
 	eventIds = {}
 	for event in j["events"]:
@@ -346,15 +473,9 @@ def writeKambi(data):
 				player = parsePlayer(player)
 				over = betOffer["outcomes"][0]["oddsAmerican"]
 				under = betOffer["outcomes"][1]["oddsAmerican"]
-				#
-				#team = teamIds[betOffer["outcomes"][0]["eventParticipantId"]]
-
-				data.setdefault(game, {})
-				data[game].setdefault(player, {})
 				data[game][player][book] = f"{over}/{under}"
 
-	with open(f"static/dailyev/odds.json", "w") as fh:
-		json.dump(data, fh, indent=4)
+	updateData(data)
 
 async def writeFeed(date, loop):
 	if not date:
@@ -482,7 +603,7 @@ def writeEV():
 		data = json.load(fh)
 
 	with open(f"static/baseballreference/bvp.json") as fh:
-		bvp = json.load(fh)
+		bvpData = json.load(fh)
 
 	with open(f"static/baseballreference/ph.json") as fh:
 		ph = json.load(fh)
@@ -490,7 +611,7 @@ def writeEV():
 	with open(f"static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
-	with open(f"static/mlbprops/lineups.json") as fh:
+	with open(f"static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
 	with open(f"updated.json") as fh:
@@ -529,7 +650,7 @@ def writeEV():
 			bvp = ""
 			try:
 				pitcher = lineups[opp]["pitcher"]
-				bvpStats = bvp[team][player+' v '+pitcher]
+				bvpStats = bvpData[team][player+' v '+pitcher]
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']} {bvpStats['hr']} HR"
 			except:
 				pass
@@ -548,7 +669,8 @@ def writeEV():
 			books = data[game][player].keys()
 
 			if "fd" not in books:
-				continue
+				#continue
+				pass
 			oddsArr = []
 			for book in books:
 				odds = data[game][player][book]
@@ -584,9 +706,12 @@ def writeEV():
 				#devig(evData, player, ou, highest)
 				pass
 
+			if player not in evData:
+				continue
+
 			try:
 				j = ph[team][player]["2024"]
-				pinchHit = f"{j['ph']} PH - {j['g']} G"
+				pinchHit = f"{j['ph']} PH / {j['g']} G"
 			except:
 				pinchHit = ""
 			
@@ -713,6 +838,29 @@ async def writeOne(book):
 		with open(f"static/dailyev/odds.json", "w") as fh:
 			json.dump(old, fh, indent=4)
 
+def runThreads(book, games, totThreads):
+	threads = []
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+	for _ in range(totThreads):
+		if book == "mgm":
+			thread = threading.Thread(target=runMGM, args=())
+		elif book == "espn":
+			thread = threading.Thread(target=runESPN, args=(roster,))
+		thread.start()
+		threads.append(thread)
+
+	for game in games:
+		url = games[game]
+		q.put((game,url))
+
+	q.join()
+
+	for _ in range(totThreads):
+		q.put((None,None))
+	for thread in threads:
+		thread.join()
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--sport")
@@ -733,25 +881,35 @@ if __name__ == '__main__':
 	parser.add_argument("--ev", action="store_true")
 	parser.add_argument("--loop", action="store_true")
 	parser.add_argument("--lineups", action="store_true")
+	parser.add_argument("--threads", type=int, default=5)
 
 	args = parser.parse_args()
+
+	games = {}
+	date = args.date
+	if not date:
+		date = str(datetime.now())[:10]
 
 	if args.feed:
 		uc.loop().run_until_complete(writeFeed(args.date, args.loop))
 	elif args.fd:
 		uc.loop().run_until_complete(writeOne("fd"))
 	elif args.mgm:
-		uc.loop().run_until_complete(writeOne("mgm"))
+		games = uc.loop().run_until_complete(getMGMLinks(date))
+		#games['mil @ nyy'] = 'https://sports.betmgm.com/en/sports/events/milwaukee-brewers-at-new-york-yankees-16837616'
+		runThreads("mgm", games, min(args.threads, len(games)))
 	elif args.dk:
 		uc.loop().run_until_complete(writeOne("dk"))
 	elif args.bet365:
 		uc.loop().run_until_complete(writeOne("365"))
 	elif args.espn:
-		uc.loop().run_until_complete(writeOne("espn"))
+		games = uc.loop().run_until_complete(getESPNLinks(date))
+		#games['mil @ nyy'] = 'https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/b353fbf4-02ef-409b-8327-58fb3b0b1fa9/section/player_props'
+		runThreads("espn", games, min(args.threads, len(games)))
 	elif args.cz:
-		uc.loop().run_until_complete(writeCZ(args.token))
+		uc.loop().run_until_complete(writeCZ(date, args.token))
 	elif args.kambi:
-		writeKambi()
+		writeKambi(date)
 
 	if args.lineups:
 		writeLineups(args.date)
@@ -768,14 +926,12 @@ if __name__ == '__main__':
 		commitChanges()
 
 	if True:
-		with open("static/mlb/caesars.json") as fh:
-			cz = json.load(fh)
 		with open("static/mlb/pinnacle.json") as fh:
 			pn = json.load(fh)
 		with open("static/dailyev/odds.json") as fh:
 			data = json.load(fh)
 
-		for book, d in zip(["cz", "pn"], [cz, pn]):
+		for book, d in zip(["pn"], [pn]):
 			for game in d:
 				if "hr" in d[game]:
 					for player in d[game]["hr"]:
@@ -785,16 +941,6 @@ if __name__ == '__main__':
 							data[game][player][book] = d[game]["hr"][player]["0.5"]
 						else:
 							data[game][player][book] = d[game]["hr"][player]
-
-		espn = {}
-		parseESPN(espn)
-
-		for game in espn:
-			if "hr" in espn[game]:
-				for player in espn[game]["hr"]:
-					data.setdefault(game, {})
-					data[game].setdefault(player, {})
-					data[game][player]["espn"] = espn[game]["hr"][player]["0.5"]
 
 		with open("static/dailyev/odds.json", "w") as fh:
 			json.dump(data, fh, indent=4)

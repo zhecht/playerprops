@@ -992,12 +992,10 @@ def writeRoster():
 		playerIds = json.load(fh)
 
 	roster = {}
-	teams = os.listdir(f"{prefix}static/baseballreference/")
+	#teams = os.listdir(f"{prefix}static/baseballreference/")
+	teams = [x.replace(".png", "") for x in os.listdir(f"/mnt/c/Users/zhech/Documents/dailyev/logos/mlb/")]
 	#teams = ["chc", "lad"]
 	for team in teams:
-
-		if team.endswith(".json"):
-			continue
 
 		if team not in playerIds:
 			playerIds[team] = {}
@@ -1006,7 +1004,7 @@ def writeRoster():
 		time.sleep(0.2)
 		url = f"https://www.espn.com/mlb/team/roster/_/name/{team}/"
 		outfile = "outmlb3"
-		call(["curl", "-k", url, "-o", outfile])
+		call(["curl", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		for table in soup.find_all("table"):
