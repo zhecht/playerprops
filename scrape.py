@@ -1702,7 +1702,7 @@ async def writeNCAABFD():
 				tab = tabs[tabIdx]
 			except:
 				continue
-			await page.wait_for(selector="div[data-test-id=ArrowAction]")
+			await page.wait_for(selector="div[data-testid=ArrowAction]")
 
 			if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense"]:
 				continue
@@ -1710,8 +1710,8 @@ async def writeNCAABFD():
 			await tab.scroll_into_view()
 			await tab.mouse_click()
 			try:
-				await page.wait_for(selector="div[data-test-id=ArrowAction]")
-				arrows = await page.query_selector_all("div[data-test-id=ArrowAction]")
+				await page.wait_for(selector="div[data-testid=ArrowAction]")
+				arrows = await page.query_selector_all("div[data-testid=ArrowAction]")
 			except:
 				continue
 
@@ -1856,7 +1856,7 @@ async def writeNCAABFD():
 				for i in range(start, len(btns), skip):
 					btn = btns[i]
 					#print(i, start, skip, btn.attributes)
-					if "data-test-id" in btn.attributes or "aria-label" not in btn.attributes:
+					if "data-testid" in btn.attributes or "aria-label" not in btn.attributes:
 						continue
 
 					labelIdx = btn.attributes.index("aria-label") + 1
@@ -2269,7 +2269,7 @@ async def writeFD(sport):
 				tab = tabs[tabIdx]
 			except:
 				continue
-			await page.wait_for(selector="div[data-test-id=ArrowAction]")
+			await page.wait_for(selector="div[data-testid=ArrowAction]")
 
 			if sport == "nhl":
 				if tab.text.lower() not in ["popular", "goals", "shots", "points/assists"]:
@@ -2289,12 +2289,12 @@ async def writeFD(sport):
 			if tab.text.lower() != "popular" or sport in ["nhl", "nba", "ncaab"]:
 				await tab.scroll_into_view()
 				await tab.mouse_click()
-				await page.wait_for(selector="div[data-test-id=ArrowAction]")
+				await page.wait_for(selector="div[data-testid=ArrowAction]")
 				nav = await page.query_selector_all("nav")
 				nav = nav[-1]
 				tabs = await nav.query_selector_all("a")
 
-			arrows = await page.query_selector_all("div[data-test-id=ArrowAction]")
+			arrows = await page.query_selector_all("div[data-testid=ArrowAction]")
 
 			for arrowIdx, arrow in enumerate(arrows):
 				label = arrow.children[0].children[0].text.lower()
@@ -2566,7 +2566,7 @@ async def writeFD(sport):
 				for i in range(start, len(btns), skip):
 					btn = btns[i]
 					#print(i, start, skip, btn.attributes)
-					if "data-test-id" in btn.attributes or "aria-label" not in btn.attributes:
+					if "data-testid" in btn.attributes or "aria-label" not in btn.attributes:
 						continue
 
 					labelIdx = btn.attributes.index("aria-label") + 1

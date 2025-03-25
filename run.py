@@ -35,9 +35,11 @@ def run(sport, date, tmrw):
 				cmd.extend(["-d", nextDay])
 			elif date:
 				cmd.extend(["-d", date])
+
+			if book == "cz":
+				cmd.extend(["--write-token"])
 			with open(f"outRun{sport}{book}.log", "w") as f:
 				subprocess.Popen(cmd, stdout=f, stderr=f)
-		# CZ
 
 		if sport == "nba":
 			subprocess.Popen(["python", f"controllers/{sport}.py", f"--minutes"])
