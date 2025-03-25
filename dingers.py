@@ -500,12 +500,21 @@ def writeEV():
 
 	for game in data:
 		away, home = map(str, game.split(" @ "))
+		with open(f"static/splits/mlb/{away}.json") as fh:
+			awayStats = json.load(fh)
+		with open(f"static/splits/mlb/{home}.json") as fh:
+			homeStats = json.load(fh)
+
 		for player in data[game]:
 			opp = away
 			team = home
+			playerStats = {}
 			if player in roster[away]:
 				opp = home
 				team = away
+				playerStats = awayStats.get(player, {})
+			elif player in roster[home]:
+				playerStats = homeStats.get(player, {})
 
 			bvp = ""
 			try:
@@ -514,6 +523,12 @@ def writeEV():
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']} {bvpStats['hr']} HR"
 			except:
 				pass
+
+			try:
+				hrs,dts = map(list,[(x,dt) for x, dt in zip(playerStats["hr"], playerStats["dt"]) if x])
+				lastHR = dts[-1]
+			except:
+				lastHR = ""
 
 			avgOver = []
 			avgUnder = []
@@ -565,15 +580,13 @@ def writeEV():
 			evData[player]["avg"] = ou
 			evData[player]["prop"] = "hr"
 			evData[player]["bvp"] = bvp
+			evData[player]["lastHR"] = lastHR
 			evData[player]["bookOdds"] = {b: o for b, o in zip(books, oddsArr)}
 
 	with open("static/dailyev/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
-	with open("static/dailyev/evArr.json", "w") as fh:
-		json.dump([value for key, value in evData.items()], fh, indent=4)
-
-	#with open("static/mlb/evArr.json", "w") as fh:
+	#with open("static/dailyev/evArr.json", "w") as fh:
 	#	json.dump([value for key, value in evData.items()], fh, indent=4)
 
 def printEV():
