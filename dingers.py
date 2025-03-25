@@ -611,6 +611,9 @@ def writeEV():
 	with open(f"static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
+	with open(f"static/baseballreference/leftOrRight.json") as fh:
+		leftOrRight = json.load(fh)
+
 	with open(f"static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
@@ -647,9 +650,10 @@ def writeEV():
 			else:
 				continue
 
-			bvp = ""
+			bvp = pitcher = ""
 			try:
 				pitcher = lineups[opp]["pitcher"]
+				pitcherLR = leftOrRight[opp].get(pitcher, "")
 				bvpStats = bvpData[team][player+' v '+pitcher]
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 			except:
@@ -716,6 +720,8 @@ def writeEV():
 				pinchHit = ""
 			
 			evData[player]["player"] = player
+			evData[player]["pitcher"] = pitcher
+			evData[player]["pitcherLR"] = pitcherLR
 			evData[player]["game"] = game
 			evData[player]["book"] = evBook
 			evData[player]["line"] = highest
@@ -758,6 +764,10 @@ def runThread(book):
 def writeLineups(date):
 	if not date:
 		date = str(datetime.now())[:10]
+
+	with open(f"static/baseballreference/leftOrRight.json") as fh:
+		leftOrRight = json.load(fh)
+
 	url = f"https://www.mlb.com/starting-lineups/{date}"
 	result = subprocess.run(["curl", url], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -779,6 +789,8 @@ def writeLineups(date):
 				continue
 			
 			pitcher = parsePlayer(table.find_all("div", class_="starting-lineups__pitcher-name")[idx].text.strip())
+			leftRight = "L" if table.find_all("span", class_="starting-lineups__pitcher-pitch-hand")[idx].text == "LHP" else "R"
+			leftOrRight[team][pitcher] = leftRight
 			data[team] = {"pitcher": pitcher, "batters": []}
 			for player in table.find("ol", class_=f"starting-lineups__team--{which}").find_all("li"):
 				try:
@@ -795,6 +807,9 @@ def writeLineups(date):
 
 	with open(f"static/mlb/lineups.json", "w") as fh:
 		json.dump(data, fh, indent=4)
+
+	with open(f"static/baseballreference/leftOrRight.json", "w") as fh:
+		json.dump(leftOrRight, fh, indent=4)
 
 
 def writeAll():
