@@ -614,6 +614,9 @@ def writeEV():
 	with open(f"static/baseballreference/leftOrRight.json") as fh:
 		leftOrRight = json.load(fh)
 
+	with open(f"static/dailyev/weather.json") as fh:
+		weather = json.load(fh)
+
 	with open(f"static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
@@ -627,6 +630,7 @@ def writeEV():
 
 	for game in data:
 		away, home = map(str, game.split(" @ "))
+		gameWeather = weather.get(game, {})
 		awayStats = {}
 		homeStats = {}
 
@@ -721,8 +725,8 @@ def writeEV():
 			
 			evData[player]["player"] = player
 			evData[player]["pitcher"] = "" if not pitcher else f"{pitcher} ({pitcherLR})"
-			evData[player]["pitcherLR"] = pitcherLR
 			evData[player]["game"] = game
+			evData[player]["gameWeather"] = gameWeather
 			evData[player]["book"] = evBook
 			evData[player]["line"] = highest
 			evData[player]["avg"] = ou
@@ -760,6 +764,41 @@ sharedData = {}
 def runThread(book):
 	uc.loop().run_until_complete(writeOne(book))
 
+async def writeWeather(date):
+	browser = await uc.start(no_sandbox=True)
+	url = f"https://swishanalytics.com/mlb/weather?date={date}"
+	page = await browser.get(url)
+
+	await page.wait_for(selector=".weather-overview-table")
+	html = await page.get_content()
+	soup = BS(html, "html.parser")
+
+	weather = nested_dict()
+	for row in soup.select(".weatherClick"):
+		tds = row.select("small")
+		game = tds[1].text.lower().strip().replace("\u00a0", " ").replace("  ", " ")
+		wind = tds[2].text
+		gameId = row.get("id")
+		weather[game]["wind"] = wind.replace("\u00a0", " ").replace("  ", " ").strip()
+
+		extra = soup.find("div", id=f"{gameId}Row")
+		time, stadium = map(str, soup.find("div", id=f"{gameId}Row").select(".desktop-hide")[0].text.split(" | "))
+		weather[game]["time"] = time
+		weather[game]["stadium"] = stadium
+		for row in extra.find("tbody").find_all("tr"):
+			hdr = row.find("td").text.lower()
+			tds = row.select(".gametime-hour small")
+			if not tds:
+				tds = row.select(".gametime-hour")
+			
+			weather[game][hdr] = [x.text.strip().replace("\u00b0", "") for x in tds]
+			if hdr == "wind dir":
+				transform = row.find("img").get("style").split("; ")[-1]
+				weather[game]["transform"] = [x.get("style").split("; ")[-1] for x in row.select(".gametime-hour img:nth-of-type(1)")]
+
+
+	with open("static/dailyev/weather.json", "w") as fh:
+		json.dump(weather, fh, indent=4)
 
 def writeLineups(date):
 	if not date:
@@ -896,6 +935,7 @@ if __name__ == '__main__':
 	parser.add_argument("--ev", action="store_true")
 	parser.add_argument("--loop", action="store_true")
 	parser.add_argument("--lineups", action="store_true")
+	parser.add_argument("--weather", action="store_true")
 	parser.add_argument("--threads", type=int, default=5)
 
 	args = parser.parse_args()
@@ -925,6 +965,9 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeCZ(date, args.token))
 	elif args.kambi:
 		writeKambi(date)
+
+	if args.weather:
+		uc.loop().run_until_complete(writeWeather(date))
 
 	if args.lineups:
 		writeLineups(args.date)
