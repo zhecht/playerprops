@@ -586,7 +586,7 @@ def writeEV():
 
 			try:
 				j = ph[team][player]["2024"]
-				pinchHit = f"{j['ph']}-{j['g']}"
+				pinchHit = f"{j['ph']} PH - {j['g']} G"
 			except:
 				pinchHit = ""
 			
