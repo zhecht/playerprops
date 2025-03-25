@@ -720,7 +720,7 @@ def writeEV():
 				pinchHit = ""
 			
 			evData[player]["player"] = player
-			evData[player]["pitcher"] = pitcher
+			evData[player]["pitcher"] = "" if not pitcher else f"{pitcher} ({pitcherLR})"
 			evData[player]["pitcherLR"] = pitcherLR
 			evData[player]["game"] = game
 			evData[player]["book"] = evBook
