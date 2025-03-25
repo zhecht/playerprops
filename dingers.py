@@ -525,8 +525,9 @@ def writeEV():
 				pass
 
 			try:
-				hrs,dts = map(list,[(x,dt) for x, dt in zip(playerStats["hr"], playerStats["dt"]) if x])
-				lastHR = dts[-1]
+				hrs = [(i, x) for i, x in enumerate(playerStats["hr"]) if x]
+				lastHR = len(playerStats["hr"]) - hrs[-1][0]
+				lastHR = f"{lastHR} Games"
 			except:
 				lastHR = ""
 
