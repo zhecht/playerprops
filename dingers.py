@@ -484,6 +484,9 @@ def writeEV():
 	with open(f"static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
 
+	with open(f"static/baseballreference/ph.json") as fh:
+		ph = json.load(fh)
+
 	with open(f"static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -500,21 +503,28 @@ def writeEV():
 
 	for game in data:
 		away, home = map(str, game.split(" @ "))
-		with open(f"static/splits/mlb/{away}.json") as fh:
-			awayStats = json.load(fh)
-		with open(f"static/splits/mlb/{home}.json") as fh:
-			homeStats = json.load(fh)
+		awayStats = {}
+		homeStats = {}
+
+		if os.path.exists(f"static/splits/mlb/{away}.json"):
+			with open(f"static/splits/mlb/{away}.json") as fh:
+				awayStats = json.load(fh)
+		if os.path.exists(f"static/splits/mlb/{home}.json"):
+			with open(f"static/splits/mlb/{home}.json") as fh:
+				homeStats = json.load(fh)
 
 		for player in data[game]:
 			opp = away
 			team = home
 			playerStats = {}
-			if player in roster[away]:
+			if player in roster.get(away, {}):
 				opp = home
 				team = away
 				playerStats = awayStats.get(player, {})
-			elif player in roster[home]:
+			elif player in roster.get(home, {}):
 				playerStats = homeStats.get(player, {})
+			else:
+				continue
 
 			bvp = ""
 			try:
@@ -573,6 +583,12 @@ def writeEV():
 			if "365" in books:
 				#devig(evData, player, ou, highest)
 				pass
+
+			try:
+				j = ph[team][player]["2024"]
+				pinchHit = f"{j['ph']}-{j['g']}"
+			except:
+				pinchHit = ""
 			
 			evData[player]["player"] = player
 			evData[player]["game"] = game
@@ -582,13 +598,14 @@ def writeEV():
 			evData[player]["prop"] = "hr"
 			evData[player]["bvp"] = bvp
 			evData[player]["lastHR"] = lastHR
+			evData[player]["ph"] = pinchHit
 			evData[player]["bookOdds"] = {b: o for b, o in zip(books, oddsArr)}
 
 	with open("static/dailyev/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
 
-	#with open("static/dailyev/evArr.json", "w") as fh:
-	#	json.dump([value for key, value in evData.items()], fh, indent=4)
+	with open("static/dailyev/evArr.json", "w") as fh:
+		json.dump([value for key, value in evData.items()], fh, indent=4)
 
 def printEV():
 	with open(f"static/dailyev/ev.json") as fh:

@@ -6,6 +6,7 @@ import os
 import operator
 import re
 import time
+import nodriver as uc
 import csv
 import unicodedata
 
@@ -1679,59 +1680,117 @@ def writeTrades():
 	with open("t", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-
-def writeBaseballReferencePH():
-	with open(f"{prefix}static/mlbprops/ev_hr.json") as fh:
-		ev = json.load(fh)
-
+async def writePH(player):
 	with open(f"{prefix}static/baseballreference/referenceIds.json") as fh:
 		referenceIds = json.load(fh)
 
 	with open(f"{prefix}static/baseballreference/ph.json") as fh:
 		ph = json.load(fh)
 
+	team = "lad"
+	player = "max muncy"
+
+	pid = referenceIds[team][player]
+	url = f"https://www.baseball-reference.com{pid}"
+
+	browser = await uc.start(no_sandbox=True)
+	page = await browser.get(url)
+	await page.wait_for(selector="#appearances tbody tr")
+	html = await page.get_content()
+	soup = BS(html, "lxml")
+	for row in soup.select("#appearances tbody tr"):
+		if row.get("class") and "spacer" in row.get("class"):
+			continue
+		year = row.find("th").text
+		g = row.select("td[data-stat=games_all]")[0].text
+		gs = row.select("td[data-stat=games_started_all]")[0].text
+		ph[team].setdefault(player, {})
+		ph[team][player].setdefault(year, {})
+		ph[team][player][year]["ph"] = int(row.select("td[data-stat=games_at_ph]")[0].text or 0)
+		ph[team][player][year]["g"] = int(g or 0)
+		ph[team][player][year]["gs"] = int(gs or 0)
+
+	browser.stop()
+	with open(f"{prefix}static/baseballreference/ph.json", "w") as fh:
+		json.dump(ph, fh, indent=4)
+
+def writeBaseballReferencePH(playerArg):
+	with open(f"{prefix}static/dailyev/odds.json") as fh:
+		evOdds = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/referenceIds.json") as fh:
+		referenceIds = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/ph.json") as fh:
+		ph = json.load(fh)
+
 	date = datetime.datetime.now()
-	for player in ev:
-		team = ev[player]["team"]
-		if team not in ph:
-			ph[team] = {}
-		if player in ph[team] and ph[team][player]["updated"] == str(date)[:10]:
-			continue
-
-		if player not in referenceIds[team]:
-			continue
-		ph[team][player] = {
-			"updated": str(date)[:10],
-			"phf": 0,
-			"ph": 0,
-			"games": 0,
-			"rest": []
-		}
-
-		pid = referenceIds[team][player].split("/")[-1][:-6]
-		print(pid)
-		time.sleep(0.3)
-		url = f"https://www.baseball-reference.com/players/gl.fcgi?id={pid}&t=b&year={date.year}"
-		outfile = "outmlb3"
-		call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
-		soup = BS(open(outfile, 'rb').read(), "lxml")
-		betweenRest = 0
-		for tr in soup.find("table", id="batting_gamelogs").find("tbody").find_all("tr"):
-			if tr.get("class") and ("thead" in tr.get("class") or "partial_table" in tr.get("class")):
+	for game in evOdds:
+		for player in evOdds[game]:
+			if playerArg and player != playerArg:
 				continue
-			inngs = tr.find_all("td")[7].text.lower()
-			ph[team][player]["games"] += 1
-			if "gs" in inngs:
-				ph[team][player]["phf"] += 1
-			elif "cg" not in inngs:
-				ph[team][player]["ph"] += 1
 
-			if "(" in tr.find_all("td")[1].text:
-				daysSinceLast = int(tr.find_all("td")[1].text.split("(")[-1][:-1])
-				if daysSinceLast == 1:
-					ph[team][player]["rest"].append(betweenRest)
-				betweenRest = 0
-			betweenRest += 1
+			away, home = map(str, game.split(" @ "))
+			team = ""
+			if player in roster[away]:
+				team = away
+			elif player in roster[home]:
+				team = home
+
+			if team not in ph:
+				ph[team] = {}
+
+			if player not in referenceIds[team]:
+				continue
+
+			pid = referenceIds[team][player]
+			print(pid)
+			time.sleep(0.3)
+			url = f"https://www.baseball-reference.com{pid}"
+			outfile = "outmlb3"
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			soup = BS(open(outfile, 'rb').read(), "lxml")
+
+			print(len(soup.select("#appearances")))
+			for row in soup.select("#appearances tbody tr"):
+				if "spacer" in row.get("class"):
+					continue
+				year = row.find("th").text
+				print(year)
+				g = row.select("td[data-stat=games_all]")[0].text
+				gs = row.select("td[data-stat=games_started_all]")[0].text
+				ph[team].setdefault(player, {})
+				ph[team][player].setdefault(year, {})
+				ph[team][player][year]["ph"] = row.select("td[data-stat=games_at_ph]")[0].text
+				ph[team][player][year]["g"] = g
+				ph[team][player][year]["gs"] = gs
+			continue
+
+			# full game logs
+			url = f"https://www.baseball-reference.com/players/gl.fcgi?id={pid}&t=b&year=2024"
+			outfile = "outmlb3"
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			soup = BS(open(outfile, 'rb').read(), "lxml")
+			betweenRest = 0
+			for tr in soup.find("table", id="players_standard_batting").find("tbody").find_all("tr"):
+				if tr.get("class") and ("thead" in tr.get("class") or "partial_table" in tr.get("class")):
+					continue
+				inngs = tr.find_all("td")[7].text.lower()
+				ph[team][player]["games"] += 1
+				if "gs" in inngs:
+					ph[team][player]["phf"] += 1
+				elif "cg" not in inngs:
+					ph[team][player]["ph"] += 1
+
+				if "(" in tr.find_all("td")[1].text:
+					daysSinceLast = int(tr.find_all("td")[1].text.split("(")[-1][:-1])
+					if daysSinceLast == 1:
+						ph[team][player]["rest"].append(betweenRest)
+					betweenRest = 0
+				betweenRest += 1
 
 	with open(f"{prefix}static/baseballreference/ph.json", "w") as fh:
 		json.dump(ph, fh, indent=4)
@@ -1841,6 +1900,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
 	parser.add_argument("--bvp", action="store_true", help="Batter Vs Pitcher")
+	parser.add_argument("--player")
 	parser.add_argument("-d", "--date", help="Date")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
@@ -1882,7 +1942,8 @@ if __name__ == "__main__":
 	elif args.birthdays:
 		writeBirthdays()
 	elif args.ph:
-		writeBaseballReferencePH()
+		uc.loop().run_until_complete(writePH(args.player))
+		#writeBaseballReferencePH(args.player)
 	elif args.rankings:
 		write_rankings()
 		write_player_rankings()
