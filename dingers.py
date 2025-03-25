@@ -726,7 +726,7 @@ def writeEV():
 			evData[player]["player"] = player
 			evData[player]["pitcher"] = "" if not pitcher else f"{pitcher} ({pitcherLR})"
 			evData[player]["game"] = game
-			evData[player]["gameWeather"] = gameWeather
+			evData[player]["weather"] = gameWeather
 			evData[player]["book"] = evBook
 			evData[player]["line"] = highest
 			evData[player]["avg"] = ou
