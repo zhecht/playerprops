@@ -102,7 +102,7 @@ async def getESPNLinks(date):
 	games = {}
 	soup = BS(html, "html.parser")
 	for article in soup.select("article"):
-		if " @ " not in article.get("aria-label"):
+		if not article.get("aria-label") or " @ " not in article.get("aria-label"):
 			continue
 		if datetime.strftime(datetime.strptime(date, "%Y-%m-%d"), "%b %d") not in article.text:
 			continue
