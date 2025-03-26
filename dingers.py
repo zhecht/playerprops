@@ -175,6 +175,16 @@ async def write365(data, browser):
 	if reject:
 		await reject.mouse_click()
 
+	if True:
+		for c in ["src-FixtureSubGroup_Closed"]:
+			divs = await page.query_selector_all("."+c)
+
+			for div in divs:
+				await div.scroll_into_view()
+				await div.mouse_click()
+				#time.sleep(round(random.uniform(0.9, 1.25), 2))
+				time.sleep(round(random.uniform(0.4, 0.9), 2))
+
 	players = await page.query_selector_all(".gl-Participant_General")
 	for player in players:
 		game = player.parent.parent.parent.parent.children[0].children[0].children[0].text
