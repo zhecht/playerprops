@@ -736,7 +736,7 @@ def writeEV(dinger):
 			if ou.endswith("/-") or ou.endswith("/0"):
 				ou = ou.split("/")[0]
 
-			devig(evData, player, ou, highest, dinger)
+			devig(evData, player, ou, highest, dinger=dinger)
 			if "365" in books:
 				#devig(evData, player, ou, highest)
 				pass
@@ -979,8 +979,8 @@ if __name__ == '__main__':
 	if args.feed:
 		uc.loop().run_until_complete(writeFeed(args.date, args.loop))
 	elif args.fd:
-		#games = uc.loop().run_until_complete(getFDLinks(date))
-		games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
+		games = uc.loop().run_until_complete(getFDLinks(date))
+		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
 		runThreads("fd", games, min(args.threads, len(games)))
 	elif args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(date))
