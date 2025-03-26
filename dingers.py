@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 q = queue.Queue()
 lock = threading.Lock()
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=False):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=False, book=""):
 	impliedOver = impliedUnder = 0
 	over = int(ou.split("/")[0])
 	if over > 0:
@@ -84,13 +84,18 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 
 		# for DK, 70% * (32 HR/tue = $32 / $20)
 		#x = 1.12
+		# for DK No Sweat, 70% * $10
+		#x = 
 		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
 		ev = round(ev, 1)
 
 	evData.setdefault(player, {})
-	evData[player][f"fairVal"] = fairVal
-	evData[player][f"implied"] = implied
-	evData[player][f"ev"] = ev
+	if book:
+		evData[player][f"{book}_ev"] = ev
+	else:
+		evData[player][f"fairVal"] = fairVal
+		evData[player][f"implied"] = implied
+		evData[player][f"ev"] = ev
 
 async def getESPNLinks(date):
 	browser = await uc.start(no_sandbox=True)
@@ -817,8 +822,9 @@ def writeEV(dinger):
 				ou = ou.split("/")[0]
 
 			devig(evData, player, ou, highest, dinger=dinger)
-			if "365" in books:
-				#devig(evData, player, ou, highest)
+			if "dk" in books:
+				highest = int(data[game][player]["dk"])
+				devig(evData, player, ou, highest, book="dk")
 				pass
 
 			if player not in evData:
