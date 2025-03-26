@@ -1326,8 +1326,8 @@ async def getMGMLinks(sport=None, tomorrow=None):
 					away = convertSoccer(away)
 					home = convertSoccer(home)
 				elif sport == "mlb":
-					away = convertMLBTeam(away)
-					home = convertMLBTeam(home)
+					away = convertMGMMLBTeam(away)
+					home = convertMGMMLBTeam(home)
 				else:
 					away = convertMGMTeam(away)
 					home = convertMGMTeam(home)
