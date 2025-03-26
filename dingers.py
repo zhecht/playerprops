@@ -674,6 +674,11 @@ def writeEV():
 				pass
 
 			try:
+				order = lineups[team]["batters"].index(player)
+			except:
+				order = "-"
+
+			try:
 				hrs = [(i, x) for i, x in enumerate(playerStats["hr"]) if x]
 				lastHR = len(playerStats["hr"]) - hrs[-1][0]
 				lastHR = f"{lastHR} Games"
@@ -744,6 +749,7 @@ def writeEV():
 			evData[player]["bvp"] = bvp
 			evData[player]["lastHR"] = lastHR
 			evData[player]["ph"] = pinchHit
+			evData[player]["order"] = order
 			evData[player]["bookOdds"] = {b: o for b, o in zip(books, oddsArr)}
 
 	with open("static/dailyev/ev.json", "w") as fh:
