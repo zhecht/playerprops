@@ -1687,7 +1687,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
-
 				for i in range(2):
 
 					if overArg and i == 1:
@@ -1757,7 +1756,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						elif player in roster[away]:
 							stats = awayStats.get(player, {})
 						else:
-							continue
+							stats = {}
 
 						ou = playerHandicap
 						if not ou.strip():
