@@ -1585,9 +1585,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	with open(f"{prefix}static/baseballreference/splits.json") as fh:
-		splits = json.load(fh)
-
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -1631,6 +1628,22 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 			if game.split(" @ ")[0] not in teamArg.split(",") and game.split(" @ ")[1] not in teamArg.split(","):
 				continue
 
+		away, home = map(str, game.split(" @ "))
+		try:
+			with open(f"static/splits/mlb/{away}.json") as fh:
+				awayStats = json.load(fh)
+		except:
+			with open(f"static/splits/mlb/{away}.json", "w") as fh:
+				json.dump({}, fh, indent=4)
+			awayStats = {}
+
+		try:
+			with open(f"static/splits/mlb/{home}.json") as fh:
+				homeStats = json.load(fh)
+		except:
+			with open(f"static/splits/mlb/{home}.json", "w") as fh:
+				json.dump({}, fh, indent=4)
+			homeStats = {}
 		props = {}
 		for book in lines:
 			if game not in lines[book]:
@@ -1730,7 +1743,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						if not unders:
 							continue
 
-					splitsDisplay = []
 					team = opp = dtSplits = totalSplits = awayHomeSplits = ""
 					totalOver = totalOverL10 = totalOverLastYear = 0
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
@@ -1741,17 +1753,22 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						if player in roster[home]:
 							team = home
 							opp = away
+							stats = homeStats.get(player, {})
+						elif player in roster[away]:
+							stats = awayStats.get(player, {})
+						else:
+							continue
+
 						ou = playerHandicap
 						if not ou.strip():
 							ou = "0.5"
-						playerSplits = splits.get(team, {}).get(player, {})
-						dtSplits = ",".join(playerSplits.get("dt", []))
-						totalSplits = ",".join(playerSplits.get(convertedProp, []))
-						awayHomeSplits = ",".join(playerSplits.get("awayHome", []))
 
-						if convertedProp in playerSplits:
-							splitsDisplay = playerSplits[convertedProp].split(",")
-							totalOver = round(len([x for x in splitsDisplay if int(x) > float(ou)]) * 100 / len(splitsDisplay))
+						dtSplits = ",".join(stats.get("dt", []))
+						totalSplits = ",".join([str(x) for x in stats.get(convertedProp, [])])
+						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
+
+						if convertedProp in stats:
+							totalOver = round(len([x for x in stats.get(convertedProp, []) if int(x) > float(ou)]) * 100 / len(stats.get(convertedProp, [])))
 						
 						if team in lastYearStats and player in lastYearStats[team] and convertedProp+"Overs" in lastYearStats[team][player]["tot"]:
 							try:
@@ -1906,7 +1923,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
-						evData[key]["splitsDisplay"] = ",".join(splitsDisplay[-10:])
 						evData[key]["dtSplits"] = dtSplits
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["awayHomeSplits"] = awayHomeSplits
@@ -1973,7 +1989,7 @@ def sortEV(propArg=""):
 			if o.startswith("+"):
 				o = "'"+o
 			arr.append(str(o))
-		arr.extend([f"{row[-1]['totalOver']}%", f"{row[-1]['totalOverLastYear']}%", row[-1]["splitsDisplay"]])
+		arr.extend([f"{row[-1]['totalOver']}%", f"{row[-1]['totalOverLastYear']}%", row[-1]["totalSplits"]])
 		arr.extend([row[-1]["oppRank"], row[-1]["oppRankLastYear"]])
 		if propArg in ["k", "single", "double", "sb", "h"]:
 			arr.insert(hdrs.index("FD")+1, row[-1]["bookOdds"].get("bet365", "-").replace("+", ""))
