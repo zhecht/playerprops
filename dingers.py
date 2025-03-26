@@ -84,8 +84,8 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 
 		# for DK, 70% * (32 HR/tue = $32 / $20)
 		#x = 1.12
-		# for DK No Sweat, 70% * $10
-		#x = 
+		# for DK No Sweat, 70% * $10/ $20 bet
+		x = 0.35
 		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
 		ev = round(ev, 1)
 
@@ -823,8 +823,10 @@ def writeEV(dinger):
 
 			devig(evData, player, ou, highest, dinger=dinger)
 			if "dk" in books:
-				highest = int(data[game][player]["dk"])
-				devig(evData, player, ou, highest, book="dk")
+				if evBook == "dk" and player in evData:
+					evData[player]["dk_ev"] = evData[player]["ev"]
+				else:
+					devig(evData, player, ou, int(data[game][player]["dk"]), book="dk")
 				pass
 
 			if player not in evData:
