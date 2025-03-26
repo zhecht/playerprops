@@ -304,63 +304,73 @@ def updateData(data):
 		with open(file, "w") as fh:
 			json.dump(d, fh, indent=4)
 
-async def writeFDPage(data, page):
-	book = "fd"
-	await page.wait_for(selector="h1")
-	game = await page.query_selector("h1")
-	game = game.text.lower().replace(" odds", "")
-	away, home = map(str, game.split(" @ "))
-	awayFull, homeFull = away, home
-	game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
-	data.setdefault(game, {})
-
-	navs = await page.query_selector_all("nav")
-	tabs = await navs[-1].query_selector_all("a")
-	for tab in tabs:
-		if tab.text == "Batter Props":
-			await tab.click()
-			await page.wait_for(selector="div[data-test-id=ArrowAction]")
-			break
-
-	els = await page.query_selector_all("div[aria-label='Show more']")
-	for el in els:
-		await el.click()
-
-	btns = await page.query_selector_all("div[role=button]")
-	for btn in btns:
-		try:
-			labelIdx = btn.attributes.index("aria-label")
-		except:
-			continue
-		labelSplit = btn.attributes[labelIdx+1].lower().split(", ")
-		if "selection unavailable" in labelSplit[-1] or labelSplit[0].startswith("tab ") or len(labelSplit) <= 1:
-			continue
-
-		player = parsePlayer(labelSplit[1])
-
-		data[game].setdefault(player, {})
-		data[game][player][book] = labelSplit[-1]
-
-async def writeFD(data, browser):
-	close = False
-	if not browser:
-		close = True
-		browser = await uc.start(no_sandbox=True)
-	url = f"https://sportsbook.fanduel.com/navigation/mlb"
+async def getFDLinks(date):
+	browser = await uc.start(no_sandbox=True)
+	url = "https://mi.sportsbook.fanduel.com/navigation/mlb"
 	page = await browser.get(url)
-
 	await page.wait_for(selector="span[role=link]")
-	links = await page.query_selector_all("span[role=link]")
+
+	html = await page.get_content()
+	soup = BS(html, "lxml")
+	links = soup.select("span[role=link]")
 
 	for link in links:
 		if link.text == "More wagers":
-			await link.parent.click()
+			t = link.find_previous("a").parent.find("time")
+			url = link.find_previous("a").get("href")
+			game = " ".join(url.split("/")[-1].split("-")[:-1])
+			away, home = map(str, game.split(" @ "))
+			game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
+			games[game] = f"https://mi.sportsbook.fanduel.com{url}?tab=batter-props"
+
+	browser.stop()
+	return games
+
+def runFD():
+	uc.loop().run_until_complete(writeFD())
+
+async def writeFD():
+	book = "fd"
+	browser = await uc.start(no_sandbox=True)
+
+	while True:
+		data = nested_dict()
+
+		(game, url) = q.get()
+		if url is None:
+			q.task_done()
 			break
 
-	await writeFDPage(data, page)
+		page = await browser.get(url)
+		await page.wait_for(selector="div[role=button][aria-selected=true]")
 
-	if close:
-		browser.stop()
+		tab = await page.query_selector("div[role=button][aria-selected=true]")
+		if tab.text != "Batter Props":
+			q.task_done()
+			continue
+
+		el = await page.query_selector("div[aria-label='Show more']")
+		if el:
+			await el.click()
+
+		btns = await page.query_selector_all("div[role=button]")
+		for btn in btns:
+			try:
+				labelIdx = btn.attributes.index("aria-label")
+			except:
+				continue
+			labelSplit = btn.attributes[labelIdx+1].lower().split(", ")
+			if "selection unavailable" in labelSplit[-1] or labelSplit[0].startswith("tab ") or len(labelSplit) <= 1:
+				continue
+
+			player = parsePlayer(labelSplit[1])
+
+			data[game][player][book] = labelSplit[-1]
+
+		updateData(data)
+		q.task_done()
+
+	browser.stop()
 
 async def writeCZ(date, token=None):
 	book = "cz"
@@ -776,7 +786,7 @@ async def writeWeather(date):
 	weather = nested_dict()
 	for row in soup.select(".weatherClick"):
 		tds = row.select("small")
-		game = tds[1].text.lower().strip().replace("\u00a0", " ").replace("  ", " ")
+		game = tds[1].text.lower().strip().replace("\u00a0", " ").replace("  ", " ").replace("az", "ari")
 		wind = tds[2].text
 		gameId = row.get("id")
 		weather[game]["wind"] = wind.replace("\u00a0", " ").replace("  ", " ").strip()
@@ -901,6 +911,8 @@ def runThreads(book, games, totThreads):
 			thread = threading.Thread(target=runMGM, args=())
 		elif book == "espn":
 			thread = threading.Thread(target=runESPN, args=(roster,))
+		elif book == "fd":
+			thread = threading.Thread(target=runFD, args=())
 		thread.start()
 		threads.append(thread)
 
@@ -948,7 +960,9 @@ if __name__ == '__main__':
 	if args.feed:
 		uc.loop().run_until_complete(writeFeed(args.date, args.loop))
 	elif args.fd:
-		uc.loop().run_until_complete(writeOne("fd"))
+		#games = uc.loop().run_until_complete(getFDLinks(date))
+		games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
+		runThreads("fd", games, min(args.threads, len(games)))
 	elif args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(date))
 		#games['mil @ nyy'] = 'https://sports.betmgm.com/en/sports/events/milwaukee-brewers-at-new-york-yankees-16837616'
