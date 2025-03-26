@@ -3,9 +3,9 @@ from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
 try:
-	from shared import convertImpOdds, convertAmericanFromImplied
+	from shared import convertImpOdds, convertAmericanFromImplied, writeCZToken, commitChanges
 except:
-	from controllers.shared import convertImpOdds, convertAmericanFromImplied
+	from controllers.shared import convertImpOdds, convertAmericanFromImplied, writeCZToken, commitChanges
 import math
 import json
 import os
@@ -14,6 +14,7 @@ import argparse
 import unicodedata
 import time
 from twilio.rest import Client
+import nodriver as uc
 
 nhl_blueprint = Blueprint('nhl', __name__, template_folder='views')
 
@@ -274,7 +275,7 @@ def writeActionNetwork(dateArg = None):
 		json.dump(odds, fh, indent=4)
 
 
-def writeCZ(date=None, token=None):
+def writeCZ(date):
 	if not date:
 		date = str(datetime.now())[:10]
 
@@ -282,12 +283,11 @@ def writeCZ(date=None, token=None):
 	url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/icehockey/events/schedule?competitionIds={league}"
 
 	outfile = "nhloutCZ"
-	cookie = "944a513d-653e-4d9d-937c-fe1b2af97e57:EgoAn2JaHoBwAAAA:iQnMDk9/lVD1Y7CzKsTrZol0bkjLdXd4ciUmy9xMfjvJE/rSHKpuvLSoAu0P7+tz59lI/7xSueH6a7+vhk32m/yBhES5GTu6qFf9ujk/SByBY8266aL6FcQuR6AAdqd3PQWsrdonKdftB32jjGac4M0I59iPbXPdpJPXY6fb2jgebckdfSSTkNaPTT7ZmJFSoDcfIf/evSJcz7Cl/8Q3yC3aNVK1LpqVch3/Ra6OumuGfhYLwyDd8ogy8VegUdOvKGwfpvT9EqMGow=="
-
-	if token:
-		cookie = token
+	cookie = ""
+	with open("token") as fh:
+		cookie = fh.read()
 	
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
+	os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -301,7 +301,7 @@ def writeCZ(date=None, token=None):
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
-		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -3232,7 +3232,8 @@ if __name__ == '__main__':
 		writeBV()
 
 	if args.cz:
-		writeCZ(args.date, args.token)
+		uc.loop().run_until_complete(writeCZToken())
+		writeCZ(args.date)
 
 	if args.update:
 		#writeFanduel()
@@ -3243,7 +3244,8 @@ if __name__ == '__main__':
 		#print("dk")
 		#writeDK(args.date)
 		print("cz")
-		writeCZ(args.date, args.token)
+		uc.loop().run_until_complete(writeCZToken())
+		writeCZ(args.date)
 		#print("bv")
 		#writeBV()
 
