@@ -1732,7 +1732,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 					splitsDisplay = []
 					team = opp = dtSplits = totalSplits = awayHomeSplits = ""
-					totalOver = totalOverLastYear = 0
+					totalOver = totalOverL10 = totalOverLastYear = 0
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					if player:
 						away, home = map(str, game.split(" @ "))
@@ -1911,6 +1911,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["awayHomeSplits"] = awayHomeSplits
 						evData[key]["totalOver"] = totalOver
+						evData[key]["total10Over"] = totalOverL10
 						evData[key]["totalOverLastYear"] = totalOverLastYear
 						evData[key]["oppRank"] = oppRank
 						evData[key]["oppRankLastYear"] = oppRankLastYear
