@@ -951,6 +951,17 @@ def writePinnacle(date, debug=False):
 	with open("static/mlb/pinnacle.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
+	with open("static/dailyev/odds.json") as fh:
+		dingers = json.load(fh)
+
+	for game in res:
+		if "hr" in res[game]:
+			for player in res[game]["hr"]:
+				dingers[game][player]["pn"] = res[game]["hr"][player]["0.5"]
+
+	with open("static/dailyev/odds.json", "w") as fh:
+		json.dump(dingers, fh, indent=4)
+
 def writeBV():
 	url = "https://www.bovada.lv/sports/baseball/mlb"
 
