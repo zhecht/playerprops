@@ -85,7 +85,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 		# for DK, 70% * (32 HR/tue = $32 / $20)
 		#x = 1.12
 		# for DK No Sweat, 70% * $10/ $20 bet
-		x = 0.35
+		x = 0.7
 		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
 		ev = round(ev, 1)
 
