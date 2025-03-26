@@ -3183,6 +3183,7 @@ if __name__ == '__main__':
 	parser.add_argument("--lineupsLoop", action="store_true", help="Lineups")
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
 	parser.add_argument("--onlygoals", action="store_true")
+	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--add", type=int)
 	parser.add_argument("--book", help="Book")
@@ -3254,3 +3255,6 @@ if __name__ == '__main__':
 
 	if args.print:
 		sortEV(args.prop)
+
+	if args.commit:
+		commitChanges()

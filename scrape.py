@@ -1102,7 +1102,10 @@ async def writeESPNFromHTML(data, html, sport, game):
 	#with open("out.html", "w") as fh:
 	#	fh.write(html)
 	playersMap = {}
-	for detail in soup.find_all("details")[::-1]:
+	details = soup.find_all("details")
+	if sport != "nhl":
+		details = details[::-1]
+	for detail in details:
 		prop = detail.find("h2").text.lower()
 		skip = 1
 		prop = prop.replace("-", " ")
@@ -1114,7 +1117,8 @@ async def writeESPNFromHTML(data, html, sport, game):
 				skip = 2
 			prop = prop.replace(" o/u", "")
 
-		if prop.startswith("first "):
+
+		if prop != "first goalscorer" and prop.startswith("first "):
 			continue
 
 		prop = prop.replace("player total ", "").replace("player ", "").replace("pitcher total ", "").replace("pitcher ", "").replace(" o/u", "").replace("to record a ", "").replace(", ", "+").replace(" and ", "+").replace(" + ", "+").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("blocks", "blk").replace("steals", "stl").replace("3-pointers made", "3ptm").replace("3-pointers attempted", "3pta").replace("free throws made", "ftm").replace("field goals made", "fgm").replace("field goals attempted", "fga").replace("first goalscorer", "fgs").replace("turnovers", "to").replace("shots on goal", "sog").replace("goals", "atgs").replace("strikeouts", "k").replace("home runs hit", "hr").replace("hits", "h").replace("stolen bases", "sb").replace("bases", "tb").replace("rbis", "rbi").replace("earned runs allowed", "er").replace("runs scored", "r").replace("runs", "r").replace("singles hit", "singles").replace("doubles hit", "doubles").replace("walks", "bb").replace("outs recorded", "outs").replace("to record win", "win")
