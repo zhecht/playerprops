@@ -892,7 +892,7 @@ async def writeWeather(date):
 	weather = nested_dict()
 	for row in soup.select(".weatherClick"):
 		tds = row.select("small")
-		game = tds[1].text.lower().strip().replace("\u00a0", " ").replace("  ", " ").replace("az", "ari")
+		game = tds[1].text.lower().strip().replace("\u00a0", " ").replace("  ", " ").replace("az", "ari").replace("cws", "chw")
 		wind = tds[2].text
 		gameId = row.get("id")
 		weather[game]["wind"] = wind.replace("\u00a0", " ").replace("  ", " ").strip()
