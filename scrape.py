@@ -1053,6 +1053,8 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			pre = "f5_"
 		elif "1st half" in prop:
 			pre = "1h_"
+		elif "1st period" in prop:
+			pre = "1p_"
 
 		if "3-way" in prop:
 			continue
