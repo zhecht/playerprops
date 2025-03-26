@@ -821,12 +821,12 @@ def writeEV(dinger):
 			if ou.endswith("/-") or ou.endswith("/0"):
 				ou = ou.split("/")[0]
 
-			devig(evData, player, ou, highest, dinger=dinger)
+			devig(evData, player, ou, highest)
 			if "dk" in books:
 				if evBook == "dk" and player in evData:
 					evData[player]["dk_ev"] = evData[player]["ev"]
 				else:
-					devig(evData, player, ou, int(data[game][player]["dk"]), book="dk")
+					devig(evData, player, ou, int(data[game][player]["dk"]), book="dk", dinger=dinger)
 				pass
 
 			if player not in evData:
