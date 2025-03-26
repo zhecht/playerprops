@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 q = queue.Queue()
 lock = threading.Lock()
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=False):
 	impliedOver = impliedUnder = 0
 	over = int(ou.split("/")[0])
 	if over > 0:
@@ -74,6 +74,18 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 		evs.append(ev)
 
 	ev = min(evs)
+
+	if dinger:
+		# 70% conversion * 40% (2.1 HR/game = 2.1*$5/$25)
+		fairVal = min(x, mult, add)
+		x = 0.2856
+		# 80% conversion * 42% (2.1 HR/game = 2.1*$5/$25)
+		x = .336
+
+		# for DK, 70% * (32 HR/tue = $32 / $20)
+		#x = 1.12
+		ev = ((100 * (finalOdds / 100 + 1)) * fairVal - 100 + (100 * x))
+		ev = round(ev, 1)
 
 	evData.setdefault(player, {})
 	evData[player][f"fairVal"] = fairVal
@@ -608,7 +620,7 @@ def parseFeed(times):
 	with open("static/dailyev/feed_times.json", "w") as fh:
 		json.dump(times, fh, indent=4)
 
-def writeEV():
+def writeEV(dinger):
 	with open(f"static/dailyev/odds.json") as fh:
 		data = json.load(fh)
 
@@ -724,7 +736,7 @@ def writeEV():
 			if ou.endswith("/-") or ou.endswith("/0"):
 				ou = ou.split("/")[0]
 
-			devig(evData, player, ou, highest)
+			devig(evData, player, ou, highest, dinger)
 			if "365" in books:
 				#devig(evData, player, ou, highest)
 				pass
@@ -954,6 +966,7 @@ if __name__ == '__main__':
 	parser.add_argument("--loop", action="store_true")
 	parser.add_argument("--lineups", action="store_true")
 	parser.add_argument("--weather", action="store_true")
+	parser.add_argument("--dinger", action="store_true")
 	parser.add_argument("--threads", type=int, default=5)
 
 	args = parser.parse_args()
@@ -996,7 +1009,7 @@ if __name__ == '__main__':
 		writeAll()
 
 	if args.ev:
-		writeEV()
+		writeEV(args.dinger)
 	if args.print:
 		printEV()
 
