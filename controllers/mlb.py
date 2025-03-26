@@ -1743,7 +1743,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							continue
 
 					team = opp = dtSplits = totalSplits = awayHomeSplits = ""
-					totalOver = totalOverL10 = totalOverLastYear = 0
+					totalOver = total10Over = totalOverLastYear = 0
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					if player:
 						away, home = map(str, game.split(" @ "))
@@ -1767,7 +1767,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
 
 						if convertedProp in stats:
-							totalOver = round(len([x for x in stats.get(convertedProp, []) if int(x) > float(ou)]) * 100 / len(stats.get(convertedProp, [])))
+							arr = stats.get(convertedProp, [])
+							totalOver = round(len([x for x in arr if int(x) > float(ou)]) * 100 / len(arr))
+							total10Over = round(len([x for x in arr[-10:] if int(x) > float(ou)]) * 100 / len(arr[-10:]))
 						
 						if team in lastYearStats and player in lastYearStats[team] and convertedProp+"Overs" in lastYearStats[team][player]["tot"]:
 							try:
@@ -1775,7 +1777,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							except:
 								pass
 
-						if totalOver and i == 1:
+						if i == 1:
+							total10Over = 100 - total10Over
 							totalOver = 100 - totalOver
 						if totalOverLastYear and i == 1:
 							totalOverLastYear = 100 - totalOverLastYear	
@@ -1926,7 +1929,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["awayHomeSplits"] = awayHomeSplits
 						evData[key]["totalOver"] = totalOver
-						evData[key]["total10Over"] = totalOverL10
+						evData[key]["total10Over"] = total10Over
 						evData[key]["totalOverLastYear"] = totalOverLastYear
 						evData[key]["oppRank"] = oppRank
 						evData[key]["oppRankLastYear"] = oppRankLastYear
