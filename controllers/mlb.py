@@ -1731,7 +1731,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							continue
 
 					splitsDisplay = []
-					team = opp = dtSplits = totalSplits = ""
+					team = opp = dtSplits = totalSplits = awayHomeSplits = ""
 					totalOver = totalOverLastYear = 0
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					if player:
@@ -1747,6 +1747,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						playerSplits = splits.get(team, {}).get(player, {})
 						dtSplits = ",".join(playerSplits.get("dt", []))
 						totalSplits = ",".join(playerSplits.get(convertedProp, []))
+						awayHomeSplits = ",".join(playerSplits.get("awayHome", []))
 
 						if convertedProp in playerSplits:
 							splitsDisplay = playerSplits[convertedProp].split(",")
@@ -1908,6 +1909,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["splitsDisplay"] = ",".join(splitsDisplay[-10:])
 						evData[key]["dtSplits"] = dtSplits
 						evData[key]["totalSplits"] = totalSplits
+						evData[key]["awayHomeSplits"] = awayHomeSplits
 						evData[key]["totalOver"] = totalOver
 						evData[key]["totalOverLastYear"] = totalOverLastYear
 						evData[key]["oppRank"] = oppRank
