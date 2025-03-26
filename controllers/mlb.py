@@ -1731,7 +1731,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							continue
 
 					splitsDisplay = []
-					team = opp = dtSplits = ""
+					team = opp = dtSplits = totalSplits = ""
 					totalOver = totalOverLastYear = 0
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					if player:
@@ -1746,6 +1746,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							ou = "0.5"
 						playerSplits = splits.get(team, {}).get(player, {})
 						dtSplits = ",".join(playerSplits.get("dt", []))
+						totalSplits = ",".join(playerSplits.get(convertedProp, []))
 
 						if convertedProp in playerSplits:
 							splitsDisplay = playerSplits[convertedProp].split(",")
@@ -1905,8 +1906,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
 						evData[key]["splitsDisplay"] = ",".join(splitsDisplay[-10:])
-						evData[key]["totalOver"] = totalOver
 						evData[key]["dtSplits"] = dtSplits
+						evData[key]["totalSplits"] = totalSplits
+						evData[key]["totalOver"] = totalOver
 						evData[key]["totalOverLastYear"] = totalOverLastYear
 						evData[key]["oppRank"] = oppRank
 						evData[key]["oppRankLastYear"] = oppRankLastYear
@@ -2038,9 +2040,6 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
-	if args.commit:
-		commitChanges()
-
 	if args.writeGamelogs:
 		writeGamelogs()
 
@@ -2102,6 +2101,9 @@ if __name__ == '__main__':
 
 	if args.print:
 		sortEV(args.prop)
+
+	if args.commit:
+		commitChanges()
 
 	if args.player:
 		#with open(f"{prefix}static/mlb/draftkings.json") as fh:
