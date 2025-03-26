@@ -9,7 +9,7 @@ import threading
 import queue
 from bs4 import BeautifulSoup as BS
 
-from controllers.shared import convertSoccer, parsePlayer, strip_accents, convertMLBTeam, nested_dict, merge_dicts
+from controllers.shared import convertSoccer, parsePlayer, strip_accents, convertMLBTeam, convertMGMMLBTeam, nested_dict, merge_dicts
 from datetime import datetime, timedelta
 
 q = queue.Queue()
@@ -1395,9 +1395,11 @@ async def writeMGMFromHTML(data, html, sport, game):
 			data[game]["spread"][line] = odds[0].text+"/"+odds[3].text
 			line = str(float(lines[1].text.strip().replace("+", "").split(" ")[-1]))
 			data[game]["total"][line] = odds[1].text+"/"+odds[4].text
-		elif prop.endswith(": total points") or prop in ["spread", "total"]:
+		elif prop.endswith(": total points") or prop.endswith(": total runs") or prop in ["spread", "total"]:
 			if sport == "nhl":
 				t = convertMGMNHLTeam(prop.split(":")[0])
+			elif sport == "mlb":
+				t = convertMLBTeam(prop.split(":")[0])
 			else:
 				t = convertCollege(prop.split(":")[0])
 			

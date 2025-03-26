@@ -1,10 +1,11 @@
 import argparse
-import datetime
 import json
 import math
 import os
 import operator
 import re
+import threading
+import queue
 import time
 import nodriver as uc
 import csv
@@ -16,11 +17,14 @@ import datetime
 from sys import platform
 from subprocess import call
 from glob import glob
+from datetime import datetime, timedelta
 
 try:
 	from controllers.functions import *
+	from controllers.shared import *
 except:
 	from functions import *
+	from shared import *
 
 try:
 	import urllib2 as urllib
@@ -33,6 +37,9 @@ if os.path.exists("/home/zhecht/playerprops"):
 elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
+
+q = queue.Queue()
+historyLock = threading.Lock()
 
 def write_stats(date):
 	with open(f"{prefix}static/baseballreference/boxscores.json") as fh:
@@ -351,7 +358,7 @@ def sumStat(header, target, source):
 
 
 def write_curr_year_averages():
-	year = datetime.datetime.now().year
+	year = datetime.now().year
 	with open(f"{prefix}static/baseballreference/averages.json") as fh:
 		averages = json.load(fh)
 	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
@@ -518,7 +525,7 @@ def write_schedule(date):
 			if "spring training" in table.find("div", class_="Table__Title").text.lower():
 				continue
 			date = table.find("div", class_="Table__Title").text.strip()
-			date = str(datetime.datetime.strptime(date, "%A, %B %d, %Y"))[:10]
+			date = str(datetime.strptime(date, "%A, %B %d, %Y"))[:10]
 			date = date.split(" ")[-1]
 		else:
 			pass
@@ -581,11 +588,152 @@ def write_schedule(date):
 	with open(f"{prefix}static/baseballreference/schedule.json", "w") as fh:
 		json.dump(schedule, fh, indent=4)
 
+async def writeHistory():
+	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
+		ids = json.load(fh)
+
+	with open(f"{prefix}static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	historical = nested_dict()
+	urls = []
+	for team in roster:
+		path = f"static/splits/mlb_historical/{team}.json"
+		if os.path.exists(path):
+			with open(path) as fh:
+				historical[team] = json.load(fh)
+		else:
+			with open(path, "w") as fh:
+				json.dump({}, fh)
+
+		for player in roster[team]:
+			if player in historical[team]:
+				continue
+			pId = ids[team][player]
+			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
+			urls.append((team, player, url))
+
+
+	#urls = [("det", "dillon dingler", "https://www.espn.com/mlb/player/gamelog/_/id/4345620")]
+	totThreads = min(len(urls), 7)
+	threads = []
+	for _ in range(totThreads):
+		thread = threading.Thread(target=runHistory, args=())
+		thread.start()
+		threads.append(thread)
+
+	for row in urls:
+		q.put(row)
+
+	q.join()
+
+	for _ in range(totThreads):
+		q.put((None, None, None))
+	for thread in threads:
+		thread.join()
+
+def runHistory():
+	uc.loop().run_until_complete(writePlayerHistory())
+
+async def writePlayerHistory():
+	browser = await uc.start(no_sandbox=True)
+
+	while True:
+		data = nested_dict()
+		(team, player, url) = q.get()
+		if url is None:
+			q.task_done()
+			break
+
+		page = await browser.get(url)
+		await page.wait_for(selector=".gamelog")
+		select = await page.query_selector(".gamelog .dropdown__select")
+
+		if not select:
+			q.task_done()
+			continue
+		years = []
+		for option in select.children:
+			if option.text == datetime.now().year:
+				continue
+			years.append(option.text)
+
+		#years = ["2024"]
+		for year in years:
+			u = f"{url}/year/{year}"
+
+			page = await browser.get(u)
+			await page.wait_for(selector=".gamelog")
+
+			html = await page.get_content()
+			soup = BS(html, "html.parser")
+			hdrs = []
+			for row in soup.select(".gamelog tr"):
+				if row.find("td") and row.find("td").text == "Totals":
+					continue
+				if "totals_row" in row.get("class"):
+					continue
+				elif "Table__sub-header" in row.get("class"):
+					hdrs = []
+					for th in row.find_all("th"):
+						hdrs.append(th.text.lower())
+				else:
+					for hdr, td in zip(hdrs, row.find_all("td")):
+						# format val
+						val = td.text.lower()
+						if hdr == "date":
+							try:
+								m,d = map(int, val.split(" ")[-1].split("/"))
+							except:
+								print(year, url)
+								continue
+							val = f"{year}-{m:02}-{d:02}"
+						elif hdr == "opp":
+							try:
+								val = td.find_all("a")[-1].text.lower()
+							except:
+								continue
+						else:
+							try:
+								val = int(val)
+							except:
+								try:
+									val = float(val)
+								except:
+									pass
+
+						ks, vs = [hdr], [val]
+
+						# add custom hdrs
+						if hdr == "opp":
+							ks.append("awayHome")
+							vs.append("A" if "@" in td.text else "H")
+
+						for k, v in zip(ks, vs):
+							if k not in data[player][year]:
+								data[player][year][k] = []	
+							data[player][year][k].append(v)
+
+		with historyLock:
+			path = f"static/splits/mlb_historical/{team}.json"
+			try:
+				with open(path) as fh:
+					d = json.load(fh)
+			except:
+				d = {}
+			d.update(data)
+			with open(path, "w") as fh:
+				#json.dump(d, fh, indent=4)
+				json.dump(d, fh)
+		q.task_done()
+
+	browser.stop()
+
 def writeYears():
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		ids = json.load(fh)
 
-	currYear = str(datetime.datetime.now())[:4]
+	currYear = str(datetime.now())[:4]
 
 	#year = "2022"
 	yearStats = {}
@@ -695,7 +843,7 @@ def writeYears():
 					else:
 						tds = row.find_all("td")
 						if len(tds) > 1 and ("@" in tds[1].text or "vs" in tds[1].text):
-							date = str(datetime.datetime.strptime(tds[0].text.strip()+"/"+year, "%a %m/%d/%Y")).split(" ")[0]
+							date = str(datetime.strptime(tds[0].text.strip()+"/"+year, "%a %m/%d/%Y")).split(" ")[0]
 							awayHome = "A" if "@" in tds[1].text else "H"
 							try:
 								opp = tds[1].find_all("a")[-1].get("href").split("/")[-2]
@@ -834,7 +982,7 @@ def writeAverages():
 def writeStatsVsTeam():
 	statsVsTeam = {}
 	statsVsTeamLastYear = {}
-	lastYear = str(datetime.datetime.now().year - 1)
+	lastYear = str(datetime.now().year - 1)
 	#statsVsTeam[team][player][opp][hdr]
 	for year in os.listdir(f"{prefix}static/mlbprops/stats/"):
 		year = year[:4]
@@ -1515,7 +1663,7 @@ def writeSavantExpected():
 def writeSavantPitcherAdvanced():
 
 	advanced = {}
-	year = datetime.datetime.now().year
+	year = datetime.now().year
 	lastYear = year - 1
 	for yr in [year, lastYear]:
 		url = f"https://baseballsavant.mlb.com/leaderboard/custom?year={yr}&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
@@ -1624,9 +1772,9 @@ def writeBVP(dateArg):
 	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
 
-	date = str(datetime.datetime.now())[:10]
+	date = str(datetime.now())[:10]
 	if int(dateArg.split("-")[-1]) > int(date.split("-")[-1]):
-		date = str(datetime.datetime.now() + datetime.timedelta(days=1))[:10]
+		date = str(datetime.now() + timedelta(days=1))[:10]
 
 	for hotCold in ["hot", "cold"]:
 		outfile = "outmlb3"
@@ -1747,7 +1895,7 @@ def writeBaseballReferencePH(playerArg):
 	with open(f"{prefix}static/baseballreference/ph.json") as fh:
 		ph = json.load(fh)
 
-	date = datetime.datetime.now()
+	date = datetime.now()
 	for game in evOdds:
 		for player in evOdds[game]:
 			if playerArg and player != playerArg:
@@ -1939,6 +2087,7 @@ if __name__ == "__main__":
 	parser.add_argument("-e", "--end", help="End Week", type=int)
 	parser.add_argument("-w", "--week", help="Week", type=int)
 	parser.add_argument("--year", help="Year by Year Avg", action="store_true")
+	parser.add_argument("--history", action="store_true")
 
 	args = parser.parse_args()
 
@@ -1947,11 +2096,14 @@ if __name__ == "__main__":
 
 	date = args.date
 	if not date:
-		date = datetime.datetime.now()
+		date = datetime.now()
 		date = str(date)[:10]
 
 	if args.year:
 		writeYearByYear()
+
+	if args.history:
+		uc.loop().run_until_complete(writeHistory())
 
 	if args.averages:
 		writeYears()

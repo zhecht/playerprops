@@ -1548,7 +1548,6 @@ def parseESPN(espnLines, noespn=None):
 							espnLines[game][prop][player] = espn[game][prop][p].copy()
 
 def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
-
 	if not boost:
 		boost = 1
 
@@ -1629,21 +1628,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 				continue
 
 		away, home = map(str, game.split(" @ "))
-		try:
-			with open(f"static/splits/mlb/{away}.json") as fh:
-				awayStats = json.load(fh)
-		except:
-			with open(f"static/splits/mlb/{away}.json", "w") as fh:
-				json.dump({}, fh, indent=4)
-			awayStats = {}
+		with open(f"static/splits/mlb/{away}.json") as fh:
+			awayStats = json.load(fh)
+		with open(f"static/splits/mlb_historical/{away}.json") as fh:
+			awayHistStats = json.load(fh)
 
-		try:
-			with open(f"static/splits/mlb/{home}.json") as fh:
-				homeStats = json.load(fh)
-		except:
-			with open(f"static/splits/mlb/{home}.json", "w") as fh:
-				json.dump({}, fh, indent=4)
-			homeStats = {}
+		with open(f"static/splits/mlb/{home}.json") as fh:
+			homeStats = json.load(fh)
+		with open(f"static/splits/mlb_historical/{home}.json") as fh:
+			homeHistStats = json.load(fh)
 		props = {}
 		for book in lines:
 			if game not in lines[book]:
@@ -1743,6 +1736,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							continue
 
 					team = opp = dtSplits = totalSplits = awayHomeSplits = ""
+					logsLYR = ""
+					hitRateLYR = 0
 					totalOver = total10Over = totalOverLastYear = 0
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					if player:
@@ -1753,10 +1748,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							team = home
 							opp = away
 							stats = homeStats.get(player, {})
+							statsHist = homeHistStats.get(player, {})
 						elif player in roster[away]:
 							stats = awayStats.get(player, {})
+							statsHist = awayHistStats.get(player, {})
 						else:
 							stats = {}
+							statsHist = {}
 
 						ou = playerHandicap
 						if not ou.strip():
@@ -1765,17 +1763,16 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						dtSplits = ",".join(stats.get("dt", []))
 						totalSplits = ",".join([str(x) for x in stats.get(convertedProp, [])])
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
+						logsLYR = statsHist.get(str(lastYear), {}).get(convertedProp, [])[::-1]
+						if logsLYR:
+							hitRateLYR = round(len([x for x in logsLYR if x > float(ou)]) * 100 / len(logsLYR))
 
 						if convertedProp in stats:
 							arr = stats.get(convertedProp, [])
 							totalOver = round(len([x for x in arr if int(x) > float(ou)]) * 100 / len(arr))
 							total10Over = round(len([x for x in arr[-10:] if int(x) > float(ou)]) * 100 / len(arr[-10:]))
-						
-						if team in lastYearStats and player in lastYearStats[team] and convertedProp+"Overs" in lastYearStats[team][player]["tot"]:
-							try:
-								totalOverLastYear = round(lastYearStats[team][player]["tot"][convertedProp+"Overs"][str(int(math.ceil(float(ou))))] * 100 / lastYearStats[team][player]["tot"]["gamesPlayed"])
-							except:
-								pass
+
+						logsLYR = ",".join([str(x) for x in logsLYR])
 
 						if i == 1:
 							if total10Over:
@@ -1927,6 +1924,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
+						evData[key]["logsLYR"] = logsLYR
+						evData[key]["hitRateLYR"] = hitRateLYR
 						evData[key]["dtSplits"] = dtSplits
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["awayHomeSplits"] = awayHomeSplits
