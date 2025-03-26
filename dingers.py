@@ -341,6 +341,69 @@ async def getFDLinks(date):
 def runFD():
 	uc.loop().run_until_complete(writeFD())
 
+async def writeFDFromBuilder(date):
+	book = "fd"
+	with open("static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	if date not in schedule:
+		print("Date not in schedule")
+		exit()
+	games = [x["game"] for x in schedule[date]]
+	teamMap = {}
+	for game in games:
+		for t in game.split(" @ "):
+			teamMap[t] = game
+	url = "https://sportsbook.fanduel.com/navigation/mlb?tab=parlay-builder"
+	browser = await uc.start(no_sandbox=True)
+	page = await browser.get(url)
+	await page.wait_for(selector="div[role=button][aria-selected=true]")
+	tab = await page.query_selector("div[role=button][aria-selected=true]")
+	data = nested_dict()
+	dingerData = nested_dict()
+	if tab.text == "Parlay Builder":
+		arrow = await page.query_selector("div[data-testid=ArrowAction]")
+		await arrow.click()
+		await page.wait_for(selector="div[aria-label='Show more']")
+		mores = await page.query_selector_all("div[aria-label='Show more']")
+		for more in mores:
+			await more.click()
+
+		html = await page.get_content()
+		soup = BS(html, "html.parser")
+		btns = soup.select("div[role=button]")
+		currGame = ""
+		for btn in btns:
+			label = btn.get("aria-label")
+			if not label:
+				continue
+			if not label.startswith("To Hit A Home Run"):
+				continue
+			player = parsePlayer(label.split(", ")[1])
+			odds = label.split(" ")[-1]
+
+			try:
+				team = btn.parent.parent.parent.find_all("img")[1]
+
+				if "/team/" not in team.get("src"):
+					continue
+				team = convertMLBTeam(team.get("src").split("/")[-1].replace(".png", "").replace("_", " "))
+				game = teamMap.get(team, currGame)
+			except:
+				game = currGame
+
+			dingerData[game][player]["fd"] = odds
+			data[game]["hr"][player] = odds
+			currGame = game
+
+	updateData(dingerData)
+	with open("static/mlb/fanduel.json") as fh:
+		d = json.load(fh)
+	merge_dicts(d, data, forceReplace=True)
+	with open("static/mlb/fanduel.json", "w") as fh:
+		json.dump(d, fh, indent=4)
+	browser.stop()
+
 async def writeFD():
 	book = "fd"
 	browser = await uc.start(no_sandbox=True)
@@ -983,9 +1046,10 @@ if __name__ == '__main__':
 	if args.feed:
 		uc.loop().run_until_complete(writeFeed(args.date, args.loop))
 	elif args.fd:
-		games = uc.loop().run_until_complete(getFDLinks(date))
+		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
-		runThreads("fd", games, min(args.threads, len(games)))
+		#runThreads("fd", games, min(args.threads, len(games)))
+		uc.loop().run_until_complete(writeFDFromBuilder(date))
 	elif args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(date))
 		#games['mil @ nyy'] = 'https://sports.betmgm.com/en/sports/events/milwaukee-brewers-at-new-york-yankees-16837616'

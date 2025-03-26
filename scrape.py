@@ -3521,7 +3521,7 @@ if __name__ == '__main__':
 		runThreads("mgm", args.sport, games, totThreads, keep=True)
 
 	if args.dk:
-		#games = uc.loop().run_until_complete(getDKLinks(args.sport))
-		games["home-runs"] = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
+		games = uc.loop().run_until_complete(getDKLinks(args.sport))
+		#games["home-runs"] = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
 		runThreads("draftkings", args.sport, games, min(args.threads, len(games)), args.keep)
 
