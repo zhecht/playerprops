@@ -1778,10 +1778,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 								pass
 
 						if i == 1:
-							total10Over = 100 - total10Over
-							totalOver = 100 - totalOver
-						if totalOverLastYear and i == 1:
-							totalOverLastYear = 100 - totalOverLastYear	
+							if total10Over:
+								total10Over = 100 - total10Over
+							if totalOver:
+								totalOver = 100 - totalOver
+							if totalOverLastYear:
+								totalOverLastYear = 100 - totalOverLastYear	
 
 
 					oppRank = oppRankLastYear = 0
