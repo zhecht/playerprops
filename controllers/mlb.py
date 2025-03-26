@@ -11,6 +11,7 @@ import unicodedata
 import time
 import csv
 from glob import glob
+import nodriver as uc
 from twilio.rest import Client
 
 prefix = ""
@@ -22,9 +23,9 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	prefix = "/home/playerprops/playerprops/"
 
 try:
-	from shared import convertImpOdds, convertAmericanFromImplied
+	from shared import convertImpOdds, convertAmericanFromImplied, writeCZToken
 except:
-	from controllers.shared import convertImpOdds, convertAmericanFromImplied
+	from controllers.shared import convertImpOdds, convertAmericanFromImplied, writeCZToken
 
 def convertFDTeam(team):
 	team = team.lower().replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "ath").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou")
@@ -417,16 +418,16 @@ def writeActionNetwork(dateArg = None):
 		json.dump(odds, fh, indent=4)
 
 
-def writeCZ(date=None, token=None):
+def writeCZ(date=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/baseball/events/schedule?competitionIds=04f90892-3afa-4e84-acce-5b89f151063d"
 	outfile = "mlboutCZ"
-	cookie = "57d82a48-216c-4ca5-a09a-586984694d53:EgoAq+9Z3ILEAAAA:/pCHTYJhQm4ghyZoK+ZFCFkm2UdjD2TbrfZdKH83lAtCmb+z6YSY3osWVfy9S0TqhKsN6Mi/FwuALsd4bZjN8bAT47M1n2KjkrugZOxbpSwC/z4bZ37VRu2hzMxYwg4Emb29nGUV/b/9fe+X7okU9BfoB15WWRxnHbd/i65j2S8kmCfPycMFOGXcpeoaU/BI2JSeOpBo3KcjB/P2xloERwV/fk+clzEDUGEihtRM9/hMpKzmCqIeI+edZxbrMqmAnzwKwCFKkVoubSlkuw=="
-	if token:
-		cookie = token
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+	cookie = ""
+	with open("token") as fh:
+		cookie = fh.read()
+	os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -444,7 +445,7 @@ def writeCZ(date=None, token=None):
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
-		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -1485,7 +1486,7 @@ def writeKambi(date):
 	outfile = f"outmlb.json"
 	url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/baseball/nfl"
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/baseball/mlb/all/all/matches.json?lang=en_US&market=US"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
+	os.system(f"curl -s \"{url}\" -o {outfile}")
 	
 	with open(outfile) as fh:
 		j = json.load(fh)
@@ -1529,7 +1530,7 @@ def writeKambi(date):
 		
 		time.sleep(0.3)
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json"
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl -s \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			j = json.load(fh)
@@ -2877,7 +2878,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						ou = playerHandicap
 						if not ou.strip():
 							ou = "0.5"
-						playerSplits = splits[team].get(player, {})
+						playerSplits = splits.get(team, {}).get(player, {})
 
 						if convertedProp in playerSplits:
 							splitsDisplay = playerSplits[convertedProp].split(",")
@@ -3201,7 +3202,8 @@ if __name__ == '__main__':
 		writeBV()
 
 	if args.cz:
-		writeCZ(args.date, args.token)
+		uc.loop().run_until_complete(writeCZToken())
+		writeCZ(args.date)
 
 	if args.update:
 		#writeFanduel()
@@ -3217,7 +3219,8 @@ if __name__ == '__main__':
 		#writeBPP(args.date)
 		#writeActionNetwork(args.date)
 		print("cz")
-		writeCZ(args.date, args.token)
+		uc.loop().run_until_complete(writeCZToken())
+		writeCZ(args.date)
 		#print("bv")
 		#writeBV()
 

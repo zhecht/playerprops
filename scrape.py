@@ -3147,6 +3147,7 @@ async def getDKLinks(sport):
 		# OU just needs 1 thread
 		if tab in ["shots on goal", "points", "assists", "player points", "player rebounds", "player assists", "player threes"]:
 			res[tab+"-o/u"] = f"{url}&subcategory={category.replace('player-', '')}-o/u"
+			continue
 		# thread for each game beacuse how DK has their alts
 		if tab in ["shots on goal", "points", "assists"]:
 			for game in games:

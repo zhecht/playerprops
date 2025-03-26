@@ -23,6 +23,7 @@ async def writeCZToken():
 			with open("token", "w") as fh:
 				fh.write(cookie.value)
 			break
+	browser.stop()
 
 def nested_dict():
 	return defaultdict(nested_dict)
