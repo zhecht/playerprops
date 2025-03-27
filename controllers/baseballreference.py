@@ -646,7 +646,11 @@ async def writePlayerHistory():
 			break
 
 		page = await browser.get(url)
-		await page.wait_for(selector=".gamelog")
+		try:
+			await page.wait_for(selector=".gamelog")
+		except:
+			q.task_done()
+			continue
 		select = await page.query_selector(".gamelog .dropdown__select")
 
 		if not select:
