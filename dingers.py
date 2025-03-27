@@ -107,12 +107,12 @@ async def getESPNLinks(date):
 	games = {}
 	soup = BS(html, "html.parser")
 	for article in soup.select("article"):
-		if not article.get("aria-label") or " @ " not in article.get("aria-label"):
+		if not article.find("h3") or " @ " not in article.find("h3").text:
 			continue
 		if datetime.strftime(datetime.strptime(date, "%Y-%m-%d"), "%b %d") not in article.text:
 			continue
 
-		away, home = map(str, article.get("aria-label").split(" @ "))
+		away, home = map(str, article.find("h3").text.split(" @ "))
 		eventId = article.find("div").find("div").get("id").split("|")[1]
 		away, home = convertMLBTeam(away), convertMLBTeam(home)
 		game = f"{away} @ {home}"
@@ -828,6 +828,8 @@ def writeEV(dinger):
 				else:
 					devig(evData, player, ou, int(data[game][player]["dk"]), book="dk", dinger=dinger)
 				pass
+			if "fd" in books:
+				devig(evData, player, ou, int(data[game][player]["fd"]), book="fd")
 
 			if player not in evData:
 				continue
