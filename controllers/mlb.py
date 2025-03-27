@@ -439,7 +439,7 @@ def writeCZ(date=None):
 			pass
 		games.append(event["id"])
 
-	#games = ["c8704ffd-9499-47e1-b958-fe2b0e933d96"]
+	#games = ["a81f213e-e391-4c9a-bd6f-60cc198174aa"]
 
 	res = {}
 	for gameId in games:
@@ -535,6 +535,8 @@ def writeCZ(date=None):
 
 			selections = market["selections"]
 			skip = 1 if prop in ["away_total", "home_total", "hr"] else 2
+			if "total doubles" in market["name"].lower() or "total singles" in market["name"].lower():
+				skip = 2
 			mainLine = ""
 			for i in range(0, len(selections), skip):
 				try:
@@ -599,11 +601,12 @@ def writeCZ(date=None):
 				for prices in linePrices:
 					selections = prices["selections"]
 					if prop == "spread":
-						line = float(prices["line"])
+						line = float(prices["line"]) * -1
 						ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
 						if selections[0]["selectionType"] == "home":
 							line *= -1
 							ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
+
 						line = str(line)
 					else:
 						line = str(float(prices["line"]))
@@ -1660,8 +1663,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 				continue
 
 			if not propArg and prop in ["triple", "double", "spread"]:
-				#pass
-				continue
+				pass
+				#continue
 
 			handicaps = {}
 			for book in lines:

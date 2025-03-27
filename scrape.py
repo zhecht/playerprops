@@ -3146,7 +3146,7 @@ async def getDKLinks(sport):
 		tabs = ["game lines", "player points", "player rebounds", "player assists", "player threes", "player combos"]
 	elif sport in ["mlb"]:
 		tabs = ["game lines", "batter props", "pitcher props", "team totals"]
-		tabs = ["team totals"]
+		#tabs = ["team totals"]
 	elif sport == "nhl":
 		tabs = ["game lines", "goalscorer", "shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]
 		#tabs = ["game lines"]
