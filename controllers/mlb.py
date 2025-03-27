@@ -1610,6 +1610,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"static/baseballreference/leftOrRight.json") as fh:
 		leftOrRight = json.load(fh)
 
+	with open(f"static/dailyev/weather.json") as fh:
+		weather = json.load(fh)
+
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -1651,6 +1654,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 				continue
 
 		away, home = map(str, game.split(" @ "))
+		gameWeather = weather.get(game, {})
 		with open(f"static/splits/mlb/{away}.json") as fh:
 			awayStats = json.load(fh)
 		with open(f"static/splits/mlb_historical/{away}.json") as fh:
@@ -1950,6 +1954,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						except:
 							pass
 
+						evData[key]["weather"] = gameWeather
 						evData[key]["implied"] = implied
 						evData[key]["team"] = team
 						evData[key]["game"] = game
