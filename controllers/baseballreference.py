@@ -615,9 +615,6 @@ async def writeHistory(playerArg):
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
 			urls.append((team, player, url))
 
-	print(urls)
-	exit()
-
 	#urls = [("det", "dillon dingler", "https://www.espn.com/mlb/player/gamelog/_/id/4345620")]
 	totThreads = min(len(urls), 7)
 	threads = []

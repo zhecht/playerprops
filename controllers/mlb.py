@@ -1751,7 +1751,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					hitRateLYR = 0
 					totalOver = total10Over = totalOverLastYear = 0
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
-					if player:
+					if prop == "away_total":
+						team = away
+						opp = home
+					elif prop == "home_total":
+						team = home
+						opp = away
+					elif player:
 						away, home = map(str, game.split(" @ "))
 						team = away
 						opp = home
