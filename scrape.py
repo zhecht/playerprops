@@ -3337,7 +3337,7 @@ async def writeDKFromHTML(data, html, sport, prop):
 					line = str(float(overBtn.find("span", class_="sportsbook-outcome-cell__line").text))
 					p = prop
 					if prop == "team_totals":
-						if (len(els) > 1 and i == 0) or (len(els) == 1 and i < 2):
+						if (len(els) > 1 and i == 0) or (len(els) == 1 and convertMLBTeam(overBtn.find_previous("span", class_="sportsbook-row-name").text.split(":")[0]) == game.split(" @ ")[0]):
 							p = "away_total"
 						else:
 							p = "home_total"
