@@ -1746,7 +1746,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						if not unders:
 							continue
 
-					team = opp = dtSplits = totalSplits = awayHomeSplits = ""
+					team = opp = dtSplits = dtSplitsLYR = totalSplits = awayHomeSplits = ""
 					logsLYR = ""
 					hitRateLYR = 0
 					totalOver = total10Over = totalOverLastYear = 0
@@ -1775,6 +1775,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						totalSplits = ",".join([str(x) for x in stats.get(convertedProp, [])])
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
 						logsLYR = statsHist.get(str(lastYear), {}).get(convertedProp, [])[::-1]
+						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("dt", [])[::-1])
 						if logsLYR:
 							hitRateLYR = round(len([x for x in logsLYR if x > float(ou)]) * 100 / len(logsLYR))
 
@@ -1937,6 +1938,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["bookOdds"] = j
 						evData[key]["logsLYR"] = logsLYR
 						evData[key]["hitRateLYR"] = hitRateLYR
+						evData[key]["dtSplitsLYR"] = dtSplitsLYR
 						evData[key]["dtSplits"] = dtSplits
 						evData[key]["totalSplits"] = totalSplits
 						evData[key]["awayHomeSplits"] = awayHomeSplits
