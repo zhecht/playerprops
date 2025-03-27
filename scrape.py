@@ -3146,6 +3146,7 @@ async def getDKLinks(sport):
 		tabs = ["game lines", "player points", "player rebounds", "player assists", "player threes", "player combos"]
 	elif sport in ["mlb"]:
 		tabs = ["game lines", "batter props", "pitcher props", "team totals"]
+		tabs = ["team totals"]
 	elif sport == "nhl":
 		tabs = ["game lines", "goalscorer", "shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]
 		#tabs = ["game lines"]
@@ -3336,7 +3337,7 @@ async def writeDKFromHTML(data, html, sport, prop):
 					line = str(float(overBtn.find("span", class_="sportsbook-outcome-cell__line").text))
 					p = prop
 					if prop == "team_totals":
-						if i == 0:
+						if (len(els) > 1 and i == 0) or (len(els) == 1 and i < 2):
 							p = "away_total"
 						else:
 							p = "home_total"
