@@ -1775,7 +1775,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						totalSplits = ",".join([str(x) for x in stats.get(convertedProp, [])])
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
 						logsLYR = statsHist.get(str(lastYear), {}).get(convertedProp, [])[::-1]
-						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("dt", [])[::-1])
+						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("date", [])[::-1])
 						if logsLYR:
 							hitRateLYR = round(len([x for x in logsLYR if x > float(ou)]) * 100 / len(logsLYR))
 
