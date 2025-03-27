@@ -1601,6 +1601,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/espn.json") as fh:
 		espnLines = json.load(fh)
 
+	with open(f"{prefix}static/mlb/lineups.json") as fh:
+		lineups = json.load(fh)
+
+	with open(f"static/baseballreference/bvp.json") as fh:
+		bvpData = json.load(fh)
+
+	with open(f"static/baseballreference/leftOrRight.json") as fh:
+		leftOrRight = json.load(fh)
+
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -1930,6 +1939,17 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						if float(evData[key]["ev"]) > 0:
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
+
+
+						bvp = pitcher = ""
+						try:
+							pitcher = lineups[opp]["pitcher"]
+							pitcherLR = leftOrRight[opp].get(pitcher, "")
+							bvpStats = bvpData[team][player+' v '+pitcher]
+							bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
+						except:
+							pass
+
 						evData[key]["implied"] = implied
 						evData[key]["team"] = team
 						evData[key]["game"] = game
@@ -1944,6 +1964,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["playerHandicap"] = playerHandicap
 						evData[key]["odds"] = l
 						evData[key]["player"] = player
+						evData[key]["pitcher"] = "" if not pitcher else f"{pitcher} ({pitcherLR})"
+						evData[key]["bvp"] = bvp
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
