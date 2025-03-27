@@ -490,8 +490,14 @@ async def get365Links(sport, keep):
 	elif sport == "mlb":
 		props = ["er-o/u", "h_allowed-o/u", "outs-o/u", "k-o/u", "k", "bb_allowed-o/u", "h-o/u", "h", "hr-o/u", "hr", "r-o/u", "rbi-o/u", "rbi", "r", "sb-o/u", "tb-o/u", "tb", "h+r+rbi-o/u", "h+r+rbi"]
 		ids = ["E160296", "E160295", "E160297", "E160293", "E163122", "E163108", "E163109", "E163117", "E160301", "E163118", "E160303", "E163110", "E163120", "E163121", "E160304", "E160302", "E163119", "E163218", "E163225"]
+		base = "https://www.oh.bet365.com/?_h=dn1Bimn5kFJPXUXuSQmXSQ%3D%3D&btsffd=1#/AC/B16/C20525425"
 		for prop, id in zip(props, ids):
-			res[prop] = f"https://www.oh.bet365.com/?_h=dn1Bimn5kFJPXUXuSQmXSQ%3D%3D&btsffd=1#/AC/B16/C20525425/D43/{id}/F43/N2/"
+			res[prop] = f"{base}/D43/{id}/F43/N2/"
+
+		props = ["game-lines", "alternative-game-total", "alternative-run-line", "rfi", "f5_total", "f5_spread"]
+		ids = ["D48/E1096/F10/N1/", "D47/E160086/F47/N1/", "D47/E160077/F47/N1/", "D29/E160139/F29/N3/", "D29/E160110/F29/N3/", "D29/E160105/F29/N3/"]
+		for prop, id in zip(props, ids):
+			res[prop] = f"{base}/{id}"
 	elif sport == "soccer":
 		#urls = ["https://www.nj.bet365.com/?_h=RZ9RUwb5FXe3IH58lQH52Q%3D%3D&btsffd=1#/AC/B1/C1/D1002/G10236/J99/Q1/F^24/N5/", "https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
 		urls = ["https://www.nj.bet365.com/?_h=nElNnPL5dnUh0trxLWRXBw%3D%3D&btsffd=1#/AC/B1/C1/D1002/G177703/J99/Q1/F^24/N8/"]
@@ -516,7 +522,10 @@ async def write365FromHTML(data, html, sport, prop):
 		pre = "1h_"
 
 	if prop == "game-lines" or prop == "1st-half":
-		teams = soup.select(".scb-ParticipantFixtureDetailsHigherBasketball_Team")
+		if sport == "mlb":
+			teams = soup.select(".sbb-ParticipantTwoWayWithPitchersBaseball_Team")
+		else:
+			teams = soup.select(".scb-ParticipantFixtureDetailsHigherBasketball_Team")
 		spreads = soup.select(".gl-Market_General:nth-of-type(2) div[role=button]")
 		totals = soup.select(".gl-Market_General:nth-of-type(3) div[role=button]")
 		mls = soup.select(".gl-Market_General:nth-of-type(4) div[role=button]")
@@ -524,7 +533,10 @@ async def write365FromHTML(data, html, sport, prop):
 			spreadLabel = spread.get("aria-label").lower()
 			totalLabel = total.get("aria-label").lower()
 			game = spreadLabel.split(" spread ")[0].replace(" v ", " @ ")
-			away, home = convertCollege(game.split(" @ ")[0]), convertCollege(game.split(" @ ")[-1])
+			if sport == "mlb":
+				away, home = convertMLBTeam(game.split(" @ ")[0]), convertMLBTeam(game.split(" @ ")[-1])
+			else:
+				away, home = convertCollege(game.split(" @ ")[0]), convertCollege(game.split(" @ ")[-1])
 			g = f"{away} @ {home}"
 
 			p = f"{pre}ml"
@@ -548,6 +560,15 @@ async def write365FromHTML(data, html, sport, prop):
 					data[g][p][line] += "/"+totalLabel.split(" ")[-1]
 				else:	
 					data[g][p][line] = totalLabel.split(" ")[-1]
+		return
+	elif prop == "rfi":
+		games = soup.select(".rcl-ParticipantFixtureDetails_TeamNames")
+		overs = soup.select(".gl-Market_General:nth-of-type(2) div[role=button]")
+		unders = soup.select(".gl-Market_General:nth-of-type(3) div[role=button]")
+		for game, over, under in zip(games, overs, unders):
+			game = game.get("aria-label").split(" - ")[0].replace(" v ", " @ ")
+			game = f"{convertMLBTeam(game.split(' @ ')[0])} @ {convertMLBTeam(game.split(' @ ')[1])}"
+			data[game]["rfi"] = f"{over.text}/{under.text}"
 		return
 
 	for gameDiv in soup.select(".gl-MarketGroupPod"):
@@ -574,7 +595,7 @@ async def write365FromHTML(data, html, sport, prop):
 			home = convertMLBTeam(home)
 		game = f"{away} {sep} {home}"
 
-		if prop in ["spread"]:
+		if prop in ["spread", "f5_spread"]:
 			overs = gameDiv.select(".gl-Market_General:nth-of-type(1) div[role=button]")
 			unders = gameDiv.select(".gl-Market_General:nth-of-type(2) div[role=button]")
 			for over, under in zip(overs, unders):
@@ -604,7 +625,7 @@ async def write365FromHTML(data, html, sport, prop):
 			line = btns[2].get("aria-label").split(" ")[-3]
 			data[game][f"{pre}home_total"][line] = btns[2].get("aria-label").split(" ")[-1]+"/"+btns[3].get("aria-label").split(" ")[-1]
 			continue
-		elif prop == "total" or prop == "alternative-total":
+		elif prop in ["total", "f5_total"] or prop == "alternative-total" or prop == "alternative-game-total":
 			lines = gameDiv.select(".gl-Market_General:nth-of-type(1) .srb-ParticipantLabelCentered_Name")
 			lines.extend(gameDiv.select(".gl-Market_General:nth-of-type(4) .srb-ParticipantLabelCentered_Name"))
 			overs = gameDiv.select(".gl-Market_General:nth-of-type(2) div[role=button]")
@@ -613,7 +634,10 @@ async def write365FromHTML(data, html, sport, prop):
 			unders.extend(gameDiv.select(".gl-Market_General:nth-of-type(6) div[role=button]"))
 			
 			for line, over, under in zip(lines, overs, unders):
-				data[game]["total"][line.text] = over.text+"/"+under.text
+				if prop == "f5_total":
+					data[game][prop][str(float(line.text))] = over.text+"/"+under.text
+				else:
+					data[game]["total"][str(float(line.text))] = over.text+"/"+under.text
 			continue
 
 		players = gameDiv.find_all("div", class_="srb-ParticipantLabelWithTeam_Name")
@@ -701,6 +725,10 @@ async def write365(sport):
 			prop = "btts"
 		elif prop == "alternative total goals":
 			prop = "total"
+		elif prop == "alternative-run-line":
+			prop = "spread"
+		elif prop in ["f5_spread"]:
+			prop = prop
 		elif "spread" in prop:
 			if prop == "alternative spread":
 				alt = False
