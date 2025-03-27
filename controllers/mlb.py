@@ -150,8 +150,8 @@ def writeDaily():
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
-	espnLines = {}
-	parseESPN(espnLines, noespn=None)
+	with open(f"{prefix}static/mlb/espn.json") as fh:
+		espnLines = json.load(fh)
 
 	lines = {
 		"pn": pnLines,
@@ -1595,6 +1595,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/mlb/espn.json") as fh:
+		espnLines = json.load(fh)
+
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -1605,9 +1608,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	lastYear = year - 1
 	with open(f"{prefix}static/mlbprops/stats/{lastYear}.json") as fh:
 		lastYearStats = json.load(fh)
-
-	espnLines = {}
-	parseESPN(espnLines, noespn=None)
 
 	lines = {
 		"pn": pnLines,
