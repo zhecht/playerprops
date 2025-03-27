@@ -23,9 +23,9 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	prefix = "/home/playerprops/playerprops/"
 
 try:
-	from shared import convertImpOdds, convertAmericanFromImplied, writeCZToken, commitChanges, parsePlayer
+	from shared import *
 except:
-	from controllers.shared import convertImpOdds, convertAmericanFromImplied, writeCZToken, commitChanges, parsePlayer
+	from controllers.shared import *
 
 def convertFDTeam(team):
 	team = team.lower().replace("pittsburgh pirates", "pit").replace("detroit tigers", "det").replace("cincinnati reds", "cin").replace("colorado rockies", "col").replace("minnesota twins", "min").replace("los angeles dodgers", "lad").replace("arizona diamondbacks", "ari").replace("oakland athletics", "ath").replace("philadelphia phillies", "phi").replace("san francisco giants", "sf").replace("kansas city royals", "kc").replace("san diego padres", "sd").replace("los angeles angels", "laa").replace("baltimore orioles", "bal").replace("washington nationals", "wsh").replace("miami marlins", "mia").replace("new york yankees", "nyy").replace("toronto blue jays", "tor").replace("seattle mariners", "sea").replace("boston red sox", "bos").replace("tampa bay rays", "tb").replace("new york mets", "nym").replace("milwaukee brewers", "mil").replace("st. louis cardinals", "stl").replace("atlanta braves", "atl").replace("texas rangers", "tex").replace("cleveland guardians", "cle").replace("chicago white sox", "chw").replace("chicago cubs", "chc").replace("houston astros", "hou").replace("athletics", "ath")
@@ -960,6 +960,7 @@ def writePinnacle(date, debug=False):
 	for game in res:
 		if "hr" in res[game]:
 			for player in res[game]["hr"]:
+				dingers[game].setdefault(player, {})
 				dingers[game][player]["pn"] = res[game]["hr"][player]["0.5"]
 
 	with open("static/dailyev/odds.json", "w") as fh:
