@@ -588,7 +588,7 @@ def write_schedule(date):
 	with open(f"{prefix}static/baseballreference/schedule.json", "w") as fh:
 		json.dump(schedule, fh, indent=4)
 
-async def writeHistory():
+async def writeHistory(playerArg):
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		ids = json.load(fh)
 
@@ -609,10 +609,14 @@ async def writeHistory():
 		for player in roster[team]:
 			if player in historical[team]:
 				continue
+			elif playerArg and player != playerArg:
+				continue
 			pId = ids[team][player]
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
 			urls.append((team, player, url))
 
+	print(urls)
+	exit()
 
 	#urls = [("det", "dillon dingler", "https://www.espn.com/mlb/player/gamelog/_/id/4345620")]
 	totThreads = min(len(urls), 7)
@@ -2107,7 +2111,7 @@ if __name__ == "__main__":
 		writeYearByYear()
 
 	if args.history:
-		uc.loop().run_until_complete(writeHistory())
+		uc.loop().run_until_complete(writeHistory(args.player))
 
 	if args.averages:
 		writeYears()
