@@ -1734,10 +1734,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 								o = "-"
 								ou = val
 
-							if not o or o == "-":
+							if not o:
 								continue
 
-							highestOdds.append(int(o.replace("+", "")))
+							if o != "-":
+								highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)
 
@@ -1841,7 +1842,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							try:
 								maxOdds.append(int(odds.split("/")[i]))
 							except:
-								maxOdds.append(-10000)
+								#maxOdds.append(-10000)
+								pass
 
 						if not maxOdds:
 							continue
