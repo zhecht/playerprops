@@ -1964,7 +1964,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["playerHandicap"] = playerHandicap
 						evData[key]["odds"] = l
 						evData[key]["player"] = player
-						evData[key]["pitcher"] = "" if not pitcher else f"{pitcher} ({pitcherLR})"
+						evData[key]["pitcher"] = "" if not pitcher else f"{pitcher.title()} ({pitcherLR})"
 						evData[key]["bvp"] = bvp
 						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
