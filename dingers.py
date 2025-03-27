@@ -265,6 +265,8 @@ async def getMGMLinks(date):
 			continue
 
 		parent = t.find_previous("ms-six-pack-event")
+		if not parent:
+			continue
 		a = parent.find("a")
 		teams = parent.select(".participant")
 		away, home = convertMGMMLBTeam(teams[0].text.strip()), convertMGMMLBTeam(teams[1].text.strip())
