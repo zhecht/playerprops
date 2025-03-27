@@ -292,7 +292,11 @@ async def writeMGM():
 			break
 
 		page = await browser.get(url)
-		await page.wait_for(selector=".event-details-pills-list")
+		try:
+			await page.wait_for(selector=".event-details-pills-list")
+		except:
+			q.task_done()
+			continue
 
 		show = await page.query_selector(".option-group-column:nth-of-type(2) .option-panel .show-more-less-button")
 		if show:

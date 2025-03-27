@@ -12,9 +12,9 @@ import time
 from twilio.rest import Client
 
 try:
-	from shared import nested_dict, merge_dicts
+	from shared import *
 except:
-	from controllers.shared import nested_dict, merge_dicts
+	from controllers.shared import *
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -535,18 +535,17 @@ def writeActionNetwork(dateArg = None):
 	with open(f"{prefix}static/ncaab/actionnetwork.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
 
-def writeCZ(date, march, token=None, keep=None):
+def writeCZ(date):
 	if not date:
 		date = str(datetime.now())[:10]
 
 	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/basketball/events/schedule?competitionIds=d246a1dd-72bf-45d1-bc86-efc519fa8e90"
 	outfile = "ncaaboutCZ"
-	cookie = "944a513d-653e-4d9d-937c-fe1b2af97e57:EgoAn2JaHoBwAAAA:iQnMDk9/lVD1Y7CzKsTrZol0bkjLdXd4ciUmy9xMfjvJE/rSHKpuvLSoAu0P7+tz59lI/7xSueH6a7+vhk32m/yBhES5GTu6qFf9ujk/SByBY8266aL6FcQuR6AAdqd3PQWsrdonKdftB32jjGac4M0I59iPbXPdpJPXY6fb2jgebckdfSSTkNaPTT7ZmJFSoDcfIf/evSJcz7Cl/8Q3yC3aNVK1LpqVch3/Ra6OumuGfhYLwyDd8ogy8VegUdOvKGwfpvT9EqMGow=="
-
-	if token:
-		cookie = token
+	cookie = ""
+	with open("token") as fh:
+		cookie = fh.read()
 	
-	os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
+	os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -556,7 +555,7 @@ def writeCZ(date, march, token=None, keep=None):
 		if not event["active"]:
 			continue
 		d = datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=5)
-		if not march and str(d)[:10] != date:
+		if str(d)[:10] != date:
 			continue
 		if date == str(datetime.now())[:10] and d < datetime.now():
 			continue
@@ -565,14 +564,11 @@ def writeCZ(date, march, token=None, keep=None):
 
 	#games = ["8e974b89-2c64-4bc4-8b45-f947477cd981"]
 	res = {}
-	if keep:
-		with open("static/ncaab/caesars.json") as fh:
-			res = json.load(fh)
 	
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
-		os.system(f"curl '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
+		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -819,7 +815,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 	game = games[gameId]
 
 	#print(game)
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" --connect-timeout 60 -o nbaoutPN'
+	url = 'curl -s "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/related" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" --connect-timeout 60 -o nbaoutPN'
 
 	time.sleep(0.5)
 	os.system(url)
@@ -854,7 +850,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 		with open("t2", "w") as fh:
 			json.dump(related, fh, indent=4)
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" --connect-timeout 60 -o nbaoutPN'
+	url = 'curl -s "https://guest.api.arcadia.pinnacle.com/0.1/matchups/'+str(gameId)+'/markets/related/straight" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "TE: trailers" --connect-timeout 60 -o nbaoutPN'
 
 	time.sleep(0.5)
 	os.system(url)
@@ -953,7 +949,7 @@ def writePinnacle(date, debug, march):
 
 	url = "https://www.pinnacle.com/en/basketball/ncaa/matchups/#period:0"
 
-	url = 'curl "https://guest.api.arcadia.pinnacle.com/0.1/leagues/493/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -o nbaoutPN'
+	url = 'curl -s "https://guest.api.arcadia.pinnacle.com/0.1/leagues/493/matchups?brandId=0" --compressed -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0" -H "Accept: application/json" -H "Accept-Language: en-US,en;q=0.5" -H "Referer: https://www.pinnacle.com/" -H "Content-Type: application/json" -H "X-API-Key: CmX2KcMrXuFmNg6YFbmTxE0y9CIrOi0R" -H "X-Device-UUID: 410040c0-e1fcf090-53cb2c91-be5a5dbd" -H "Origin: https://www.pinnacle.com" -H "Connection: keep-alive" -H "Sec-Fetch-Dest: empty" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Site: same-site" -o nbaoutPN'
 
 	os.system(url)
 	outfile = f"nbaoutPN"
@@ -1285,7 +1281,7 @@ def writeKambi(date, march):
 	outfile = f"outnba.json"
 	url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/basketball/ncaab"
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/basketball/ncaab/all/all/matches.json?lang=en_US&market=US"
-	os.system(f"curl \"{url}\" --connect-timeout 60 -o {outfile}")
+	os.system(f"curl -s \"{url}\" --connect-timeout 60 -o {outfile}")
 	
 	with open(outfile) as fh:
 		j = json.load(fh)
@@ -1325,7 +1321,7 @@ def writeKambi(date, march):
 		
 		time.sleep(0.3)
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json"
-		os.system(f"curl \"{url}\" --connect-timeout 60 -o {outfile}")
+		os.system(f"curl -s \"{url}\" --connect-timeout 60 -o {outfile}")
 
 		with open(outfile) as fh:
 			j = json.load(fh)
@@ -3438,7 +3434,8 @@ if __name__ == '__main__':
 		bvParlay()
 
 	if args.cz:
-		writeCZ(args.date, args.march, args.token, args.keep)
+		uc.loop().run_until_complete(writeCZToken())
+		writeCZ(args.date)
 
 	if args.matchups:
 		writeMatchups()
@@ -3455,7 +3452,8 @@ if __name__ == '__main__':
 		print("kambi")
 		writeKambi(args.date, args.march)
 		print("cz")
-		writeCZ(args.date, args.march, args.token, args.keep)
+		uc.loop().run_until_complete(writeCZToken())
+		writeCZ(args.date)
 
 	if args.ev:
 		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, notd=args.notd, boost=args.boost)
