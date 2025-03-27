@@ -1060,8 +1060,8 @@ async def getESPNLinks(sport, tomorrow):
 		json.dump(data, fh, indent=4)
 	return games
 
-def runESPN(sport):
-	uc.loop().run_until_complete(writeESPN(sport))
+def runESPN(sport, rosters):
+	uc.loop().run_until_complete(writeESPN(sport, rosters))
 
 async def writeESPNGamePropsHTML(data, html, sport, game):
 	soup = BS(html, "lxml")
@@ -1125,7 +1125,7 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				data[game][prop][line] = ou
 
 
-async def writeESPNFromHTML(data, html, sport, game):
+async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 	soup = BS(html, "lxml")
 	#with open("out.html", "w") as fh:
 	#	fh.write(html)
@@ -1133,6 +1133,7 @@ async def writeESPNFromHTML(data, html, sport, game):
 	details = soup.find_all("details")
 	if sport != "nhl":
 		details = details[::-1]
+
 	for detail in details:
 		prop = detail.find("h2").text.lower()
 		skip = 1
@@ -1189,8 +1190,12 @@ async def writeESPNFromHTML(data, html, sport, game):
 				if sport not in ["ncaab", "nhl"] and "." in row.find("th").text:
 					last = player.split(" ")
 					player = player.split(" ")[0][0]+" "+last[-1]
-				if player in playersMap:
+
+				if player in playersMapArg:
+					player = playersMapArg[player]
+				elif player in playersMap:
 					player = playersMap[player]
+
 				for idx, td in enumerate(row.find_all("td")):
 					if td.text == "--":
 						continue
@@ -1207,16 +1212,19 @@ async def writeESPNFromHTML(data, html, sport, game):
 			btns = detail.find_all("button")
 			for idx in range(0, len(btns), skip):
 				if skip == 2:
-					player = btns[idx].find_previous("header").text.lower()
+					player = strip_accents(btns[idx].find_previous("header").text.lower())
 				else:
 					player = btns[idx].text.lower().split(" total")[0].split(" to record")[0]
 
 				if "." in player:
-					last = player.split(" ")
+					last = parsePlayer(player).split(" ")
 					player = player.split(" ")[0][0]+" "+last[-1]
 				
-					if player in playersMap:
+					if player in playersMapArg:
+						player = playersMapArg[player]
+					elif player in playersMap:
 						player = playersMap[player]
+
 				elif sport == "ncaab":
 					last = player.split(" ")
 					p = player.split(" ")[0][0]+" "+last[-1]
@@ -1249,7 +1257,7 @@ async def writeESPNFromHTML(data, html, sport, game):
 					#print(prop, player, line, o, u)
 					data[game][prop][player][line] = f"{o}/{u}"
 
-async def writeESPN(sport):
+async def writeESPN(sport, rosters):
 	browser = await uc.start(no_sandbox=True)
 	file = f"static/{sport}/espn.json"
 	while True:
@@ -1259,6 +1267,16 @@ async def writeESPN(sport):
 		if url is None:
 			q.task_done()
 			break
+
+		playerMap = {}
+		if "player" in url:
+			away, home = map(str, game.split(" @ "))
+			for team in [away, home]:
+				for player in rosters.get(team, {}):
+					last = player.split(" ")
+					p = player[0][0]+" "+last[-1]
+					playerMap[p] = player
+
 		page = await browser.get(url)
 		try:
 			await page.wait_for(selector="div[data-testid='away-team-card']")
@@ -1276,7 +1294,7 @@ async def writeESPN(sport):
 		if game.endswith("-game-props") or game.endswith("-lines"):
 			await writeESPNGamePropsHTML(data, html, sport, game.replace("-game-props", "").replace("-lines", ""))
 		else:
-			await writeESPNFromHTML(data, html, sport, game)
+			await writeESPNFromHTML(data, html, sport, game, playerMap)
 
 		updateData(file, data)
 		q.task_done()
@@ -1677,6 +1695,11 @@ def runThreads(book, sport, games, totThreads, keep=False):
 	if not keep:
 		with open(file, "w") as fh:
 			json.dump({}, fh, indent=4)
+	rosters = {}
+	if sport == "mlb" and book == "espn":
+		with open("static/baseballreference/roster.json") as fh:
+			rosters = json.load(fh)
+
 	for _ in range(totThreads):
 		if book == "fanduel" and sport == "ncaab":
 			thread = threading.Thread(target=runNCAABFD, args=())
@@ -1687,7 +1710,7 @@ def runThreads(book, sport, games, totThreads, keep=False):
 		elif book == "draftkings":
 			thread = threading.Thread(target=runDK, args=(sport,))
 		elif book == "espn":
-			thread = threading.Thread(target=runESPN, args=(sport,))
+			thread = threading.Thread(target=runESPN, args=(sport, rosters, ))
 		elif book == "betrivers":
 			thread = threading.Thread(target=runBR, args=(sport,))
 		elif book == "bet365":
@@ -3122,7 +3145,7 @@ async def getDKLinks(sport):
 	elif sport == "ncaab":
 		tabs = ["game lines", "player points", "player rebounds", "player assists", "player threes", "player combos"]
 	elif sport in ["mlb"]:
-		tabs = ["batter props", "pitcher props"]
+		tabs = ["game lines", "batter props", "pitcher props", "team totals"]
 	elif sport == "nhl":
 		tabs = ["game lines", "goalscorer", "shots on goal", "points", "assists", "blocks", "goalie props", "team totals"]
 		#tabs = ["game lines"]
@@ -3135,6 +3158,14 @@ async def getDKLinks(sport):
 				res[key] = f"{url}&subcategory={key}"
 			for key in ["blocks", "steals", "steals+blocks", "turnovers"]:
 				res[f"{key}-o/u"] = f"{url}&subcategory={key.replace('+','-%2B-')}-o/u"
+			continue
+		elif tab == "team totals":
+			res[category+"-o/u"] = url
+			res[category] = f"{url}&subcategory=alternate-total-runs"
+			continue
+		elif tab == "1st x innings":
+			res["f5"] = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=1st-x-innings&subcategory=1st-5-innings"
+			res["f3"] = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=1st-x-innings&subcategory=1st-3-innings"
 			continue
 		elif sport == "ncaab" and tab != "game lines" and tab.startswith("player"):
 			if tab == "player combos":
@@ -3219,7 +3250,8 @@ async def writeDKFromHTML(data, html, sport, prop):
 			away = gameDiv.select(".event-cell__name-text")[0].text
 			home = divs[idx+1].select(".event-cell__name-text")[0].text
 		else:
-			game = eval(gameDiv.find("div").get("data-tracking"))["value"]
+			tracking = gameDiv.find("div").get("data-tracking")
+			game = eval(tracking)["value"]
 			away, home = map(str, game.split(" @ "))
 
 		if sport == "ncaab":
@@ -3242,6 +3274,8 @@ async def writeDKFromHTML(data, html, sport, prop):
 			continue
 		gamesSeen[game] = True
 
+		#print(game, prop)
+
 		if prop == "game_lines":
 			tds = gameDiv.select("td")
 			tds2 = divs[idx+1].select("td")
@@ -3258,15 +3292,55 @@ async def writeDKFromHTML(data, html, sport, prop):
 				data[game]["total"][line] = f"{tds[1].find_all('span')[-1].text}/{tds2[1].find_all('span')[-1].text}".replace("\u2212", "-")
 			except:
 				pass
-		elif prop in ["spread", "total"]:
-			btns = gameDiv.select(".sportsbook-outcome-cell__body")
-			for btnIdx in range(0, len(btns), 2):
-				overBtn = btns[btnIdx]
-				underBtn = btns[btnIdx+1]
-				over = overBtn.select(".sportsbook-odds")[0].text
-				under = underBtn.select(".sportsbook-odds")[0].text
-				line = str(float(overBtn.find("span", class_="sportsbook-outcome-cell__line").text))
-				data[game][prop][line] = f"{over}/{under}".replace("\u2212", "-")
+		elif prop in ["f5", "f3"]:
+			for row in gameDiv.select(".component-29"):
+				p = row.find("span").text.lower()
+				if "+" in p:
+					continue
+				elif p == "1st 5 innings" or p == "1st 3 innings":
+					p = f"{prop}_ml"
+				elif p.startswith("run line"):
+					p = f"{prop}_spread"
+				elif p.startswith("total runs"):
+					p = f"{prop}_total"
+				elif convertMLBTeam(p.split(":")[0]) == game.split(" @ ")[0]:
+					p = f"{prop}_away_total"
+				elif convertMLBTeam(p.split(":")[0]) == game.split(" @ ")[1]:
+					p = f"{prop}_home_total"
+
+				btns = row.select(".sportsbook-outcome-cell__body")
+				for btnIdx in range(0, len(btns), 2):
+					overBtn = btns[btnIdx]
+					underBtn = btns[btnIdx+1]
+					over = overBtn.select(".sportsbook-odds")[0].text
+					under = underBtn.select(".sportsbook-odds")[0].text
+
+					if "ml" in p:
+						data[game][p] = f"{over}/{under}".replace("\u2212", "-")
+					else:
+						line = str(float(overBtn.find("span", class_="sportsbook-outcome-cell__line").text))
+						data[game][p][line] = f"{over}/{under}".replace("\u2212", "-")
+		elif prop in ["spread", "total", "team_totals"]:
+			
+			els = [gameDiv]
+			if prop == "team_totals":
+				els = gameDiv.select(".view-more") or [gameDiv]
+
+			for i, el in enumerate(els):
+				btns = el.select(".sportsbook-outcome-cell__body")
+				for btnIdx in range(0, len(btns), 2):
+					overBtn = btns[btnIdx]
+					underBtn = btns[btnIdx+1]
+					over = overBtn.select(".sportsbook-odds")[0].text
+					under = underBtn.select(".sportsbook-odds")[0].text
+					line = str(float(overBtn.find("span", class_="sportsbook-outcome-cell__line").text))
+					p = prop
+					if prop == "team_totals":
+						if i == 0:
+							p = "away_total"
+						else:
+							p = "home_total"
+					data[game][p][line] = f"{over}/{under}".replace("\u2212", "-")
 		elif sport == "ncaab":
 			btns = gameDiv.select(".sb-selection-picker__selection--focused")
 			for btnIdx, btn in enumerate(btns):
@@ -3344,7 +3418,7 @@ async def writeDK(sport):
 
 		#print(mainTab, prop)
 
-		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines", "goalscorer"]:
+		if mainTab.endswith("o/u") or mainTab in ["goalie props", "game lines", "goalscorer"] or prop in ["team_totals", "f3", "f5"]:
 			#time.sleep(0.15)
 			html = await page.get_content()
 			await writeDKFromHTML(data, html, sport, prop)
