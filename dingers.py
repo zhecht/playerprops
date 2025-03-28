@@ -598,6 +598,7 @@ def writeKambi(date):
 
 		for betOffer in j["betOffers"]:
 			label = betOffer["criterion"]["label"].lower()
+			print(label)
 			if not teamIds and "Handicap" in label:
 				for row in betOffer["outcomes"]:
 					team = convertMLBTeam(row["label"].lower())
