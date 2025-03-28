@@ -109,7 +109,7 @@ async def getESPNLinks(date):
 	for article in soup.select("article"):
 		if not article.find("h3") or " @ " not in article.find("h3").text:
 			continue
-		if datetime.strftime(datetime.strptime(date, "%Y-%m-%d"), "%b %d") not in article.text:
+		if date != str(datetime.now())[:10] and datetime.strftime(datetime.strptime(date, "%Y-%m-%d"), "%b %d") not in article.text:
 			continue
 
 		away, home = map(str, article.find("h3").text.split(" @ "))
@@ -298,18 +298,45 @@ async def writeMGM():
 			q.task_done()
 			continue
 
-		show = await page.query_selector(".option-group-column:nth-of-type(2) .option-panel .show-more-less-button")
-		if show:
-			await show.click()
+		#show = await page.query_selector(".option-group-column:nth-of-type(2) .option-panel .show-more-less-button")
+		#if show:
+		#	await show.click()
+		
+		foundPanel = None
+		panels = await page.query_selector_all(".option-panel")
+		for panel in panels:
+			if "Batter home runs" in panel.text_all:
+				up = await panel.query_selector("svg[title=theme-up]")
+				if not up:
+					up = await panel.query_selector(".clickable")
+					await up.click()
 
-		html = await page.get_content()
-		soup = BS(html, "html.parser")
-		panel = soup.select(".option-group-column:nth-of-type(2) .option-panel")[0]
-		if panel.select(".market-name")[0].text.strip() != "Batter home runs":
+				show = await panel.query_selector(".show-more-less-button")
+				if show and show.text_all == "Show More":
+					await show.click()
+					await show.scroll_into_view()
+					time.sleep(0.75)
+				foundPanel = panel
+				break
+
+		if not foundPanel:
 			q.task_done()
 			continue
-		players = panel.select(".attribute-key")
-		odds = panel.select("ms-option")
+		else:
+			html = await page.get_content()
+			soup = BS(html, "html.parser")
+
+		panel = None
+		players = []
+		odds = []
+		for p in soup.select(".option-panel"):
+			if "Batter home runs" in p.text:
+				players = p.select(".attribute-key")
+				odds = p.select("ms-option")
+				break
+
+		#players = panel.select(".attribute-key")
+		#odds = panel.select("ms-option")
 
 		for i, player in enumerate(players):
 			player = parsePlayer(player.text.strip().split(" (")[0])
@@ -1080,8 +1107,8 @@ if __name__ == '__main__':
 		#runThreads("fd", games, min(args.threads, len(games)))
 		uc.loop().run_until_complete(writeFDFromBuilder(date))
 	elif args.mgm:
-		games = uc.loop().run_until_complete(getMGMLinks(date))
-		#games['mil @ nyy'] = 'https://sports.betmgm.com/en/sports/events/milwaukee-brewers-at-new-york-yankees-16837616'
+		#games = uc.loop().run_until_complete(getMGMLinks(date))
+		games['det @ lad'] = 'https://sports.mi.betmgm.com/en/sports/events/detroit-tigers-at-los-angeles-dodgers-17081448'
 		runThreads("mgm", games, min(args.threads, len(games)))
 	elif args.dk:
 		uc.loop().run_until_complete(writeOne("dk"))
