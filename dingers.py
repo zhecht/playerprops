@@ -1113,7 +1113,7 @@ if __name__ == '__main__':
 	if args.commit:
 		commitChanges()
 
-	if True:
+	if False:
 		with open("static/mlb/pinnacle.json") as fh:
 			pn = json.load(fh)
 		with open("static/dailyev/odds.json") as fh:
