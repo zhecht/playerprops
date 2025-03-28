@@ -598,7 +598,7 @@ def writeKambi(date):
 
 		for betOffer in j["betOffers"]:
 			label = betOffer["criterion"]["label"].lower()
-			print(label)
+			#print(label)
 			if not teamIds and "Handicap" in label:
 				for row in betOffer["outcomes"]:
 					team = convertMLBTeam(row["label"].lower())
@@ -1108,8 +1108,8 @@ if __name__ == '__main__':
 		#runThreads("fd", games, min(args.threads, len(games)))
 		uc.loop().run_until_complete(writeFDFromBuilder(date))
 	elif args.mgm:
-		#games = uc.loop().run_until_complete(getMGMLinks(date))
-		games['det @ lad'] = 'https://sports.mi.betmgm.com/en/sports/events/detroit-tigers-at-los-angeles-dodgers-17081448'
+		games = uc.loop().run_until_complete(getMGMLinks(date))
+		#games['det @ lad'] = 'https://sports.mi.betmgm.com/en/sports/events/detroit-tigers-at-los-angeles-dodgers-17081448'
 		runThreads("mgm", games, min(args.threads, len(games)))
 	elif args.dk:
 		uc.loop().run_until_complete(writeOne("dk"))
