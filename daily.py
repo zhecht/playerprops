@@ -45,7 +45,7 @@ def writeSchedule(sport, date):
 			if ", " in result.text:
 				winSide, lossSide = map(str, result.text.lower().split(", "))
 				winTeam, winScore = map(str, winSide.split(" "))
-				lossTeam, lossScore = map(str, lossSide.split(" "))
+				lossTeam, lossScore = map(str, lossSide.split(" (")[0].split(" "))
 
 				score = f"{winScore}-{lossScore}"
 				if winTeam != awayTeam:
@@ -133,6 +133,8 @@ def writeStats(sport, date):
 							stats[team][player][k] = float(v)
 							if k == "ip":
 								stats[team][player]["outs"] = int(float(v))*3 + int(str(v).split(".")[-1])
+						elif v == "INF":
+							stats[team][player][k] = float('inf')
 						else:
 							if k in ["h", "bb", "hr"] and pos == "p":
 								k += "_allowed"
@@ -150,7 +152,7 @@ def writeStats(sport, date):
 									stats[team][player][k] = 0
 							pStats = stats[team][player]
 							stats[team][player]["tb"] = pStats["1b"] + pStats["2b"] + pStats["3b"] + pStats["hr"]
-							stats[team][player]["h+r+rbi"] = pStats["h"] + pStats["r"] + pStats["rbi"]
+							stats[team][player]["h+r+rbi"] = pStats.get("h", 0) + pStats.get("r", 0) + pStats.get("rbi", 0)
 
 
 	for team in stats:

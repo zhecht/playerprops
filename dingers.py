@@ -1069,6 +1069,56 @@ def runThreads(book, games, totThreads):
 	for thread in threads:
 		thread.join()
 
+def writeOdds():
+	with open(f"static/mlb/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
+	with open(f"static/mlb/kambi.json") as fh:
+		kambiLines = json.load(fh)
+
+	with open(f"static/mlb/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"static/mlb/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"static/mlb/fanduel.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"static/mlb/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"static/mlb/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	with open(f"static/mlb/espn.json") as fh:
+		espnLines = json.load(fh)
+
+	lines = {
+		"pn": pnLines,
+		"kambi": kambiLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"dk": dkLines,
+		"cz": czLines,
+		"espn": espnLines,
+		"365": bet365Lines
+	}
+
+	data = nested_dict()
+	for book in lines:
+		d = lines[book]
+		for game in d:
+			if "hr" in d[game]:
+				for player in d[game]["hr"]:
+					if book in ["fd", "cz", "kambi"]:
+						data[game][player][book] = d[game]["hr"][player]
+					else:
+						data[game][player][book] = d[game]["hr"][player]["0.5"]
+
+	with open("static/dailyev/odds.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--sport")
@@ -1092,6 +1142,7 @@ if __name__ == '__main__':
 	parser.add_argument("--weather", action="store_true")
 	parser.add_argument("--dinger", action="store_true")
 	parser.add_argument("--threads", type=int, default=5)
+	parser.add_argument("--scrape", action="store_true")
 
 	args = parser.parse_args()
 
@@ -1140,6 +1191,9 @@ if __name__ == '__main__':
 
 	if args.commit:
 		commitChanges()
+
+	if args.scrape:
+		writeOdds()
 
 	if False:
 		with open("static/mlb/pinnacle.json") as fh:
