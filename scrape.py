@@ -1025,15 +1025,21 @@ async def getESPNLinks(sport, tomorrow):
 
 		article = teamsBS[i].find_previous("article")
 
-		btn = article.select("button[data-type=AWAY_SPREAD]")[0]
-		line = str(float(btn.find("span").text.split(" ")[-1]))
-		ou = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=HOME_SPREAD]")[0].find_all("span")[-1].text
-		data[game]["spread"][line] = ou.replace("Even", "+100")
+		try:
+			btn = article.select("button[data-type=AWAY_SPREAD]")[0]
+			line = str(float(btn.find("span").text.split(" ")[-1]))
+			ou = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=HOME_SPREAD]")[0].find_all("span")[-1].text
+			data[game]["spread"][line] = ou.replace("Even", "+100")
+		except:
+			pass
 
-		btn = article.select("button[data-type=OVER]")[0]
-		line = str(float(btn.find("span").text.split(" ")[-1]))
-		ou = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=UNDER]")[0].find_all("span")[-1].text
-		data[game]["total"][line] = ou.replace("Even", "+100")
+		try:
+			btn = article.select("button[data-type=OVER]")[0]
+			line = str(float(btn.find("span").text.split(" ")[-1]))
+			ou = btn.find_all("span")[-1].text+"/"+article.select("button[data-type=UNDER]")[0].find_all("span")[-1].text
+			data[game]["total"][line] = ou.replace("Even", "+100")
+		except:
+			pass
 
 		try:
 			mlO = article.select("button[data-type=AWAY_MONEYLINE]")[0].text
@@ -1043,7 +1049,11 @@ async def getESPNLinks(sport, tomorrow):
 		except:
 			pass
 
-		eventId = div.id.split("|")[1]
+		try:
+			eventId = div.id.split("|")[1]
+		except:
+			continue
+
 		if sport == "ncaab":
 			games[game] = f"{url}/event/{eventId}/section/player-props"
 		else:
