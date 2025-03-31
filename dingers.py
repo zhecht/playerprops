@@ -109,7 +109,9 @@ async def getESPNLinks(date):
 	for article in soup.select("article"):
 		if not article.find("h3") or " @ " not in article.find("h3").text:
 			continue
-		if date != str(datetime.now())[:10] and datetime.strftime(datetime.strptime(date, "%Y-%m-%d"), "%b %d") not in article.text:
+		if date == str(datetime.now())[:10] and "Today" not in article.text:
+			continue
+		elif date != str(datetime.now())[:10] and datetime.strftime(datetime.strptime(date, "%Y-%m-%d"), "%b %d") not in article.text:
 			continue
 
 		away, home = map(str, article.find("h3").text.split(" @ "))
