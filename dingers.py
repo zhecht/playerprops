@@ -593,7 +593,7 @@ def writeKambi(date):
 		
 		time.sleep(0.3)
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json"
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl -s \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			j = json.load(fh)
@@ -1172,9 +1172,10 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(getESPNLinks(date))
 		#games['mil @ nyy'] = 'https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/b353fbf4-02ef-409b-8327-58fb3b0b1fa9/section/player_props'
 		runThreads("espn", games, min(args.threads, len(games)))
-	elif args.cz:
+	
+	if args.cz:
 		uc.loop().run_until_complete(writeCZ(date, args.token))
-	elif args.kambi:
+	if args.kambi:
 		writeKambi(date)
 
 	if args.weather:
