@@ -2525,6 +2525,10 @@ async def writeFD(sport):
 					if "period" in label:
 						continue
 					prop = "sog"
+				elif "hits + runs + rbis" in label:
+					prop = "h+r+rbi"
+					skip = 1
+					mainLine = str(float(label.split(" ")[3].replace("+", "")) - 0.5)
 				elif label.startswith("player"):
 					if "to record" in label or "specials" in label or "performance" in label or "featured" in label or "x+" in label or "first 3 minutes" in label:
 						continue
