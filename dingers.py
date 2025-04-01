@@ -1122,7 +1122,7 @@ def writeOdds():
 				for player in d[game]["hr"]:
 					if book in ["fd", "cz", "kambi"]:
 						data[game][player][book] = d[game]["hr"][player]
-					else:
+					elif "0.5" in d[game]["hr"][player]:
 						data[game][player][book] = d[game]["hr"][player]["0.5"]
 
 	with open("static/dailyev/odds.json", "w") as fh:

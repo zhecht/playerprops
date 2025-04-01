@@ -1323,13 +1323,13 @@ def writeDK(date, propArg, keep):
 		date = str(datetime.now())[:10]
 
 	mainCats = {
-		"game lines": 493,
+		#"game lines": 493,
 		"batter": 743,
 		"pitcher": 1031,
-		"game props": 724,
-		"innings": 729,
-		"1st inning": 1024,
-		"1st x innings": 1626
+		#"game props": 724,
+		#"innings": 729,
+		#"1st inning": 1024,
+		#"1st x innings": 1626
 	}
 	
 	subCats = {
@@ -1363,7 +1363,7 @@ def writeDK(date, propArg, keep):
 		17412: "era-o/u", 17413: "outs-o/u",
 	}
 
-	if True:
+	if False:
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
@@ -1477,8 +1477,8 @@ def writeDK(date, propArg, keep):
 									prop = "ml"
 								elif "run line" in prop:
 									prop = "spread"
-								elif topProp == "team total runs":
-									team = convertTeam(prop.replace(" total runs", "").replace("alternate ", ""))
+								elif "team total runs" in topProp:
+									team = convertTeam(prop.split(": ")[0].replace(" total runs", "").replace("alternate ", ""))
 									if game.startswith(team):
 										prop = "away_total"
 									else:
@@ -1497,7 +1497,11 @@ def writeDK(date, propArg, keep):
 								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
 								continue
 
-							for outcome in outcomes:
+							skip = 1
+							if "spread" in prop or "total" in prop:
+								skip = 2
+							for i in range(0, len(outcomes), skip):
+								outcome = outcomes[i]
 								if "spread" in prop or "total" in prop:
 									player = convertMLBTeam(outcome["participant"])
 								else:
@@ -1533,12 +1537,7 @@ def writeDK(date, propArg, keep):
 										lines[game][prop][player] = ou
 								elif "spread" in prop or "total" in prop:
 									line = str(float(outcome["line"]))
-									isOver = outcome["label"] == "Over"
-									if line not in lines[game][prop]:
-										lines[game][prop][line] = ou
-									else:
-
-										lines[game][prop][line] = ou
+									lines[game][prop][line] = ou + "/" + outcomes[i+1]["oddsAmerican"]
 								else: #o/u
 									line = outcome.get("line", "")
 
