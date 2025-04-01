@@ -154,6 +154,8 @@ async def writeESPN(rosters):
 			if not detail.text.startswith("Player Total Home Runs Hit"):
 				continue
 			for article in detail.find_all("article"):
+				if not article.find("header"):
+					continue
 				player = parsePlayer(article.find("header").text)
 				last = player.split(" ")
 				p = player[0][0]+". "+last[-1]
