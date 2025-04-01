@@ -980,9 +980,12 @@ def writeLineups(date):
 
 			if team in data:
 				continue
-			
+
 			pitcher = parsePlayer(table.find_all("div", class_="starting-lineups__pitcher-name")[idx].text.strip())
-			leftRight = "L" if table.find_all("span", class_="starting-lineups__pitcher-pitch-hand")[idx].text == "LHP" else "R"
+			try:
+				leftRight = "L" if table.find_all("span", class_="starting-lineups__pitcher-pitch-hand")[idx].text == "LHP" else "R"
+			except:
+				leftRight = ""
 			leftOrRight[team][pitcher] = leftRight
 			data[team] = {"pitcher": pitcher, "batters": []}
 			for player in table.find("ol", class_=f"starting-lineups__team--{which}").find_all("li"):
@@ -1192,28 +1195,8 @@ if __name__ == '__main__':
 	if args.print:
 		printEV()
 
-	if args.commit:
-		commitChanges()
-
 	if args.scrape:
 		writeOdds()
 
-	if False:
-		with open("static/mlb/pinnacle.json") as fh:
-			pn = json.load(fh)
-		with open("static/dailyev/odds.json") as fh:
-			data = json.load(fh)
-
-		for book, d in zip(["pn"], [pn]):
-			for game in d:
-				if "hr" in d[game]:
-					for player in d[game]["hr"]:
-						data.setdefault(game, {})
-						data[game].setdefault(player, {})
-						if book == "pn":
-							data[game][player][book] = d[game]["hr"][player]["0.5"]
-						else:
-							data[game][player][book] = d[game]["hr"][player]
-
-		with open("static/dailyev/odds.json", "w") as fh:
-			json.dump(data, fh, indent=4)
+	if args.commit:
+		commitChanges()
