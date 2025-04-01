@@ -1363,7 +1363,7 @@ def writeDK(date, propArg, keep):
 		17412: "era-o/u", 17413: "outs-o/u",
 	}
 
-	if True:
+	if False:
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
@@ -1541,15 +1541,18 @@ def writeDK(date, propArg, keep):
 								else: #o/u
 									line = outcome.get("line", "")
 
-									if line:
+									if not line or prop in ["single", "double", "triple"]:
+										if player in lines[game][prop]:
+											lines[game][prop][player] += "/"+ou
+										else:
+											lines[game][prop][player] = ou
+									else:
 										line = str(float(line))
 										if line in lines[game][prop][player]:
 											if "under" in outcome.get("label", "").lower():
 												lines[game][prop][player][line] += "/"+ou
 										else:
 											lines[game][prop][player][line] = ou
-									else:
-										lines[game][prop][player] = ou
 
 							continue
 
@@ -1660,8 +1663,8 @@ def writeKambi(date):
 		eventIds[game] = event["event"]["id"]
 		data[game] = {}
 
-	#eventIds = {'kc @ cle': 1020375013}
-	#data['kc @ cle'] = {}
+	#eventIds = {'kc @ mil': 1022035215}
+	#data['kc @ mil'] = {}
 	#print(eventIds)
 	#exit()
 	for game in eventIds:

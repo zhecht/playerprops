@@ -2357,8 +2357,8 @@ async def writeFD(sport):
 				#if tab.text.lower() not in ["player combos"]:
 					continue
 			elif sport == "mlb":
-				#if tab.text.lower() not in ["popular", "batter props"]:
 				if tab.text.lower() not in ["popular", "batter props"]:
+				#if tab.text.lower() not in ["pitcher props"]:
 					continue
 			else:
 				if tab.text.lower() not in ["popular", "td scorer props", "passing props", "receiving props", "rushing props"]:
@@ -2589,12 +2589,14 @@ async def writeFD(sport):
 				elif prop == "pass+rush_yd":
 					prop = "pass+rush"
 
-				if not prop:
+				if not prop or "combine" in prop:
 					continue
 
 				path = arrow.children[-1].children[0].children[0]
 				if prop != "lines" and path.attributes[1].split(" ")[0] != "M.147":
 					await arrow.click()
+					if prop in ["single", "double", "triple"]:
+						time.sleep(1)
 					#await div.wait_for(selector="div[role=button]")
 					#await div.wait_for(selector="div[aria-label='Show more']")
 
@@ -2821,7 +2823,7 @@ async def writeFD(sport):
 						if line in data[game][prop][player]:
 							continue
 
-						if prop == "hr":
+						if prop in ["hr", "single", "double", "triple"]:
 							data[game][prop][player] = odds
 						else:
 							data[game][prop][player][line] = odds
@@ -2845,6 +2847,8 @@ async def writeFD(sport):
 							except:
 								continue
 			
+		#with open("out", "w") as fh:
+		#	json.dump(data, fh, indent=4)
 		updateData(file, data)
 		q.task_done()
 	browser.stop()
@@ -3631,7 +3635,7 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(getBRLinks(args.sport, args.tomorrow or args.tmrw))
 		runThreads("betrivers", args.sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
-		#games["vgk @ det"] = "/ice-hockey/nhl/vegas-golden-knights-@-detroit-red-wings-34126907"
+		#games["kc @ mil"] = "/baseball/mlb/kansas-city-royals-@-milwaukee-brewers-34176901"
 		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow or args.tmrw))
 		#print(games)
 		totThreads = min(args.threads, len(games))
