@@ -1855,17 +1855,22 @@ async def writePH(playerArg):
 			else:
 				continue
 
-			if team in ph and player in ph[team]:
+			if not playerArg and team in ph and player in ph[team]:
 				continue
+
 			pid = referenceIds[team][player]
 			url = f"https://www.baseball-reference.com{pid}"
+
+			ph.setdefault(team, {})
+			ph[team].setdefault(player, {})
+			ph[team][player] = {}
 
 			page = await browser.get(url)
 			await page.wait_for(selector="#appearances tbody tr")
 			html = await page.get_content()
 			soup = BS(html, "lxml")
 			for row in soup.select("#appearances tbody tr"):
-				if row.get("class") and "spacer" in row.get("class"):
+				if row.get("class") and ("spacer" in row.get("class") or "partial_table" in row.get("class")):
 					continue
 				year = row.find("th").text
 				#print(player, year)
@@ -1874,12 +1879,12 @@ async def writePH(playerArg):
 				except:
 					continue
 				gs = row.select("td[data-stat=games_started_all]")[0].text
-				ph.setdefault(team, {})
-				ph[team].setdefault(player, {})
-				ph[team][player].setdefault(year, {})
 				phs = row.select("td[data-stat=games_at_ph]")
 				if not phs:
 					continue
+
+				ph[team][player].setdefault(year, {})
+
 				ph[team][player][year]["ph"] = int(phs[0].text or 0)
 				ph[team][player][year]["g"] = int(g or 0)
 				ph[team][player][year]["gs"] = int(gs or 0)
