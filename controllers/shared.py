@@ -61,6 +61,22 @@ def merge_dicts(d1, d2, forceReplace=False):
 		else:
 			d1[k] = v
 
+def convertAmericanOdds(avg):
+	if avg >= 2:
+		avg = (avg - 1) * 100
+	else:
+		avg = -100 / (avg - 1)
+	return round(avg)
+
+def convertDecOdds(odds):
+	if odds == 0:
+		return 0
+	if odds > 0:
+		decOdds = 1 + (odds / 100)
+	else:
+		decOdds = 1 - (100 / odds)
+	return decOdds
+	
 def convertImpOdds(odds):
 	if odds == 0:
 		return 0

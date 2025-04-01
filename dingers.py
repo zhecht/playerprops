@@ -859,14 +859,16 @@ def writeEV(dinger):
 
 			devig(evData, player, ou, highest)
 			if "dk" in books:
-				if evBook == "dk" and player in evData:
-					evData[player]["dk_ev"] = evData[player]["ev"]
-				else:
-					devig(evData, player, ou, int(data[game][player]["dk"]), book="dk", dinger=dinger)
+				#if evBook == "dk" and player in evData:
+				#	evData[player]["dk_ev"] = evData[player]["ev"]
+				#else:
+				devig(evData, player, ou, int(data[game][player]["dk"]), book="dk", dinger=True)
 				pass
 			if "fd" in books:
 				devig(evData, player, ou, int(data[game][player]["fd"]), book="fd")
-
+				fd = int(data[game][player]["fd"])
+				fd = convertAmericanOdds(1 + (convertDecOdds(fd) - 1) * 1.50)
+				devig(evData, player, ou, fd, book="fd50%")
 			if player not in evData:
 				continue
 
