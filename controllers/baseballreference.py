@@ -1360,7 +1360,7 @@ def write_rankings():
 
 
 def write_batting_pitches():
-	url = "https://www.baseball-reference.com/leagues/majors/2024-pitches-batting.shtml"
+	url = "https://www.baseball-reference.com/leagues/majors/2025-pitches-batting.shtml"
 	time.sleep(0.2)
 	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
@@ -1845,12 +1845,16 @@ async def writePH(playerArg):
 	for game in odds:
 		away, home = map(str, game.split(" @ "))
 		for player in odds[game]:
+			if playerArg and player != playerArg:
+				continue
+
 			if player in referenceIds[away]:
 				team = away
 			elif player in referenceIds[home]:
 				team = home
 			else:
 				continue
+
 			if team in ph and player in ph[team]:
 				continue
 			pid = referenceIds[team][player]
