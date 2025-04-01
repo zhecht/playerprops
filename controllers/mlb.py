@@ -1316,6 +1316,311 @@ def arb(bookArg="fd"):
 	for row in sorted(res, reverse=True)[:20]:
 		print(row)
 
+def writeDK(date, propArg, keep):
+	url = "https://sportsbook.draftkings.com/leagues/football/nfl"
+
+	if not date:
+		date = str(datetime.now())[:10]
+
+	mainCats = {
+		"game lines": 493,
+		"batter": 743,
+		"pitcher": 1031,
+		"game props": 724,
+		"innings": 729,
+		"1st inning": 1024,
+		"1st x innings": 1626
+	}
+	
+	subCats = {
+		493: [4519, 13168, 13169],
+		743: [
+			# HR, H, TB, RBI
+			17319, 17320, 17321, 17322,
+			# HRR-ou, h-ou, tb-ou, rbi-ou, r-ou, sb-ou
+			17406, 6719, 6607, 8025, 17407, 17408,
+			# single, double, bb
+			17409, 17410, 17411
+		],
+		729: [6821],
+		1024: [11024],
+		1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
+		1626: [15629]
+	}
+
+	propIds = {
+		11024: "rfi",
+		17319: "hr",
+		17320: "h", 6719: "h-o/u",
+		17321: "tb", 6607: "tb-o/u",
+		17322: "rbi", 8025: "rbi-o/u",
+		17406: "h+r+rbi-o/u",
+		17407: "r-o/u", 17408: "sb-o/u",
+		17409: "single-o/u", 17410: "double-o/u", 17411: "bb-o/u",
+		17323: "k", 15221: "k-o/u", 9884: "win",
+		17324: "h_allowed", 9886: "h_allowed-o/u",
+		17325: "bb_allowed", 15219: "bb_allowed-o/u",
+		17412: "era-o/u", 17413: "outs-o/u",
+	}
+
+	if True:
+		mainCats = {
+			#"batter": 743,
+			#"pitchers": 1031,
+			#"game lines": 493,
+			#"game props": 724,
+			#"innings": 729,
+			#"1st inning": 1024,
+			"1st x innings": 1626
+		}
+
+		subCats = {
+			#743: [17319, 17320, 17321, 17322, 17406, 6719, 6607, 8025, 17407, 17408, 17409, 17410, 17411],
+			#1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
+			#1024: [11024],
+			1626: [15629]
+		}
+
+	lines = nested_dict()
+	for mainCat in mainCats:
+		for subCat in subCats.get(mainCats[mainCat], [0]):
+			if propArg and "hr" in propArg and subCat not in [6606, 15520]:
+				continue
+			elif propArg and "k" in propArg and subCat != 15221:
+				continue
+			elif propArg and "single" in propArg and subCat != 11031:
+				continue
+			elif propArg and "double" in propArg and subCat != 11032:
+				continue
+			time.sleep(0.3)
+			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/84240/categories/{mainCats[mainCat]}"
+			if subCat:
+				url += f"/subcategories/{subCat}"
+			url += "?format=json"
+			outfile = "outmlbdk"
+			cookie = "-H 'Cookie: hgg=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiIxODU4ODA5NTUwIiwiZGtzLTYwIjoiMjg1IiwiZGtlLTEyNiI6IjM3NCIsImRrcy0xNzkiOiI1NjkiLCJka2UtMjA0IjoiNzA5IiwiZGtlLTI4OCI6IjExMjgiLCJka2UtMzE4IjoiMTI2MSIsImRrZS0zNDUiOiIxMzUzIiwiZGtlLTM0NiI6IjEzNTYiLCJka2UtNDI5IjoiMTcwNSIsImRrZS03MDAiOiIyOTkyIiwiZGtlLTczOSI6IjMxNDAiLCJka2UtNzU3IjoiMzIxMiIsImRraC03NjgiOiJxU2NDRWNxaSIsImRrZS03NjgiOiIwIiwiZGtlLTgwNiI6IjM0MjYiLCJka2UtODA3IjoiMzQzNyIsImRrZS04MjQiOiIzNTExIiwiZGtlLTgyNSI6IjM1MTQiLCJka3MtODM0IjoiMzU1NyIsImRrZS04MzYiOiIzNTcwIiwiZGtoLTg5NSI6IjhlU3ZaRG8wIiwiZGtlLTg5NSI6IjAiLCJka2UtOTAzIjoiMzg0OCIsImRrZS05MTciOiIzOTEzIiwiZGtlLTk0NyI6IjQwNDIiLCJka2UtOTc2IjoiNDE3MSIsImRrcy0xMTcyIjoiNDk2NCIsImRrcy0xMTc0IjoiNDk3MCIsImRrcy0xMjU1IjoiNTMyNiIsImRrcy0xMjU5IjoiNTMzOSIsImRrZS0xMjc3IjoiNTQxMSIsImRrZS0xMzI4IjoiNTY1MyIsImRraC0xNDYxIjoiTjZYQmZ6S1EiLCJka3MtMTQ2MSI6IjAiLCJka2UtMTU2MSI6IjY3MzMiLCJka2UtMTY1MyI6IjcxMzEiLCJka2UtMTY1NiI6IjcxNTEiLCJka2UtMTY4NiI6IjcyNzEiLCJka2UtMTcwOSI6IjczODMiLCJka3MtMTcxMSI6IjczOTUiLCJka2UtMTc0MCI6Ijc1MjciLCJka2UtMTc1NCI6Ijc2MDUiLCJka3MtMTc1NiI6Ijc2MTkiLCJka3MtMTc1OSI6Ijc2MzYiLCJka2UtMTc2MCI6Ijc2NDkiLCJka2UtMTc2NiI6Ijc2NzUiLCJka2gtMTc3NCI6IjJTY3BrTWF1IiwiZGtlLTE3NzQiOiIwIiwiZGtlLTE3NzAiOiI3NjkyIiwiZGtlLTE3ODAiOiI3NzMxIiwiZGtlLTE2ODkiOiI3Mjg3IiwiZGtlLTE2OTUiOiI3MzI5IiwiZGtlLTE3OTQiOiI3ODAxIiwiZGtlLTE4MDEiOiI3ODM4IiwiZGtoLTE4MDUiOiJPR2tibGtIeCIsImRrZS0xODA1IjoiMCIsImRrcy0xODE0IjoiNzkwMSIsImRraC0xNjQxIjoiUjBrX2xta0ciLCJka2UtMTY0MSI6IjAiLCJka2UtMTgyOCI6Ijc5NTYiLCJka2gtMTgzMiI6ImFfdEFzODZmIiwiZGtlLTE4MzIiOiIwIiwiZGtzLTE4NDciOiI4MDU0IiwiZGtzLTE3ODYiOiI3NzU4IiwiZGtlLTE4NTEiOiI4MDk3IiwiZGtlLTE4NTgiOiI4MTQ3IiwiZGtlLTE4NjEiOiI4MTU3IiwiZGtlLTE4NjAiOiI4MTUyIiwiZGtlLTE4NjgiOiI4MTg4IiwiZGtoLTE4NzUiOiJZRFJaX3NoSiIsImRrcy0xODc1IjoiMCIsImRrcy0xODc2IjoiODIxMSIsImRraC0xODc5IjoidmI5WWl6bE4iLCJka2UtMTg3OSI6IjAiLCJka2UtMTg0MSI6IjgwMjQiLCJka3MtMTg4MiI6IjgyMzkiLCJka2UtMTg4MSI6IjgyMzYiLCJka2UtMTg4MyI6IjgyNDMiLCJka2UtMTg4MCI6IjgyMzIiLCJka2UtMTg4NyI6IjgyNjQiLCJka2UtMTg5MCI6IjgyNzYiLCJka2UtMTkwMSI6IjgzMjYiLCJka2UtMTg5NSI6IjgzMDAiLCJka2gtMTg2NCI6IlNWbjFNRjc5IiwiZGtlLTE4NjQiOiIwIiwibmJmIjoxNzIyNDQyMjc0LCJleHAiOjE3MjI0NDI1NzQsImlhdCI6MTcyMjQ0MjI3NCwiaXNzIjoiZGsifQ.jA0OxjKzxkyuAktWmqFbJHkI6SWik-T-DyZuLjL9ZKM; STE=\"2024-07-31T16:43:12.166175Z\"; STIDN=eyJDIjoxMjIzNTQ4NTIzLCJTIjo3MTU0NjgxMTM5NCwiU1MiOjc1Mjc3OTAxMDAyLCJWIjoxODU4ODA5NTUwLCJMIjoxLCJFIjoiMjAyNC0wNy0zMVQxNjo0MToxNC42ODc5Mzk4WiIsIlNFIjoiVVMtREsiLCJVQSI6IngxcVNUYXJVNVFRRlo3TDNxcUlCbWpxWFozazhKVmt2OGFvaCttT1ZpWFE9IiwiREsiOiIzMTQyYjRkMy0yNjU2LTRhNDMtYTBjNi00MTEyM2Y5OTEyNmUiLCJESSI6IjEzNTBmMGM0LWQ3MDItNDUwZC1hOWVmLTJlZjRjZjcxOTY3NyIsIkREIjo0NDg3NTQ0MDk4OH0=; STH=3a3368e54afc8e4c0a5c91094077f5cd1ce31d692aaaf5432b67972b5c3eb6fc; _abck=56D0C7A07377CFD1419CD432549CD1DB~0~YAAQJdbOF6Bzr+SQAQAAsmCPCQykOCRLV67pZ3Dd/613rD8UDsL5x/r+Q6G6jXCECjlRwzW7ESOMYaoy0fhStB3jiEPLialxs/UD9kkWAWPhuOq/RRxzYkX+QY0wZ/Uf8WSSap57OIQdRC3k3jlI6z2G8PKs4IyyQ/bRZfS2Wo6yO0x/icRKUAUeESKrgv6XrNaZCr14SjDVxBBt3Qk4aqJPKbWIbaj+1PewAcP+y/bFEVCmbcrAruJ4TiyqMTEHbRtM9y2O0WsTg79IZu52bpOI2jFjEUXZNRlz2WVhxbApaKY09QQbbZ3euFMffJ25/bXgiFpt7YFwfYh1v+4jrIvbwBwoCDiHn+xy17v6CXq5hIEyO4Bra6QT1sDzil+lQZPgqrPBE0xwoHxSWnhVr60EK1X5IVfypMHUcTvLKFcEP2eqwSZ67Luc/ompWuxooaOVNYrgvH/Vvs5UbyVOEsDcAXoyGt0BW3ZVMVPHXS/30dP3Rw==~-1~-1~1722445877; PRV=3P=0&V=1858809550&E=1720639388; ss-pid=4CNl0TGg6ki1ygGONs5g; ab.storage.deviceId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%22fe7382ec-2564-85bf-d7c4-3eea92cb7c3e%22%2C%22c%22%3A1709950180242%2C%22l%22%3A1709950180242%7D; ab.storage.userId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%2228afffab-27db-4805-85ca-bc8af84ecb98%22%2C%22c%22%3A1712278087074%2C%22l%22%3A1712278087074%7D; ab.storage.sessionId.b543cb99-2762-451f-9b3e-91b2b1538a42=%7B%22g%22%3A%223eff9525-6179-dc9c-ce88-9e51fca24c58%22%2C%22e%22%3A1722444192818%2C%22c%22%3A1722442278923%2C%22l%22%3A1722442392818%7D; _gcl_au=1.1.386764008.1720096930; _ga_QG8WHJSQMJ=GS1.1.1722442278.7.1.1722442393.19.0.0; _ga=GA1.2.2079166597.1720096930; _dpm_id.16f4=b3163c2a-8640-4fb7-8d66-2162123e163e.1720096930.7.1722442393.1722178863.1f3bf842-66c7-446c-95e3-d3d5049471a9; _tgpc=78b6db99-db5f-5ce5-848f-0d7e4938d8f2; _tglksd=eyJzIjoiYjRkNjE4MWYtMTJjZS01ZDJkLTgwNTYtZWQ2NzIxM2MzMzM2Iiwic3QiOjE3MjI0NDIyNzgyNzEsInNvZCI6IihkaXJlY3QpIiwic29kdCI6MTcyMTg3ODUxOTY5OCwic29kcyI6Im8iLCJzb2RzdCI6MTcyMTg3ODUxOTY5OH0=; _sp_srt_id.16f4=55c32e85-f32f-42ac-a0e8-b1e37c9d3bc6.1720096930.6.1722442279.1722178650.6d45df5a-aea8-4a66-a4ba-0ef841197d1d.cdc2d898-fa3f-4430-a4e4-b34e1909bb05...0; _scid=e6437688-491e-4800-b4b2-e46e81b2816c; _ga_M8T3LWXCC5=GS1.2.1722442279.7.1.1722442288.51.0.0; _svsid=9d0929120b67695ad6ee074ccfd583b7; _sctr=1%7C1722398400000; _hjSessionUser_2150570=eyJpZCI6ImNmMDA3YTA2LTFiNmMtNTFkYS05Y2M4LWNmNTAyY2RjMWM0ZCIsImNyZWF0ZWQiOjE3MjA1NTMwMDE4OTMsImV4aXN0aW5nIjp0cnVlfQ==; _csrf=ba945d1a-57c4-4b50-a4b2-1edea5014b72; ss-id=x8zwcqe0hExjZeHXAKPK; ak_bmsc=F8F9B7ED0366DC4EB63B2DD6D078134C~000000000000000000000000000000~YAAQJdbOF3hzr+SQAQAAp1uPCRjLBiubHwSBX74Dd/8hmIdve4Tnb++KpwPtaGp+NN2ZcEf+LtxC0PWwzhZQ1one2MxGFFw1J6BXg+qiFAoQ6+I3JExoHz4r+gqodWq7y5Iri7+3aBFQRDtn17JMd1PTEEuN8EckzKIidL3ggrEPS+h1qtof3aHJUdx/jkCUjkaN/phWSvohlUGscny8dJvRz76e3F20koI5UsjJ/rQV7dUn6HNw1b5H1tDeL7UR1mbBrCLz6YPDx4XCjybvteRQpyLGI0o9L6xhXqv12exVAbZ15vpuNJalhR6eB4/PVwCmfVniFcr/xc8hivkuBBMOj1lN7ADykNA60jFaIRAY2BD2yj27Aedr7ETAFnvac0L0ITfH20LkA2cFhGUxmzOJN0JQ6iTU7VGgk19FzV+oeUxNmMPX; bm_sz=D7ABF43D4A5671594F842F6C403AB281~YAAQJdbOF3lzr+SQAQAAp1uPCRgFgps3gN3zvxvZ+vbm5t9IRWYlb7as+myjQOyHzYhriG6n+oxyoRdQbE6wLz996sfM/6r99tfwOLP2K8ULgA2nXfOPvqk6BwofdTsUd7KP7EnKhcCjhADO18uKB/QvIJgyS3IFBROxP2XFzS15m/DrRbF7lQDRscWtVo8oOITxNTBlwg0g4fI3gzjG6A4uHYxjeCegxSrHFHGFr4KZXgOnsJhmZe0lqIRWUFcIKC/gfsDd+jfyUnprMso1Flsv9blGlvycOoWTHPdEQvUudpOZlZ3JYz9H5y+dU94wBD9ejxIlRKP26giQISjun829Kt7CuKxJXYAcSJeiomZFh5Abj+Mkv0wi6ZcRcmOVFt49eywPazFHpGM8DVcUkVEFMcpNCeiJ/CtC60U9SoJy+ermF1hTqiAq~3622209~4408134; bm_sv=6618DE86472CB31D7B7F16DAE6689651~YAAQJdbOF96Lr+SQAQAA4iSRCRjfwGUmEhVBbE3y/2VDAAvuPyI2gX7io7CQCPfcdMOnBnNhxHIKYt9PFr7Y1TADQHFUC9kqXu7Nbj9d1BrLlfi1rPbv/YKPqhqSTLkbNSWbeKhKM4HfOu7C+RLV383VzGeyDhc2zOuBKBVNivHMTF9njS3vK6RKeSPFCfxOJdDHgNlIYykf0Ke2WJvflHflTUykwWUaYIlqoB52Ixb9opHQVTptWjetGdYjuOO2S2ZPkw==~1; _dpm_ses.16f4=*; _tgidts=eyJzaCI6ImQ0MWQ4Y2Q5OGYwMGIyMDRlOTgwMDk5OGVjZjg0MjdlIiwiY2kiOiIxZDMxOGRlZC0yOWYwLTUzYjItYjFkNy0yMDlmODEwNDdlZGYiLCJzaSI6ImI0ZDYxODFmLTEyY2UtNWQyZC04MDU2LWVkNjcyMTNjMzMzNiJ9; _tguatd=eyJzYyI6IihkaXJlY3QpIn0=; _tgsid=eyJscGQiOiJ7XCJscHVcIjpcImh0dHBzOi8vc3BvcnRzYm9vay5kcmFmdGtpbmdzLmNvbSUyRmxlYWd1ZXMlMkZiYXNlYmFsbCUyRm1sYlwiLFwibHB0XCI6XCJNTEIlMjBCZXR0aW5nJTIwT2RkcyUyMCUyNiUyMExpbmVzJTIwJTdDJTIwRHJhZnRLaW5ncyUyMFNwb3J0c2Jvb2tcIixcImxwclwiOlwiXCJ9IiwicHMiOiJkOTY4OTkxNy03ZTAxLTQ2NTktYmUyOS1mZThlNmI4ODY3MzgiLCJwdmMiOiIxIiwic2MiOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6LTEiLCJlYyI6IjUiLCJwdiI6IjEiLCJ0aW0iOiJiNGQ2MTgxZi0xMmNlLTVkMmQtODA1Ni1lZDY3MjEzYzMzMzY6MTcyMjQ0MjI4MjA3NDotMSJ9; _sp_srt_ses.16f4=*; _gid=GA1.2.150403708.1722442279; _scid_r=e6437688-491e-4800-b4b2-e46e81b2816c; _uetsid=85e6d8504f5711efbe6337917e0e834a; _uetvid=d50156603a0211efbb275bc348d5d48b; _hjSession_2150570=eyJpZCI6ImQxMTAyZTZjLTkyYzItNGMwNy1hNzMzLTcxNDhiODBhOTI4MyIsImMiOjE3MjI0NDIyODE2NDUsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MH0=; _rdt_uuid=1720096930967.9d40f035-a394-4136-b9ce-2cf3bb298115'"
+			os.system(f"curl -s {url} --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Connection: keep-alive' {cookie} -o {outfile}")
+
+			with open(outfile) as fh:
+				data = json.load(fh)
+
+			#with open("out", "w") as fh:
+			#	json.dump(data, fh, indent=4)
+
+			prop = propIds.get(subCat, "")
+
+			print(prop)
+
+			events = {}
+			if "eventGroup" not in data:
+				continue
+
+			for event in data["eventGroup"]["events"]:
+				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
+				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
+				if startDt.day != int(date[-2:]):
+					#continue
+					pass
+				game = event["name"].lower()
+				games = []
+				for team in game.split(" @ "):
+					t = convertTeam(team)
+					games.append(t)
+				game = " @ ".join(games)
+				if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
+					continue
+
+				events[event["eventId"]] = game
+
+			for catRow in data["eventGroup"]["offerCategories"]:
+				if catRow["offerCategoryId"] != mainCats[mainCat]:
+					continue
+				if "offerSubcategoryDescriptors" not in catRow:
+					continue
+				for cRow in catRow["offerSubcategoryDescriptors"]:
+					if "offerSubcategory" not in cRow:
+						continue
+					topProp = cRow["name"].lower()
+					for offerRow in cRow["offerSubcategory"]["offers"]:
+						for row in offerRow:
+							try:
+								game = events[row["eventId"]]
+							except:
+								continue
+
+							#if game != "texas a&m @ miami fl":
+							#	continue
+
+							if "label" not in row:
+								continue
+
+							alt = True
+							if subCat in propIds:
+								prop = propIds[subCat]
+
+								if "o/u" in prop:
+									alt = False
+									prop = prop.replace("-o/u", "")
+							else:
+								alt = False
+								prop = row["label"].lower().split(" [")[0]
+							
+								prefix = ""
+								if "1st 5" in prop:
+									prefix = "f5_"
+								elif "1st 3" in prop:
+									prefix = "f3_"
+								elif "1st 7" in prop:
+									prefix = "f7_"
+
+								if "moneyline" in prop or prop in ["1st 5 innings", "1st 3 innings", "1st 7 innings"]:
+									prop = "ml"
+								elif "run line" in prop:
+									prop = "spread"
+								elif topProp == "team total runs":
+									team = convertTeam(prop.replace(" total runs", "").replace("alternate ", ""))
+									if game.startswith(team):
+										prop = "away_total"
+									else:
+										prop = "home_total"
+								elif "total" in prop:
+									prop = "total"
+								else:
+									continue
+
+
+								prop = prop.replace(" alternate", "")
+								prop = f"{prefix}{prop}"
+
+							outcomes = row["outcomes"]
+							if "ml" in prop:
+								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
+								continue
+
+							for outcome in outcomes:
+								if "spread" in prop or "total" in prop:
+									player = convertMLBTeam(outcome["participant"])
+								else:
+									player = parsePlayer(outcome["participant"].split(" (")[0].strip())
+
+								ou = outcome["oddsAmerican"]
+
+								if prop == "win":
+									if player in lines[game][prop]:
+										lines[game][prop][player] += "/"+ou
+									else:
+										lines[game][prop][player] = ou
+								elif prop == "rfi":
+									if outcome["line"] != 0.5:
+										continue
+									if prop in lines[game]:
+										lines[game][prop] += "/"+ou
+									else:
+										lines[game][prop] = ou
+								elif alt:
+									line = outcome.get("label", "")
+
+									if line:
+										line = str(float(line.replace("+", "")) - 0.5)
+										if line in lines[game][prop][player]:
+											o,u = map(str, lines[game][prop][player][line].split("/"))
+											if int(ou) > int(o):
+												o = ou
+											lines[game][prop][player][line] = o+"/"+u
+										else:
+											lines[game][prop][player][line] = ou
+									else:
+										lines[game][prop][player] = ou
+								elif "spread" in prop or "total" in prop:
+									line = str(float(outcome["line"]))
+									isOver = outcome["label"] == "Over"
+									if line not in lines[game][prop]:
+										lines[game][prop][line] = ou
+									else:
+
+										lines[game][prop][line] = ou
+								else: #o/u
+									line = outcome.get("line", "")
+
+									if line:
+										line = str(float(line))
+										if line in lines[game][prop][player]:
+											if "under" in outcome.get("label", "").lower():
+												lines[game][prop][player][line] += "/"+ou
+										else:
+											lines[game][prop][player][line] = ou
+									else:
+										lines[game][prop][player] = ou
+
+							continue
+
+							if "ml" in prop:
+								lines[game][prop] = ou
+							elif prop == "rfi":
+								lines[game][prop] = ou
+							elif "total" in prop or "spread" in prop:
+								for i in range(0, len(outcomes), 1):
+									line = str(float(outcomes[i]["line"]))
+									odds = str(outcomes[i]['oddsAmerican'])
+									team = outcomes[i]["label"].lower()
+									team = convertTeam(team)
+
+									if game.endswith(team):
+										line = str(float(line) * -1)
+									if line not in lines[game][prop]:
+										lines[game][prop][line] = odds
+									else:
+										if outcomes[i]["label"] == "Under" or game.endswith(team):
+
+											if len(lines[game][prop][line].split("/")) == 2:
+												if int(odds) > int(lines[game][prop][line].split("/")[-1]):
+													lines[game][prop][line] = f"{lines[game][prop][line].split('/')[0]}/{odds}"
+											else:
+												lines[game][prop][line] += "/"+odds
+										else:
+											if len(lines[game][prop][line].split("/")) == 2:
+												if int(odds) > int(lines[game][prop][line].split("/")[0]):
+													lines[game][prop][line] = f"{odds}/{lines[game][prop][line].split('/')[-1]}"
+											else:
+												lines[game][prop][line] = odds+"/"+lines[game][prop][line]
+							else:
+								ou = f"{outcomes[0]['oddsAmerican']}"
+								if len(row["outcomes"]) > 1:
+									ou += f"/{outcomes[1]['oddsAmerican']}"
+								player = parsePlayer(outcomes[0]["participant"].split(" (")[0].strip())
+
+								if prop == "hr" and subCat == 15520:
+									if player in lines[game][prop]:
+										continue
+
+								if player not in lines[game][prop]:
+									lines[game][prop][player] = {}
+
+								if prop == "hr" and subCat == 15520:
+									for outcome in outcomes:
+										if outcome["label"] != "1+":
+											continue
+										lines[game][prop][player] = f"{outcome['oddsAmerican']}"
+								elif prop in ["w", "hr", "sb"]:
+									lines[game][prop][player] = ou
+								elif prop in ["single", "double"]:
+									if str(outcomes[0]['line']) != "0.5":
+										continue
+									lines[game][prop][player] = ou
+								else:
+									lines[game][prop][player][outcomes[0]['line']] = ou
+
+
+	if keep:
+		with open("static/mlb/draftkings.json") as fh:
+			d = json.load(fh)
+		merge_dicts(d, lines, forceReplace=True)
+		with open("static/mlb/draftkings.json", "w") as fh:
+			json.dump(d, fh, indent=4)
+	else:
+		with open("static/mlb/draftkings.json", "w") as fh:
+			json.dump(lines, fh, indent=4)
+
 def writeKambi(date):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -2211,6 +2516,7 @@ if __name__ == '__main__':
 	parser.add_argument("--writeGamelogs", action="store_true")
 	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--leftRight", action="store_true")
+	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--year", type=int)
 	parser.add_argument("--book", help="Book")
@@ -2252,7 +2558,7 @@ if __name__ == '__main__':
 		writePointsbet(args.date)
 
 	if args.dk:
-		writeDK(args.date, args.prop)
+		writeDK(args.date, args.prop, args.keep)
 
 	if args.kambi:
 		writeKambi(args.date)
