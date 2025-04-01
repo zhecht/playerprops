@@ -868,7 +868,7 @@ def writeEV(dinger):
 				devig(evData, player, ou, int(data[game][player]["fd"]), book="fd")
 				fd = int(data[game][player]["fd"])
 				fd = convertAmericanOdds(1 + (convertDecOdds(fd) - 1) * 1.50)
-				devig(evData, player, ou, fd, book="fd50%")
+				devig(evData, player, ou, fd, book="fd-50%")
 			if player not in evData:
 				continue
 
