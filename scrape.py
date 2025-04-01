@@ -1436,6 +1436,8 @@ async def writeMGMFromHTML(data, html, sport, game):
 			prop = "fgs"
 		elif prop == "totals":
 			prop = "total"
+		elif prop.startswith("1st inning run"):
+			prop = "rfi"
 		elif prop.startswith("player") or prop.startswith("alternate player"):
 			if prop.startswith("alternate"):
 				alt = True
@@ -1454,6 +1456,8 @@ async def writeMGMFromHTML(data, html, sport, game):
 			data[game]["spread"][line] = odds[0].text+"/"+odds[3].text
 			line = str(float(lines[1].text.strip().replace("+", "").split(" ")[-1]))
 			data[game]["total"][line] = odds[1].text+"/"+odds[4].text
+		elif prop == "rfi":
+			data[game]["rfi"] = odds[0].text+"/"+odds[1].text
 		elif prop.endswith(": total points") or prop.endswith(": total runs") or prop in ["spread", "total"]:
 			if sport == "nhl":
 				t = convertMGMNHLTeam(prop.split(":")[0])
@@ -1535,7 +1539,9 @@ async def writeMGM(sport):
 
 				multProps = False
 				alt = False
-				if prop == "first td scorer":
+				if prop.startswith("1st inning run"):
+					prop = "rfi"
+				elif prop == "first td scorer":
 					prop = "ftd"
 				elif prop == "anytime td scorer":
 					prop = "attd"

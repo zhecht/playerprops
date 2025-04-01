@@ -1328,7 +1328,7 @@ def writeDK(date, propArg, keep):
 		"pitcher": 1031,
 		#"game props": 724,
 		#"innings": 729,
-		#"1st inning": 1024,
+		"1st inning": 1024,
 		#"1st x innings": 1626
 	}
 	
@@ -1363,22 +1363,22 @@ def writeDK(date, propArg, keep):
 		17412: "era-o/u", 17413: "outs-o/u",
 	}
 
-	if False:
+	if True:
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
 			#"game lines": 493,
 			#"game props": 724,
 			#"innings": 729,
-			#"1st inning": 1024,
-			"1st x innings": 1626
+			"1st inning": 1024,
+			#"1st x innings": 1626
 		}
 
 		subCats = {
 			#743: [17319, 17320, 17321, 17322, 17406, 6719, 6607, 8025, 17407, 17408, 17409, 17410, 17411],
 			#1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
-			#1024: [11024],
-			1626: [15629]
+			1024: [11024],
+			#1626: [15629]
 		}
 
 	lines = nested_dict()
