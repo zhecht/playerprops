@@ -2456,6 +2456,8 @@ async def writeFD(sport):
 						#print(label)
 						mainLine = str(float(label.split("+")[0].split(" ")[-1]) - 0.5)
 						prop = label.split(" ")[-1].replace("hits", "h").replace("runs", "r").replace("rbis", "rbi").replace("bases", "tb")
+						if "stolen" in label:
+							prop = "sb"
 					skip = 1
 				elif label.endswith("total goals"):
 					team = convertNHLTeam(label.split(" total")[0])
