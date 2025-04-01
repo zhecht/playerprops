@@ -168,6 +168,120 @@ def writeDaily():
 	with open(f"static/mlb/lines/{date}.json", "w") as fh:
 		json.dump(lines, fh)
 
+
+async def writeLeftRight(year):
+	if not year:
+		year = datetime.now().year - 1
+
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	playerTeams = nested_dict()
+	for team in roster:
+		for player in roster[team]:
+			if player not in playerTeams:
+				playerTeams[player] = []
+			playerTeams[player].append(team)
+
+	url = f"https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=1&startDate=2024-03-01&endDate=2024-11-01&splitArrPitch=&position=B&autoPt=false&splitTeams=false&statType=player&statgroup=1&players=&filter=PA%7Cgt%7C10&groupBy=season&wxTemperature=&wxPressure=&wxAirDensity=&wxElevation=&wxWindSpeed=&sort=22,1&pg=0"
+
+	leftRightSplits = nested_dict()
+
+	for throws in ["LHP", "RHP"]:
+		with open(f"Splits Leaderboard Data vs {throws}.csv", newline="") as fh:
+			reader = csv.reader(fh)
+
+			headers = []
+			for idx, row in enumerate(reader):
+				if idx == 0:
+					headers = [x.lower() for x in row]
+				else:
+					player = parsePlayer(row[1])
+					if "Tm" in row[2]:
+						teams = playerTeams.get(player)
+						if not teams:
+							team = row[2].lower()
+						else:
+							team = teams[0]
+					else:
+						team = convertMLBTeam(row[2])
+
+					for hdr, col in zip(headers, row):
+						try:
+							leftRightSplits[team][player][year][throws][f"{hdr}"] = int(col)
+						except:
+							try:
+								leftRightSplits[team][player][year][throws][f"{hdr}"] = float(col)
+							except:
+								leftRightSplits[team][player][year][throws][f"{hdr}"] = col
+
+	with open(f"static/mlb/leftRightSplits.json") as fh:
+		data = json.load(fh)
+	merge_dicts(data, leftRightSplits, forceReplace=True)
+
+	for team in data:
+		for player in data[team]:
+			data[team][player]["total"] = {}
+
+			for year in data[team][player]:
+				if year == "total":
+					continue
+				for LR in data[team][player][year]:
+					for key in data[team][player][year][LR]:
+						if key in ["season", "name", "tm", "playerId", "avg"]:
+							continue
+						val = data[team][player][year][LR][key]
+						if key in data[team][player]["total"]:
+							data[team][player]["total"][key] += val
+						else:
+							data[team][player]["total"][key] = val
+
+	with open(f"static/mlb/leftRightSplits.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
+def writeLeftRightSplits():
+
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	playerTeams = nested_dict()
+	for team in roster:
+		for player in roster[team]:
+			if player not in playerTeams:
+				playerTeams[player] = []
+			playerTeams[player].append(team)
+
+	url = "https://www.fangraphs.com/leaders/splits-leaderboards?splitArr=1&splitArrPitch=&position=B&autoPt=false&splitTeams=false&statType=player&statgroup=1&startDate=2024-03-01&endDate=2024-11-01&players=&filter=PA%7Cgt%7C10&groupBy=season&wxTemperature=&wxPressure=&wxAirDensity=&wxElevation=&wxWindSpeed=&sort=22,1&pg=0"
+
+	leftRightSplits = nested_dict()
+
+	for throws in ["LHP", "RHP"]:
+		with open(f"Splits Leaderboard Data vs {throws}.csv", newline="") as fh:
+			reader = csv.reader(fh)
+
+			headers = []
+			for idx, row in enumerate(reader):
+				if idx == 0:
+					headers = [x.lower() for x in row]
+				else:
+					player = parsePlayer(row[1])
+					if "Tm" in row[2]:
+						teams = playerTeams.get(player)
+						if not teams:
+							continue
+						team = teams[0]
+					else:
+						team = convertMLBTeam(row[2])
+
+					for hdr, col in zip(headers, row):
+						try:
+							leftRightSplits[team][player][throws][f"{hdr}"] = float(col)
+						except:
+							leftRightSplits[team][player][throws][f"{hdr}"] = col
+
+	with open(f"static/mlb/leftRightSplits.json", "w") as fh:
+		json.dump(leftRightSplits, fh, indent=4)
+
 def writeESPN():
 	js = """
 
@@ -1811,12 +1925,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						logsLYR = ",".join([str(x) for x in logsLYR])
 
 						if i == 1:
-							if total10Over:
-								total10Over = 100 - total10Over
-							if totalOver:
-								totalOver = 100 - totalOver
-							if totalOverLastYear:
-								totalOverLastYear = 100 - totalOverLastYear	
+							#if total10Over:
+							total10Over = 100 - total10Over
+							#if totalOver:
+							totalOver = 100 - totalOver
+							#if totalOverLastYear:
+							totalOverLastYear = 100 - totalOverLastYear	
 
 
 					oppRank = oppRankLastYear = 0
@@ -2096,7 +2210,9 @@ if __name__ == '__main__':
 	parser.add_argument("--arb", action="store_true")
 	parser.add_argument("--writeGamelogs", action="store_true")
 	parser.add_argument("--commit", action="store_true")
+	parser.add_argument("--leftRight", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
+	parser.add_argument("--year", type=int)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Book")
 
@@ -2178,6 +2294,10 @@ if __name__ == '__main__':
 
 	if args.commit:
 		commitChanges()
+
+	if args.leftRight:
+		#writeLeftRightSplits()
+		uc.loop().run_until_complete(writeLeftRight(args.year))
 
 	if args.player:
 		#with open(f"{prefix}static/mlb/draftkings.json") as fh:
