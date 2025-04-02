@@ -1197,6 +1197,8 @@ def convertTeamRankingsTeam(team):
 		return "nyy"
 	elif team.endswith("mets"):
 		return "nym"
+	elif team == "sacramento":
+		return "ath"
 	return team.replace(".", "").replace(" ", "")[:3]
 
 def addNumSuffix(val):
