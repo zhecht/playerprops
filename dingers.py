@@ -689,7 +689,7 @@ def parseFeed(times):
 				pass
 
 			pa = tds[2].text.strip()
-			print(game, times[game].get(pa))
+			#print(game, times[game].get(pa))
 			dt = times[game].get(pa, str(datetime.now()).split(".")[0])
 			times[game][pa] = dt
 			j = {
