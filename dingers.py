@@ -838,7 +838,7 @@ def writeEV(dinger):
 				if highest == int(over):
 					evBook = book
 				avgOver.append(convertImpOdds(int(over)))
-				if "/" in odds:
+				if "/" in odds and book != "espn":
 					avgUnder.append(convertImpOdds(int(odds.split("/")[-1])))
 
 			if avgOver:
