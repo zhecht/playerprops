@@ -694,6 +694,7 @@ def parseFeed(times):
 			times[game][pa] = dt
 			j = {
 				"player": player,
+				"game": game,
 				"hr/park": tds[-1].text.strip(),
 				"pa": pa,
 				"dt": dt,
