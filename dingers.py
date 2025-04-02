@@ -765,6 +765,13 @@ def writeEV(dinger):
 	with open(f"static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
+	with open(f"static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	gameTimes = {}
+	for gameData in schedule[str(datetime.now())[:10]]:
+		gameTimes[gameData["game"]] = gameData["start"]
+
 	with open(f"updated.json") as fh:
 		updated = json.load(fh)
 	updated["dingers"] = str(datetime.now())
@@ -775,6 +782,7 @@ def writeEV(dinger):
 
 	for game in data:
 		away, home = map(str, game.split(" @ "))
+		gameStart = gameTimes.get(game, "")
 		gameWeather = weather.get(game, {})
 		awayStats = {}
 		homeStats = {}
@@ -892,6 +900,7 @@ def writeEV(dinger):
 			evData[player]["lastHR"] = lastHR
 			evData[player]["ph"] = pinchHit
 			evData[player]["order"] = order
+			evData[player]["start"] = gameStart
 			evData[player]["bookOdds"] = {b: o for b, o in zip(books, oddsArr)}
 
 	with open("static/dailyev/ev.json", "w") as fh:
