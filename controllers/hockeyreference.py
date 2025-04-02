@@ -626,6 +626,7 @@ if __name__ == "__main__":
 	parser.add_argument("--rankings", help="Rankings", action="store_true")
 	parser.add_argument("--schedule", help="Schedule", action="store_true")
 	parser.add_argument("--logos", action="store_true")
+	parser.add_argument("--roster", action="store_true")
 	parser.add_argument("--splits", action="store_true")
 	parser.add_argument("--totals", help="Totals", action="store_true")
 	parser.add_argument("--stats", help="Stats", action="store_true")
