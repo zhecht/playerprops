@@ -770,7 +770,9 @@ def writeEV(dinger):
 
 	gameTimes = {}
 	for gameData in schedule[str(datetime.now())[:10]]:
-		gameTimes[gameData["game"]] = gameData["start"]
+		dt = datetime.strptime(gameData["start"], "%I:%M %p")
+		dt = int(dt.strftime("%H%M"))
+		gameTimes[gameData["game"]] = dt
 
 	with open(f"updated.json") as fh:
 		updated = json.load(fh)
@@ -782,7 +784,7 @@ def writeEV(dinger):
 
 	for game in data:
 		away, home = map(str, game.split(" @ "))
-		gameStart = gameTimes.get(game, "")
+		gameStart = gameTimes[game]
 		gameWeather = weather.get(game, {})
 		awayStats = {}
 		homeStats = {}
