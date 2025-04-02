@@ -1378,6 +1378,7 @@ def writeDK(date, propArg, keep):
 
 		subCats = {
 			#743: [17319, 17320, 17321, 17322, 17406, 6719, 6607, 8025, 17407, 17408, 17409, 17410, 17411],
+			743: [17406],
 			#1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
 			1024: [11024],
 			#1626: [15629]
@@ -1500,7 +1501,7 @@ def writeDK(date, propArg, keep):
 								continue
 
 							skip = 1
-							if "spread" in prop or "total" in prop:
+							if not alt:
 								skip = 2
 							for i in range(0, len(outcomes), skip):
 								outcome = outcomes[i]
@@ -1512,17 +1513,13 @@ def writeDK(date, propArg, keep):
 								ou = outcome["oddsAmerican"]
 
 								if prop == "win":
-									if player in lines[game][prop]:
-										lines[game][prop][player] += "/"+ou
-									else:
-										lines[game][prop][player] = ou
+									if i+1 >= len(outcomes):
+										continue
+									lines[game][prop][player] = ou+"/"+outcomes[i+1]["oddsAmerican"]
 								elif prop == "rfi":
 									if outcome["line"] != 0.5:
 										continue
-									if prop in lines[game]:
-										lines[game][prop] += "/"+ou
-									else:
-										lines[game][prop] = ou
+									lines[game][prop] = ou+"/"+outcomes[i+1]["oddsAmerican"]
 								elif alt:
 									line = outcome.get("label", "")
 
@@ -1543,77 +1540,21 @@ def writeDK(date, propArg, keep):
 								else: #o/u
 									line = outcome.get("line", "")
 
+									if i+1 >= len(outcomes):
+										continue
+
 									if not line or prop in ["single", "double", "triple"]:
-										if player in lines[game][prop]:
-											lines[game][prop][player] += "/"+ou
-										else:
-											lines[game][prop][player] = ou
+										lines[game][prop][player] = ou+"/"+outcomes[i+1]["oddsAmerican"]
 									else:
 										line = str(float(line))
+										lines[game][prop][player] [line] = ou+"/"+outcomes[i+1]["oddsAmerican"]
+										"""
 										if line in lines[game][prop][player]:
 											if "under" in outcome.get("label", "").lower():
 												lines[game][prop][player][line] += "/"+ou
 										else:
 											lines[game][prop][player][line] = ou
-
-							continue
-
-							if "ml" in prop:
-								lines[game][prop] = ou
-							elif prop == "rfi":
-								lines[game][prop] = ou
-							elif "total" in prop or "spread" in prop:
-								for i in range(0, len(outcomes), 1):
-									line = str(float(outcomes[i]["line"]))
-									odds = str(outcomes[i]['oddsAmerican'])
-									team = outcomes[i]["label"].lower()
-									team = convertTeam(team)
-
-									if game.endswith(team):
-										line = str(float(line) * -1)
-									if line not in lines[game][prop]:
-										lines[game][prop][line] = odds
-									else:
-										if outcomes[i]["label"] == "Under" or game.endswith(team):
-
-											if len(lines[game][prop][line].split("/")) == 2:
-												if int(odds) > int(lines[game][prop][line].split("/")[-1]):
-													lines[game][prop][line] = f"{lines[game][prop][line].split('/')[0]}/{odds}"
-											else:
-												lines[game][prop][line] += "/"+odds
-										else:
-											if len(lines[game][prop][line].split("/")) == 2:
-												if int(odds) > int(lines[game][prop][line].split("/")[0]):
-													lines[game][prop][line] = f"{odds}/{lines[game][prop][line].split('/')[-1]}"
-											else:
-												lines[game][prop][line] = odds+"/"+lines[game][prop][line]
-							else:
-								ou = f"{outcomes[0]['oddsAmerican']}"
-								if len(row["outcomes"]) > 1:
-									ou += f"/{outcomes[1]['oddsAmerican']}"
-								player = parsePlayer(outcomes[0]["participant"].split(" (")[0].strip())
-
-								if prop == "hr" and subCat == 15520:
-									if player in lines[game][prop]:
-										continue
-
-								if player not in lines[game][prop]:
-									lines[game][prop][player] = {}
-
-								if prop == "hr" and subCat == 15520:
-									for outcome in outcomes:
-										if outcome["label"] != "1+":
-											continue
-										lines[game][prop][player] = f"{outcome['oddsAmerican']}"
-								elif prop in ["w", "hr", "sb"]:
-									lines[game][prop][player] = ou
-								elif prop in ["single", "double"]:
-									if str(outcomes[0]['line']) != "0.5":
-										continue
-									lines[game][prop][player] = ou
-								else:
-									lines[game][prop][player][outcomes[0]['line']] = ou
-
+										"""
 
 	if keep:
 		with open("static/mlb/draftkings.json") as fh:
