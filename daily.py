@@ -111,9 +111,13 @@ def writeStats(sport, date):
 
 		awayTeam, homeTeam = map(str, gameData["game"].split(" @ "))
 		for team, teamStats in zip([awayTeam, homeTeam], boxscore):
+			awayHome = "H" if team == homeTeam else "A"
+			opp = awayTeam if team == homeTeam else homeTeam
 			for pos, posStats in zip(["h", "p"], teamStats["stats"]):
 				for playerStats in posStats["athlts"]:
 					player = parsePlayer(playerStats["athlt"]["dspNm"])
+					stats[team][player]["awayHome"] = awayHome
+					stats[team][player]["opp"] = opp
 
 					for play in playerStats.get("plys", []):
 						p = getPlayType(sport, playData[play])
@@ -180,7 +184,13 @@ def writeStats(sport, date):
 				if dtIdx == -1:
 					teamStats[player][key].append(stats[team][player][key])
 				else:
-					teamStats[player][key][dtIdx] = stats[team][player][key]
+					if len(teamStats[player][key]) == 0:
+						teamStats[player][key] = [stats[team][player][key]]*len(teamStats[player]["dt"])
+					else:
+						try:
+							teamStats[player][key][dtIdx] = stats[team][player][key]
+						except:
+							continue
 
 		with open(path, "w") as fh:
 			json.dump(teamStats, fh)
