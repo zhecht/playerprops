@@ -281,8 +281,8 @@ def write_totals():
 
 def writeRoster():
 	playerIds = {}
-	#with open(f"{prefix}static/hockeyreference/playerIds.json") as fh:
-	#	playerIds = json.load(fh)
+	with open(f"{prefix}static/hockeyreference/playerIds.json") as fh:
+		playerIds = json.load(fh)
 
 	roster = {}
 	#teams = os.listdir(f"{prefix}static/baseballreference/")
