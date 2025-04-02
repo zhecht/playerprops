@@ -809,7 +809,7 @@ def writeEV(dinger):
 				pass
 
 			try:
-				order = lineups[team]["batters"].index(player)
+				order = lineups[team]["batters"].index(player)+1
 			except:
 				order = "-"
 
