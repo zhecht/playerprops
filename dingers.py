@@ -1216,3 +1216,17 @@ if __name__ == '__main__':
 
 	if args.commit:
 		commitChanges()
+
+	data = []
+	plays = [("matt wallner", 340), ("aaron judge", 230)]
+	for player, odds in plays:
+		data.append({
+			"book": "fd",
+			"sport": "mlb",
+			"player": player,
+			"prop": "hr",
+			"odds": odds
+		})
+
+	with open("plays.json", "w") as fh:
+		json.dump(data, fh, indent=4)
