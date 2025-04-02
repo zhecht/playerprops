@@ -10,7 +10,7 @@ def commitChanges():
 
 	origin = repo.remote(name="origin")
 	origin.push()
-	print("Successful commit")
+	#print("Successful commit")
 
 async def writeCZToken():
 	url = f"https://sportsbook.caesars.com/us/mi/bet/"

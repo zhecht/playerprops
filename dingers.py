@@ -672,7 +672,7 @@ def parseFeed(times, totGames):
 	allTable = soup.find("div", id="allMetrics")
 	hdrs = [th.text.lower() for th in allTable.find_all("th")]
 	data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
-	data["all"]["games"] = totGames
+	data["all"]["totGames"] = totGames
 	for div in soup.find_all("div", class_="game-container"):
 		away = div.find("div", class_="team-left")
 		home = div.find("div", class_="team-right")
