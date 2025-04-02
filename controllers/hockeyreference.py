@@ -295,7 +295,7 @@ def writeRoster():
 
 		roster[team] = {}
 		time.sleep(0.2)
-		url = f"https://www.espn.com/mlb/team/roster/_/name/{team}/"
+		url = f"https://www.espn.com/nhl/team/roster/_/name/{team}/"
 		outfile = "outmlb3"
 		call(["curl", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
@@ -311,7 +311,7 @@ def writeRoster():
 	with open(f"{prefix}static/hockeyreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
 
-	with open(f"{prefix}static/baseballreference/roster.json", "w") as fh:
+	with open(f"{prefix}static/hockeyreference/roster.json", "w") as fh:
 		json.dump(roster, fh, indent=4)
 
 def convertStatMuseTeam(team):
