@@ -1219,13 +1219,20 @@ if __name__ == '__main__':
 
 	data = []
 	plays = [("matt wallner", 340), ("aaron judge", 230)]
+	with open("static/dailyev/ev.json") as fh:
+		ev = json.load(fh)
 	for player, odds in plays:
+		evData = {}
+		devig(evData, player, ev[player]["ou"], odds)
+		betEV = evData[player]["ev"]
 		data.append({
 			"book": "fd",
 			"sport": "mlb",
 			"player": player,
 			"prop": "hr",
-			"odds": odds
+			"odds": odds,
+			"ev": ev.get(player, {}),
+			"betEV": betEV,
 		})
 
 	with open("plays.json", "w") as fh:
