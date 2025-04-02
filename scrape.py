@@ -3654,19 +3654,19 @@ if __name__ == '__main__':
 
 	if args.espn:
 		#games["ole miss @ iowa state"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/ncaab-championship/event/eab40ca8-b46e-4a85-abbd-f573bf54f523/section/player-props"
-		games = uc.loop().run_until_complete(getESPNLinks(args.sport, args.tomorrow or args.tmrw))
+		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw))
 		totThreads = min(args.threads, len(games)*2)
-		runThreads("espn", args.sport, games, totThreads, keep=True)
+		runThreads("espn", sport, games, totThreads, keep=True)
 
 	if args.mgm:
-		games = uc.loop().run_until_complete(getMGMLinks(args.sport, args.tomorrow or args.tmrw))
+		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw))
 		#print(games)
 		#games["bryant @ michigan state"] = "/en/sports/events/bryant-at-michigan-state-neutral-venue-17231070?market=-1"
 		totThreads = min(args.threads, len(games))
-		runThreads("mgm", args.sport, games, totThreads, keep=True)
+		runThreads("mgm", sport, games, totThreads, keep=True)
 
 	if args.dk:
-		games = uc.loop().run_until_complete(getDKLinks(args.sport))
+		games = uc.loop().run_until_complete(getDKLinks(sport))
 		#games["home-runs"] = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
-		runThreads("draftkings", args.sport, games, min(args.threads, len(games)), args.keep)
+		runThreads("draftkings", sport, games, min(args.threads, len(games)), args.keep)
 
