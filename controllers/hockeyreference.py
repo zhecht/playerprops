@@ -280,7 +280,7 @@ def write_totals():
 		json.dump(totals, fh, indent=4)
 
 def writeRoster():
-
+	playerIds = {}
 	#with open(f"{prefix}static/hockeyreference/playerIds.json") as fh:
 	#	playerIds = json.load(fh)
 
