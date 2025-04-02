@@ -656,7 +656,7 @@ async def writeFeed(date, loop):
 			break
 		
 		time.sleep(1)
-		if i >= 7:
+		if i >= 5:
 			commitChanges()
 			i = 0
 
