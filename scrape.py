@@ -1716,7 +1716,8 @@ def runThreads(book, sport, games, totThreads, keep=False):
 			json.dump({}, fh, indent=4)
 	rosters = {}
 	if sport in ["mlb", "nhl"] and book == "espn":
-		with open("static/baseballreference/roster.json") as fh:
+		x = "baseballreference" if sport == "mlb" else "hockeyreference"
+		with open(f"static/{x}/roster.json") as fh:
 			rosters = json.load(fh)
 
 	for _ in range(totThreads):
