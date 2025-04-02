@@ -1498,6 +1498,9 @@ def writeDK(date, propArg, keep):
 							outcomes = row["outcomes"]
 							if "ml" in prop:
 								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
+							elif prop == "rfi":
+								outcomes = [x for x in outcomes if x["line"] == 0.5]
+								lines[game][prop] = outcomes[0]["oddsAmerican"]+"/"+outcomes[1]["oddsAmerican"]
 								continue
 
 							skip = 1
@@ -1516,10 +1519,6 @@ def writeDK(date, propArg, keep):
 									if i+1 >= len(outcomes):
 										continue
 									lines[game][prop][player] = ou+"/"+outcomes[i+1]["oddsAmerican"]
-								elif prop == "rfi":
-									if outcome["line"] != 0.5:
-										continue
-									lines[game][prop] = ou+"/"+outcomes[i+1]["oddsAmerican"]
 								elif alt:
 									line = outcome.get("label", "")
 
