@@ -279,6 +279,41 @@ def write_totals():
 	with open(f"{prefix}static/hockeyreference/totals.json", "w") as fh:
 		json.dump(totals, fh, indent=4)
 
+def writeRoster():
+
+	#with open(f"{prefix}static/hockeyreference/playerIds.json") as fh:
+	#	playerIds = json.load(fh)
+
+	roster = {}
+	#teams = os.listdir(f"{prefix}static/baseballreference/")
+	teams = [x.replace(".png", "") for x in os.listdir(f"/mnt/c/Users/zhech/Documents/dailyev/logos/nhl/")]
+	#teams = ["chc", "lad"]
+	for team in teams:
+
+		if team not in playerIds:
+			playerIds[team] = {}
+
+		roster[team] = {}
+		time.sleep(0.2)
+		url = f"https://www.espn.com/mlb/team/roster/_/name/{team}/"
+		outfile = "outmlb3"
+		call(["curl", url, "-o", outfile])
+		soup = BS(open(outfile, 'rb').read(), "lxml")
+
+		for table in soup.find_all("table"):
+			for row in table.find_all("tr")[1:]:
+				nameLink = row.find_all("td")[1].find("a").get("href").split("/")
+				fullName = parsePlayer(row.find_all("td")[1].find("a").text)
+				playerId = int(nameLink[-1])
+				playerIds[team][fullName] = playerId
+				roster[team][fullName] = row.find_all("td")[2].text.strip()
+
+	with open(f"{prefix}static/hockeyreference/playerIds.json", "w") as fh:
+		json.dump(playerIds, fh, indent=4)
+
+	with open(f"{prefix}static/baseballreference/roster.json", "w") as fh:
+		json.dump(roster, fh, indent=4)
+
 def convertStatMuseTeam(team):
 	team = team.lower()
 	if team.startswith("montreal"):
@@ -614,6 +649,8 @@ if __name__ == "__main__":
 		write_totals()
 	elif args.ids:
 		writePlayerIds()
+	elif args.roster:
+		writeRoster()
 	elif args.rankings:
 		writeRankings()
 	elif args.ttoi:
