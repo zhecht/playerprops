@@ -698,7 +698,8 @@ def parseFeed(times):
 				"hr/park": tds[-1].text.strip(),
 				"pa": pa,
 				"dt": dt,
-				"img": img
+				"img": img,
+				"team": convertSavantLogoId(img.split("/")[-1].replace(".svg", ""))
 			}
 			i = 3
 			for hdr in ["in", "result", "evo", "la", "dist"]:
