@@ -789,6 +789,9 @@ def writeEV(dinger):
 		awayStats = {}
 		homeStats = {}
 
+		if int(datetime.now().strftime("%H%M")) > gameStart:
+			continue
+
 		if os.path.exists(f"static/splits/mlb/{away}.json"):
 			with open(f"static/splits/mlb/{away}.json") as fh:
 				awayStats = json.load(fh)
@@ -1218,7 +1221,7 @@ if __name__ == '__main__':
 		commitChanges()
 
 	data = []
-	plays = [("matt wallner", 340), ("aaron judge", 230)]
+	plays = [("matt wallner", 340), ("aaron judge", 230), ("trey sweeney", 870), ("byron buxton", 320), ("randy arozarena", 680), ("cal raleigh", 500), ("jake rogers", 830), ("kerry carpenter", 520), ("nick maton", 800)]
 	with open("static/dailyev/ev.json") as fh:
 		ev = json.load(fh)
 	for player, odds in plays:
