@@ -662,6 +662,54 @@ async def writeFeed(date, loop):
 
 	browser.stop()
 
+def parseFeed(times):
+	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
+	data = {}
+	allTable = soup.find("div", id="allMetrics")
+	hdrs = [th.text.lower() for th in allTable.find_all("th")]
+	data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
+	for div in soup.find_all("div", class_="game-container"):
+		away = div.find("div", class_="team-left")
+		home = div.find("div", class_="team-right")
+		away = convertMLBTeam(away.text.strip())
+		home = convertMLBTeam(home.text.strip())
+		game = f"{away} @ {home}"
+		data[game] = []
+		if game not in times:
+			times[game] = {}
+		table = div.find("div", class_="mini-ev-table")
+		if not table:
+			continue
+		for tr in table.find("tbody").find_all("tr"):
+			tds = tr.find_all("td")
+			player = parsePlayer(tds[1].text.strip())
+			img = tds[0].find("img").get("src")
+			if tds[4].text.strip() != "Home Run":
+				#continue
+				pass
+
+			pa = tds[2].text.strip()
+			print(game, times[game].get(pa))
+			dt = times[game].get(pa, str(datetime.now()).split(".")[0])
+			times[game][pa] = dt
+			j = {
+				"player": player,
+				"hr/park": tds[-1].text.strip(),
+				"pa": pa,
+				"dt": dt,
+				"img": img
+			}
+			i = 3
+			for hdr in ["in", "result", "evo", "la", "dist"]:
+				j[hdr] = tds[i].text.strip()
+				i += 1
+			data[game].append(j)
+
+	with open("static/dailyev/feed.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+	with open("static/dailyev/feed_times.json", "w") as fh:
+		json.dump(times, fh, indent=4)
+
 def parseESPN(espnLines):
 	with open("static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
@@ -695,53 +743,6 @@ def parseESPN(espnLines):
 						espnLines[game][prop][player] = espn[game][prop][p]
 					else:
 						espnLines[game][prop][player] = espn[game][prop][p].copy()
-
-def parseFeed(times):
-	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
-	data = {}
-	allTable = soup.find("div", id="allMetrics")
-	hdrs = [th.text.lower() for th in allTable.find_all("th")]
-	data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
-	for div in soup.find_all("div", class_="game-container"):
-		away = div.find("div", class_="team-left")
-		home = div.find("div", class_="team-right")
-		away = convertMLBTeam(away.text.strip())
-		home = convertMLBTeam(home.text.strip())
-		game = f"{away} @ {home}"
-		data[game] = []
-		if game not in times:
-			times[game] = {}
-		table = div.find("div", class_="mini-ev-table")
-		if not table:
-			continue
-		for tr in table.find("tbody").find_all("tr"):
-			tds = tr.find_all("td")
-			player = parsePlayer(tds[1].text.strip())
-			img = tds[0].find("img").get("src")
-			if tds[4].text.strip() != "Home Run":
-				#continue
-				pass
-
-			pa = tds[2].text.strip()
-			dt = times[game].get(pa, str(datetime.now()))
-			times[game][pa] = dt
-			j = {
-				"player": player,
-				"hr/park": tds[-1].text.strip(),
-				"pa": pa,
-				"dt": dt,
-				"img": img
-			}
-			i = 3
-			for hdr in ["in", "result", "evo", "la", "dist"]:
-				j[hdr] = tds[i].text.strip()
-				i += 1
-			data[game].append(j)
-
-	with open("static/dailyev/feed.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-	with open("static/dailyev/feed_times.json", "w") as fh:
-		json.dump(times, fh, indent=4)
 
 def writeEV(dinger):
 	with open(f"static/dailyev/odds.json") as fh:
