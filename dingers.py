@@ -886,7 +886,7 @@ def writeEV(dinger):
 			evData[player]["weather"] = gameWeather
 			evData[player]["book"] = evBook
 			evData[player]["line"] = highest
-			evData[player]["avg"] = ou
+			evData[player]["ou"] = ou
 			evData[player]["prop"] = "hr"
 			evData[player]["bvp"] = bvp
 			evData[player]["lastHR"] = lastHR
