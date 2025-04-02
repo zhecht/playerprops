@@ -3624,6 +3624,7 @@ if __name__ == '__main__':
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--tomorrow", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
+	parser.add_argument("--nhl", action="store_true")
 	parser.add_argument("--threads", type=int, default=7)
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--prop", "-p")
@@ -3632,20 +3633,24 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
+	sport = args.sport
+	if args.nhl:
+		sport = "nhl" 
+
 	games = {}
 	if args.bet365:
-		games = uc.loop().run_until_complete(get365Links(args.sport, args.keep))
+		games = uc.loop().run_until_complete(get365Links(sport, args.keep))
 		#games["alternative-total"] = "https://www.oh.bet365.com/?_h=uIqVxgT5FXe3HZt4UKzGkA%3D%3D&btsffd=1#/AC/B18/C21008290/D47/E181286/F47/N0/"
-		runThreads("bet365", args.sport, games, min(args.threads, len(games)), args.keep)
+		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
-		games = uc.loop().run_until_complete(getBRLinks(args.sport, args.tomorrow or args.tmrw))
-		runThreads("betrivers", args.sport, games, min(args.threads, len(games)), args.keep)
+		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw))
+		runThreads("betrivers", sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
 		#games["kc @ mil"] = "/baseball/mlb/kansas-city-royals-@-milwaukee-brewers-34176901"
-		games = uc.loop().run_until_complete(getFDLinks(args.sport, args.tomorrow or args.tmrw))
+		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw))
 		#print(games)
 		totThreads = min(args.threads, len(games))
-		runThreads("fanduel", args.sport, games, totThreads, keep=True)
+		runThreads("fanduel", sport, games, totThreads, keep=True)
 
 	if args.espn:
 		#games["ole miss @ iowa state"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/ncaab-championship/event/eab40ca8-b46e-4a85-abbd-f573bf54f523/section/player-props"
