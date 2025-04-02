@@ -898,6 +898,8 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 	relatedData = {}
 	for row in related:
+		if row.get("periods") and row["periods"][0]["status"] == "closed":
+			continue
 		if "special" in row:
 			prop = row["units"].lower()
 
@@ -1057,7 +1059,7 @@ def writePinnacle(date, debug=False):
 			games[str(row["id"])] = convertFDTeam(game)
 
 	res = {}
-	#games = {'1592529328': 'kc @ cle'}	
+	#games = {'1606945742': 'nym @ mia'}	
 	retry = []
 	for gameId in games:
 		parsePinnacle(res, games, gameId, retry, debug)
