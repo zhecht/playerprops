@@ -1483,7 +1483,7 @@ def writeDK(date, propArg, keep):
 									prop = "ml"
 								elif "run line" in prop:
 									prop = "spread"
-								elif "team total runs" in topProp:
+								elif "team total runs" in prop:
 									team = convertTeam(prop.split(": ")[0].replace(" total runs", "").replace("alternate ", ""))
 									if game.startswith(team):
 										prop = "away_total"
