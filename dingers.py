@@ -650,18 +650,19 @@ async def writeFeed(date, loop):
 
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
-	games = []
-	for gameData in schedule[date]:
-		dt = datetime.strptime(gameData["start"], "%I:%M %p")
-		dt = int(dt.strftime("%H%M"))
-		if dt <= int(datetime.now().strftime("%H%M")):
-			games.append(gameData)
 
 	i = 0
 	while True:
 		html = await page.get_content()
 		with open(f"static/dailyev/feed.html", "w") as fh:
 			fh.write(html)
+
+		games = []
+		for gameData in schedule[date]:
+			dt = datetime.strptime(gameData["start"], "%I:%M %p")
+			dt = int(dt.strftime("%H%M"))
+			if dt <= int(datetime.now().strftime("%H%M")):
+				games.append(gameData)
 		parseFeed(times, len(games))
 		i += 1
 
