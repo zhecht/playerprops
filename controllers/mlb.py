@@ -1468,6 +1468,8 @@ def writeDK(date, propArg, keep):
 							else:
 								alt = False
 								prop = row["label"].lower().split(" [")[0]
+
+								print(prop)
 							
 								prefix = ""
 								if "1st 5" in prop:
@@ -1495,8 +1497,6 @@ def writeDK(date, propArg, keep):
 
 								prop = prop.replace(" alternate", "")
 								prop = f"{prefix}{prop}"
-
-							print(prop)
 
 							outcomes = row["outcomes"]
 							if "ml" in prop:
