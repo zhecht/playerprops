@@ -784,7 +784,7 @@ def writeEV(dinger):
 
 	with open(f"updated.json") as fh:
 		updated = json.load(fh)
-	updated["dingers"] = str(datetime.now())
+	#updated["dingers"] = str(datetime.now())
 	with open(f"updated.json", "w") as fh:
 		json.dump(updated, fh, indent=4)
 
