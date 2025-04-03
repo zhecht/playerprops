@@ -1218,8 +1218,8 @@ if __name__ == '__main__':
 		writeLineups(args.date)
 
 	if args.update:
-		#for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
-		for book in ["espn", "mgm"]:
+		for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
+		#for book in ["espn", "mgm"]:
 			subprocess.Popen(["python", "dingers.py", f"--{book}"])
 
 		"""
