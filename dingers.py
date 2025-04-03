@@ -652,7 +652,7 @@ async def writeFeed(date, loop):
 		schedule = json.load(fh)
 	games = []
 	for gameData in schedule[date]:
-		dt = datetime.strptime(gameData["start"], "%Y-%m-%d")
+		dt = datetime.strptime(gameData["start"], "%I:%M %p")
 		dt = int(dt.strftime("%H%M"))
 		if dt <= int(datetime.now().strftime("%H%M")):
 			games.append(gameData)
