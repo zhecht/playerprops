@@ -40,13 +40,12 @@ async def writeSplits(player):
 	await page.wait_for(selector=".table-savant")
 	data = nested_dict()
 
-	tab = await page.query_selector("#tab_splits")
-	await tab.click()
+	#tab = await page.query_selector("#tab_splits")
+	#await tab.click()
 
-	el = await page.query_selector("#splits-season-mlb")
-	await el.click()
+	#el = await page.query_selector("#splits-season-mlb")
+	#await el.click()
 
-	time.sleep(5)
 	html = await page.get_content()
 	soup = BS(html, "html.parser")
 
@@ -70,11 +69,20 @@ async def writeSplits(player):
 					except:
 						j[hdr] = td.text.strip().lower()
 
-			data[player][year][j["type"]] = j.copy()
+			t = j["type"]
+			del j["type"]
+			data[player][year][t] = j.copy()
 
 	browser.stop()
+
+	path = f"static/splits/mlb_savant/{team}.json"
+	d = {}
+	if os.path.exists(path):
+		with open(path) as fh:
+			d = json.load(fh)
+	merge_dicts(d, data, forceReplace=True)
 	with open(f"static/splits/mlb_savant/{team}.json", "w") as fh:
-		json.dump(data, fh, indent=4)
+		json.dump(d, fh)
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
