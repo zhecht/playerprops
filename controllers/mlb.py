@@ -1469,7 +1469,7 @@ def writeDK(date, propArg, keep):
 								alt = False
 								prop = row["label"].lower().split(" [")[0]
 
-								print(prop)
+								#print(prop)
 							
 								prefix = ""
 								if "1st 5" in prop:
