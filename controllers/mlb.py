@@ -2114,6 +2114,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							if not o:
 								continue
 
+							if "unavailable" in o:
+								continue
+
 							if o != "-":
 								highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
@@ -2131,6 +2134,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					logsLYR = ""
 					hitRateLYR = 0
 					totalOver = total10Over = totalOverLastYear = 0
+					playerYears = []
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					if prop == "away_total":
 						team = away
@@ -2161,6 +2165,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						dtSplits = ",".join(stats.get("dt", []))
 						totalSplits = ",".join([str(x) for x in stats.get(convertedProp, [])])
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
+						playerYears = sorted(list(statsHist.keys()), reverse=True)
 						logsLYR = statsHist.get(str(lastYear), {}).get(convertedProp, [])[::-1]
 						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("date", [])[::-1])
 						if logsLYR:
@@ -2331,6 +2336,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["fullLine"] = maxOU
 						evData[key]["handicap"] = handicap
 						evData[key]["playerHandicap"] = playerHandicap
+						evData[key]["playerYears"] = playerYears
 						evData[key]["odds"] = l
 						evData[key]["player"] = player
 						evData[key]["pitcher"] = "" if not pitcher else f"{pitcher.title()} ({pitcherLR})"
