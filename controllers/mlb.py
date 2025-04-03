@@ -1372,7 +1372,7 @@ def writeDK(date, propArg, keep):
 			"game lines": 493,
 			#"game props": 724,
 			#"innings": 729,
-			"1st inning": 1024,
+			#"1st inning": 1024,
 			#"1st x innings": 1626
 		}
 
