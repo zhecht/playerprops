@@ -1249,15 +1249,18 @@ if __name__ == '__main__':
 	if args.commit:
 		commitChanges()
 
-	if False:
+	if True:
 		data = []
-		plays = [("matt wallner", 340), ("aaron judge", 230), ("trey sweeney", 870), ("byron buxton", 320), ("randy arozarena", 680), ("cal raleigh", 500), ("jake rogers", 830), ("kerry carpenter", 520), ("nick maton", 800)]
+		plays = [("jordan westburg", 750), ("aaron judge", 172)]
 		with open("static/dailyev/ev.json") as fh:
 			ev = json.load(fh)
 		for player, odds in plays:
 			evData = {}
-			devig(evData, player, ev[player]["ou"], odds)
-			betEV = evData[player]["ev"]
+			if player in ev:
+				devig(evData, player, ev[player]["ou"], odds)
+				betEV = evData[player]["ev"]
+			else:
+				betEV = ""
 			data.append({
 				"book": "fd",
 				"sport": "mlb",
