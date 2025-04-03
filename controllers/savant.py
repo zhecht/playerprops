@@ -38,22 +38,42 @@ async def writeSplits(player):
 
 	page = await browser.get(url)
 	await page.wait_for(selector=".table-savant")
+	data = nested_dict()
+
+	tab = await page.query_selector("#tab_splits")
+	await tab.click()
+
+	el = await page.query_selector("#splits-season-mlb")
+	await el.click()
+
+	time.sleep(5)
 	html = await page.get_content()
 	soup = BS(html, "html.parser")
 
-	data = nested_dict()
 	year = "2025"
 
-	table = soup.select("#date-platoon-mlb")[0]
-	hdrs = [th.text.lower() for th in table.select("th")]
-	for tr in table.select("tbody tr"):
-		for hdr, td in zip(hdrs, tr.select("td")):
-			if hdr in ["team", "lg"]:
-				continue
-			data[player][year]["leftRight"][hdr] = td.text
+	tables = ["#date-platoon-mlb", "#order-splits-mlb"]
+
+	for tableId in tables:
+		table = soup.select(tableId)[0]
+		hdrs = [th.text.lower() for th in table.select("th")]
+		for tr in table.select("tbody tr"):
+			j = {}
+			for hdr, td in zip(hdrs, tr.select("td")):
+				if hdr in ["team", "lg"]:
+					continue
+				try:
+					j[hdr] = int(td.text.strip() or 0)
+				except:
+					try:
+						j[hdr] = float(td.text.strip())
+					except:
+						j[hdr] = td.text.strip().lower()
+
+			data[player][year][j["type"]] = j.copy()
 
 	browser.stop()
-	with open(f"static/splits/mlb_savant/{team}", "w") as fh:
+	with open(f"static/splits/mlb_savant/{team}.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
 if __name__ == "__main__":
