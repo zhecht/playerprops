@@ -784,7 +784,7 @@ def writeEV(dinger):
 
 	with open(f"updated.json") as fh:
 		updated = json.load(fh)
-	updated["dingers"] = str(datetime.now())
+	#updated["dingers"] = str(datetime.now())
 	with open(f"updated.json", "w") as fh:
 		json.dump(updated, fh, indent=4)
 
@@ -798,7 +798,8 @@ def writeEV(dinger):
 		homeStats = {}
 
 		if int(datetime.now().strftime("%H%M")) > gameStart:
-			continue
+			#continue
+			pass
 
 		if os.path.exists(f"static/splits/mlb/{away}.json"):
 			with open(f"static/splits/mlb/{away}.json") as fh:
