@@ -1472,8 +1472,6 @@ def writeDK(date, propArg, keep):
 							else:
 								alt = False
 								prop = row["label"].lower().split(" [")[0]
-
-								print(prop)
 							
 								prefix = ""
 								if "1st 5" in prop:
@@ -1487,7 +1485,7 @@ def writeDK(date, propArg, keep):
 									prop = "ml"
 								elif "run line" in prop:
 									prop = "spread"
-								elif "team total runs" in prop:
+								elif "team total runs" in prop or subCat == 16208:
 									team = convertTeam(prop.split(": ")[0].replace(" total runs", "").replace("alternate ", ""))
 									if game.startswith(team):
 										prop = "away_total"
