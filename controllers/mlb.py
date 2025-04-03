@@ -2002,6 +2002,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"static/baseballreference/leftOrRight.json") as fh:
 		leftOrRight = json.load(fh)
 
+	with open(f"static/mlb/leftRightSplits.json") as fh:
+		leftRightSplits = json.load(fh)
+
 	with open(f"static/dailyev/weather.json") as fh:
 		weather = json.load(fh)
 
@@ -2212,8 +2215,27 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							#if totalOver:
 							totalOver = 100 - totalOver
 							#if totalOverLastYear:
-							totalOverLastYear = 100 - totalOverLastYear	
+							totalOverLastYear = 100 - totalOverLastYear
 
+					bvp = pitcher = ""
+					try:
+						pitcher = lineups[opp]["pitcher"]
+						pitcherLR = leftOrRight[opp].get(pitcher, "")
+						bvpStats = bvpData[team][player+' v '+pitcher]
+						bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
+					except:
+						pass
+
+					# LeftRightSplits Last Year
+					try:
+						x = leftRightSplits[team][player]["2024"][pitcherLR+"HP"]
+						other = "L" if pitcherLR == "R" else "R"
+						x2 = leftRightSplits[team][player]["2024"][pitcherLR+"HP"]
+						if player == "brandon marsh":
+							print(x, x2)
+						leftRightHTML = f"<></>"
+					except:
+						pass
 
 					oppRank = oppRankLastYear = 0
 					rankingsProp = convertRankingsProp(prop)
@@ -2341,15 +2363,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
 
-
-						bvp = pitcher = ""
-						try:
-							pitcher = lineups[opp]["pitcher"]
-							pitcherLR = leftOrRight[opp].get(pitcher, "")
-							bvpStats = bvpData[team][player+' v '+pitcher]
-							bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
-						except:
-							pass
 
 						evData[key]["weather"] = gameWeather
 						evData[key]["implied"] = implied
