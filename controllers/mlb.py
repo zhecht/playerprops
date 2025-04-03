@@ -1496,6 +1496,8 @@ def writeDK(date, propArg, keep):
 								prop = prop.replace(" alternate", "")
 								prop = f"{prefix}{prop}"
 
+							print(prop)
+
 							outcomes = row["outcomes"]
 							if "ml" in prop:
 								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
