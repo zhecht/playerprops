@@ -906,6 +906,7 @@ def writeEV(dinger):
 			evData[player]["player"] = player
 			evData[player]["pitcher"] = "" if not pitcher else f"{pitcher} ({pitcherLR})"
 			evData[player]["game"] = game
+			evData[player]["team"] = team
 			evData[player]["weather"] = gameWeather
 			evData[player]["book"] = evBook
 			evData[player]["line"] = highest
