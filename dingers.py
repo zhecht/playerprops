@@ -861,7 +861,7 @@ def writeEV(dinger):
 					evBook = book
 				avgOver.append(convertImpOdds(int(over)))
 				#if "/" in odds and book not in ["kambi", "espn", "pn"]:
-				if "/" in odds and book != "kambi":
+				if "/" in odds and book not in ["kambi", "pn"]:
 				#if "/" in odds:
 					avgUnder.append(convertImpOdds(int(odds.split("/")[-1])))
 
