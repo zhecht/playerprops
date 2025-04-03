@@ -1369,7 +1369,7 @@ def writeDK(date, propArg, keep):
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
-			"game lines": 493,
+			#"game lines": 493,
 			#"game props": 724,
 			#"innings": 729,
 			#"1st inning": 1024,
