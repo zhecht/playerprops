@@ -1325,7 +1325,7 @@ def writeDK(date, propArg, keep):
 		date = str(datetime.now())[:10]
 
 	mainCats = {
-		#"game lines": 493,
+		"game lines": 493,
 		"batter": 743,
 		"pitcher": 1031,
 		#"game props": 724,
@@ -1365,11 +1365,11 @@ def writeDK(date, propArg, keep):
 		17412: "er-o/u", 17413: "outs-o/u",
 	}
 
-	if False:
+	if True:
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
-			#"game lines": 493,
+			"game lines": 493,
 			#"game props": 724,
 			#"innings": 729,
 			"1st inning": 1024,
@@ -1377,6 +1377,7 @@ def writeDK(date, propArg, keep):
 		}
 
 		subCats = {
+			493: [4519, 13168, 13169],
 			#743: [17319, 17320, 17321, 17322, 17406, 6719, 6607, 8025, 17407, 17408, 17409, 17410, 17411],
 			743: [17406],
 			#1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
