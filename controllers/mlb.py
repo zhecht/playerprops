@@ -1331,7 +1331,7 @@ def writeDK(date, propArg, keep):
 		#"game props": 724,
 		#"innings": 729,
 		"1st inning": 1024,
-		#"1st x innings": 1626
+		"1st x innings": 1626
 	}
 	
 	subCats = {
@@ -1373,7 +1373,7 @@ def writeDK(date, propArg, keep):
 			#"game props": 724,
 			#"innings": 729,
 			#"1st inning": 1024,
-			#"1st x innings": 1626
+			"1st x innings": 1626
 		}
 
 		subCats = {
@@ -1382,7 +1382,7 @@ def writeDK(date, propArg, keep):
 			743: [17406],
 			#1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
 			1024: [11024],
-			#1626: [15629]
+			1626: [15629]
 		}
 
 	lines = nested_dict()
