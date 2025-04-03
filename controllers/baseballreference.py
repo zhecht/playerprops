@@ -707,6 +707,9 @@ async def writePlayerHistory():
 								except:
 									pass
 
+						if val == "Infinity":
+							val = None
+
 						ks, vs = [hdr], [val]
 
 						# add custom hdrs
