@@ -1525,6 +1525,7 @@ def writeDK(date, propArg, keep):
 								elif alt:
 									line = outcome.get("label", "")
 
+									print(game, prop, line)
 									if line:
 										line = str(float(line.replace("+", "")) - 0.5)
 										if line in lines[game][prop][player]:
