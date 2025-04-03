@@ -1232,6 +1232,7 @@ if __name__ == '__main__':
 		for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
 		#for book in ["espn", "mgm"]:
 			subprocess.Popen(["python", "dingers.py", f"--{book}"])
+		subprocess.Popen(["python", "controllers/mlb.py", f"--pn"])
 
 		"""
 		uc.loop().run_until_complete(writeWeather(date))
