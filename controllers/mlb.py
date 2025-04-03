@@ -1543,6 +1543,8 @@ def writeDK(date, propArg, keep):
 									if i+1 >= len(outcomes):
 										continue
 
+									print(prop, line, ou, outcomes[i+1])
+
 									if not line or prop in ["single", "double", "triple"]:
 										lines[game][prop][player] = ou+"/"+outcomes[i+1]["oddsAmerican"]
 									else:
