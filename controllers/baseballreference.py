@@ -1641,7 +1641,7 @@ def writeSavantExpected():
 	for t in ["", "?type=pitcher"]:
 		time.sleep(0.2)
 		outfile = "outmlb3"
-		call(["curl", "-k", url+t, "-o", outfile])
+		call(["curl", "-s", url+t, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		data = "{}"
@@ -2168,6 +2168,8 @@ if __name__ == "__main__":
 
 	printStuff()
 	#readBirthdays()
+
+	writeSavantExpected()
 	
 	#writeDailyHomers()
 

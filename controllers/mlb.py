@@ -2231,8 +2231,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						x = leftRightSplits[team][player]["2024"][pitcherLR+"HP"]
 						other = "L" if pitcherLR == "R" else "R"
 						x2 = leftRightSplits[team][player]["2024"][pitcherLR+"HP"]
-						if player == "brandon marsh":
-							print(x, x2)
 						leftRightHTML = f"<></>"
 					except:
 						pass
