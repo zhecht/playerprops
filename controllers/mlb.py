@@ -2152,7 +2152,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							if not o:
 								continue
 
-							if "unavailable" in o:
+							if "unavailable" in o or "infinity" in o:
 								continue
 
 							if o != "-":
