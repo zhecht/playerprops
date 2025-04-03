@@ -1362,7 +1362,7 @@ def writeDK(date, propArg, keep):
 		17323: "k", 15221: "k-o/u", 9884: "win",
 		17324: "h_allowed", 9886: "h_allowed-o/u",
 		17325: "bb_allowed", 15219: "bb_allowed-o/u",
-		17412: "era-o/u", 17413: "outs-o/u",
+		17412: "er-o/u", 17413: "outs-o/u",
 	}
 
 	if False:
