@@ -1174,6 +1174,10 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 			prop = "rush+rec"
 		elif prop == "3_pointers_made":
 			prop = "3ptm"
+		elif prop == "doubles":
+			prop = "double"
+		elif prop == "singles":
+			prop = "single"
 
 		if sport == "mlb":
 			skip = 2
