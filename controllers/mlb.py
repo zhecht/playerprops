@@ -1367,7 +1367,7 @@ def writeDK(date, propArg, keep):
 		17412: "er-o/u", 17413: "outs-o/u",
 	}
 
-	if True:
+	if False:
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
