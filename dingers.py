@@ -898,7 +898,8 @@ def writeEV(dinger):
 				#if evBook == "dk" and player in evData:
 				#	evData[player]["dk_ev"] = evData[player]["ev"]
 				#else:
-				devig(evData, player, ou, int(data[game][player]["dk"]), book="dk", dinger=True)
+				devig(evData, player, ou, int(data[game][player]["dk"]), book="dk-sweat", dinger=True)
+				devig(evData, player, ou, int(data[game][player]["dk"]), book="dk")
 				pass
 			if "fd" in books:
 				devig(evData, player, ou, int(data[game][player]["fd"]), book="fd")
