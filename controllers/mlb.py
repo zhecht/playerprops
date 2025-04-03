@@ -1516,7 +1516,9 @@ def writeDK(date, propArg, keep):
 
 								ou = outcome["oddsAmerican"]
 
-								if prop == "win":
+								if prop == "ml":
+									lines[game][prop] = ou+"/"+outcomes[i+1]["oddsAmerican"]
+								elif prop == "win":
 									if i+1 >= len(outcomes):
 										continue
 									lines[game][prop][player] = ou+"/"+outcomes[i+1]["oddsAmerican"]
