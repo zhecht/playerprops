@@ -650,7 +650,12 @@ async def writeFeed(date, loop):
 
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
-	games = schedule[date]
+	games = []
+	for gameData in schedule[date]:
+		dt = datetime.strptime(gameData["start"], "%Y-%m-%d")
+		dt = int(dt.strftime("%H%M"))
+		if dt <= int(datetime.now().strftime("%H%M")):
+			games.append(gameData)
 
 	i = 0
 	while True:
