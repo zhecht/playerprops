@@ -1218,7 +1218,21 @@ if __name__ == '__main__':
 		writeLineups(args.date)
 
 	if args.update:
-		writeAll()
+		#for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
+		for book in ["espn", "mgm"]:
+			subprocess.Popen(["python", "dingers.py", f"--{book}"])
+
+		"""
+		uc.loop().run_until_complete(writeWeather(date))
+		writeLineups(args.date)
+		uc.loop().run_until_complete(writeCZ(date, args.token))
+		print("kambi")
+		writeKambi(date)
+		print("dk")
+		uc.loop().run_until_complete(writeOne("dk"))
+		print("365")
+		uc.loop().run_until_complete(writeOne("365"))
+		"""
 
 	if args.ev:
 		writeEV(args.dinger)

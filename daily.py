@@ -201,6 +201,8 @@ if __name__ == '__main__':
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--date", "-d")
 	parser.add_argument("--sport")
+	parser.add_argument("--nhl", action="store_true")
+	parser.add_argument("--mlb", action="store_true")
 	parser.add_argument("-u", "--update", action="store_true")
 	parser.add_argument("--run", action="store_true")
 	parser.add_argument("--schedule", action="store_true")
@@ -208,14 +210,20 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	if not args.sport:
+	sport = args.sport
+	if args.nhl:
+		sport = "nhl"
+	elif args.mlb:
+		sport = "mlb"
+
+	if not sport:
 		print("NEED SPORT")
 		exit()
 
 	if args.update:
-		writeSchedule(args.sport, args.date)
-		writeStats(args.sport, args.date)
+		writeSchedule(sport, args.date)
+		writeStats(sport, args.date)
 	elif args.stats:
-		writeStats(args.sport, args.date)
+		writeStats(sport, args.date)
 	elif args.schedule:
-		writeSchedule(args.sport, args.date)
+		writeSchedule(sport, args.date)
