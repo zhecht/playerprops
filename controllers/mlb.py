@@ -1925,6 +1925,34 @@ def parseESPN(espnLines, noespn=None):
 						else:
 							espnLines[game][prop][player] = espn[game][prop][p].copy()
 
+def clear():
+	with open(f"{prefix}static/mlb/bet365.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/kambi.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/bovada.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/pinnacle.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/mgm.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/fanduel.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/draftkings.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/caesars.json", "w") as fh:
+		json.dump({}, fh)
+
+	with open(f"{prefix}static/mlb/espn.json", "w") as fh:
+		json.dump({}, fh)
+
 def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 	if not boost:
 		boost = 1
@@ -2446,6 +2474,7 @@ if __name__ == '__main__':
 	parser.add_argument("--ml", action="store_true", help="Moneyline and Totals")
 	parser.add_argument("--prop", help="Prop")
 	parser.add_argument("-u", "--update", action="store_true", help="Update")
+	parser.add_argument("--clear", action="store_true", help="Clear")
 	parser.add_argument("--under", action="store_true", help="Under")
 	parser.add_argument("--over", action="store_true", help="Over")
 	parser.add_argument("--nocz", action="store_true", help="No CZ Lines")
@@ -2523,6 +2552,9 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeCZToken())
 		writeCZ(args.date)
 
+	if args.clear:
+		clear()
+
 	if args.update:
 		#writeFanduel()
 		print("pn")
@@ -2532,8 +2564,8 @@ if __name__ == '__main__':
 		#print("mgm")
 		#writeMGM(args.date)
 		#if not args.skipdk:
-		#	print("dk")
-		#	writeDK(args.date, args.prop)
+		print("dk")
+		writeDK(args.date, args.prop, args.keep)
 		#writeBPP(args.date)
 		#writeActionNetwork(args.date)
 		print("cz")

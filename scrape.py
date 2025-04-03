@@ -3625,7 +3625,10 @@ if __name__ == '__main__':
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--tomorrow", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
+
 	parser.add_argument("--nhl", action="store_true")
+	parser.add_argument("--mlb", action="store_true")
+
 	parser.add_argument("--threads", type=int, default=7)
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--prop", "-p")
@@ -3636,7 +3639,9 @@ if __name__ == '__main__':
 
 	sport = args.sport
 	if args.nhl:
-		sport = "nhl" 
+		sport = "nhl"
+	elif args.mlb:
+		sport = "mlb"
 
 	games = {}
 	if args.bet365:
