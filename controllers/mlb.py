@@ -1468,8 +1468,6 @@ def writeDK(date, propArg, keep):
 							else:
 								alt = False
 								prop = row["label"].lower().split(" [")[0]
-
-								#print(prop)
 							
 								prefix = ""
 								if "1st 5" in prop:
@@ -1527,7 +1525,6 @@ def writeDK(date, propArg, keep):
 								elif alt:
 									line = outcome.get("label", "")
 
-									print(game, prop, line)
 									if line:
 										line = str(float(line.replace("+", "")) - 0.5)
 										if line in lines[game][prop][player]:
