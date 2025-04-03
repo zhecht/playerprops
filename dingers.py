@@ -146,7 +146,11 @@ async def writeESPN(rosters):
 				playerMap[p] = player
 
 		page = await browser.get(url)
-		await page.wait_for(selector="div[data-testid='away-team-card']")
+		try:
+			await page.wait_for(selector="div[data-testid='away-team-card']")
+		except:
+			q.task_done()
+			continue
 		html = await page.get_content()
 		soup = BS(html, "html.parser")
 
