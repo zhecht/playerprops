@@ -68,7 +68,7 @@ def bvpReport():
 	posts = []
 	post = ""
 	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
-	print(m,d)
+	print(m,d,type(d) is int)
 	hdr = f"HRs vs {m} {d}{getSuffix(d)} SP (sorted by avg)\n\n"
 	for row in sorted(homers, reverse=True):
 		players = [(x[1].split(" ")[-1].title(), x[0]) for x in sorted(homers[row], reverse=True)]
