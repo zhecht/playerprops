@@ -904,6 +904,8 @@ def writeEV(date, dinger):
 				devig(evData, player, ou, int(data[game][player]["dk"]), book="dk-sweat", dinger=True)
 				devig(evData, player, ou, int(data[game][player]["dk"]), book="dk")
 				pass
+			if "espn" in books:
+				devig(evData, player, ou, int(data[game][player]["espn"]), book="espn")
 			if "fd" in books:
 				devig(evData, player, ou, int(data[game][player]["fd"]), book="fd")
 				fd = int(data[game][player]["fd"])
