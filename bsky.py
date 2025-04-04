@@ -65,7 +65,7 @@ def dailyReport():
 
 	posts = []
 	post = f"{datetime.now().strftime("%b %-d")}"
-	post += f" HRs vs Pitcher (sorted by avg)\n"
+	post += f" HRs vs Pitcher (sorted by avg)\n\n"
 	for row in sorted(homers, reverse=True):
 		players = [(x[1].split(" ")[-1].title(), x[0]) for x in sorted(homers[row], reverse=True)]
 
