@@ -95,7 +95,7 @@ def dailyReport():
 				post = ""
 			post += p
 		else:
-			post += f"{row} => {', '.join([x[0] for x in players])}\n"
+			post += f"{row} HRs => {', '.join([x[0] for x in players])}\n"
 	posts.append(post)
 
 	for post in posts:
