@@ -16,9 +16,101 @@ import nodriver as uc
 
 from controllers.shared import *
 
-# 300 char limit
+def dailyReport():
+	date = str(datetime.now())[:10]
 
-def dailyReport(date):
+	with open(f"static/dailyev/odds.json") as fh:
+		data = json.load(fh)
+
+	with open(f"static/mlb/lineups.json") as fh:
+		lineups = json.load(fh)
+
+	with open(f"static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	with open(f"static/baseballreference/leftOrRight.json") as fh:
+		leftOrRight = json.load(fh)
+
+	with open(f"static/baseballreference/bvp.json") as fh:
+		bvpData = json.load(fh)
+
+	with open(f"static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	homers = {}
+	for game in data:
+		away, home = map(str, game.split(" @ "))
+		for player in data[game]:
+			team, opp = home, away
+			if player in roster.get(away, {}):
+				team, opp = away, home
+			elif player not in roster.get(home, {}):
+				continue
+
+			bvp = pitcher = ""
+			try:
+				pitcher = lineups[opp]["pitcher"]
+				pitcherLR = leftOrRight[opp].get(pitcher, "")
+				bvpStats = bvpData[team][player+' v '+pitcher]
+				hrs = bvpStats["hr"]
+				avg = round(bvpStats["h"] / bvpStats["ab"], 3)
+				
+				if hrs:
+					homers.setdefault(hrs, [])
+					homers[hrs].append((avg, player))
+				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
+			except:
+				pass
+
+
+	posts = []
+	post = f"{datetime.now().strftime("%b %-d")} ({len(schedule[date])} games)\n\n"
+	post += f"HR vs Pitcher (sorted by avg)\n"
+	for row in sorted(homers, reverse=True):
+		players = [(x[1].split(" ")[-1].title(), x[0]) for x in sorted(homers[row], reverse=True)]
+
+		if row == 1:
+			seen = {}
+			for thresh in [750, 500, 250]:
+				ps = []
+				for p in players:
+					if p[1] >= thresh / 1000 and p[0] not in seen:
+						ps.append(p[0])
+						seen[p[0]] = 1
+
+				p = f"{row} (0.{thresh}+) => {', '.join(ps)}\n"
+				if len(post)+len(p) >= 300:
+					posts.append(post)
+					post = ""
+				post += p
+
+			ps = []
+			for p in players:
+				if p[0] not in seen:
+					ps.append(p[0])
+			p = f"{row} (<0.250) => {', '.join(ps)}\n"
+			if len(post)+len(p) >= 300:
+				posts.append(post)
+				post = ""
+			post += p
+		else:
+			post += f"{row} => {', '.join([x[0] for x in players])}\n"
+	posts.append(post)
+	
+	if True:
+		client = Client()
+		import p
+		client.login("zhecht7@gmail.com", p.BSKY_PASSWORD)
+		print(posts[0])
+		parent = client.send_post(text=posts[0])
+
+		if len(posts) > 1:
+			client.send_post(posts[1], reply_to={
+				"parent": {"uri": parent.uri, "cid": parent.cid},
+				"root": {"uri": parent.uri, "cid": parent.cid}
+			})
+
+def yesterdayReport(date):
 	if not date:
 		date = str(datetime.now())[:10]
 	with open("static/dailyev/feed.json") as fh:
@@ -95,6 +187,6 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	dailyReport(args.date)
+	dailyReport()
 
 	#postHomer({'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'})
