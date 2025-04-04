@@ -2159,7 +2159,7 @@ def writeDK(date):
 								elif alt:
 									line = outcome.get("label", "")
 									if "spread" in prop or "total" in prop:
-										line = outcome["line"]
+										line = str(outcome["line"])
 									if line:
 										line = str(float(line.replace("+", "")) - 0.5)
 										if line in lines[game][prop][player]:
