@@ -97,7 +97,7 @@ def dailyReport():
 			post += f"{row} => {', '.join([x[0] for x in players])}\n"
 	posts.append(post)
 	
-	if True:
+	if False:
 		client = Client()
 		import p
 		client.login("zhecht7@gmail.com", p.BSKY_PASSWORD)
@@ -146,7 +146,7 @@ def yesterdayReport():
 			if s:
 				nearPost += f"{team.upper()}: {', '.join(s)}\n"
 
-	if True:
+	if False:
 		client = Client()
 		import p
 		client.login("zhecht7@gmail.com", p.BSKY_PASSWORD)
