@@ -54,7 +54,7 @@ def postHomer(data):
 	post = f"""{data["player"].title()} DINGER | {data["game"].upper()} {icon}{data["in"]} | {data["dist"]} ft | {data["hr/park"].split("/")[0]} Parks
 	"""
 	
-	client = AsyncClient()
+	client = Client()
 	import p
 	client.login("intersectinglines7@gmail.com", p.BSKY_PASSWORD)
 	client.send_post(text=post)
