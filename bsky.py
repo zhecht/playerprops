@@ -195,7 +195,9 @@ def batterReport():
 				n,d = map(int, row["hr/park"].split("/"))
 				s.append(f"{player} {row['dist']} ft")
 			if s:
-				post += f"{team.upper()}: {', '.join(s)}\n"
+				post += f"{team.upper()}: {', '.join(s)}\n\n"
+
+	print(post)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
