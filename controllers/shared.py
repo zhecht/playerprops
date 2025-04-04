@@ -12,6 +12,17 @@ def commitChanges():
 	origin.push()
 	#print("Successful commit")
 
+def getSuffix(num):
+	if num >= 11 and num <= 13:
+		return "th"
+	elif num % 10 == 1:
+		return "st"
+	elif num % 10 == 2:
+		return "nd"
+	elif num % 10 == 3:
+		return "rd"
+	return "th"
+
 async def writeCZToken():
 	url = f"https://sportsbook.caesars.com/us/mi/bet/"
 	browser = await uc.start(no_sandbox=True)
