@@ -47,9 +47,11 @@ def dailyReport(date):
 	"""
 
 #{'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'}
-def postHomer(data):
+def postHomer(data): 
 	# Aaron Judge DINGER | ARI @ NYY | 394 ft | 14 Parks
-	post = f"""{data["player"].title()} ({data["team"].upper()}) DINGER | {data["dist"]} ft | {data["hr/park"]} HR/Parks
+	# Aaron Judge DINGER | ARI @ NYY ▼4 | 394 ft | 14 Parks
+	icon = "▲" if else "▼"
+	post = f"""{data["player"].title()} DINGER | {data["game"].upper()} {data["in"]} | {data["dist"]} ft | {data["hr/park"].split("/")[0]} Parks
 	"""
 	
 	client = Client() #AsyncClient
