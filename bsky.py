@@ -203,9 +203,10 @@ def batterReport():
 			p = f"{team.upper()}: {', '.join(s)}\n"
 			if len(p) + len(post) >= CHAR_LIMIT:
 				print("-"*20)
+			print(p)
 			post += p
 
-	print(post)
+	#print(post)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
