@@ -79,7 +79,7 @@ def dailyReport():
 						ps.append(p[0])
 						seen[p[0]] = 1
 
-				p = f"{row} HR (.{thresh}+) => {', '.join(ps)}\n"
+				p = f"{row} HR (.{thresh}+) => {', '.join(ps)}\n\n"
 				if len(post)+len(p) >= CHAR_LIMIT:
 					posts.append(post)
 					post = ""
