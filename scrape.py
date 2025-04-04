@@ -1098,6 +1098,8 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			continue
 
 		if "moneyline" in prop:
+			if prop == "quarter moneyline":
+				continue
 			prop = "ml"
 		elif "run line" in prop or "spread" in prop:
 			if "&" in prop:
