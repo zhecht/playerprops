@@ -805,6 +805,8 @@ def writeEV(date, dinger):
 
 	for game in data:
 		away, home = map(str, game.split(" @ "))
+		if game not in gameTimes:
+			continue
 		gameStart = gameTimes[game]
 		gameWeather = weather.get(game, {})
 		awayStats = {}
