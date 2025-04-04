@@ -185,13 +185,15 @@ def batterReport():
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and int(x["hr/park"].split("/")[0]) > 2]
 
-	post = "Almost Homers last game\n\n"
+	
 	teams = []
 	for game in games:
 		for team in game.split(" @ "):
 			teams.append(team)
 
 	postLength = 0
+	post = "Almost Homers last game\n\n"
+	print(post)
 	for team in sorted(teams):
 		rows = [x for x in near if x["team"] == team]
 		s = []
