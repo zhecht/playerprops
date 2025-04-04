@@ -2166,6 +2166,8 @@ def writeDK(date):
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0]).strip()
 								if player not in lines[game][prop]:
 									lines[game][prop][player] = {}
+
+								print(prop, outcomes[0])
 								if outcomes[0]["line"] in lines[game][prop][player]:
 									continue
 								lines[game][prop][player][outcomes[0]['line']] = f"{outcomes[0]['oddsAmerican']}"
