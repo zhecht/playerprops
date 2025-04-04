@@ -20,6 +20,11 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	# if on linux aka prod
 	prefix = "/home/playerprops/playerprops/"
 
+try:
+	from shared import *
+except:
+	from controllers.shared import *
+
 def convertNBATeam(team):
 	team = team.lower()
 	if team.endswith("warriors") or team == "gsw":
