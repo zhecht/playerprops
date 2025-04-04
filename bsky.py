@@ -189,12 +189,7 @@ def batterReport():
 		if row["player"] not in players:
 			continue
 		n,d = map(int, row["hr/park"].split("/"))
-		s.append(f"{player} {row['dist']} ft")
-
-	if s:
-		post += f"{team.upper()}: {', '.join(s)}\n"
-
-	print(post)
+		print(f"{player} {row['dist']} ft")
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
