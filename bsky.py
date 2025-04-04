@@ -199,7 +199,7 @@ def batterReport():
 			n,d = map(int, row["hr/park"].split("/"))
 			s.append(f"{player} {row['dist']} ft")
 		if s:
-			post += f"{team.upper()}: {', '.join(s)}\n\n"
+			post += f"{team.upper()}: {', '.join(s)}\n"
 
 	print(post)
 
