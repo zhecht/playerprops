@@ -635,6 +635,19 @@ def writeFeedSplits(date, data):
 	with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
 		json.dump(data, fh)
 
+	allFeed = []
+	splits = nested_dict()
+	for game in data:
+		if game == "all":
+			continue
+		for playData in data[game]:
+			splits[playData["team"]][playData["player"]][f"{date}-{playData['pa']}"] = {
+				"hr/park": playData["hr/park"],
+				"pa": playData["pa"],
+				"in": playData["in"],
+				"result": playData["result"],
+			}
+
 async def writeFeed(date, loop):
 	if not date:
 		date = str(datetime.now())[:10]
