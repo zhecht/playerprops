@@ -56,17 +56,6 @@ def convertTeam(team):
 		t = "chw"
 	return t
 
-def getSuffix(num):
-	if num >= 11 and num <= 13:
-		return "th"
-	elif num % 10 == 1:
-		return "st"
-	elif num % 10 == 2:
-		return "nd"
-	elif num % 10 == 3:
-		return "rd"
-	return "th"
-
 def convertRankingsProp(prop):
 	if prop in ["r"]:
 		return "er"
