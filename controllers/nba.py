@@ -2163,8 +2163,10 @@ def writeDK(date):
 									if line:
 										line = str(float(line.replace("+", "")) - 0.5)
 										if line in lines[game][prop][player]:
-											print(outcome, lines[game][prop][player][line])
-											o,u = map(str, lines[game][prop][player][line].split("/"))
+											u = ""
+											o = lines[game][prop][player][line].split("/")[0]
+											if "/" in lines[game][prop][player][line]:
+												o,u = map(str, lines[game][prop][player][line].split("/"))
 											if int(ou) > int(o):
 												o = ou
 											lines[game][prop][player][line] = o+"/"+u
