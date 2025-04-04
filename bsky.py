@@ -45,6 +45,9 @@ def dailyReport(date):
 	BOS @ BAL: Casas, Campbell, Mullins, Bregman
 	"""
 
+def postHomer(data):
+	print(data)
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--threads", type=int, default=7)

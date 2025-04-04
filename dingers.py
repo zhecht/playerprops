@@ -720,6 +720,7 @@ def parseFeed(data, times, totGames):
 				j[hdr] = tds[i].text.strip()
 				i += 1
 
+			seen = False
 			if not seen and j["result"] == "Home Run":
 				postHomer(j)
 			data[game].append(j)
