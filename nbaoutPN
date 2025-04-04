@@ -1,1066 +1,5168 @@
 [
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;0;m",
-    "limits": [
-      {
-        "amount": 10000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": 0,
+    "hasAltSpread": true,
+    "hasAltTotal": true,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1606804621,
+    "isBetshareEnabled": false,
+    "isFeatured": true,
+    "isHighlighted": true,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": null,
+    "parentId": null,
+    "parlayRestriction": "unique_matchups",
+    "participants": [
       {
-        "designation": "home",
-        "price": -279
+        "alignment": "home",
+        "name": "Indiana Pacers",
+        "order": 1,
+        "stats": [
+          {
+            "period": 0
+          },
+          {
+            "period": 1
+          },
+          {
+            "period": 3
+          },
+          {
+            "period": 4
+          }
+        ]
       },
       {
-        "designation": "away",
-        "price": 236
+        "alignment": "away",
+        "name": "Utah Jazz",
+        "order": 0,
+        "stats": [
+          {
+            "period": 0
+          },
+          {
+            "period": 1
+          },
+          {
+            "period": 3
+          },
+          {
+            "period": 4
+          }
+        ]
       }
     ],
-    "status": "open",
-    "type": "moneyline",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 0,
+        "status": "open"
+      },
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 1,
+        "status": "open"
+      },
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 3,
+        "status": "open"
+      },
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 4,
+        "status": "open"
+      }
+    ],
+    "rotation": 561,
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 64,
+    "type": "matchup",
+    "units": "Regular",
+    "version": 589898327
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;0;tt;81.5;home",
-    "limits": [
-      {
-        "amount": 1000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229742,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 81.5,
-        "price": -110
+        "alignment": "neutral",
+        "id": 1607229743,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 81.5,
-        "price": -108
+        "alignment": "neutral",
+        "id": 1607229744,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "side": "home",
-    "status": "open",
-    "type": "team_total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Myles Turner (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;0;tt;75.5;away",
-    "limits": [
-      {
-        "amount": 1000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229745,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 75.5,
-        "price": -104
+        "alignment": "neutral",
+        "id": 1607229746,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 75.5,
-        "price": -114
+        "alignment": "neutral",
+        "id": 1607229747,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "side": "away",
-    "status": "open",
-    "type": "team_total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Myles Turner (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;0;s;-6.0",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229748,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -6.0,
-        "price": -108
+        "alignment": "neutral",
+        "id": 1607229749,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 6.0,
-        "price": -104
+        "alignment": "neutral",
+        "id": 1607229750,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Myles Turner (Rebounds)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Rebounds",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-4.0",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229754,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -4.0,
-        "price": -154
+        "alignment": "neutral",
+        "id": 1607229755,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 4.0,
-        "price": 132
+        "alignment": "neutral",
+        "id": 1607229756,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Myles Turner (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-4.5",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229757,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -4.5,
-        "price": -142
+        "alignment": "neutral",
+        "id": 1607229758,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 4.5,
-        "price": 123
+        "alignment": "neutral",
+        "id": 1607229759,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Pascal Siakam (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-5.0",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229760,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -5.0,
-        "price": -131
+        "alignment": "neutral",
+        "id": 1607229761,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 5.0,
-        "price": 114
+        "alignment": "neutral",
+        "id": 1607229762,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Pascal Siakam (Assists)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-5.5",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229763,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -5.5,
-        "price": -119
+        "alignment": "neutral",
+        "id": 1607229764,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 5.5,
-        "price": 105
+        "alignment": "neutral",
+        "id": 1607229765,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Pascal Siakam (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-6.5",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229766,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -6.5,
-        "price": 102
+        "alignment": "neutral",
+        "id": 1607229767,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 6.5,
-        "price": -115
+        "alignment": "neutral",
+        "id": 1607229768,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Pascal Siakam (Rebounds)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Rebounds",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-7.0",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229772,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -7.0,
-        "price": 110
+        "alignment": "neutral",
+        "id": 1607229773,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 7.0,
-        "price": -126
+        "alignment": "neutral",
+        "id": 1607229774,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Pascal Siakam (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-7.5",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229775,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -7.5,
-        "price": 119
+        "alignment": "neutral",
+        "id": 1607229776,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 7.5,
-        "price": -138
+        "alignment": "neutral",
+        "id": 1607229777,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Collin Sexton (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;s;-8.0",
-    "limits": [
-      {
-        "amount": 30000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229778,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -8.0,
-        "price": 127
+        "alignment": "neutral",
+        "id": 1607229779,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 8.0,
-        "price": -148
+        "alignment": "neutral",
+        "id": 1607229780,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Collin Sexton (Assists)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;0;ou;156.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229781,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 156.0,
-        "price": -112
+        "alignment": "neutral",
+        "id": 1607229782,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 156.0,
-        "price": -104
+        "alignment": "neutral",
+        "id": 1607229783,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Collin Sexton (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;154.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229784,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 154.0,
-        "price": -141
+        "alignment": "neutral",
+        "id": 1607229785,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 154.0,
-        "price": 118
+        "alignment": "neutral",
+        "id": 1607229786,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Collin Sexton (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;154.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229787,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 154.5,
-        "price": -133
+        "alignment": "neutral",
+        "id": 1607229788,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 154.5,
-        "price": 112
+        "alignment": "neutral",
+        "id": 1607229789,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyrese Haliburton (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;155.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229790,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 155.0,
-        "price": -126
+        "alignment": "neutral",
+        "id": 1607229791,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 155.0,
-        "price": 107
+        "alignment": "neutral",
+        "id": 1607229792,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyrese Haliburton (Assists)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;155.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229793,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 155.5,
-        "price": -119
+        "alignment": "neutral",
+        "id": 1607229794,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 155.5,
-        "price": 101
+        "alignment": "neutral",
+        "id": 1607229795,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyrese Haliburton (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;156.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229796,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 156.5,
-        "price": -107
+        "alignment": "neutral",
+        "id": 1607229797,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 156.5,
-        "price": -111
+        "alignment": "neutral",
+        "id": 1607229798,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyrese Haliburton (Double+Double)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "DoubleDouble",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;157.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229799,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 157.0,
-        "price": -100
+        "alignment": "neutral",
+        "id": 1607229800,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 157.0,
-        "price": -117
+        "alignment": "neutral",
+        "id": 1607229801,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyrese Haliburton (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;157.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229802,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 157.5,
-        "price": 105
+        "alignment": "neutral",
+        "id": 1607229803,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 157.5,
-        "price": -124
+        "alignment": "neutral",
+        "id": 1607229804,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Andrew Nembhard (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;0;ou;158.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229805,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 158.0,
-        "price": 110
+        "alignment": "neutral",
+        "id": 1607229806,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 158.0,
-        "price": -131
+        "alignment": "neutral",
+        "id": 1607229807,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Andrew Nembhard (Assists)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;1;m",
-    "limits": [
-      {
-        "amount": 3000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229808,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "price": -208
+        "alignment": "neutral",
+        "id": 1607229809,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "price": 173
+        "alignment": "neutral",
+        "id": 1607229810,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "moneyline",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Andrew Nembhard (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;1;tt;38.5;home",
-    "limits": [
-      {
-        "amount": 500,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229811,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 38.5,
-        "price": -107
+        "alignment": "neutral",
+        "id": 1607229812,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 38.5,
-        "price": -114
+        "alignment": "neutral",
+        "id": 1607229813,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "side": "home",
-    "status": "open",
-    "type": "team_total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Aaron Nesmith (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;1;tt;35.5;away",
-    "limits": [
-      {
-        "amount": 500,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229814,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 35.5,
-        "price": -101
+        "alignment": "neutral",
+        "id": 1607229815,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 35.5,
-        "price": -120
+        "alignment": "neutral",
+        "id": 1607229816,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "side": "away",
-    "status": "open",
-    "type": "team_total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Aaron Nesmith (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;1;s;-3.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229817,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -3.0,
-        "price": -112
+        "alignment": "neutral",
+        "id": 1607229818,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 3.0,
-        "price": -102
+        "alignment": "neutral",
+        "id": 1607229819,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Aaron Nesmith (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;s;-1.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229820,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -1.5,
-        "price": -152
+        "alignment": "neutral",
+        "id": 1607229821,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 1.5,
-        "price": 128
+        "alignment": "neutral",
+        "id": 1607229822,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Kyle Filipowski (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;s;-2.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229823,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -2.0,
-        "price": -139
+        "alignment": "neutral",
+        "id": 1607229824,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 2.0,
-        "price": 118
+        "alignment": "neutral",
+        "id": 1607229825,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Kyle Filipowski (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;s;-2.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229826,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -2.5,
-        "price": -125
+        "alignment": "neutral",
+        "id": 1607229827,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 2.5,
-        "price": 108
+        "alignment": "neutral",
+        "id": 1607229828,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Kyle Filipowski (Rebounds)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Rebounds",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;s;-3.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229829,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -3.5,
-        "price": -102
+        "alignment": "neutral",
+        "id": 1607229830,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 3.5,
-        "price": -114
+        "alignment": "neutral",
+        "id": 1607229831,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Kyle Filipowski (Double+Double)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "DoubleDouble",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;s;-4.0",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229832,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -4.0,
-        "price": 108
+        "alignment": "neutral",
+        "id": 1607229833,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 4.0,
-        "price": -126
+        "alignment": "neutral",
+        "id": 1607229834,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Kyle Filipowski (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;s;-4.5",
-    "limits": [
-      {
-        "amount": 5000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229835,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "home",
-        "points": -4.5,
-        "price": 116
+        "alignment": "neutral",
+        "id": 1607229836,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "away",
-        "points": 4.5,
-        "price": -138
+        "alignment": "neutral",
+        "id": 1607229837,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "spread",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Brice Sensabaugh (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": false,
-    "key": "s;1;ou;73.5",
-    "limits": [
-      {
-        "amount": 2000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229838,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 73.5,
-        "price": -107
+        "alignment": "neutral",
+        "id": 1607229839,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 73.5,
-        "price": -109
+        "alignment": "neutral",
+        "id": 1607229840,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Brice Sensabaugh (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;ou;72.0",
-    "limits": [
-      {
-        "amount": 2000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229841,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 72.0,
-        "price": -138
+        "alignment": "neutral",
+        "id": 1607229842,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 72.0,
-        "price": 116
+        "alignment": "neutral",
+        "id": 1607229843,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Brice Sensabaugh (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;ou;72.5",
-    "limits": [
-      {
-        "amount": 2000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229844,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 72.5,
-        "price": -127
+        "alignment": "neutral",
+        "id": 1607229845,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 72.5,
-        "price": 108
+        "alignment": "neutral",
+        "id": 1607229846,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Isaiah Collier (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;ou;73.0",
-    "limits": [
-      {
-        "amount": 2000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229847,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 73.0,
-        "price": -118
+        "alignment": "neutral",
+        "id": 1607229848,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 73.0,
-        "price": -100
+        "alignment": "neutral",
+        "id": 1607229849,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Isaiah Collier (Assists)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;ou;74.0",
-    "limits": [
-      {
-        "amount": 2000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607229850,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 74.0,
-        "price": 101
+        "alignment": "neutral",
+        "id": 1607229851,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 74.0,
-        "price": -119
+        "alignment": "neutral",
+        "id": 1607229852,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Isaiah Collier (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;ou;74.5",
-    "limits": [
-      {
-        "amount": 2000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607262322,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 74.5,
-        "price": 109
+        "alignment": "neutral",
+        "id": 1607262323,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 74.5,
-        "price": -129
+        "alignment": "neutral",
+        "id": 1607262324,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Andrew Nembhard (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
   },
   {
-    "cutoffAt": "2025-03-27T23:39:00+00:00",
-    "isAlternate": true,
-    "key": "s;1;ou;75.0",
-    "limits": [
-      {
-        "amount": 2000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607262325,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
       }
-    ],
-    "matchupId": 1606489974,
-    "period": 1,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 75.0,
-        "price": 117
+        "alignment": "neutral",
+        "id": 1607262326,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
       },
       {
-        "designation": "under",
-        "points": 75.0,
-        "price": -139
+        "alignment": "neutral",
+        "id": 1607262327,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3007135124
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Keyonte George (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607262328,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607262329,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607262330,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Keyonte George (Assists)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607262331,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607262332,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607262333,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Keyonte George (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607262334,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607262335,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607262336,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Keyonte George (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607274889,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607274890,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607274891,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Obi Toppin (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607274892,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607274893,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607274894,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Obi Toppin (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055941
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607274895,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607274896,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607274897,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Obi Toppin (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055941
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607274899,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607274900,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607274901,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Bennedict Mathurin (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055941
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607274902,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607274903,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607274904,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Bennedict Mathurin (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055941
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607274905,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607274906,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607274907,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Bennedict Mathurin (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055941
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607280480,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607280481,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607280482,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Johnny Juzang (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607280483,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607280484,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607280485,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Johnny Juzang (3 Point FG)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ThreePointFieldGoals",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607280486,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607280487,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607280488,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Johnny Juzang (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607280767,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607280768,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607280769,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Oscar Tshiebwe (Points)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607280770,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607280771,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607280772,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Oscar Tshiebwe (Rebounds)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Rebounds",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607280773,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607280774,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607280775,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Oscar Tshiebwe (Double+Double)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "DoubleDouble",
+    "version": 413055936
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607280776,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 487,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 13,
+      "matchupCountSE": 13,
+      "name": "NBA",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 3,
+        "id": 4,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 424,
+        "matchupCountSE": 422,
+        "name": "Basketball",
+        "primaryMarketType": "spread"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1606804621,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Indiana Pacers",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Utah Jazz",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:10:00+00:00"
+    },
+    "parentId": 1606804621,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607280777,
+        "name": "Over",
+        "order": 0,
+        "rotation": 562
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607280778,
+        "name": "Under",
+        "order": 0,
+        "rotation": 563
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:10:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 562,
+    "special": {
+      "category": "Player Props",
+      "description": "Oscar Tshiebwe (Pts+Rebs+Asts)"
+    },
+    "startTime": "2025-04-04T23:10:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "PointsReboundsAssist",
+    "version": 413055936
   }
 ]
