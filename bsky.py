@@ -198,8 +198,12 @@ def batterReport():
 			player = row["player"].split(" ")[-1].title()
 			n,d = map(int, row["hr/park"].split("/"))
 			s.append(f"{player} {row['dist']} ft")
+
 		if s:
-			post += f"{team.upper()}: {', '.join(s)}\n"
+			p = f"{team.upper()}: {', '.join(s)}\n"
+			if len(p) + len(post) >= CHAR_LIMIT:
+				print("-"*20)
+			post += p
 
 	print(post)
 
