@@ -3638,6 +3638,7 @@ if __name__ == '__main__':
 	parser.add_argument("--nhl", action="store_true")
 	parser.add_argument("--mlb", action="store_true")
 	parser.add_argument("--nba", action="store_true")
+	parser.add_argument("--nfl", action="store_true")
 
 	parser.add_argument("--threads", type=int, default=7)
 	parser.add_argument("--team", "-t")
@@ -3654,6 +3655,8 @@ if __name__ == '__main__':
 		sport = "mlb"
 	elif args.nba:
 		sport = "nba"
+	elif args.nfl:
+		sport = "nfl"
 
 	games = {}
 	if args.bet365:
