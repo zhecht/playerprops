@@ -651,6 +651,10 @@ def writeFeedSplits(date, data):
 				"dist": playData["dist"],
 			}
 
+	for team in splits:
+		with open(f"static/splits/mlb_feed/{team}.json", "w") as fh:
+			json.dump(splits[team], fh, indent=4)
+
 async def writeFeed(date, loop):
 	if not date:
 		date = str(datetime.now())[:10]
