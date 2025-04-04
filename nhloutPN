@@ -1,56 +1,7302 @@
 [
   {
-    "cutoffAt": "2025-04-03T23:07:00+00:00",
-    "isAlternate": false,
-    "key": "s;0;m",
-    "limits": [
-      {
-        "amount": 1000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": 0,
+    "hasAltSpread": true,
+    "hasAltTotal": true,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607051889,
+    "isBetshareEnabled": false,
+    "isFeatured": true,
+    "isHighlighted": true,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
       }
-    ],
-    "matchupId": 1607100007,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": null,
+    "parentId": null,
+    "parlayRestriction": "unique_matchups",
+    "participants": [
       {
-        "designation": "home",
-        "price": -164
+        "alignment": "home",
+        "name": "Washington Capitals",
+        "order": 1,
+        "stats": [
+          {
+            "period": 1
+          },
+          {
+            "period": 2
+          },
+          {
+            "period": 3
+          },
+          {
+            "period": 6
+          },
+          {
+            "period": 0
+          }
+        ]
       },
       {
-        "designation": "away",
-        "price": 140
+        "alignment": "away",
+        "name": "Chicago Blackhawks",
+        "order": 0,
+        "stats": [
+          {
+            "period": 1
+          },
+          {
+            "period": 2
+          },
+          {
+            "period": 3
+          },
+          {
+            "period": 6
+          },
+          {
+            "period": 0
+          }
+        ]
       }
     ],
-    "status": "open",
-    "type": "moneyline",
-    "version": 3027875710
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 1,
+        "status": "open"
+      },
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 2,
+        "status": "open"
+      },
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 3,
+        "status": "open"
+      },
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 6,
+        "status": "open"
+      },
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "hasMoneyline": true,
+        "hasSpread": true,
+        "hasTeamTotal": true,
+        "hasTotal": true,
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 91,
+    "type": "matchup",
+    "units": "Regular",
+    "version": 589785251
   },
   {
-    "cutoffAt": "2025-04-03T23:07:00+00:00",
-    "isAlternate": false,
-    "key": "s;0;ou;55.5",
-    "limits": [
-      {
-        "amount": 1000,
-        "type": "maxRiskStake"
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215513,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
       }
-    ],
-    "matchupId": 1607100007,
-    "period": 0,
-    "prices": [
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
       {
-        "designation": "over",
-        "points": 55.5,
-        "price": 105
+        "alignment": "neutral",
+        "id": 1607215514,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
       },
       {
-        "designation": "under",
-        "points": 55.5,
-        "price": -123
+        "alignment": "neutral",
+        "id": 1607215515,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
       }
     ],
-    "status": "open",
-    "type": "total",
-    "version": 3027875710
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Alex Ovechkin (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861582
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215516,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215517,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215518,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Alex Ovechkin (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861582
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215519,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215520,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215521,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Alex Ovechkin (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861582
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215522,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215523,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215524,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Alex Ovechkin (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861582
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215525,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215526,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215527,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "John Carlson (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861582
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215531,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215532,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215533,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "John Carlson (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215534,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215535,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215536,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "John Carlson (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215537,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215538,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215539,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tom Wilson (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215540,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215541,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215542,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tom Wilson (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215543,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215544,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215545,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tom Wilson (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215546,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215547,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215548,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tom Wilson (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215552,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215553,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215554,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Teuvo Teravainen (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215555,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215556,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215557,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Teuvo Teravainen (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215558,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215559,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215560,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyler Bertuzzi (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215561,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215562,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215563,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyler Bertuzzi (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215564,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215565,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215566,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyler Bertuzzi (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215567,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215568,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215569,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Tyler Bertuzzi (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861721
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215573,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215574,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215575,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Dylan Strome (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215576,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215577,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215578,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Dylan Strome (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215579,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215580,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215581,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Dylan Strome (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215582,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215583,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215584,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Dylan Strome (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215585,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215586,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215587,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Andrew Mangiapane (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215588,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215589,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215590,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Jakob Chychrun (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215591,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215592,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215593,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Jakob Chychrun (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215594,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215595,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215596,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Jakob Chychrun (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215597,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215598,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215599,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Jakob Chychrun (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215600,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215601,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215602,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Pierre-Luc Dubois (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215603,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215604,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215605,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Pierre-Luc Dubois (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215606,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215607,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215608,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Pierre-Luc Dubois (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215609,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215610,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215611,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Pierre-Luc Dubois (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861890
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215612,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215613,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215614,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ryan Donato (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215615,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215616,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215617,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ryan Donato (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215618,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215619,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215620,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ryan Donato (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215621,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215622,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215623,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ryan Donato (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215624,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215625,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215626,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Aliaksei Protas (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215627,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215628,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215629,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Aliaksei Protas (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215630,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215631,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215632,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Aliaksei Protas (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215633,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215634,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215635,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Aliaksei Protas (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215636,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215637,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215638,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor McMichael (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215639,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215640,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215641,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor McMichael (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215642,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215643,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215644,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor McMichael (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215645,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215646,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215647,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor McMichael (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215648,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215649,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215650,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ilya Mikheyev (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861955
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215651,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215652,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215653,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ilya Mikheyev (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215654,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215655,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215656,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ilya Mikheyev (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215657,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215658,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215659,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ilya Mikheyev (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215660,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215661,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215662,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Alex Vlasic (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215663,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215664,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215665,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Alex Vlasic (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215666,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215667,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215668,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Frank Nazar (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215672,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215673,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215674,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Frank Nazar (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215675,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215676,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215677,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Frank Nazar (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215678,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215679,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215680,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ryan Leonard (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215684,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215685,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215686,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ryan Leonard (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215687,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215688,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215689,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Ryan Leonard (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215693,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215694,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215695,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Oliver Moore (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861970
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215696,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215697,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215698,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Oliver Moore (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861985
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215699,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215700,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215701,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor Bedard (Shots On Goal)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "ShotsOnGoal",
+    "version": 412861985
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215702,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215703,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215704,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor Bedard (Goals)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Goals",
+    "version": 412861985
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215705,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215706,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215707,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor Bedard (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861985
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215708,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215709,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215710,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Connor Bedard (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861985
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215711,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215712,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215713,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Artyom Levshunov (Assists)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Assists",
+    "version": 412861985
+  },
+  {
+    "ageLimit": 20,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607215714,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607215715,
+        "name": "Over",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607215716,
+        "name": "Under",
+        "order": 0,
+        "rotation": 23
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 22,
+    "special": {
+      "category": "Player Props",
+      "description": "Artyom Levshunov (Points)"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Points",
+    "version": 412861985
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218751,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218753,
+        "name": "0",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218754,
+        "name": "1",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218755,
+        "name": "2",
+        "order": 0,
+        "rotation": 23
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218756,
+        "name": "3",
+        "order": 0,
+        "rotation": 24
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218757,
+        "name": "4",
+        "order": 0,
+        "rotation": 25
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218758,
+        "name": "5",
+        "order": 0,
+        "rotation": 26
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218759,
+        "name": "6+",
+        "order": 0,
+        "rotation": 27
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Washington Capitals Goals"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890696
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218764,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218766,
+        "name": "Yes",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218767,
+        "name": "No",
+        "order": 0,
+        "rotation": 22
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Washington Capitals To Win to Nil?"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890696
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218779,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218781,
+        "name": "0 - 2",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218782,
+        "name": "3 - 4",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218783,
+        "name": "5 - 6",
+        "order": 0,
+        "rotation": 23
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218784,
+        "name": "7 - 8",
+        "order": 0,
+        "rotation": 24
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218785,
+        "name": "9 - 10",
+        "order": 0,
+        "rotation": 25
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218786,
+        "name": "11+",
+        "order": 0,
+        "rotation": 26
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Total Goals Range"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890696
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218789,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218791,
+        "name": "0",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218792,
+        "name": "1",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218793,
+        "name": "2",
+        "order": 0,
+        "rotation": 23
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218794,
+        "name": "3",
+        "order": 0,
+        "rotation": 24
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218795,
+        "name": "4",
+        "order": 0,
+        "rotation": 25
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218796,
+        "name": "5",
+        "order": 0,
+        "rotation": 26
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218797,
+        "name": "6+",
+        "order": 0,
+        "rotation": 27
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Chicago Blackhawks Goals"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890696
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218800,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218802,
+        "name": "0",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218803,
+        "name": "1",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218804,
+        "name": "2",
+        "order": 0,
+        "rotation": 23
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218805,
+        "name": "3",
+        "order": 0,
+        "rotation": 24
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218806,
+        "name": "4",
+        "order": 0,
+        "rotation": 25
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218807,
+        "name": "5",
+        "order": 0,
+        "rotation": 26
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218808,
+        "name": "6",
+        "order": 0,
+        "rotation": 27
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218809,
+        "name": "7",
+        "order": 0,
+        "rotation": 28
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218810,
+        "name": "8",
+        "order": 0,
+        "rotation": 29
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218811,
+        "name": "9",
+        "order": 0,
+        "rotation": 30
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218812,
+        "name": "10+",
+        "order": 0,
+        "rotation": 31
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Exact Total Goals"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890696
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218815,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218817,
+        "name": "Chicago Blackhawks 0, Washington Capitals 0",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218818,
+        "name": "Chicago Blackhawks 0, Washington Capitals 1",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218819,
+        "name": "Chicago Blackhawks 0, Washington Capitals 2",
+        "order": 0,
+        "rotation": 23
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218820,
+        "name": "Chicago Blackhawks 0, Washington Capitals 3",
+        "order": 0,
+        "rotation": 24
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218821,
+        "name": "Chicago Blackhawks 0, Washington Capitals 4",
+        "order": 0,
+        "rotation": 25
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218822,
+        "name": "Chicago Blackhawks 0, Washington Capitals 5",
+        "order": 0,
+        "rotation": 26
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218823,
+        "name": "Chicago Blackhawks 0, Washington Capitals 6",
+        "order": 0,
+        "rotation": 27
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218824,
+        "name": "Chicago Blackhawks 1, Washington Capitals 0",
+        "order": 0,
+        "rotation": 28
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218825,
+        "name": "Chicago Blackhawks 1, Washington Capitals 1",
+        "order": 0,
+        "rotation": 29
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218826,
+        "name": "Chicago Blackhawks 1, Washington Capitals 2",
+        "order": 0,
+        "rotation": 30
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218827,
+        "name": "Chicago Blackhawks 1, Washington Capitals 3",
+        "order": 0,
+        "rotation": 31
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218828,
+        "name": "Chicago Blackhawks 1, Washington Capitals 4",
+        "order": 0,
+        "rotation": 32
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218829,
+        "name": "Chicago Blackhawks 1, Washington Capitals 5",
+        "order": 0,
+        "rotation": 33
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218830,
+        "name": "Chicago Blackhawks 1, Washington Capitals 6",
+        "order": 0,
+        "rotation": 34
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218831,
+        "name": "Chicago Blackhawks 2, Washington Capitals 0",
+        "order": 0,
+        "rotation": 35
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218832,
+        "name": "Chicago Blackhawks 2, Washington Capitals 1",
+        "order": 0,
+        "rotation": 36
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218833,
+        "name": "Chicago Blackhawks 2, Washington Capitals 2",
+        "order": 0,
+        "rotation": 37
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218834,
+        "name": "Chicago Blackhawks 2, Washington Capitals 3",
+        "order": 0,
+        "rotation": 38
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218835,
+        "name": "Chicago Blackhawks 2, Washington Capitals 4",
+        "order": 0,
+        "rotation": 39
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218836,
+        "name": "Chicago Blackhawks 2, Washington Capitals 5",
+        "order": 0,
+        "rotation": 40
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218837,
+        "name": "Chicago Blackhawks 2, Washington Capitals 6",
+        "order": 0,
+        "rotation": 41
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218838,
+        "name": "Chicago Blackhawks 3, Washington Capitals 0",
+        "order": 0,
+        "rotation": 42
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218839,
+        "name": "Chicago Blackhawks 3, Washington Capitals 1",
+        "order": 0,
+        "rotation": 43
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218840,
+        "name": "Chicago Blackhawks 3, Washington Capitals 2",
+        "order": 0,
+        "rotation": 44
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218841,
+        "name": "Chicago Blackhawks 3, Washington Capitals 3",
+        "order": 0,
+        "rotation": 45
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218842,
+        "name": "Chicago Blackhawks 3, Washington Capitals 4",
+        "order": 0,
+        "rotation": 46
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218843,
+        "name": "Chicago Blackhawks 3, Washington Capitals 5",
+        "order": 0,
+        "rotation": 47
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218844,
+        "name": "Chicago Blackhawks 3, Washington Capitals 6",
+        "order": 0,
+        "rotation": 48
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218845,
+        "name": "Chicago Blackhawks 4, Washington Capitals 0",
+        "order": 0,
+        "rotation": 49
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218846,
+        "name": "Chicago Blackhawks 4, Washington Capitals 1",
+        "order": 0,
+        "rotation": 50
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218847,
+        "name": "Chicago Blackhawks 4, Washington Capitals 2",
+        "order": 0,
+        "rotation": 51
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218848,
+        "name": "Chicago Blackhawks 4, Washington Capitals 3",
+        "order": 0,
+        "rotation": 52
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218849,
+        "name": "Chicago Blackhawks 4, Washington Capitals 4",
+        "order": 0,
+        "rotation": 53
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218850,
+        "name": "Chicago Blackhawks 4, Washington Capitals 5",
+        "order": 0,
+        "rotation": 54
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218851,
+        "name": "Chicago Blackhawks 4, Washington Capitals 6",
+        "order": 0,
+        "rotation": 55
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218852,
+        "name": "Chicago Blackhawks 5, Washington Capitals 0",
+        "order": 0,
+        "rotation": 56
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218853,
+        "name": "Chicago Blackhawks 5, Washington Capitals 1",
+        "order": 0,
+        "rotation": 57
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218854,
+        "name": "Chicago Blackhawks 5, Washington Capitals 2",
+        "order": 0,
+        "rotation": 58
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218855,
+        "name": "Chicago Blackhawks 5, Washington Capitals 3",
+        "order": 0,
+        "rotation": 59
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218856,
+        "name": "Chicago Blackhawks 5, Washington Capitals 4",
+        "order": 0,
+        "rotation": 60
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218857,
+        "name": "Chicago Blackhawks 5, Washington Capitals 5",
+        "order": 0,
+        "rotation": 61
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218858,
+        "name": "Chicago Blackhawks 5, Washington Capitals 6",
+        "order": 0,
+        "rotation": 62
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218859,
+        "name": "Chicago Blackhawks 6, Washington Capitals 0",
+        "order": 0,
+        "rotation": 63
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218860,
+        "name": "Chicago Blackhawks 6, Washington Capitals 1",
+        "order": 0,
+        "rotation": 64
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218861,
+        "name": "Chicago Blackhawks 6, Washington Capitals 2",
+        "order": 0,
+        "rotation": 65
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218862,
+        "name": "Chicago Blackhawks 6, Washington Capitals 3",
+        "order": 0,
+        "rotation": 66
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218863,
+        "name": "Chicago Blackhawks 6, Washington Capitals 4",
+        "order": 0,
+        "rotation": 67
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218864,
+        "name": "Chicago Blackhawks 6, Washington Capitals 5",
+        "order": 0,
+        "rotation": 68
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218865,
+        "name": "Chicago Blackhawks 6, Washington Capitals 6",
+        "order": 0,
+        "rotation": 69
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Correct Score"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890776
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218872,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218874,
+        "name": "Chicago Blackhawks & Over 5.5",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218875,
+        "name": "Washington Capitals & Over 5.5",
+        "order": 0,
+        "rotation": 22
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218876,
+        "name": "Chicago Blackhawks & Under 5.5",
+        "order": 0,
+        "rotation": 23
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218877,
+        "name": "Washington Capitals & Under 5.5",
+        "order": 0,
+        "rotation": 24
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Winner/Total Goals"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890696
+  },
+  {
+    "ageLimit": 0,
+    "altTeaser": false,
+    "featureOrder": -1,
+    "hasAltSpread": false,
+    "hasAltTotal": false,
+    "hasBetshare": false,
+    "hasLive": true,
+    "hasMarkets": true,
+    "id": 1607218938,
+    "isBetshareEnabled": false,
+    "isFeatured": false,
+    "isHighlighted": false,
+    "isLive": false,
+    "isPromoted": false,
+    "league": {
+      "ageLimit": 0,
+      "featureOrder": 0,
+      "group": "USA",
+      "id": 1456,
+      "isFeatured": true,
+      "isHidden": false,
+      "isPromoted": false,
+      "isSticky": false,
+      "matchupCount": 19,
+      "matchupCountSE": 19,
+      "name": "NHL",
+      "sequence": 1,
+      "sport": {
+        "featureOrder": 5,
+        "id": 19,
+        "isFeatured": true,
+        "isHidden": false,
+        "isSticky": false,
+        "matchupCount": 111,
+        "matchupCountSE": 66,
+        "name": "Hockey",
+        "primaryMarketType": "moneyline"
+      }
+    },
+    "liveMode": null,
+    "parent": {
+      "id": 1607051889,
+      "participants": [
+        {
+          "alignment": "home",
+          "name": "Washington Capitals",
+          "score": null
+        },
+        {
+          "alignment": "away",
+          "name": "Chicago Blackhawks",
+          "score": null
+        }
+      ],
+      "startTime": "2025-04-04T23:07:00+00:00"
+    },
+    "parentId": 1607051889,
+    "parlayRestriction": null,
+    "participants": [
+      {
+        "alignment": "neutral",
+        "id": 1607218940,
+        "name": "Yes",
+        "order": 0,
+        "rotation": 21
+      },
+      {
+        "alignment": "neutral",
+        "id": 1607218941,
+        "name": "No",
+        "order": 0,
+        "rotation": 22
+      }
+    ],
+    "periods": [
+      {
+        "cutoffAt": "2025-04-04T23:07:00Z",
+        "period": 0,
+        "status": "open"
+      }
+    ],
+    "rotation": 21,
+    "special": {
+      "category": "Game Props",
+      "description": "Chicago Blackhawks To Score?"
+    },
+    "startTime": "2025-04-04T23:07:00Z",
+    "state": {},
+    "status": "pending",
+    "totalMarketCount": 1,
+    "type": "special",
+    "units": "Regular",
+    "version": 412890696
   }
 ]
