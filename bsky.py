@@ -91,13 +91,13 @@ def bvpReport():
 			for p in players:
 				if p[0] not in seen:
 					ps.append(p[0])
-			p = f"{row} HR (<.250) => {', '.join(ps)}\n"
+			p = f"{row} HR (<.250) => {', '.join(ps)}\n\n"
 			if len(post)+len(p) >= CHAR_LIMIT:
 				posts.append(post)
 				post = ""
 			post += p
 		else:
-			post += f"{row} HRs => {', '.join([x[0] for x in players])}\n"
+			post += f"{row} HRs => {', '.join([x[0] for x in players])}\n\n"
 	posts.append(post)
 
 	for post in posts:
