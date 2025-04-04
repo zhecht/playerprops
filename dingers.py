@@ -646,6 +646,9 @@ def writeFeedSplits(date, data):
 				"pa": playData["pa"],
 				"in": playData["in"],
 				"result": playData["result"],
+				"evo": playData["evo"],
+				"la": playData["la"],
+				"dist": playData["dist"],
 			}
 
 async def writeFeed(date, loop):
