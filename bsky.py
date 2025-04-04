@@ -67,7 +67,8 @@ def dailyReport():
 
 	posts = []
 	post = ""
-	hdr = f"HRs vs {datetime.now().strftime("%b %-d")} SP (sorted by avg)\n\n"
+	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
+	hdr = f"HRs vs {m} {d}{getSuffix(d)} SP (sorted by avg)\n\n"
 	for row in sorted(homers, reverse=True):
 		players = [(x[1].split(" ")[-1].title(), x[0]) for x in sorted(homers[row], reverse=True)]
 
