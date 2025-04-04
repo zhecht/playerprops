@@ -191,8 +191,8 @@ def batterReport():
 		for team in game.split(" @ "):
 			teams.append(team)
 
-	postLength = 0
 	post = "Almost Homers last game\n\n"
+	postLength = len(post)
 	print(post)
 	for team in sorted(teams):
 		rows = [x for x in near if x["team"] == team]
