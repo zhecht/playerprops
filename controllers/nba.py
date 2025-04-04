@@ -358,7 +358,7 @@ def writePointsbet(date):
 
 	url = "https://api.mi.pointsbet.com/api/v2/competitions/5/events/featured?includeLive=false&page=1"
 	outfile = f"nbaoutPB"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
+	os.system(f"curl -s \"{url}\" -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -373,7 +373,7 @@ def writePointsbet(date):
 		url = f"https://api.mi.pointsbet.com/api/mes/v3/events/{gameId}"
 		time.sleep(0.3)
 		outfile = f"nbaoutPB"
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl -s \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -672,7 +672,7 @@ def writeBV(date):
 	url = "https://www.bovada.lv/services/sports/event/coupon/events/A/description/basketball/nba?marketFilterId=def&preMatchOnly=false&eventsLimit=5000&lang=en"
 	outfile = f"nbaoutBV"
 
-	os.system(f"curl -k \"{url}\" -o {outfile}")
+	os.system(f"curl -s \"{url}\" -o {outfile}")
 
 	with open(outfile) as fh:
 		data = json.load(fh)
@@ -689,7 +689,7 @@ def writeBV(date):
 	for link in ids:
 		url = f"https://www.bovada.lv/services/sports/event/coupon/events/A/description{link}?lang=en"
 		time.sleep(0.3)
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl -s \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			data = json.load(fh)
@@ -1008,7 +1008,7 @@ def writeKambi(date):
 		
 		time.sleep(0.3)
 		url = f"https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/betoffer/event/{eventId}.json"
-		os.system(f"curl -k \"{url}\" -o {outfile}")
+		os.system(f"curl -s \"{url}\" -o {outfile}")
 
 		with open(outfile) as fh:
 			j = json.load(fh)
@@ -3973,7 +3973,7 @@ def printHistorical():
 def writeMatchups():
 	url = "https://www.fantasypros.com/nba/defense-vs-position.php"
 	outfile = "outnba"
-	os.system(f"curl -k \"{url}\" -o {outfile}")
+	os.system(f"curl -s \"{url}\" -o {outfile}")
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	data = {}
