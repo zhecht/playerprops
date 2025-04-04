@@ -663,7 +663,8 @@ async def writeFeed(date, loop):
 			dt = int(dt.strftime("%H%M"))
 			if dt <= int(datetime.now().strftime("%H%M")):
 				games.append(gameData)
-		parseFeed(times, len(games))
+		data = {}
+		parseFeed(data, times, len(games))
 		i += 1
 
 		if not loop:
@@ -676,9 +677,8 @@ async def writeFeed(date, loop):
 
 	browser.stop()
 
-def parseFeed(times, totGames):
+def parseFeed(data, times, totGames):
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
-	data = {}
 	allTable = soup.find("div", id="allMetrics")
 	hdrs = [th.text.lower() for th in allTable.find_all("th")]
 	data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
@@ -699,27 +699,29 @@ def parseFeed(times, totGames):
 			tds = tr.find_all("td")
 			player = parsePlayer(tds[1].text.strip())
 			img = tds[0].find("img").get("src")
-			if tds[4].text.strip() != "Home Run":
-				#continue
-				pass
+			team = convertSavantLogoId(img.split("/")[-1].replace(".svg", ""))
+			hrPark = tds[-1].text.strip()
 
 			pa = tds[2].text.strip()
-			#print(game, times[game].get(pa))
+			seen = pa in times[game]
 			dt = times[game].get(pa, str(datetime.now()).split(".")[0])
 			times[game][pa] = dt
 			j = {
 				"player": player,
 				"game": game,
-				"hr/park": tds[-1].text.strip(),
+				"hr/park": hrPark,
 				"pa": pa,
 				"dt": dt,
 				"img": img,
-				"team": convertSavantLogoId(img.split("/")[-1].replace(".svg", ""))
+				"team": team
 			}
 			i = 3
 			for hdr in ["in", "result", "evo", "la", "dist"]:
 				j[hdr] = tds[i].text.strip()
 				i += 1
+
+			if not seen and j["result"] == "Home Run":
+				postHomer(j)
 			data[game].append(j)
 
 	with open("static/dailyev/feed.json", "w") as fh:
