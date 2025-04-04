@@ -912,7 +912,7 @@ def writeEV(date, dinger):
 			if player not in evData:
 				continue
 			elif evData[player]["ev"] > 0:
-				print(player, ou)
+				print(player, evBook, ou)
 
 			try:
 				j = ph[team][player]["2024"]
