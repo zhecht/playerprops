@@ -66,7 +66,8 @@ def dailyReport():
 
 
 	posts = []
-	post = f"HRs vs {datetime.now().strftime("%b %-d")} SP (sorted by avg)\n\n"
+	post = ""
+	hdr = f"HRs vs {datetime.now().strftime("%b %-d")} SP (sorted by avg)\n\n"
 	for row in sorted(homers, reverse=True):
 		players = [(x[1].split(" ")[-1].title(), x[0]) for x in sorted(homers[row], reverse=True)]
 
@@ -89,7 +90,7 @@ def dailyReport():
 			for p in players:
 				if p[0] not in seen:
 					ps.append(p[0])
-			p = f"{row} (<0.250) => {', '.join(ps)}\n"
+			p = f"{row} HR (<0.250) => {', '.join(ps)}\n"
 			if len(post)+len(p) >= CHAR_LIMIT:
 				posts.append(post)
 				post = ""
@@ -99,7 +100,7 @@ def dailyReport():
 	posts.append(post)
 
 	for post in posts:
-		print(post)
+		print(f"{hdr}{post}")
 	
 	if False:
 		client = Client()
