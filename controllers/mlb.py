@@ -1406,7 +1406,6 @@ def writeDK(date, propArg, keep):
 			#	json.dump(data, fh, indent=4)
 
 			prop = propIds.get(subCat, "")
-
 			print(prop)
 
 			events = {}
