@@ -54,9 +54,8 @@ def postHomer(data):
 	
 	client = Client() #AsyncClient
 	import p
-	print(p.BSKY_PASSWORD)
-	#client.login("intersectinglines7@gmail.com", pwd)
-	#client.sent_post(text=post)
+	client.login("intersectinglines7@gmail.com", p.BSKY_PASSWORD)
+	client.sent_post(text=post)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
