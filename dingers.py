@@ -911,7 +911,7 @@ def writeEV(date, dinger):
 				devig(evData, player, ou, int(data[game][player]["mgm"].split("/")[0]), book="mgm")
 				o = int(data[game][player]["mgm"].split("/")[0])
 				o = convertAmericanOdds(1 + (convertDecOdds(o) - 1) * 1.50)
-				devig(evData, player, ou, o, book="mgm-20%")
+				devig(evData, player, ou, o, book="mgm-20")
 			if "fd" in books:
 				devig(evData, player, ou, int(data[game][player]["fd"]), book="fd")
 				fd = int(data[game][player]["fd"])
