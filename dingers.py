@@ -718,7 +718,8 @@ def parseFeed(data, times, totGames, loop):
 				i += 1
 
 			if loop and not seen and j["result"] == "Home Run":
-				bsky.postHomer(j)
+				#bsky.postHomer(j)
+				pass
 			data[game].append(j)
 
 	with open("static/dailyev/feed.json", "w") as fh:

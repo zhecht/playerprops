@@ -110,19 +110,20 @@ def dailyReport():
 				"root": {"uri": parent.uri, "cid": parent.cid}
 			})
 
-def yesterdayReport(date):
-	if not date:
-		date = str(datetime.now())[:10]
+def yesterdayReport():
+	date = str(datetime.now())[:10]
 	with open("static/dailyev/feed.json") as fh:
 		feed = json.load(fh)
 
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	games = [x["game"] for x in schedule[date]]
 	allFeed = []
-	for game in games:
-		allFeed.extend(feed[game])
+	for day in [1,2]:
+		dt = str(datetime.now() - timedelta(days=day))[:10]
+		games = [x["game"] for x in schedule[date]]
+		for game in games:
+			allFeed.extend(feed[game])
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
