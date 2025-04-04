@@ -659,7 +659,7 @@ def writeFeedSplits(date, data):
 			j = {}
 		merge_dicts(j, splits[team], forceReplace=True)
 		with open(f"static/splits/mlb_feed/{team}.json", "w") as fh:
-			json.dump(j, fh, indent=4)
+			json.dump(j, fh)
 
 async def writeFeed(date, loop):
 	if not date:
