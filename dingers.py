@@ -764,7 +764,7 @@ def parseESPN(espnLines):
 					else:
 						espnLines[game][prop][player] = espn[game][prop][p].copy()
 
-def writeEV(dinger):
+def writeEV(date, dinger):
 	with open(f"static/dailyev/odds.json") as fh:
 		data = json.load(fh)
 
@@ -790,7 +790,7 @@ def writeEV(dinger):
 		schedule = json.load(fh)
 
 	gameTimes = {}
-	for gameData in schedule[str(datetime.now())[:10]]:
+	for gameData in schedule[date]:
 		dt = datetime.strptime(gameData["start"], "%I:%M %p")
 		dt = int(dt.strftime("%H%M"))
 		gameTimes[gameData["game"]] = dt
@@ -1192,8 +1192,13 @@ if __name__ == '__main__':
 	parser.add_argument("--dinger", action="store_true")
 	parser.add_argument("--threads", type=int, default=5)
 	parser.add_argument("--scrape", action="store_true")
+	parser.add_argument("--clear", action="store_true")
 
 	args = parser.parse_args()
+
+	if args.clear:
+		with open("static/dailyev/odds.json", "w") as fh:
+			json.dump({}, fh)
 
 	games = {}
 	date = args.date
@@ -1232,10 +1237,13 @@ if __name__ == '__main__':
 		writeLineups(args.date)
 
 	if args.update:
+		date = args.date
+		if not date:
+			date = str(datetime.now())[:10]
 		for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
 		#for book in ["espn", "mgm"]:
-			subprocess.Popen(["python", "dingers.py", f"--{book}"])
-		subprocess.Popen(["python", "controllers/mlb.py", f"--pn"])
+			subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date])
+		subprocess.Popen(["python", "controllers/mlb.py", f"--pn", "-d", date])
 
 		"""
 		uc.loop().run_until_complete(writeWeather(date))
@@ -1250,7 +1258,7 @@ if __name__ == '__main__':
 		"""
 
 	if args.ev:
-		writeEV(args.dinger)
+		writeEV(args.date, args.dinger)
 	if args.print:
 		printEV()
 

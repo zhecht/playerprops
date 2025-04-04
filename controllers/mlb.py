@@ -1074,6 +1074,7 @@ def writePinnacle(date, debug=False):
 		dingers = json.load(fh)
 
 	for game in res:
+		dingers.setdefault(game, {})
 		if "hr" in res[game]:
 			for player in res[game]["hr"]:
 				dingers[game].setdefault(player, {})
