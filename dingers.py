@@ -631,6 +631,10 @@ def writeKambi(date):
 
 	updateData(data)
 
+def writeFeedSplits(date, data):
+	with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
+		json.dump(data, fh)
+
 async def writeFeed(date, loop):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -674,17 +678,13 @@ async def writeFeed(date, loop):
 
 	browser.stop()
 
-def writeFeedSplits(date, data):
-	with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
-		json.dump(data, fh)
-
 def parseFeed(data, times, totGames, loop):
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
 	allTable = soup.find("div", id="allMetrics")
 	hdrs = [th.text.lower() for th in allTable.find_all("th")]
 	data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
 	data["all"]["totGames"] = totGames
-	for div in soup.find_all("div", class_="game-container"):
+	for div in soup.find_all("div", class_="game-container")[:1]:
 		away = div.find("div", class_="team-left")
 		home = div.find("div", class_="team-right")
 		away = convertMLBTeam(away.text.strip())
