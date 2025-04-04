@@ -162,6 +162,9 @@ def batterReport():
 	with open("static/baseballreference/roster.json") as fh:
 		rosters = json.load(fh)
 
+	with open("static/dailyev/odds.json") as fh:
+		odds = json.load(fh)
+
 	players = []
 	for team in rosters:
 		for player in rosters[team]:
@@ -194,7 +197,7 @@ def batterReport():
 
 	post = []
 	for player in x:
-		post.append(f"{player.title()} ({', '.join(x[player])})")
+		post.append(f"{player.title()}")
 	post = ", ".join(post)
 
 	print(post)
