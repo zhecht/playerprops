@@ -1997,10 +1997,10 @@ def writeDK(date):
 		"assists": 1217,
 		"threes": 1218,
 		"blocks/steals": 1219,
-		"turnovers": 1220,
 		"combos": 583,
 		"team": 523,
-		"quick hits": 1157
+		"defense": 1293
+		#"quick hits": 1157
 	}
 	
 	subCats = {
@@ -2013,12 +2013,14 @@ def writeDK(date):
 		1220: [12504],
 		583: [16483, 16482, 16481, 9974, 5001, 9976, 9973],
 		523: [4609],
-		1157: [14793]
+		1157: [14793],
+		1293: [13782],
 	}
 
 	propIds = {13202: "spread", 13201: "total", 12488: "pts-ou", 16477: "pts", 12492: "reb-ou", 16479: "reb", 12495: "ast-ou", 16478: "ast", 12497: "3ptm-ou", 16480: "3ptm", 9976: "pts+reb", 9973: "pts+ast", 9974: "reb+ast", 12499: "blk", 12500: "stl", 12502: "stl+blk", 12504: "to", 14793: "first_3ptm",
 		16483: "pts+reb+ast", 16482: "pts+reb", 16481: "pts+ast",
-		9974: "reb+ast-ou", 5001: "pts+reb+ast-ou", 9976: "pts+reb-ou", 9973: "pts+ast-ou"
+		9974: "reb+ast-ou", 5001: "pts+reb+ast-ou", 9976: "pts+reb-ou", 9973: "pts+ast-ou",
+		13782: "to-ou", 13780: "blk-ou", 13508: "stl-ou", 13781: "stl+blk-ou", 16485: "stl", 16484: "blk"
 	}
 
 	if False:
