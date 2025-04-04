@@ -183,13 +183,19 @@ def batterReport():
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
 	post = f""
-	s = []
+	x = {}
 	for row in near:
-		player = row["player"].split(" ")[-1].title()
 		if row["player"] not in players:
 			continue
+		player = row["player"].split(" ")[-1].title()
 		n,d = map(int, row["hr/park"].split("/"))
-		print(f"{player} {row['dist']} ft")
+		x.setdefault(player, [])
+		x[player].append(row["dist"])
+
+	for player in x:
+		post += f"{player}: {', '.join(x[player])}\n"
+
+	print(post)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
