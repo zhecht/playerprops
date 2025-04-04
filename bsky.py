@@ -197,22 +197,6 @@ def batterReport():
 
 	print(post)
 
-# 🚀⚾🚀 Aaron Judge
-#   🏟️ ▾1 ARI @ NYY
-# 399 ft | 19 Parks
-def postHomer(data): 
-	icon = "▴" if data["game"].startswith(data["team"]) else "▾"
-	post = f"""🚀⚾🚀 {data["player"].title()} DINGER
- 🏟️ {icon}{data["in"]} {data["game"].upper()}
-{data["dist"]} ft | {data["hr/park"].split("/")[0]} Parks
-	"""
-	
-	client = Client()
-	import p
-	client.login("zhecht7@gmail.com", p.BSKY_PASSWORD)
-	print(post)
-	client.send_post(text=post)
-
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--threads", type=int, default=7)
