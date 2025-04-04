@@ -203,13 +203,13 @@ def batterReport():
 			s.append(f"{player} {row['dist']} ft")
 
 		if s:
-			p = f"{team.upper()}: {', '.join(s)}\n"
+			p = f"{team.upper()}: {', '.join(s)}"
 			postLength += len(p)
 			if postLength >= CHAR_LIMIT:
 				print("-"*20)
 				postLength = 0
 			print(p)
-			post += p
+			post += f"{p}\n"
 
 	#print(post)
 
