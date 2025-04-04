@@ -35,12 +35,16 @@ def dailyReport(date):
 	post = f"{len(homers)} HRs {datetime.strptime(date, "%Y-%m-%d").strftime("%b %-d")}"
 	for game in games:
 		post += f"{game.upper()}: \n"
+	print(post)
+
+	"""
 	10 HRs Apr 3 (2.00 per Game)
 
 	ARI @ NYY: Chisholm, Grisham, Judge
 	HOU @ MIN: Pena, Walker
 	COL @ PHI: Schwarber
 	BOS @ BAL: Casas, Campbell, Mullins, Bregman
+	"""
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
