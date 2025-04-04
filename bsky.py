@@ -187,7 +187,8 @@ def batterReport():
 	for row in near:
 		if row["player"] not in players:
 			continue
-		player = row["player"].split(" ")[-1].title()
+		#player = row["player"].split(" ")[-1].title()
+		player = row["player"]
 		n,d = map(int, row["hr/park"].split("/"))
 		x.setdefault(player, [])
 		x[player].append(row["dist"])
