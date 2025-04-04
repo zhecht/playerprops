@@ -664,8 +664,7 @@ async def writeFeed(date, loop):
 		i += 1
 
 		if not loop:
-			with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
-				json.dump(data, fh)
+			writeFeedSplits(date, data)	
 			break
 		
 		time.sleep(1)
@@ -674,6 +673,10 @@ async def writeFeed(date, loop):
 			i = 0
 
 	browser.stop()
+
+def writeFeedSplits(date, data):
+	with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
+		json.dump(data, fh)
 
 def parseFeed(data, times, totGames, loop):
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
