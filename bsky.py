@@ -185,22 +185,17 @@ def batterReport():
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
-	x = {}
-	for row in near:
-		if row["player"] not in players:
-			continue
-		#player = row["player"].split(" ")[-1].title()
-		player = row["player"]
-		n,d = map(int, row["hr/park"].split("/"))
-		x.setdefault(player, [])
-		x[player].append(row["dist"]+" ft")
-
-	post = []
-	for player in x:
-		post.append(f"{player.title()}")
-	post = ", ".join(post)
-
-	print(post)
+	post = "Almost Homers last game\n\n"
+	for game in games:
+		for team in game.split(" @ "):
+			rows = [x for x in near if x["team"] == team]
+			s = []
+			for row in rows:
+				player = row["player"].split(" ")[-1].title()
+				n,d = map(int, row["hr/park"].split("/"))
+				s.append(f"{player} {row['dist']} ft")
+			if s:
+				post += f"{team.upper()}: {', '.join(s)}\n"
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
