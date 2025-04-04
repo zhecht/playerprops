@@ -1124,7 +1124,7 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 		btns = detail.find_all("button")
 		for idx in range(0, len(btns), 2):
 			ou = btns[idx].find_all("span")[-1].text
-			#print(prop, ou)
+			print(game, prop, ou)
 			ou += "/"+btns[idx+1].find_all("span")[-1].text
 			ou = ou.replace("Even", "+100")
 
