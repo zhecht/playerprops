@@ -50,8 +50,8 @@ def dailyReport(date):
 def postHomer(data): 
 	# Aaron Judge DINGER | ARI @ NYY | 394 ft | 14 Parks
 	# Aaron Judge DINGER | ARI @ NYY ▼4 | 394 ft | 14 Parks
-	icon = "▲" if else "▼"
-	post = f"""{data["player"].title()} DINGER | {data["game"].upper()} {data["in"]} | {data["dist"]} ft | {data["hr/park"].split("/")[0]} Parks
+	icon = "▲" if data["game"].startswith(data["team"]) else "▼"
+	post = f"""{data["player"].title()} DINGER | {data["game"].upper()} {icon}{data["in"]} | {data["dist"]} ft | {data["hr/park"].split("/")[0]} Parks
 	"""
 	
 	client = Client() #AsyncClient
