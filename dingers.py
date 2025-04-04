@@ -359,7 +359,11 @@ async def writeMGM():
 
 			data[game][player][book] = ou
 
-		updateData(data)
+		try:
+			updateData(data)
+		except:
+			print(data)
+			pass
 		q.task_done()
 
 	browser.stop()
@@ -633,18 +637,7 @@ async def writeFeed(date, loop):
 	url = f"https://baseballsavant.mlb.com/gamefeed?date={date}"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
-
 	await page.wait_for(selector=".container-open")
-	"""
-	await page.wait_for(selector=".container-open")
-	o = await page.query_selector(".container-open")
-	await o.mouse_click()
-	time.sleep(0.5)
-	await page.wait_for(selector="#nav-buttons")
-	nav = await page.query_selector("#nav-buttons")
-	await nav.children[3].click()
-	time.sleep(1)
-	"""
 
 	with open("static/dailyev/feed_times.json") as fh:
 		times = json.load(fh)
@@ -660,15 +653,18 @@ async def writeFeed(date, loop):
 
 		games = []
 		for gameData in schedule[date]:
-			dt = datetime.strptime(gameData["start"], "%I:%M %p")
-			dt = int(dt.strftime("%H%M"))
-			if dt <= int(datetime.now().strftime("%H%M")):
-				games.append(gameData)
+			if gameData["start"]:
+				dt = datetime.strptime(gameData["start"], "%I:%M %p")
+				dt = int(dt.strftime("%H%M"))
+				if dt <= int(datetime.now().strftime("%H%M")):
+					games.append(gameData)
 		data = {}
-		parseFeed(data, times, len(games))
+		parseFeed(data, times, len(games), loop)
 		i += 1
 
 		if not loop:
+			with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
+				json.dump(data, fh)
 			break
 		
 		time.sleep(1)
@@ -678,7 +674,7 @@ async def writeFeed(date, loop):
 
 	browser.stop()
 
-def parseFeed(data, times, totGames):
+def parseFeed(data, times, totGames, loop):
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
 	allTable = soup.find("div", id="allMetrics")
 	hdrs = [th.text.lower() for th in allTable.find_all("th")]
@@ -721,7 +717,7 @@ def parseFeed(data, times, totGames):
 				j[hdr] = tds[i].text.strip()
 				i += 1
 
-			if not seen and j["result"] == "Home Run":
+			if loop and not seen and j["result"] == "Home Run":
 				bsky.postHomer(j)
 			data[game].append(j)
 
