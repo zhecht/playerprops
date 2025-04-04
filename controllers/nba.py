@@ -2158,8 +2158,8 @@ def writeDK(date):
 									lines[game][prop][player] = ou+"/"+outcomes[i+1]["oddsAmerican"]
 								elif alt:
 									line = outcome.get("label", "")
-									print(prop, outcome)
-
+									if "spread" in prop or "total" in prop:
+										line = outcome["line"]
 									if line:
 										line = str(float(line.replace("+", "")) - 0.5)
 										if line in lines[game][prop][player]:
