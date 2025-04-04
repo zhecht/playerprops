@@ -168,6 +168,9 @@ def convertMLBTeam(team):
 		return "sf"
 	elif t in ["tam", "tbr"]:
 		return "tb"
+
+	if t == "oak":
+		return "ath"
 	return t
 
 def convertMGMTeam(team):

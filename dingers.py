@@ -765,6 +765,8 @@ def parseESPN(espnLines):
 						espnLines[game][prop][player] = espn[game][prop][p].copy()
 
 def writeEV(date, dinger):
+	if not date:
+		date = str(datetime.now())[:10]
 	with open(f"static/dailyev/odds.json") as fh:
 		data = json.load(fh)
 
