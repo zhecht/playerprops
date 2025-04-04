@@ -181,7 +181,6 @@ def batterReport():
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
-	print(near)
 	post = f""
 	for game in games:
 		for team in game.split(" @ "):
