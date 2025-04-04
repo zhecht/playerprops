@@ -90,7 +90,7 @@ def dailyReport():
 			for p in players:
 				if p[0] not in seen:
 					ps.append(p[0])
-			p = f"{row} HR (<0.250) => {', '.join(ps)}\n"
+			p = f"{row} HR (<.250) => {', '.join(ps)}\n"
 			if len(post)+len(p) >= CHAR_LIMIT:
 				posts.append(post)
 				post = ""
