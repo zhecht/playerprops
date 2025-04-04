@@ -191,6 +191,7 @@ def batterReport():
 		for team in game.split(" @ "):
 			teams.append(team)
 
+	postLength = 0
 	for team in sorted(teams):
 		rows = [x for x in near if x["team"] == team]
 		s = []
@@ -201,8 +202,10 @@ def batterReport():
 
 		if s:
 			p = f"{team.upper()}: {', '.join(s)}\n"
-			if len(p) + len(post) >= CHAR_LIMIT:
+			postLength += len(p)
+			if postLength >= CHAR_LIMIT:
 				print("-"*20)
+				postLength = 0
 			print(p)
 			post += p
 
