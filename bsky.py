@@ -183,7 +183,7 @@ def batterReport():
 			allFeed.extend(feed[game])
 
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
-	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
+	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and int(x["hr/park"].split("/")[0]) > 2]
 
 	post = "Almost Homers last game\n\n"
 	teams = []
