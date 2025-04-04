@@ -182,20 +182,17 @@ def batterReport():
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
-	print(len(near))
 	post = f""
-	for game in games:
-		for team in game.split(" @ "):
-			rows = [x for x in near if x["team"] == team]
-			s = []
-			for row in rows:
-				player = row["player"].split(" ")[-1].title()
-				if player not in players:
-					continue
-				n,d = map(int, row["hr/park"].split("/"))
-				s.append(f"{player} {row['dist']} ft")
-			if s:
-				post += f"{team.upper()}: {', '.join(s)}\n"
+	s = []
+	for row in near:
+		player = row["player"].split(" ")[-1].title()
+		if player not in players:
+			continue
+		n,d = map(int, row["hr/park"].split("/"))
+		s.append(f"{player} {row['dist']} ft")
+
+	if s:
+		post += f"{team.upper()}: {', '.join(s)}\n"
 
 	print(post)
 
