@@ -35,7 +35,6 @@ def dailyReport(date):
 	post = f"{datetime.strptime(date, "%Y-%m-%d").strftime("%b %-d")}: {len(homers)} HRs ({round(len(homers) / len(games), 2)} per game)\n\n"
 	for game in games:
 		post += f"{game.upper()}: \n"
-	print(post)
 
 	"""
 	10 HRs Apr 3 (2.00 per Game)
