@@ -115,8 +115,9 @@ def dailyReport():
 				"root": {"uri": parent.uri, "cid": parent.cid}
 			})
 
-def yesterdayReport():
-	date = str(datetime.now())[:10]
+def dailyReport(date):
+	if not date:
+		date = str(datetime.now())[:10]
 	with open("static/dailyev/feed.json") as fh:
 		feed = json.load(fh)
 
@@ -124,11 +125,9 @@ def yesterdayReport():
 		schedule = json.load(fh)
 
 	allFeed = []
-	for day in [1,2]:
-		dt = str(datetime.now() - timedelta(days=day))[:10]
-		games = [x["game"] for x in schedule[date]]
-		for game in games:
-			allFeed.extend(feed[game])
+	games = [x["game"] for x in schedule[date]]
+	for game in games:
+		allFeed.extend(feed[game])
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
@@ -140,6 +139,40 @@ def yesterdayReport():
 				post += f"{team.upper()}: {rows}\n"
 
 	nearPost = f"{len(near)} almost HRs\n\n"
+	for game in games:
+		for team in game.split(" @ "):
+			rows = [x for x in near if x["team"] == team]
+			s = []
+			for row in rows:
+				player = row["player"].split(" ")[-1].title()
+				n,d = map(int, row["hr/park"].split("/"))
+				s.append(f"{player} {row['dist']} ft")
+			if s:
+				nearPost += f"{team.upper()}: {', '.join(s)}\n"
+
+def batterReport():
+	date = str(datetime.now())[:10]
+	with open("static/dailyev/feed.json") as fh:
+		feed = json.load(fh)
+
+	with open("static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	with open("static/dailyev/ev.json") as fh:
+		ev = json.load(fh)
+
+	allFeed = []
+	for day in [1,2]:
+		dt = str(datetime.now() - timedelta(days=day))[:10]
+		games = [x["game"] for x in schedule[date]]
+		with open(f"static/splits/mlb_feed/{dt}.json") as fh:
+			feed = json.load(fh)
+		for game in games:
+			allFeed.extend(feed[game])
+	homers = [x for x in allFeed if x["result"] == "Home Run"]
+	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
+
+	post = f"{len(near)} almost HRs\n\n"
 	for game in games:
 		for team in game.split(" @ "):
 			rows = [x for x in near if x["team"] == team]
