@@ -32,19 +32,37 @@ def dailyReport(date):
 	for game in games:
 		allFeed.extend(feed[game])
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
+	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
 	post = f"{datetime.strptime(date, "%Y-%m-%d").strftime("%b %-d")}: {len(homers)} HRs ({round(len(homers) / len(games), 2)} per game)\n\n"
 	for game in games:
-		post += f"{game.upper()}: \n"
+		for team in game.split(" @ "):
+			rows = ", ".join([y["player"].split(" ")[-1].title() for y in [x for x in homers if x["team"] == team]])
+			if rows:
+				post += f"{team.upper()}: {rows}\n"
 
-	"""
-	10 HRs Apr 3 (2.00 per Game)
+	nearPost = f"{len(near)} almost HRs\n\n"
+	for game in games:
+		for team in game.split(" @ "):
+			rows = [x for x in near if x["team"] == team]
+			s = []
+			for row in rows:
+				player = row["player"].split(" ")[-1].title()
+				n,d = map(int, row["hr/park"].split("/"))
+				s.append(f"{player} {row['dist']} ft")
+			if s:
+				nearPost += f"{team.upper()}: {', '.join(s)}\n"
 
-	ARI @ NYY: Chisholm, Grisham, Judge
-	HOU @ MIN: Pena, Walker
-	COL @ PHI: Schwarber
-	BOS @ BAL: Casas, Campbell, Mullins, Bregman
-	"""
+	if True:
+		client = Client()
+		import p
+		client.login("zhecht7@gmail.com", p.BSKY_PASSWORD)
+		print(post)
+		parent = client.send_post(text=post)
+		client.send_post(nearPost[:300], reply_to={
+			"parent": {"uri": parent.uri, "cid": parent.cid},
+			"root": {"uri": parent.uri, "cid": parent.cid}
+		})
 
 # 🚀⚾🚀 Aaron Judge
 #   🏟️ ▾1 ARI @ NYY
@@ -77,6 +95,6 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	#dailyReport(args.date)
+	dailyReport(args.date)
 
-	postHomer({'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'})
+	#postHomer({'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'})
