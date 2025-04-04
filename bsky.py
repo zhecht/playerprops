@@ -182,7 +182,6 @@ def batterReport():
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
-	post = f""
 	x = {}
 	for row in near:
 		if row["player"] not in players:
@@ -193,8 +192,10 @@ def batterReport():
 		x.setdefault(player, [])
 		x[player].append(row["dist"]+" ft")
 
+	post = []
 	for player in x:
-		post += f"{player.title()} ({', '.join(x[player])})\n"
+		post.append(f"{player.title()} ({', '.join(x[player])})")
+	post = ", ".join(post)
 
 	print(post)
 
