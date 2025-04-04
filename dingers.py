@@ -1280,7 +1280,7 @@ if __name__ == '__main__':
 
 	if True:
 		data = []
-		plays = [("jordan westburg", 750), ("aaron judge", 172)]
+		plays = [("adolis garcia", 420), ("rhys hoskins", 500), ("corey seager", 290)]
 		with open("static/dailyev/ev.json") as fh:
 			ev = json.load(fh)
 		for player, odds in plays:
