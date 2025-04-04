@@ -18,7 +18,7 @@ from controllers.shared import *
 
 CHAR_LIMIT = 280
 
-def dailyReport():
+def bvpReport():
 	date = str(datetime.now())[:10]
 
 	with open(f"static/dailyev/odds.json") as fh:
