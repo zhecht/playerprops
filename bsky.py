@@ -191,10 +191,10 @@ def batterReport():
 		player = row["player"]
 		n,d = map(int, row["hr/park"].split("/"))
 		x.setdefault(player, [])
-		x[player].append(row["dist"])
+		x[player].append(row["dist"]+" ft")
 
 	for player in x:
-		post += f"{player}: {', '.join(x[player])}\n"
+		post += f"{player.title()} ({', '.join(x[player])})\n"
 
 	print(post)
 
