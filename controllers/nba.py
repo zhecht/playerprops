@@ -971,7 +971,7 @@ def writeKambi(date):
 	outfile = f"outnba.json"
 	url = "https://c3-static.kambi.com/client/pivuslarl-lbr/index-retail-barcode.html#sports-hub/basketball/nba"
 	url = "https://eu-offering-api.kambicdn.com/offering/v2018/pivuslarl-lbr/listView/basketball/nba/all/all/matches.json?lang=en_US&market=US"
-	os.system(f"curl \"{url}\" --connect-timeout 30 -o {outfile}")
+	os.system(f"curl -s \"{url}\" --connect-timeout 30 -o {outfile}")
 	
 	with open(outfile) as fh:
 		j = json.load(fh)
