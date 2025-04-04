@@ -922,7 +922,7 @@ def writeEV(date, dinger):
 			if player not in evData:
 				continue
 			elif evData[player]["ev"] > 0:
-				print(player, evBook, ou)
+				print(player, evBook, highest, evData[player]["fairVal"])
 
 			try:
 				j = ph[team][player]["2024"]
