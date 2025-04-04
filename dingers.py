@@ -9,6 +9,7 @@ import nodriver as uc
 import subprocess
 import threading
 import multiprocessing
+import bsky
 
 from bs4 import BeautifulSoup as BS
 from controllers.shared import *
@@ -720,9 +721,8 @@ def parseFeed(data, times, totGames):
 				j[hdr] = tds[i].text.strip()
 				i += 1
 
-			seen = False
 			if not seen and j["result"] == "Home Run":
-				postHomer(j)
+				bsky.postHomer(j)
 			data[game].append(j)
 
 	with open("static/dailyev/feed.json", "w") as fh:

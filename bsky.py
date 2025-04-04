@@ -2,6 +2,7 @@
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
+from atproto import Client
 import math
 import json
 import os
@@ -45,8 +46,17 @@ def dailyReport(date):
 	BOS @ BAL: Casas, Campbell, Mullins, Bregman
 	"""
 
+#{'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'}
 def postHomer(data):
-	print(data)
+	# Aaron Judge (NYY) DINGER | 394 ft | 14/30 HR/Parks
+	post = f"""{data["player"].title()} ({data["team"].upper()}) DINGER | {data["dist"]} ft | {data["hr/park"]} HR/Parks
+	"""
+	
+	client = Client() #AsyncClient
+	import p
+	print(p.BSKY_PASSWORD)
+	#client.login("intersectinglines7@gmail.com", pwd)
+	#client.sent_post(text=post)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
@@ -63,4 +73,6 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	dailyReport(args.date)
+	#dailyReport(args.date)
+
+	postHomer({'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'})
