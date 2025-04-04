@@ -96,6 +96,9 @@ def dailyReport():
 		else:
 			post += f"{row} => {', '.join([x[0] for x in players])}\n"
 	posts.append(post)
+
+	for post in posts:
+		print(post)
 	
 	if False:
 		client = Client()
