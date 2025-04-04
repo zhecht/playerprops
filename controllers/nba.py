@@ -3790,7 +3790,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							devig(evData, key, pn, line, prop=prop, sharp=True)
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
-							print(key)
+							#print(key)
 							continue
 						if float(evData[key]["ev"]) > 0:
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
