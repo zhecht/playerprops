@@ -811,7 +811,7 @@ def writeEV(date, dinger):
 		homeStats = {}
 
 		if int(datetime.now().strftime("%H%M")) > gameStart:
-			continue
+			#continue
 			pass
 
 		if os.path.exists(f"static/splits/mlb/{away}.json"):
