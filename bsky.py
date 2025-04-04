@@ -30,9 +30,9 @@ def dailyReport(date):
 	allFeed = []
 	for game in games:
 		allFeed.extend(feed[game])
-	homers = []
+	homers = [x for x in allFeed if x["result"] == "Home Run"]
 
-	post = f"{feed['all']['']} HRs {datetime.strptime(date, "%Y-%m-%d").strftime("%b %-d")}"
+	post = f"{len(homers)} HRs {datetime.strptime(date, "%Y-%m-%d").strftime("%b %-d")}"
 	for game in games:
 		post += f"{game.upper()}: \n"
 	10 HRs Apr 3 (2.00 per Game)
