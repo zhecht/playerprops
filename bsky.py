@@ -2,7 +2,7 @@
 from datetime import datetime,timedelta
 from subprocess import call
 from bs4 import BeautifulSoup as BS
-from atproto import Client
+from atproto import AsyncClient, Client
 import math
 import json
 import os
@@ -54,7 +54,7 @@ def postHomer(data):
 	post = f"""{data["player"].title()} DINGER | {data["game"].upper()} {icon}{data["in"]} | {data["dist"]} ft | {data["hr/park"].split("/")[0]} Parks
 	"""
 	
-	client = Client() #AsyncClient
+	client = AsyncClient()
 	import p
 	client.login("intersectinglines7@gmail.com", p.BSKY_PASSWORD)
 	client.send_post(text=post)
