@@ -913,6 +913,8 @@ def writeEV(date, dinger):
 				devig(evData, player, ou, fd, book="fd-50%")
 			if player not in evData:
 				continue
+			elif evData[player]["ev"] > 0:
+				print(player, ou)
 
 			try:
 				j = ph[team][player]["2024"]
