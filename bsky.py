@@ -57,6 +57,7 @@ def postHomer(data):
 	client = Client()
 	import p
 	client.login("intersectinglines7@gmail.com", p.BSKY_PASSWORD)
+	print(post)
 	client.send_post(text=post)
 
 if __name__ == '__main__':
