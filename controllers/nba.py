@@ -2070,9 +2070,6 @@ def writeDK(date):
 				if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
 					continue
 
-				if game not in lines:
-					lines[game] = {}
-
 				events[event["eventId"]] = game
 
 			for catRow in data["eventGroup"]["offerCategories"]:
