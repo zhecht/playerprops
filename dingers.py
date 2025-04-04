@@ -656,7 +656,7 @@ async def writeFeed(date, loop):
 			if gameData["start"]:
 				dt = datetime.strptime(gameData["start"], "%I:%M %p")
 				dt = int(dt.strftime("%H%M"))
-				print(dt)
+				#print(dt, int(datetime.now().strftime("%H%M")))
 				if dt <= int(datetime.now().strftime("%H%M")):
 					games.append(gameData)
 		data = {}
