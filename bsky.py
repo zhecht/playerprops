@@ -159,13 +159,21 @@ def batterReport():
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
+	with open("static/baseballreference/roster.json") as fh:
+		rosters = json.load(fh)
+
+	players = []
+	for team in rosters:
+		for player in rosters[team]:
+			players.append(player)
+
 	with open("static/dailyev/ev.json") as fh:
 		ev = json.load(fh)
 
 	allFeed = []
 	for day in [1,2]:
 		dt = str(datetime.now() - timedelta(days=day))[:10]
-		games = [x["game"] for x in schedule[date]]
+		games = [x["game"] for x in schedule[dt]]
 		with open(f"static/splits/mlb_feed/{dt}.json") as fh:
 			feed = json.load(fh)
 		for game in games:
@@ -173,28 +181,22 @@ def batterReport():
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
-	post = f"{len(near)} almost HRs\n\n"
+	print(near)
+	post = f""
 	for game in games:
 		for team in game.split(" @ "):
 			rows = [x for x in near if x["team"] == team]
 			s = []
 			for row in rows:
 				player = row["player"].split(" ")[-1].title()
+				if player not in players:
+					continue
 				n,d = map(int, row["hr/park"].split("/"))
 				s.append(f"{player} {row['dist']} ft")
 			if s:
-				nearPost += f"{team.upper()}: {', '.join(s)}\n"
+				post += f"{team.upper()}: {', '.join(s)}\n"
 
-	if False:
-		client = Client()
-		import p
-		client.login("zhecht7@gmail.com", p.BSKY_PASSWORD)
-		print(post)
-		parent = client.send_post(text=post)
-		client.send_post(nearPost[:300], reply_to={
-			"parent": {"uri": parent.uri, "cid": parent.cid},
-			"root": {"uri": parent.uri, "cid": parent.cid}
-		})
+	print(post)
 
 # 🚀⚾🚀 Aaron Judge
 #   🏟️ ▾1 ARI @ NYY
@@ -228,6 +230,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	#dailyReport(args.date)
-	bvpReport()
+	#bvpReport()
+	batterReport()
 
 	#postHomer({'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'})

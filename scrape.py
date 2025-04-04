@@ -1646,8 +1646,8 @@ async def writeMGM(sport):
 				up = await panel.query_selector("svg[title=theme-up]")
 				if not up:
 					up = await panel.query_selector(".clickable")
-					await up.click()
 					try:
+						await up.click()
 						await page.wait_for(selector=f".option-group-column:nth-child({groupIdx+1}) ms-option-panel:nth-child({panelIdx+1}) .option")
 					except:
 						continue
@@ -2625,6 +2625,9 @@ async def writeFD(sport):
 						bs.append(btn)
 				btns = bs
 				start = 1
+
+				if len(btns) < 2:
+					continue
 
 				if "..." in btns[1].text:
 					start += 1
