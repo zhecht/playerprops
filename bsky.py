@@ -16,6 +16,8 @@ import nodriver as uc
 
 from controllers.shared import *
 
+CHAR_LIMIT = 280
+
 def dailyReport():
 	date = str(datetime.now())[:10]
 
@@ -79,7 +81,7 @@ def dailyReport():
 						seen[p[0]] = 1
 
 				p = f"{row} (0.{thresh}+) => {', '.join(ps)}\n"
-				if len(post)+len(p) >= 300:
+				if len(post)+len(p) >= CHAR_LIMIT:
 					posts.append(post)
 					post = ""
 				post += p
@@ -89,7 +91,7 @@ def dailyReport():
 				if p[0] not in seen:
 					ps.append(p[0])
 			p = f"{row} (<0.250) => {', '.join(ps)}\n"
-			if len(post)+len(p) >= 300:
+			if len(post)+len(p) >= CHAR_LIMIT:
 				posts.append(post)
 				post = ""
 			post += p
