@@ -806,18 +806,21 @@ def writeStatsPage(date):
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	games = [x["game"] for x in schedule[date]]
 	teamGame = {}
-	for game in games:
-		a,h = map(str, game.split(" @ "))
+	opps = {}
+	for game in schedule[date]:
+		a,h = map(str, game["game"].split(" @ "))
 		teamGame[a] = game
 		teamGame[h] = game
+		opps[a] = h
+		opps[h] = a
 
 	data = []
 	for team in roster:
 		for player in roster[team]:
 			j = {
-				"player": player, "team": team, "game": teamGame[team]
+				"player": player, "team": team, "opp": opps[team],
+				"game": teamGame[team]["game"], "start": teamGame[team]["start"]
 			}
 
 			data.append(j)
