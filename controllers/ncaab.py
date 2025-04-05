@@ -2068,10 +2068,10 @@ def writeDK(date, march):
 
 	mainCats = {
 		"game lines": 487,
-		"points": 1215,
-		"rebounds": 1216,
-		"assists": 1217,
-		"threes": 1218,
+		"player-points": 1215,
+		"player-rebounds": 1216,
+		"player-assists": 1217,
+		"player-threes": 1218,
 		"team": 523,
 		"combos": 583
 	}
@@ -2086,7 +2086,7 @@ def writeDK(date, march):
 
 	if True:
 		mainCats = {
-			"points": 1215,
+			"player-points": 1215,
 		}
 		subCats = {
 			
@@ -2172,7 +2172,7 @@ def writeDK(date, march):
 								elif "1st quarter" in prop:
 									prefix = "1q_"
 
-								if mainCat.startswith("player "):
+								if mainCat.startswith("player"):
 									prop = mainCat.split(" ")[-1].replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("threes", "3ptm")
 								elif "moneyline" in prop:
 									prop = "ml"
