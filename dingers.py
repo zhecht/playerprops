@@ -121,17 +121,17 @@ def writeCirca():
 
 		for row in text:
 			if row and "(" in row:
-				player = row.split(" (")[0].lower()
+				player = parsePlayer(row.split(" (")[0].lower())
 				team = convertMLBTeam(row.split("(")[-1].split(")")[0])
-				game = teamGame[team]
 				over = re.search(r"\+\d{3,4}", row)
 				under = re.search(r"-\d{3,4}", row)
 				over = over.group() if over else None
 				under = under.group() if under else None
 
-				data[game][player]["circa"] = f"{over}/{under}"
+				data[player] = f"{over}/{under}"
 
-	updateData(data)
+	with open("static/mlb/circa.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 
 async def getESPNLinks(date):
 	browser = await uc.start(no_sandbox=True)
