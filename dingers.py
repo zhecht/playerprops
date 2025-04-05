@@ -450,7 +450,9 @@ async def writeBR(date):
 		await article.scroll_into_view()
 		if "Show more" in article.text_all:
 			show = await article.query_selector(".crRLLM")
-			print(show)
+			print(article)
+			browser.stop()
+			exit()
 			if show:
 				await show.parent.click()
 
