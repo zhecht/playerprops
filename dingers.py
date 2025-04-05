@@ -133,6 +133,20 @@ def writeCirca():
 	with open("static/mlb/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
+def mergeCirca():
+	with open("static/mlb/circa.json") as fh:
+		circa = json.load(fh)
+	with open("static/dailyev/odds.json") as fh:
+		odds = json.load(fh)
+
+	for team in odds:
+		for player in odds[team]:
+			if player in circa:
+				odds[team][player]["circa"] = circa[player]
+
+	with open("static/dailyev/odds.json", "w") as fh:
+		json.dump(odds, fh, indent=4)
+
 async def getESPNLinks(date):
 	browser = await uc.start(no_sandbox=True)
 	url = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb"
@@ -1338,6 +1352,7 @@ if __name__ == '__main__':
 	parser.add_argument("--clear", action="store_true")
 	parser.add_argument("--stats", action="store_true")
 	parser.add_argument("--circa", action="store_true")
+	parser.add_argument("--merge-circa", action="store_true")
 
 	args = parser.parse_args()
 
@@ -1376,6 +1391,8 @@ if __name__ == '__main__':
 		writeKambi(date)
 	if args.circa:
 		writeCirca()
+	if args.merge_circa:
+		mergeCirca()
 
 	if args.weather:
 		uc.loop().run_until_complete(writeWeather(date))
