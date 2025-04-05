@@ -42,7 +42,8 @@ def bvpReport(date):
 
 	homers = {}
 	games = [x["game"] for x in schedule[date]]
-	for game in games:
+	times = [x["start"] for x in schedule[date]]
+	for t, game in zip(times, games):
 		away, home = map(str, game.split(" @ "))
 		awayPitcher, homePitcher = lineups[away]["pitcher"], lineups[home]["pitcher"]
 		players = list(roster[away].keys()) + list(roster[home].keys())
@@ -75,7 +76,7 @@ def bvpReport(date):
 		# 1:07 pm NYY @ DET: Stroman v Skubal
 		#	Mountcastle (3)
 		if homers:
-			print(f"""{game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()}
+			print(f"""{t} {game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()}
 	{", ".join(homers)}
 """)
 
