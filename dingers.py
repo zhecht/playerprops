@@ -803,6 +803,12 @@ def writeStatsPage(date):
 	with open(f"static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
+	with open(f"static/baseballreference/bvp.json") as fh:
+		bvpData = json.load(fh)
+
+	with open(f"static/baseballreference/leftOrRight.json") as fh:
+		leftOrRight = json.load(fh)
+
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
@@ -823,24 +829,24 @@ def writeStatsPage(date):
 		opp = opps[team]
 		pitcher = lineups[opp]["pitcher"]
 		pitcherLR = leftOrRight[opp].get(pitcher, "")
-		try:
-			order = lineups[team]["batters"].index(player)+1
-		except:
-			order = "-"
-		bvpStats = bvpData[team].get(player+' v '+pitcher, {})
-		bvp = ""
-		if bvpStats:
-			bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
 
 		for player in roster[team]:
-			j = {
+
+			try:
+				order = lineups[team]["batters"].index(player)+1
+			except:
+				order = "-"
+			bvpStats = bvpData[team].get(player+' v '+pitcher, {})
+			bvp = ""
+			if bvpStats:
+				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
+
+			data.append({
 				"player": player, "team": team, "opp": opp,
 				"game": teamGame[team]["game"], "start": teamGame[team]["start"],
 				"bvp": bvp, "pitcher": pitcher,
 				"order": order,
-			}
-
-			data.append(j)
+			})
 
 	with open(f"static/mlb/stats.json", "w") as fh:
 		json.dump(data, fh)
