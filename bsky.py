@@ -74,7 +74,8 @@ def bvpReport(date):
 
 		# 1:07 pm NYY @ DET: Stroman v Skubal
 		#	Mountcastle (3)
-		print(f"""{game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()}
+		if homers:
+			print(f"""{game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()}
 	{", ".join(homers)}
 """)
 
