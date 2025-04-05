@@ -480,8 +480,8 @@ props = {}
 def writeCirca(sport):
 	date = str(datetime.now())[:10]
 	dt = datetime.now().strftime("%Y-%-m-%-d")
-	file = f"{sport.upper()} Props - {dt}.pdf"
-	pages = convert_from_path(f"{sport.upper()} Props - {dt}.pdf")
+	file = f"/mnt/c/Users/zhech/Downloads/{sport.upper()} Props - {dt}.pdf"
+	pages = convert_from_path(file)
 	data = nested_dict()
 	for page in pages:
 		text = pytesseract.image_to_string(page).split("\n")
