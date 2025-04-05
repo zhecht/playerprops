@@ -1408,7 +1408,7 @@ if __name__ == '__main__':
 	elif args.dk:
 		uc.loop().run_until_complete(writeOne("dk"))
 	elif args.br:
-		uc.loop().run_until_complete(writeBR())
+		uc.loop().run_until_complete(writeBR(date))
 	elif args.bet365:
 		uc.loop().run_until_complete(writeOne("365"))
 	elif args.espn:
