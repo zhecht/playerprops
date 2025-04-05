@@ -2754,7 +2754,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 		"espn": espnLines,
 		"365": bet365Lines,
 		"dk": dkLines,
-		"cz": czLines
+		"cz": czLines,
+		"circa": circa,
 	}
 
 	with open(f"{prefix}static/nhl/ev.json") as fh:
