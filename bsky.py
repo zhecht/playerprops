@@ -44,7 +44,7 @@ def bvpReport(date):
 	games = [x["game"] for x in schedule[date]]
 	for game in games:
 		away, home = map(str, game.split(" @ "))
-		players = roster[away].keys() + roster[home].keys()
+		players = list(roster[away].keys()) + list(roster[home].keys())
 		for player in players:
 			team, opp = home, away
 			if player in roster.get(away, {}):
