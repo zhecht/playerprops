@@ -107,7 +107,7 @@ def bvpReport(date):
 			for p in players:
 				if p[0] not in seen:
 					ps.append(p[0])
-			p = f"{row} HR (<.250) => {', '.join(ps)}\n\n"
+			p = f"{row} HR (<.333) => {', '.join(ps)}\n\n"
 			if len(post)+len(p) >= CHAR_LIMIT:
 				posts.append(post)
 				post = ""
