@@ -2245,7 +2245,7 @@ def writeDK(date, march):
 								else:
 									line = outcomes[0]['line']
 								lines[game][prop][player][line] = f"{outcomes[0]['oddsAmerican']}"
-								if len(row["outcomes"]) > 1:
+								if not alt and len(row["outcomes"]) > 1:
 									lines[game][prop][player][line] += f"/{outcomes[1]['oddsAmerican']}"
 
 	with open("static/ncaab/draftkings.json", "w") as fh:
