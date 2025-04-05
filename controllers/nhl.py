@@ -468,7 +468,7 @@ def writeCZ(date):
 def writeCirca():
 	date = str(datetime.now())[:10]
 	with open("static/nhl/circa.json") as fh:
-		circa = json.load()
+		circa = json.load(fh)
 
 	with open(f"static/hockeyreference/schedule.json") as fh:
 		schedule = json.load(fh)
