@@ -2223,7 +2223,7 @@ def writeDK(date, march):
 									except:
 										pass
 									lines[game][prop][line] = ou
-							elif len(outcomes) > 2:
+							elif not alt and len(outcomes) > 2:
 								for i in range(0, len(outcomes), 2):
 									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
 									if player not in lines[game][prop]:
