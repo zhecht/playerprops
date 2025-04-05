@@ -1989,7 +1989,10 @@ async def writeNCAABFD():
 					data[game].setdefault(prop, {})
 
 					if "ml" in prop:
-						data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
+						try:
+							data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
+						except:
+							continue
 					elif skip == 1:
 						if mainLine:
 							player = parsePlayer(fields[1].split(" (")[0])
