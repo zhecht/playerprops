@@ -448,7 +448,6 @@ async def writeBR(date):
 
 	for article in articles:
 		await article.scroll_into_view()
-
 		if "Show more" in article.text_all:
 			show = await article.query_selector(".crRLLM")
 			print(show)
