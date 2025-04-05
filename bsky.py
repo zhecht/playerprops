@@ -47,7 +47,7 @@ def bvpReport(date):
 		away, home = map(str, game.split(" @ "))
 		awayPitcher, homePitcher = lineups[away]["pitcher"], lineups[home]["pitcher"]
 		players = list(roster[away].keys()) + list(roster[home].keys())
-		homers = []
+		#homers = []
 		for player in players:
 			team, opp = home, away
 			if player in roster.get(away, {}):
