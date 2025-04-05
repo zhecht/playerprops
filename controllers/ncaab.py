@@ -2161,8 +2161,11 @@ def writeDK(date, march):
 								continue
 
 							prefix = ""
+							alt = False
 							if subCat in propIds:
 								prop = propIds[subCat]
+								if prop in ["pts", "ast", "reb"] or "+" in prop:
+									alt = True
 							else:
 								prop = row["label"].lower().split(" [")[0]
 								
