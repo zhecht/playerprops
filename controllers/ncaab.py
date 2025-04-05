@@ -2174,6 +2174,7 @@ def writeDK(date, march):
 
 								if mainCat.startswith("player"):
 									prop = mainCat.split("-")[-1].replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("threes", "3ptm")
+									alt = True
 								elif "moneyline" in prop:
 									prop = "ml"
 								elif "spread" in prop:
@@ -2236,7 +2237,6 @@ def writeDK(date, march):
 										lines[game][prop][player][outcomes[i]['line']] = f"{outcomes[i+1]['oddsAmerican']}/{outcomes[i]['oddsAmerican']}"
 							else:
 								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
-								print(player)
 								if player not in lines[game][prop]:
 									lines[game][prop][player] = {}
 								lines[game][prop][player][outcomes[0]['line']] = f"{outcomes[0]['oddsAmerican']}"
