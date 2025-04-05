@@ -2224,6 +2224,14 @@ def writeDK(date, march):
 									except:
 										pass
 									lines[game][prop][line] = ou
+							elif alt:
+								for outcome in outcomes:
+									player = parsePlayer(outcome["participant"].split(" (")[0])
+									if player not in lines[game][prop]:
+										lines[game][prop][player] = {}
+
+									line = str(float(outcome["label"].split("+")[0].split(" ")[-1]) - 0.5)
+									lines[game][prop][player][line] = f"{outcomes[0]['oddsAmerican']}"
 							elif not alt and len(outcomes) > 2:
 								for i in range(0, len(outcomes), 2):
 									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
@@ -2240,10 +2248,7 @@ def writeDK(date, march):
 								if player not in lines[game][prop]:
 									lines[game][prop][player] = {}
 
-								if alt:
-									line = str(float(outcomes[0]["label"].split("+")[0].split(" ")[-1]) - 0.5)
-								else:
-									line = outcomes[0]['line']
+								line = outcomes[0]['line']
 								lines[game][prop][player][line] = f"{outcomes[0]['oddsAmerican']}"
 								if not alt and len(row["outcomes"]) > 1:
 									lines[game][prop][player][line] += f"/{outcomes[1]['oddsAmerican']}"
