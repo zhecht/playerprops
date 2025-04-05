@@ -44,7 +44,9 @@ def bvpReport(date):
 	games = [x["game"] for x in schedule[date]]
 	for game in games:
 		away, home = map(str, game.split(" @ "))
+		awayPitcher, homePitcher = lineups[away]["pitcher"], lineups[home]["pitcher"]
 		players = list(roster[away].keys()) + list(roster[home].keys())
+		homers = []
 		for player in players:
 			team, opp = home, away
 			if player in roster.get(away, {}):
@@ -60,12 +62,20 @@ def bvpReport(date):
 				hrs = bvpStats["hr"]
 				avg = round(bvpStats["h"] / bvpStats["ab"], 3)
 				
-				if hrs:
-					homers.setdefault(hrs, [])
-					homers[hrs].append((avg, player))
+				#if hrs:
+				#	homers.setdefault(hrs, [])
+				#	homers[hrs].append((avg, player))
 				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
+				homers.append(f"{player} ({hrs})")
 			except:
 				pass
+
+
+		# 1:07 pm NYY @ DET: Stroman v Skubal
+		#	Mountcastle (3)
+		print(f"""{game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()}
+	{", ".join(homers)}
+""")
 
 
 	posts = []
