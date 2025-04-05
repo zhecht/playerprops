@@ -652,11 +652,12 @@ def writeFeedSplits(date, data):
 			}
 
 	for team in splits:
+		j = nested_dict()
 		try:
 			with open(f"static/splits/mlb_feed/{team}.json") as fh:
-				j = json.load(fh)
+				j.update(json.load(fh))
 		except:
-			j = nested_dict()
+			pass
 
 		for player in splits[team]:
 			for key in splits[team][player]:
