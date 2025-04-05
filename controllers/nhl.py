@@ -2708,6 +2708,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"{prefix}static/nhl/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/nhl/circa.json") as fh:
+		circa = json.load(fh)
+
 	with open(f"{prefix}static/nhl/espn.json") as fh:
 		espnLines = json.load(fh)
 
