@@ -437,6 +437,22 @@ def updateData(data):
 		with open(file, "w") as fh:
 			json.dump(d, fh, indent=4)
 
+def writeBR(date):
+	url = "https://mi.betrivers.com/?page=sportsbook&group=1000093616&type=playerprops"
+	browser = await uc.start(no_sandbox=True)
+	page = await browser.get(url)
+
+	res = {}
+	await page.wait_for(selector="article")
+	html = await page.get_content()
+	soup = BS(html, "lxml")
+
+	with open("out.html", "w") as fh:
+		fh.write(html)
+		
+	browser.stop()
+	return res
+
 async def getFDLinks(date):
 	browser = await uc.start(no_sandbox=True)
 	url = "https://mi.sportsbook.fanduel.com/navigation/mlb"
@@ -1349,6 +1365,7 @@ if __name__ == '__main__':
 	parser.add_argument("--espn", action="store_true")
 	parser.add_argument("--cz", action="store_true")
 	parser.add_argument("--dk", action="store_true")
+	parser.add_argument("--br", action="store_true")
 	parser.add_argument("--fd", action="store_true")
 	parser.add_argument("--mgm", action="store_true")
 	parser.add_argument("--kambi", action="store_true")
@@ -1390,6 +1407,8 @@ if __name__ == '__main__':
 		runThreads("mgm", games, min(args.threads, len(games)))
 	elif args.dk:
 		uc.loop().run_until_complete(writeOne("dk"))
+	elif args.br:
+		uc.loop().run_until_complete(writeOne("br"))
 	elif args.bet365:
 		uc.loop().run_until_complete(writeOne("365"))
 	elif args.espn:
