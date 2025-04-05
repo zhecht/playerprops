@@ -452,6 +452,7 @@ async def writeBR(date):
 		show = await article.query_selector(".crRLLM")
 		if show:
 			await show.click()
+			time.sleep(5)
 
 	html = await page.get_content()
 	soup = BS(html, "lxml")
