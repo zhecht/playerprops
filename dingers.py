@@ -1462,7 +1462,7 @@ if __name__ == '__main__':
 	if args.commit:
 		commitChanges()
 
-	if True:
+	if False:
 		data = []
 		plays = [("adolis garcia", 420), ("rhys hoskins", 500), ("corey seager", 290)]
 		with open("static/dailyev/ev.json") as fh:
