@@ -4,11 +4,14 @@ import math
 import os
 import random
 import queue
+import re
 import time
 import nodriver as uc
 import subprocess
 import threading
 import multiprocessing
+from pdf2image import convert_from_path
+import pytesseract
 
 from bs4 import BeautifulSoup as BS
 from controllers.shared import *
@@ -100,7 +103,19 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 def writeCirca():
 	dt = datetime.now().strftime("%Y-%-m-%-d")
 	file = f"MLB Props - {dt}.pdf"
-	
+	pages = convert_from_path(f"MLB Props - {dt}.pdf")
+	for page in pages:
+		text = pytesseract.image_to_string(page).split("\n")
+
+		for row in text:
+			if row and "(" in row:
+				player = row.split(" (")[0].lower()
+				over = re.search(r"\+\d{3,4}", row)
+				under = re.search(r"-\d{3,4}", row)
+				over = over.group() if over else None
+				under = under.group() if under else None
+
+				print(player, over, under)
 
 async def getESPNLinks(date):
 	browser = await uc.start(no_sandbox=True)
@@ -255,6 +270,8 @@ async def writeDK(data, browser):
 		for oIdx, odd in enumerate(odds):
 			player = parsePlayer(odd.parent.parent.parent.parent.parent.children[0].text.split(" (")[0])
 			ou = odd.text_all.split(" ")[-1]
+			if ou.endswith("+"):
+				continue
 			data[game].setdefault(player, {})
 			data[game][player][book] = ou
 
