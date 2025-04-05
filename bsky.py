@@ -41,7 +41,8 @@ def bvpReport(date):
 		roster = json.load(fh)
 
 	homers = {}
-	for game in schedule[date]:
+	games = [x["game"] for x in schedule[date]]
+	for game in games:
 		away, home = map(str, game.split(" @ "))
 		players = roster[away].keys() + roster[home].keys()
 		for player in players:
