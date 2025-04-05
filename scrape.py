@@ -8,6 +8,8 @@ import argparse
 import threading
 import queue
 from bs4 import BeautifulSoup as BS
+from pdf2image import convert_from_path
+import pytesseract
 
 from controllers.shared import convertSoccer, parsePlayer, strip_accents, convertMLBTeam, convertMGMMLBTeam, nested_dict, merge_dicts
 from datetime import datetime, timedelta
