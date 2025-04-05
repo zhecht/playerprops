@@ -371,6 +371,9 @@ def writeESPNTeamIds():
 		if not os.path.exists(path):
 			os.mkdir(path)
 
+		if teamId == "aub":
+			print("here")
+
 		if not os.path.exists(f"{path}/{teamId}.png"):
 			#print(teamName)
 			os.system(f"curl '{url}' -o '{path}/{teamId}.png'")
