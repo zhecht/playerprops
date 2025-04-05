@@ -171,7 +171,10 @@ async def writeESPN(rosters):
 					continue
 				data[game][player][book] = over+"/"+under
 
-		updateData(data)
+		try:
+			updateData(data)
+		except:
+			print("espn fail", data)
 		q.task_done()
 	browser.stop()
 
