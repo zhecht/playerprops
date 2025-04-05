@@ -66,7 +66,8 @@ def bvpReport(date):
 				#	homers.setdefault(hrs, [])
 				#	homers[hrs].append((avg, player))
 				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
-				homers.append(f"{player} ({hrs})")
+				if hrs:
+					homers.append(f"{player} ({hrs})")
 			except:
 				pass
 
@@ -79,7 +80,7 @@ def bvpReport(date):
 
 
 	return
-	
+
 	posts = []
 	post = ""
 	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
