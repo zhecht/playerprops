@@ -220,17 +220,15 @@ if __name__ == '__main__':
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--date", "-d")
 	parser.add_argument("--sport")
-	parser.add_argument("--nhl", action="store_true")
-	parser.add_argument("--mlb", action="store_true")
-	parser.add_argument("-u", "--update", action="store_true")
-	parser.add_argument("--run", action="store_true")
-	parser.add_argument("--schedule", action="store_true")
-	parser.add_argument("--stats", action="store_true")
+	parser.add_argument("--report", action="store_true")
+	parser.add_argument("--bvp", action="store_true")
 
 	args = parser.parse_args()
 
 	#dailyReport(args.date)
-	#bvpReport()
-	batterReport()
+	if args.bvp:
+		bvpReport()
+	if args.report:
+		batterReport()
 
 	#postHomer({'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'})
