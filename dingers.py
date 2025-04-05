@@ -450,6 +450,7 @@ async def writeBR(date):
 	for article in articles:
 		await article.scroll_into_view()
 		show = await article.query_selector(".crRLLM")
+		print(show)
 		if show:
 			await show.parent.click()
 			time.sleep(5)
