@@ -1,3643 +1,2150 @@
 [
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": true,
-    "hasAltTotal": true,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607138984,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": null,
-    "parentId": null,
-    "parlayRestriction": "unique_matchups",
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;0;m",
+    "limits": [
       {
-        "alignment": "home",
-        "name": "Kansas City Royals",
-        "order": 1,
-        "pitcher": null,
-        "stats": [
-          {
-            "period": 0
-          },
-          {
-            "period": 1
-          },
-          {
-            "period": 3
-          }
-        ]
-      },
-      {
-        "alignment": "away",
-        "name": "Baltimore Orioles",
-        "order": 0,
-        "pitcher": null,
-        "stats": [
-          {
-            "period": 0
-          },
-          {
-            "period": 1
-          },
-          {
-            "period": 3
-          }
-        ]
+        "amount": 4000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "hasMoneyline": true,
-        "hasSpread": true,
-        "hasTeamTotal": true,
-        "hasTotal": true,
-        "period": 0,
-        "status": "open"
+        "designation": "home",
+        "price": -215
       },
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "hasMoneyline": false,
-        "hasSpread": true,
-        "hasTeamTotal": true,
-        "hasTotal": true,
-        "period": 1,
-        "status": "open"
-      },
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "hasMoneyline": true,
-        "hasSpread": true,
-        "hasTeamTotal": false,
-        "hasTotal": true,
-        "period": 3,
-        "status": "open"
+        "designation": "away",
+        "price": 190
       }
     ],
-    "rotation": 965,
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 20,
-    "type": "matchup",
-    "units": "Regular",
-    "version": 589892551
+    "status": "open",
+    "type": "moneyline",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607147077,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;0;tt;4.5;home",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607147078,
-        "name": "Baltimore Orioles",
-        "order": 0,
-        "rotation": 927
+        "amount": 650,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 4.5,
+        "price": -125
       },
       {
-        "alignment": "neutral",
-        "id": 1607147079,
-        "name": "Kansas City Royals",
-        "order": 0,
-        "rotation": 928
+        "designation": "under",
+        "points": 4.5,
+        "price": 107
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
-      }
-    ],
-    "rotation": 927,
-    "special": {
-      "category": "Next Run",
-      "description": "Team To Score 1st Run"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "1st Run",
-    "version": 413044818
+    "side": "home",
+    "status": "open",
+    "type": "team_total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292657,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": "unique_matchups",
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;0;tt;3.5;away",
+    "limits": [
       {
-        "alignment": "home",
-        "name": "Kansas City Royals  (Hits+Runs+Errors)",
-        "order": 1,
-        "pitcher": null,
-        "stats": [
-          {
-            "period": 0
-          }
-        ]
+        "amount": 650,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 3.5,
+        "price": 109
       },
       {
-        "alignment": "away",
-        "name": "Baltimore Orioles  (Hits+Runs+Errors)",
-        "order": 0,
-        "pitcher": null,
-        "stats": [
-          {
-            "period": 0
-          }
-        ]
+        "designation": "under",
+        "points": 3.5,
+        "price": -128
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "hasMoneyline": false,
-        "hasSpread": false,
-        "hasTeamTotal": false,
-        "hasTotal": true,
-        "period": 0,
-        "status": "open"
-      }
-    ],
-    "rotation": 9965,
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "matchup",
-    "units": "Hits + Runs + Errors",
-    "version": 589892551
+    "side": "away",
+    "status": "open",
+    "type": "team_total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292658,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;0;s;-1.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292659,
-        "name": "Odd",
-        "order": 0,
-        "rotation": 965
+        "amount": 4000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "home",
+        "points": -1.5,
+        "price": 100
       },
       {
-        "alignment": "neutral",
-        "id": 1607292660,
-        "name": "Even",
-        "order": 0,
-        "rotation": 966
+        "designation": "away",
+        "points": 1.5,
+        "price": -113
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
-      }
-    ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Kansas City Royals Runs Odd/Even 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045013
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292661,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;s;1.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292662,
-        "name": "Odd",
-        "order": 0,
-        "rotation": 965
+        "amount": 4000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "home",
+        "points": 1.5,
+        "price": -383
       },
       {
-        "alignment": "neutral",
-        "id": 1607292663,
-        "name": "Even",
-        "order": 0,
-        "rotation": 966
+        "designation": "away",
+        "points": -1.5,
+        "price": 283
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
-      }
-    ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Kansas City Royals Runs Odd/Even"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045024
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292664,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;s;1.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292665,
-        "name": "0",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292666,
-        "name": "1",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292667,
-        "name": "2",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292668,
-        "name": "3",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292669,
-        "name": "4",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292670,
-        "name": "5",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292671,
-        "name": "6",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292672,
-        "name": "7",
-        "order": 0,
-        "rotation": 972
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292673,
-        "name": "8+",
-        "order": 0,
-        "rotation": 973
+        "amount": 4000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "home",
+        "points": 1.0,
+        "price": -325
+      },
+      {
+        "designation": "away",
+        "points": -1.0,
+        "price": 254
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Kansas City Royals Exact Total Runs"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045024
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292674,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;s;-1.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292675,
-        "name": "Baltimore Orioles & Over 4.5",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292676,
-        "name": "Kansas City Royals & Over 4.5",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292677,
-        "name": "Draw & Over 4.5",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292678,
-        "name": "Baltimore Orioles & Under 4.5",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292679,
-        "name": "Kansas City Royals & Under 4.5",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292680,
-        "name": "Draw & Under 4.5",
-        "order": 0,
-        "rotation": 970
+        "amount": 4000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
+        "designation": "home",
+        "points": -1.0,
+        "price": -157
+      },
+      {
+        "designation": "away",
+        "points": 1.0,
+        "price": 136
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Double Result",
-      "description": "1st Half Winner/Total 4.5 Runs"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045024
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292681,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;s;-2.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292682,
-        "name": "0",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292683,
-        "name": "1",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292684,
-        "name": "2",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292685,
-        "name": "3",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292686,
-        "name": "4",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292687,
-        "name": "5",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292688,
-        "name": "6",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292689,
-        "name": "7",
-        "order": 0,
-        "rotation": 972
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292690,
-        "name": "8+",
-        "order": 0,
-        "rotation": 973
+        "amount": 4000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "home",
+        "points": -2.0,
+        "price": 128
+      },
+      {
+        "designation": "away",
+        "points": 2.0,
+        "price": -147
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Baltimore Orioles Exact Total Runs"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045026
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292691,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;s;-2.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292692,
-        "name": "Baltimore Orioles 1, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292693,
-        "name": "Baltimore Orioles 2, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292694,
-        "name": "Baltimore Orioles 3, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292695,
-        "name": "Baltimore Orioles 4, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292696,
-        "name": "Baltimore Orioles 5, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292697,
-        "name": "Baltimore Orioles 6, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292698,
-        "name": "Baltimore Orioles 7, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292699,
-        "name": "Baltimore Orioles 0, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 972
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292700,
-        "name": "Baltimore Orioles 2, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 973
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292701,
-        "name": "Baltimore Orioles 3, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 974
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292702,
-        "name": "Baltimore Orioles 4, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 975
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292703,
-        "name": "Baltimore Orioles 5, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 976
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292704,
-        "name": "Baltimore Orioles 6, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 977
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292705,
-        "name": "Baltimore Orioles 7, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 978
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292706,
-        "name": "Baltimore Orioles 0, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 979
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292707,
-        "name": "Baltimore Orioles 1, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 980
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292708,
-        "name": "Baltimore Orioles 3, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 981
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292709,
-        "name": "Baltimore Orioles 4, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 982
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292710,
-        "name": "Baltimore Orioles 5, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 983
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292711,
-        "name": "Baltimore Orioles 6, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 984
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292712,
-        "name": "Baltimore Orioles 7, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 985
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292713,
-        "name": "Baltimore Orioles 0, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 986
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292714,
-        "name": "Baltimore Orioles 1, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 987
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292715,
-        "name": "Baltimore Orioles 2, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 988
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292716,
-        "name": "Baltimore Orioles 4, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 989
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292717,
-        "name": "Baltimore Orioles 5, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 990
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292718,
-        "name": "Baltimore Orioles 6, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 991
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292719,
-        "name": "Baltimore Orioles 7, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 992
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292720,
-        "name": "Baltimore Orioles 0, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 993
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292721,
-        "name": "Baltimore Orioles 1, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 994
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292722,
-        "name": "Baltimore Orioles 2, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 995
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292723,
-        "name": "Baltimore Orioles 3, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 996
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292724,
-        "name": "Baltimore Orioles 5, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 997
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292725,
-        "name": "Baltimore Orioles 6, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 998
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292726,
-        "name": "Baltimore Orioles 7, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 999
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292727,
-        "name": "Baltimore Orioles 0, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1000
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292728,
-        "name": "Baltimore Orioles 1, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1001
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292729,
-        "name": "Baltimore Orioles 2, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1002
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292730,
-        "name": "Baltimore Orioles 3, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1003
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292731,
-        "name": "Baltimore Orioles 4, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1004
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292732,
-        "name": "Baltimore Orioles 6, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1005
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292733,
-        "name": "Baltimore Orioles 7, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1006
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292734,
-        "name": "Baltimore Orioles 0, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1007
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292735,
-        "name": "Baltimore Orioles 1, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1008
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292736,
-        "name": "Baltimore Orioles 2, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1009
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292737,
-        "name": "Baltimore Orioles 3, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1010
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292738,
-        "name": "Baltimore Orioles 4, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1011
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292739,
-        "name": "Baltimore Orioles 5, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1012
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292740,
-        "name": "Baltimore Orioles 7, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1013
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292741,
-        "name": "Baltimore Orioles 0, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1014
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292742,
-        "name": "Baltimore Orioles 1, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1015
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292743,
-        "name": "Baltimore Orioles 2, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1016
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292744,
-        "name": "Baltimore Orioles 3, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1017
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292745,
-        "name": "Baltimore Orioles 4, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1018
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292746,
-        "name": "Baltimore Orioles 5, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1019
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292747,
-        "name": "Baltimore Orioles 6, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1020
+        "amount": 4000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "home",
+        "points": -2.5,
+        "price": 152
+      },
+      {
+        "designation": "away",
+        "points": 2.5,
+        "price": -181
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Correct Score"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045026
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292748,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;s;-3.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292749,
-        "name": "Odd",
-        "order": 0,
-        "rotation": 965
+        "amount": 4000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "home",
+        "points": -3.0,
+        "price": 198
       },
       {
-        "alignment": "neutral",
-        "id": 1607292750,
-        "name": "Even",
-        "order": 0,
-        "rotation": 966
+        "designation": "away",
+        "points": 3.0,
+        "price": -249
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
-      }
-    ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Total Runs Odd/Even"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045029
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292751,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;0;ou;8.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292752,
-        "name": "Odd",
-        "order": 0,
-        "rotation": 965
+        "amount": 2000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 8.5,
+        "price": -107
       },
       {
-        "alignment": "neutral",
-        "id": 1607292753,
-        "name": "Even",
-        "order": 0,
-        "rotation": 966
+        "designation": "under",
+        "points": 8.5,
+        "price": -105
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
-      }
-    ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Baltimore Orioles Runs Odd/Even 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045029
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292754,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;5.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292755,
-        "name": "Odd",
-        "order": 0,
-        "rotation": 965
+        "amount": 2000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 5.5,
+        "price": -370
       },
       {
-        "alignment": "neutral",
-        "id": 1607292756,
-        "name": "Even",
-        "order": 0,
-        "rotation": 966
+        "designation": "under",
+        "points": 5.5,
+        "price": 283
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
-      }
-    ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Baltimore Orioles Runs Odd/Even"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045029
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292757,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;7.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292758,
-        "name": "Odd",
-        "order": 0,
-        "rotation": 965
+        "amount": 2000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 7.0,
+        "price": -203
       },
       {
-        "alignment": "neutral",
-        "id": 1607292759,
-        "name": "Even",
-        "order": 0,
-        "rotation": 966
+        "designation": "under",
+        "points": 7.0,
+        "price": 177
       }
     ],
-    "periods": [
-      {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
-      }
-    ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Total Runs Odd/Even 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045031
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292760,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;7.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292761,
-        "name": "Baltimore Orioles & Over 8.5",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292762,
-        "name": "Kansas City Royals & Over 8.5",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292763,
-        "name": "Baltimore Orioles & Under 8.5",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292764,
-        "name": "Kansas City Royals & Under 8.5",
-        "order": 0,
-        "rotation": 968
+        "amount": 2000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "over",
+        "points": 7.5,
+        "price": -148
+      },
+      {
+        "designation": "under",
+        "points": 7.5,
+        "price": 131
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Double Result",
-      "description": "Winner/Total 8.5 Runs"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045031
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292765,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;8.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292766,
-        "name": "Baltimore Orioles By 1",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292767,
-        "name": "Baltimore Orioles By 2",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292768,
-        "name": "Baltimore Orioles By 3",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292769,
-        "name": "Baltimore Orioles By 4",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292770,
-        "name": "Baltimore Orioles By 5+",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292771,
-        "name": "Kansas City Royals By 1",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292772,
-        "name": "Kansas City Royals By 2",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292773,
-        "name": "Kansas City Royals By 3",
-        "order": 0,
-        "rotation": 972
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292774,
-        "name": "Kansas City Royals By 4",
-        "order": 0,
-        "rotation": 973
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292775,
-        "name": "Kansas City Royals By 5+",
-        "order": 0,
-        "rotation": 974
+        "amount": 2000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "over",
+        "points": 8.0,
+        "price": -128
+      },
+      {
+        "designation": "under",
+        "points": 8.0,
+        "price": 113
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Winning Margin"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413045032
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292776,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;9.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292777,
-        "name": "Baltimore Orioles By 1 - 2",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292778,
-        "name": "Baltimore Orioles By 3 - 4",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292779,
-        "name": "Baltimore Orioles By 5 - 6",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292780,
-        "name": "Baltimore Orioles By 7+",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292781,
-        "name": "Kansas City Royals By 1 - 2",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292782,
-        "name": "Kansas City Royals By 3 - 4",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292783,
-        "name": "Kansas City Royals By 5 - 6",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292784,
-        "name": "Kansas City Royals By 7+",
-        "order": 0,
-        "rotation": 972
+        "amount": 2000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "over",
+        "points": 9.0,
+        "price": 119
+      },
+      {
+        "designation": "under",
+        "points": 9.0,
+        "price": -135
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Winning Margin Range"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056226
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292785,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;9.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292786,
-        "name": "1",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292787,
-        "name": "2",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292788,
-        "name": "3",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292789,
-        "name": "4",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292790,
-        "name": "5",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292791,
-        "name": "6",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292792,
-        "name": "7",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292793,
-        "name": "8",
-        "order": 0,
-        "rotation": 972
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292794,
-        "name": "9",
-        "order": 0,
-        "rotation": 973
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292795,
-        "name": "10",
-        "order": 0,
-        "rotation": 974
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292796,
-        "name": "11",
-        "order": 0,
-        "rotation": 975
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292797,
-        "name": "12",
-        "order": 0,
-        "rotation": 976
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292798,
-        "name": "13",
-        "order": 0,
-        "rotation": 977
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292799,
-        "name": "14",
-        "order": 0,
-        "rotation": 978
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292800,
-        "name": "15+",
-        "order": 0,
-        "rotation": 979
+        "amount": 2000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "over",
+        "points": 9.5,
+        "price": 145
+      },
+      {
+        "designation": "under",
+        "points": 9.5,
+        "price": -165
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Exact Total Runs"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056345
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292801,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;10.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292802,
-        "name": "1 - 3",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292803,
-        "name": "4 - 6",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292804,
-        "name": "7 - 9",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292805,
-        "name": "10 - 12",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292806,
-        "name": "13+",
-        "order": 0,
-        "rotation": 969
+        "amount": 2000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 0,
-        "status": "open"
+        "designation": "over",
+        "points": 10.0,
+        "price": 177
+      },
+      {
+        "designation": "under",
+        "points": 10.0,
+        "price": -204
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Total Runs Range"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056226
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292807,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;0;ou;12.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292808,
-        "name": "Baltimore Orioles By 1",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292809,
-        "name": "Baltimore Orioles By 2",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292810,
-        "name": "Baltimore Orioles By 3+",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292811,
-        "name": "Tie",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292812,
-        "name": "Kansas City Royals By 1",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292813,
-        "name": "Kansas City Royals By 2",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292814,
-        "name": "Kansas City Royals By 3+",
-        "order": 0,
-        "rotation": 971
+        "amount": 2000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 0,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
+        "designation": "over",
+        "points": 12.5,
+        "price": 368
+      },
+      {
+        "designation": "under",
+        "points": 12.5,
+        "price": -513
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Winning Margin 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056171
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292815,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;1;tt;2.5;home",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292816,
-        "name": "0",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292817,
-        "name": "1",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292818,
-        "name": "2",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292819,
-        "name": "3",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292820,
-        "name": "4",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292821,
-        "name": "5",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292822,
-        "name": "6",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292823,
-        "name": "7",
-        "order": 0,
-        "rotation": 972
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292824,
-        "name": "8",
-        "order": 0,
-        "rotation": 973
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292825,
-        "name": "9",
-        "order": 0,
-        "rotation": 974
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292826,
-        "name": "10",
-        "order": 0,
-        "rotation": 975
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292827,
-        "name": "11+",
-        "order": 0,
-        "rotation": 976
+        "amount": 325,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
+        "designation": "over",
+        "points": 2.5,
+        "price": -119
+      },
+      {
+        "designation": "under",
+        "points": 2.5,
+        "price": -102
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Exact Total Runs 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056180
+    "side": "home",
+    "status": "open",
+    "type": "team_total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292828,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;1;tt;1.5;away",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292829,
-        "name": "0 - 2",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292830,
-        "name": "3 - 4",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292831,
-        "name": "5 - 6",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292832,
-        "name": "7+",
-        "order": 0,
-        "rotation": 968
+        "amount": 325,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
+        "designation": "over",
+        "points": 1.5,
+        "price": -107
+      },
+      {
+        "designation": "under",
+        "points": 1.5,
+        "price": -113
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Total Runs Range 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056180
+    "side": "away",
+    "status": "open",
+    "type": "team_total",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292833,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;1;s;0.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292834,
-        "name": "0",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292835,
-        "name": "1",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292836,
-        "name": "2",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292837,
-        "name": "3",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292838,
-        "name": "4",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292839,
-        "name": "5+",
-        "order": 0,
-        "rotation": 970
+        "amount": 1000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
+        "designation": "home",
+        "points": 0.0,
+        "price": -205
+      },
+      {
+        "designation": "away",
+        "points": -0.0,
+        "price": 178
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Baltimore Orioles Exact Total Runs 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056180
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292840,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;s;1.0",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292841,
-        "name": "0",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292842,
-        "name": "1",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292843,
-        "name": "2",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292844,
-        "name": "3",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292845,
-        "name": "4",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292846,
-        "name": "5+",
-        "order": 0,
-        "rotation": 970
+        "amount": 1000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
+        "designation": "home",
+        "points": 1.0,
+        "price": -434
+      },
+      {
+        "designation": "away",
+        "points": -1.0,
+        "price": 323
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Kansas City Royals Exact Total Runs 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056180
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
   },
   {
-    "ageLimit": 0,
-    "altTeaser": false,
-    "featureOrder": -1,
-    "hasAltSpread": false,
-    "hasAltTotal": false,
-    "hasBetshare": false,
-    "hasLive": true,
-    "hasMarkets": true,
-    "id": 1607292847,
-    "isBetshareEnabled": false,
-    "isFeatured": false,
-    "isHighlighted": false,
-    "isLive": false,
-    "isPromoted": false,
-    "league": {
-      "ageLimit": 0,
-      "featureOrder": 0,
-      "group": "USA",
-      "id": 246,
-      "isFeatured": true,
-      "isHidden": false,
-      "isPromoted": false,
-      "isSticky": false,
-      "matchupCount": 25,
-      "matchupCountSE": 25,
-      "name": "MLB",
-      "sequence": 1,
-      "sport": {
-        "featureOrder": 4,
-        "id": 3,
-        "isFeatured": true,
-        "isHidden": false,
-        "isSticky": false,
-        "matchupCount": 45,
-        "matchupCountSE": 45,
-        "name": "Baseball",
-        "primaryMarketType": "moneyline"
-      }
-    },
-    "liveMode": null,
-    "parent": {
-      "id": 1607138984,
-      "participants": [
-        {
-          "alignment": "home",
-          "name": "Kansas City Royals",
-          "score": null
-        },
-        {
-          "alignment": "away",
-          "name": "Baltimore Orioles",
-          "score": null
-        }
-      ],
-      "startTime": "2025-04-05T20:10:00+00:00"
-    },
-    "parentId": 1607138984,
-    "parlayRestriction": null,
-    "participants": [
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;s;0.5",
+    "limits": [
       {
-        "alignment": "neutral",
-        "id": 1607292848,
-        "name": "Baltimore Orioles 0, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 965
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292849,
-        "name": "Baltimore Orioles 0, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 966
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292850,
-        "name": "Baltimore Orioles 0, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 967
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292851,
-        "name": "Baltimore Orioles 0, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 968
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292852,
-        "name": "Baltimore Orioles 0, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 969
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292853,
-        "name": "Baltimore Orioles 0, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 970
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292854,
-        "name": "Baltimore Orioles 0, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 971
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292855,
-        "name": "Baltimore Orioles 1, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 972
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292856,
-        "name": "Baltimore Orioles 1, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 973
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292857,
-        "name": "Baltimore Orioles 1, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 974
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292858,
-        "name": "Baltimore Orioles 1, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 975
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292859,
-        "name": "Baltimore Orioles 1, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 976
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292860,
-        "name": "Baltimore Orioles 1, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 977
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292861,
-        "name": "Baltimore Orioles 1, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 978
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292862,
-        "name": "Baltimore Orioles 1, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 979
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292863,
-        "name": "Baltimore Orioles 2, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 980
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292864,
-        "name": "Baltimore Orioles 2, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 981
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292865,
-        "name": "Baltimore Orioles 2, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 982
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292866,
-        "name": "Baltimore Orioles 2, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 983
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292867,
-        "name": "Baltimore Orioles 2, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 984
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292868,
-        "name": "Baltimore Orioles 2, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 985
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292869,
-        "name": "Baltimore Orioles 2, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 986
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292870,
-        "name": "Baltimore Orioles 2, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 987
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292871,
-        "name": "Baltimore Orioles 3, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 988
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292872,
-        "name": "Baltimore Orioles 3, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 989
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292873,
-        "name": "Baltimore Orioles 3, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 990
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292874,
-        "name": "Baltimore Orioles 3, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 991
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292875,
-        "name": "Baltimore Orioles 3, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 992
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292876,
-        "name": "Baltimore Orioles 3, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 993
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292877,
-        "name": "Baltimore Orioles 3, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 994
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292878,
-        "name": "Baltimore Orioles 3, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 995
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292879,
-        "name": "Baltimore Orioles 4, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 996
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292880,
-        "name": "Baltimore Orioles 4, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 997
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292881,
-        "name": "Baltimore Orioles 4, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 998
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292882,
-        "name": "Baltimore Orioles 4, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 999
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292883,
-        "name": "Baltimore Orioles 4, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 1000
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292884,
-        "name": "Baltimore Orioles 4, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1001
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292885,
-        "name": "Baltimore Orioles 4, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1002
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292886,
-        "name": "Baltimore Orioles 4, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1003
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292887,
-        "name": "Baltimore Orioles 5, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 1004
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292888,
-        "name": "Baltimore Orioles 5, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 1005
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292889,
-        "name": "Baltimore Orioles 5, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 1006
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292890,
-        "name": "Baltimore Orioles 5, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 1007
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292891,
-        "name": "Baltimore Orioles 5, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 1008
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292892,
-        "name": "Baltimore Orioles 5, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1009
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292893,
-        "name": "Baltimore Orioles 5, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1010
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292894,
-        "name": "Baltimore Orioles 5, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1011
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292895,
-        "name": "Baltimore Orioles 6, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 1012
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292896,
-        "name": "Baltimore Orioles 6, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 1013
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292897,
-        "name": "Baltimore Orioles 6, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 1014
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292898,
-        "name": "Baltimore Orioles 6, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 1015
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292899,
-        "name": "Baltimore Orioles 6, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 1016
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292900,
-        "name": "Baltimore Orioles 6, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1017
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292901,
-        "name": "Baltimore Orioles 6, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1018
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292902,
-        "name": "Baltimore Orioles 6, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1019
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292903,
-        "name": "Baltimore Orioles 7, Kansas City Royals 0",
-        "order": 0,
-        "rotation": 1020
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292904,
-        "name": "Baltimore Orioles 7, Kansas City Royals 1",
-        "order": 0,
-        "rotation": 1021
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292905,
-        "name": "Baltimore Orioles 7, Kansas City Royals 2",
-        "order": 0,
-        "rotation": 1022
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292906,
-        "name": "Baltimore Orioles 7, Kansas City Royals 3",
-        "order": 0,
-        "rotation": 1023
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292907,
-        "name": "Baltimore Orioles 7, Kansas City Royals 4",
-        "order": 0,
-        "rotation": 1024
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292908,
-        "name": "Baltimore Orioles 7, Kansas City Royals 5",
-        "order": 0,
-        "rotation": 1025
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292909,
-        "name": "Baltimore Orioles 7, Kansas City Royals 6",
-        "order": 0,
-        "rotation": 1026
-      },
-      {
-        "alignment": "neutral",
-        "id": 1607292910,
-        "name": "Baltimore Orioles 7, Kansas City Royals 7",
-        "order": 0,
-        "rotation": 1027
+        "amount": 1000,
+        "type": "maxRiskStake"
       }
     ],
-    "periods": [
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
       {
-        "cutoffAt": "2025-04-05T20:10:00Z",
-        "period": 1,
-        "status": "open"
+        "designation": "home",
+        "points": 0.5,
+        "price": -263
+      },
+      {
+        "designation": "away",
+        "points": -0.5,
+        "price": 218
       }
     ],
-    "rotation": 965,
-    "special": {
-      "category": "Exact Scores",
-      "description": "Correct Score 1st Half"
-    },
-    "startTime": "2025-04-05T20:10:00Z",
-    "state": {},
-    "status": "pending",
-    "totalMarketCount": 1,
-    "type": "special",
-    "units": "Runs",
-    "version": 413056180
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;s;-0.5",
+    "limits": [
+      {
+        "amount": 1000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
+      {
+        "designation": "home",
+        "points": -0.5,
+        "price": -138
+      },
+      {
+        "designation": "away",
+        "points": 0.5,
+        "price": 120
+      }
+    ],
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;s;-1.0",
+    "limits": [
+      {
+        "amount": 1000,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
+      {
+        "designation": "home",
+        "points": -1.0,
+        "price": -105
+      },
+      {
+        "designation": "away",
+        "points": 1.0,
+        "price": -112
+      }
+    ],
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;1;ou;4.5",
+    "limits": [
+      {
+        "amount": 650,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 4.5,
+        "price": -114
+      },
+      {
+        "designation": "under",
+        "points": 4.5,
+        "price": -101
+      }
+    ],
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;ou;3.5",
+    "limits": [
+      {
+        "amount": 650,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 3.5,
+        "price": -196
+      },
+      {
+        "designation": "under",
+        "points": 3.5,
+        "price": 167
+      }
+    ],
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;ou;4.0",
+    "limits": [
+      {
+        "amount": 650,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 4.0,
+        "price": -156
+      },
+      {
+        "designation": "under",
+        "points": 4.0,
+        "price": 135
+      }
+    ],
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;ou;5.0",
+    "limits": [
+      {
+        "amount": 650,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 5.0,
+        "price": 114
+      },
+      {
+        "designation": "under",
+        "points": 5.0,
+        "price": -131
+      }
+    ],
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": true,
+    "key": "s;1;ou;5.5",
+    "limits": [
+      {
+        "amount": 650,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 1,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 5.5,
+        "price": 142
+      },
+      {
+        "designation": "under",
+        "points": 5.5,
+        "price": -164
+      }
+    ],
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;3;m",
+    "limits": [
+      {
+        "amount": 325,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 3,
+    "prices": [
+      {
+        "designation": "home",
+        "price": 219
+      },
+      {
+        "designation": "away",
+        "price": 359
+      },
+      {
+        "designation": "draw",
+        "price": -118
+      }
+    ],
+    "status": "open",
+    "type": "moneyline",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;3;s;0.0",
+    "limits": [
+      {
+        "amount": 325,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 3,
+    "prices": [
+      {
+        "designation": "home",
+        "points": 0.0,
+        "price": -166
+      },
+      {
+        "designation": "away",
+        "points": -0.0,
+        "price": 141
+      }
+    ],
+    "status": "open",
+    "type": "spread",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;3;ou;0.5",
+    "limits": [
+      {
+        "amount": 325,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607151218,
+    "period": 3,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 0.5,
+        "price": -112
+      },
+      {
+        "designation": "under",
+        "points": 0.5,
+        "price": -104
+      }
+    ],
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607153744,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607153747,
+        "price": -107
+      },
+      {
+        "participantId": 1607153748,
+        "price": -109
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872914513
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "isAlternate": false,
+    "key": "s;0;ou;25.5",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291895,
+    "period": 0,
+    "prices": [
+      {
+        "designation": "over",
+        "points": 25.5,
+        "price": -124
+      },
+      {
+        "designation": "under",
+        "points": 25.5,
+        "price": 103
+      }
+    ],
+    "status": "open",
+    "type": "total",
+    "version": 3031962135
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291896,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607291897,
+        "price": 107
+      },
+      {
+        "participantId": 1607291898,
+        "price": -126
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291899,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607291900,
+        "price": -106
+      },
+      {
+        "participantId": 1607291901,
+        "price": -110
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291902,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607291904,
+        "price": 936
+      },
+      {
+        "participantId": 1607291905,
+        "price": 651
+      },
+      {
+        "participantId": 1607291906,
+        "price": 531
+      },
+      {
+        "participantId": 1607291907,
+        "price": 500
+      },
+      {
+        "participantId": 1607291908,
+        "price": 523
+      },
+      {
+        "participantId": 1607291909,
+        "price": 596
+      },
+      {
+        "participantId": 1607291910,
+        "price": 719
+      },
+      {
+        "participantId": 1607291911,
+        "price": 331
+      },
+      {
+        "participantId": 1607291903,
+        "price": 1552
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291912,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607291913,
+        "price": 459
+      },
+      {
+        "participantId": 1607291914,
+        "price": 193
+      },
+      {
+        "participantId": 1607291915,
+        "price": 1550
+      },
+      {
+        "participantId": 1607291916,
+        "price": 467
+      },
+      {
+        "participantId": 1607291917,
+        "price": 275
+      },
+      {
+        "participantId": 1607291918,
+        "price": 588
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291919,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607291920,
+        "price": 779
+      },
+      {
+        "participantId": 1607291921,
+        "price": 467
+      },
+      {
+        "participantId": 1607291922,
+        "price": 421
+      },
+      {
+        "participantId": 1607291923,
+        "price": 451
+      },
+      {
+        "participantId": 1607291924,
+        "price": 523
+      },
+      {
+        "participantId": 1607291925,
+        "price": 647
+      },
+      {
+        "participantId": 1607291926,
+        "price": 825
+      },
+      {
+        "participantId": 1607291927,
+        "price": 1080
+      },
+      {
+        "participantId": 1607291928,
+        "price": 694
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291929,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607291944,
+        "price": 4190
+      },
+      {
+        "participantId": 1607291945,
+        "price": 2216
+      },
+      {
+        "participantId": 1607291946,
+        "price": 2859
+      },
+      {
+        "participantId": 1607291947,
+        "price": 3405
+      },
+      {
+        "participantId": 1607291948,
+        "price": 4152
+      },
+      {
+        "participantId": 1607291949,
+        "price": 5230
+      },
+      {
+        "participantId": 1607291950,
+        "price": 6473
+      },
+      {
+        "participantId": 1607291951,
+        "price": 3975
+      },
+      {
+        "participantId": 1607291952,
+        "price": 2574
+      },
+      {
+        "participantId": 1607291953,
+        "price": 1758
+      },
+      {
+        "participantId": 1607291954,
+        "price": 2867
+      },
+      {
+        "participantId": 1607291955,
+        "price": 3507
+      },
+      {
+        "participantId": 1607291956,
+        "price": 4249
+      },
+      {
+        "participantId": 1607291957,
+        "price": 5625
+      },
+      {
+        "participantId": 1607291958,
+        "price": 4096
+      },
+      {
+        "participantId": 1607291959,
+        "price": 2662
+      },
+      {
+        "participantId": 1607291960,
+        "price": 2407
+      },
+      {
+        "participantId": 1607291961,
+        "price": 1785
+      },
+      {
+        "participantId": 1607291962,
+        "price": 3077
+      },
+      {
+        "participantId": 1607291963,
+        "price": 3989
+      },
+      {
+        "participantId": 1607291964,
+        "price": 5209
+      },
+      {
+        "participantId": 1607291965,
+        "price": 4456
+      },
+      {
+        "participantId": 1607291966,
+        "price": 2929
+      },
+      {
+        "participantId": 1607291967,
+        "price": 2646
+      },
+      {
+        "participantId": 1607291968,
+        "price": 2687
+      },
+      {
+        "participantId": 1607291969,
+        "price": 1948
+      },
+      {
+        "participantId": 1607291970,
+        "price": 3925
+      },
+      {
+        "participantId": 1607291971,
+        "price": 5183
+      },
+      {
+        "participantId": 1607291972,
+        "price": 5049
+      },
+      {
+        "participantId": 1607291973,
+        "price": 3372
+      },
+      {
+        "participantId": 1607291974,
+        "price": 2995
+      },
+      {
+        "participantId": 1607291975,
+        "price": 2938
+      },
+      {
+        "participantId": 1607291976,
+        "price": 3281
+      },
+      {
+        "participantId": 1607291977,
+        "price": 2548
+      },
+      {
+        "participantId": 1607291978,
+        "price": 5354
+      },
+      {
+        "participantId": 1607291979,
+        "price": 5847
+      },
+      {
+        "participantId": 1607291980,
+        "price": 3897
+      },
+      {
+        "participantId": 1607291981,
+        "price": 3420
+      },
+      {
+        "participantId": 1607291982,
+        "price": 3534
+      },
+      {
+        "participantId": 1607291983,
+        "price": 3897
+      },
+      {
+        "participantId": 1607291984,
+        "price": 4531
+      },
+      {
+        "participantId": 1607291985,
+        "price": 3571
+      },
+      {
+        "participantId": 1607291930,
+        "price": 6015
+      },
+      {
+        "participantId": 1607291931,
+        "price": 5800
+      },
+      {
+        "participantId": 1607291932,
+        "price": 6196
+      },
+      {
+        "participantId": 1607291933,
+        "price": 7237
+      },
+      {
+        "participantId": 1607291934,
+        "price": 8612
+      },
+      {
+        "participantId": 1607291937,
+        "price": 4449
+      },
+      {
+        "participantId": 1607291938,
+        "price": 3531
+      },
+      {
+        "participantId": 1607291939,
+        "price": 3894
+      },
+      {
+        "participantId": 1607291940,
+        "price": 4497
+      },
+      {
+        "participantId": 1607291941,
+        "price": 5550
+      },
+      {
+        "participantId": 1607291942,
+        "price": 6938
+      },
+      {
+        "participantId": 1607291943,
+        "price": 8640
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291986,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607291987,
+        "price": -158
+      },
+      {
+        "participantId": 1607291988,
+        "price": 134
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291989,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607291990,
+        "price": 116
+      },
+      {
+        "participantId": 1607291991,
+        "price": -136
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291992,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607291993,
+        "price": -104
+      },
+      {
+        "participantId": 1607291994,
+        "price": -112
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291995,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607291996,
+        "price": -106
+      },
+      {
+        "participantId": 1607291997,
+        "price": -110
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607291998,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607292000,
+        "price": 178
+      },
+      {
+        "participantId": 1607292001,
+        "price": 414
+      },
+      {
+        "participantId": 1607292002,
+        "price": 182
+      },
+      {
+        "participantId": 1607291999,
+        "price": 411
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292003,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607292004,
+        "price": 661
+      },
+      {
+        "participantId": 1607292005,
+        "price": 843
+      },
+      {
+        "participantId": 1607292006,
+        "price": 1083
+      },
+      {
+        "participantId": 1607292007,
+        "price": 1454
+      },
+      {
+        "participantId": 1607292008,
+        "price": 956
+      },
+      {
+        "participantId": 1607292009,
+        "price": 368
+      },
+      {
+        "participantId": 1607292010,
+        "price": 609
+      },
+      {
+        "participantId": 1607292011,
+        "price": 689
+      },
+      {
+        "participantId": 1607292012,
+        "price": 825
+      },
+      {
+        "participantId": 1607292013,
+        "price": 333
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292014,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607292015,
+        "price": 389
+      },
+      {
+        "participantId": 1607292016,
+        "price": 714
+      },
+      {
+        "participantId": 1607292017,
+        "price": 1371
+      },
+      {
+        "participantId": 1607292018,
+        "price": 1930
+      },
+      {
+        "participantId": 1607292019,
+        "price": 214
+      },
+      {
+        "participantId": 1607292020,
+        "price": 395
+      },
+      {
+        "participantId": 1607292021,
+        "price": 634
+      },
+      {
+        "participantId": 1607292022,
+        "price": 673
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292023,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607292032,
+        "price": 602
+      },
+      {
+        "participantId": 1607292033,
+        "price": 871
+      },
+      {
+        "participantId": 1607292034,
+        "price": 768
+      },
+      {
+        "participantId": 1607292035,
+        "price": 1136
+      },
+      {
+        "participantId": 1607292036,
+        "price": 1078
+      },
+      {
+        "participantId": 1607292037,
+        "price": 1604
+      },
+      {
+        "participantId": 1607292038,
+        "price": 677
+      },
+      {
+        "participantId": 1607292024,
+        "price": 2536
+      },
+      {
+        "participantId": 1607292025,
+        "price": 2419
+      },
+      {
+        "participantId": 1607292026,
+        "price": 1054
+      },
+      {
+        "participantId": 1607292027,
+        "price": 1188
+      },
+      {
+        "participantId": 1607292028,
+        "price": 685
+      },
+      {
+        "participantId": 1607292029,
+        "price": 867
+      },
+      {
+        "participantId": 1607292030,
+        "price": 603
+      },
+      {
+        "participantId": 1607292031,
+        "price": 803
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;0;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292039,
+    "period": 0,
+    "prices": [
+      {
+        "participantId": 1607292040,
+        "price": 726
+      },
+      {
+        "participantId": 1607292041,
+        "price": 309
+      },
+      {
+        "participantId": 1607292042,
+        "price": 207
+      },
+      {
+        "participantId": 1607292043,
+        "price": 325
+      },
+      {
+        "participantId": 1607292044,
+        "price": 368
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292045,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607292046,
+        "price": 612
+      },
+      {
+        "participantId": 1607292047,
+        "price": 866
+      },
+      {
+        "participantId": 1607292048,
+        "price": 596
+      },
+      {
+        "participantId": 1607292049,
+        "price": 461
+      },
+      {
+        "participantId": 1607292050,
+        "price": 483
+      },
+      {
+        "participantId": 1607292051,
+        "price": 553
+      },
+      {
+        "participantId": 1607292052,
+        "price": 213
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292053,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607292064,
+        "price": 1608
+      },
+      {
+        "participantId": 1607292065,
+        "price": 1054
+      },
+      {
+        "participantId": 1607292054,
+        "price": 1358
+      },
+      {
+        "participantId": 1607292055,
+        "price": 774
+      },
+      {
+        "participantId": 1607292056,
+        "price": 583
+      },
+      {
+        "participantId": 1607292057,
+        "price": 519
+      },
+      {
+        "participantId": 1607292058,
+        "price": 519
+      },
+      {
+        "participantId": 1607292059,
+        "price": 564
+      },
+      {
+        "participantId": 1607292060,
+        "price": 650
+      },
+      {
+        "participantId": 1607292061,
+        "price": 783
+      },
+      {
+        "participantId": 1607292062,
+        "price": 975
+      },
+      {
+        "participantId": 1607292063,
+        "price": 1243
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292066,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607292067,
+        "price": 292
+      },
+      {
+        "participantId": 1607292068,
+        "price": 254
+      },
+      {
+        "participantId": 1607292069,
+        "price": 300
+      },
+      {
+        "participantId": 1607292070,
+        "price": 215
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872946793
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292071,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607292072,
+        "price": 249
+      },
+      {
+        "participantId": 1607292073,
+        "price": 256
+      },
+      {
+        "participantId": 1607292074,
+        "price": 381
+      },
+      {
+        "participantId": 1607292075,
+        "price": 565
+      },
+      {
+        "participantId": 1607292076,
+        "price": 827
+      },
+      {
+        "participantId": 1607292077,
+        "price": 609
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292078,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607292079,
+        "price": 443
+      },
+      {
+        "participantId": 1607292080,
+        "price": 405
+      },
+      {
+        "participantId": 1607292081,
+        "price": 398
+      },
+      {
+        "participantId": 1607292082,
+        "price": 460
+      },
+      {
+        "participantId": 1607292083,
+        "price": 574
+      },
+      {
+        "participantId": 1607292084,
+        "price": 273
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872332115
+  },
+  {
+    "cutoffAt": "2025-04-05T23:15:00+00:00",
+    "key": "s;1;m",
+    "limits": [
+      {
+        "amount": 500,
+        "type": "maxRiskStake"
+      }
+    ],
+    "matchupId": 1607292085,
+    "period": 1,
+    "prices": [
+      {
+        "participantId": 1607292086,
+        "price": 1467
+      },
+      {
+        "participantId": 1607292087,
+        "price": 1450
+      },
+      {
+        "participantId": 1607292088,
+        "price": 1634
+      },
+      {
+        "participantId": 1607292089,
+        "price": 1962
+      },
+      {
+        "participantId": 1607292090,
+        "price": 2455
+      },
+      {
+        "participantId": 1607292091,
+        "price": 3200
+      },
+      {
+        "participantId": 1607292092,
+        "price": 4256
+      },
+      {
+        "participantId": 1607292093,
+        "price": 1638
+      },
+      {
+        "participantId": 1607292094,
+        "price": 1499
+      },
+      {
+        "participantId": 1607292095,
+        "price": 1466
+      },
+      {
+        "participantId": 1607292096,
+        "price": 1651
+      },
+      {
+        "participantId": 1607292097,
+        "price": 1982
+      },
+      {
+        "participantId": 1607292098,
+        "price": 2479
+      },
+      {
+        "participantId": 1607292099,
+        "price": 3228
+      },
+      {
+        "participantId": 1607292100,
+        "price": 4294
+      },
+      {
+        "participantId": 1607292101,
+        "price": 2143
+      },
+      {
+        "participantId": 1607292102,
+        "price": 2007
+      },
+      {
+        "participantId": 1607292103,
+        "price": 1947
+      },
+      {
+        "participantId": 1607292104,
+        "price": 2159
+      },
+      {
+        "participantId": 1607292105,
+        "price": 2572
+      },
+      {
+        "participantId": 1607292106,
+        "price": 3187
+      },
+      {
+        "participantId": 1607292107,
+        "price": 4105
+      },
+      {
+        "participantId": 1607292109,
+        "price": 2874
+      },
+      {
+        "participantId": 1607292110,
+        "price": 2700
+      },
+      {
+        "participantId": 1607292111,
+        "price": 2672
+      },
+      {
+        "participantId": 1607292112,
+        "price": 2922
+      },
+      {
+        "participantId": 1607292113,
+        "price": 3420
+      },
+      {
+        "participantId": 1607292114,
+        "price": 4195
+      },
+      {
+        "participantId": 1607292117,
+        "price": 3891
+      },
+      {
+        "participantId": 1607292118,
+        "price": 3668
+      },
+      {
+        "participantId": 1607292119,
+        "price": 3631
+      },
+      {
+        "participantId": 1607292120,
+        "price": 4021
+      },
+      {
+        "participantId": 1607292121,
+        "price": 4631
+      },
+      {
+        "participantId": 1607292127,
+        "price": 4966
+      }
+    ],
+    "type": "moneyline",
+    "version": 4872516864
   }
 ]
