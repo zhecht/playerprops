@@ -437,7 +437,7 @@ def updateData(data):
 		with open(file, "w") as fh:
 			json.dump(d, fh, indent=4)
 
-def writeBR(date):
+async def writeBR(date):
 	url = "https://mi.betrivers.com/?page=sportsbook&group=1000093616&type=playerprops"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
