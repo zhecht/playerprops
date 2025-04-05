@@ -18,8 +18,9 @@ from controllers.shared import *
 
 CHAR_LIMIT = 280
 
-def bvpReport():
-	date = str(datetime.now())[:10]
+def bvpReport(date):
+	if not date:
+		date = str(datetime.now())[:10]
 
 	with open(f"static/dailyev/odds.json") as fh:
 		data = json.load(fh)
@@ -40,9 +41,10 @@ def bvpReport():
 		roster = json.load(fh)
 
 	homers = {}
-	for game in data:
+	for game in schedule[date]:
 		away, home = map(str, game.split(" @ "))
-		for player in data[game]:
+		players = roster[away].keys() + roster[home].keys()
+		for player in players:
 			team, opp = home, away
 			if player in roster.get(away, {}):
 				team, opp = away, home
@@ -227,7 +229,7 @@ if __name__ == '__main__':
 
 	#dailyReport(args.date)
 	if args.bvp:
-		bvpReport()
+		bvpReport(args.date)
 	if args.report:
 		batterReport()
 
