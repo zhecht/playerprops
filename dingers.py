@@ -845,7 +845,7 @@ def writeStatsPage(date):
 				"player": player, "team": team, "opp": opp,
 				"game": teamGame[team]["game"], "start": teamGame[team]["start"],
 				"bvp": bvp, "pitcher": pitcher,
-				"order": order,
+				"order": order, "prop": ""
 			})
 
 	with open(f"static/mlb/stats.json", "w") as fh:
