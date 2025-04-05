@@ -806,6 +806,9 @@ def writeStatsPage(date):
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
+	with open(f"static/mlb/lineups.json") as fh:
+		lineups = json.load(fh)
+
 	teamGame = {}
 	opps = {}
 	for game in schedule[date]:
@@ -817,10 +820,24 @@ def writeStatsPage(date):
 
 	data = []
 	for team in roster:
+		opp = opps[team]
+		pitcher = lineups[opp]["pitcher"]
+		pitcherLR = leftOrRight[opp].get(pitcher, "")
+		try:
+			order = lineups[team]["batters"].index(player)+1
+		except:
+			order = "-"
+		bvpStats = bvpData[team].get(player+' v '+pitcher, {})
+		bvp = ""
+		if bvpStats:
+			bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
+
 		for player in roster[team]:
 			j = {
-				"player": player, "team": team, "opp": opps[team],
-				"game": teamGame[team]["game"], "start": teamGame[team]["start"]
+				"player": player, "team": team, "opp": opp,
+				"game": teamGame[team]["game"], "start": teamGame[team]["start"],
+				"bvp": bvp, "pitcher": pitcher,
+				"order": order,
 			}
 
 			data.append(j)
