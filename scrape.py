@@ -486,7 +486,10 @@ def writeCirca(sport):
 		for row in text:
 			if row and "(" in row:
 				player = parsePlayer(row.split(" (")[0].lower())
-				team = convertMLBTeam(row.split("(")[-1].split(")")[0])
+				if sport == "mlb":
+					team = convertMLBTeam(row.split("(")[-1].split(")")[0])
+				elif sport == "nhl":
+					team = convertNHLTeam(row.split("(")[-1].split(")")[0])
 				over = re.search(r"\+\d{3,4}", row)
 				under = re.search(r"-\d{3,4}", row)
 				over = over.group() if over else None
@@ -494,7 +497,7 @@ def writeCirca(sport):
 
 				data[player] = f"{over}/{under}"
 
-	with open("static/mlb/circa.json", "w") as fh:
+	with open(f"static/{sport}/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
 async def get365Links(sport, keep):
