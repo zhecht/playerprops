@@ -797,6 +797,34 @@ def parseESPN(espnLines):
 					else:
 						espnLines[game][prop][player] = espn[game][prop][p].copy()
 
+def writeStatsPage(date):
+	if not date:
+		date = str(datetime.now())[:10]
+	with open(f"static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	with open(f"static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	games = [x["game"] for x in schedule[date]]
+	teamGame = {}
+	for game in games:
+		a,h = map(str, game.split(" @ "))
+		teamGame[a] = game
+		teamGame[h] = game
+
+	data = []
+	for team in roster:
+		for player in roster[team]:
+			j = {
+				"player": player, "team": team, "game": teamGame[team]
+			}
+
+			data.append(j)
+
+	with open(f"static/mlb/stats.json", "w") as fh:
+		json.dump(data, fh)
+
 def writeEV(date, dinger):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -1240,6 +1268,7 @@ if __name__ == '__main__':
 	parser.add_argument("--threads", type=int, default=5)
 	parser.add_argument("--scrape", action="store_true")
 	parser.add_argument("--clear", action="store_true")
+	parser.add_argument("--stats", action="store_true")
 
 	args = parser.parse_args()
 
@@ -1304,6 +1333,8 @@ if __name__ == '__main__':
 			print(datetime.now())
 			writeEV(date, args.dinger)
 			printEV()
+			if args.commit:
+				commitChanges()
 
 		"""
 		uc.loop().run_until_complete(writeWeather(date))
@@ -1321,6 +1352,9 @@ if __name__ == '__main__':
 		writeEV(args.date, args.dinger)
 	if args.print:
 		printEV()
+
+	if args.stats:
+		writeStatsPage(args.date)
 
 	if args.scrape:
 		writeOdds()

@@ -1790,7 +1790,7 @@ def writeBVP(dateArg):
 		outfile = "outmlb3"
 		time.sleep(0.2)
 		url = f"https://www.rotowire.com/baseball/tables/matchup.php?type={hotCold}batter&bab=1&bhothr=0&bhotavg=0&bhottops=0&start={date}&end={date}"
-		call(["curl", "-k", url, "-o", outfile])
+		call(["curl", "-s", url, "-o", outfile])
 
 		with open(outfile) as fh:
 			data = json.load(fh)
