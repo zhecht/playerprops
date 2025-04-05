@@ -366,7 +366,7 @@ def writeESPNTeamIds():
 		teamId = logo.get("alt").lower()
 		team = logo.parent.get("href").split("/")[-2]
 		
-		url = f"https://a.espncdn.com/combiner/i?img=/i/teamlogos/{sport.replace('ncaab', 'ncaa')}/500/{team}.png"
+		url = f"https://a.espncdn.com/combiner/i?img=/i/teamlogos/ncaa/500/{team}.png"
 		path = f"/mnt/c/Users/zhech/Documents/dailyev/logos/ncaab"
 		if not os.path.exists(path):
 			os.mkdir(path)
