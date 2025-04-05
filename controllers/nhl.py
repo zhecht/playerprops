@@ -465,6 +465,33 @@ def writeCZ(date):
 	with open("static/nhl/caesars.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
+def writeCirca():
+	date = str(datetime.now())[:10]
+	with open("static/nhl/circa.json") as fh:
+		circa = json.load()
+
+	with open(f"static/hockeyreference/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	with open(f"static/hockeyreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	games = schedule[date]
+	teamGame = {}
+	for game in games:
+		a,h = map(str, game.split(" @ "))
+		teamGame[a] = game
+		teamGame[h] = game
+
+	data = nested_dict()
+	for team in roster:
+		for player in roster[team]:
+			if player in circa:
+				data[teamGame[team]]["atgs"][player] = circa[player]
+
+	with open("static/nhl/circa.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 def writePointsbet(date=None):
 	url = "https://api.mi.pointsbet.com/api/v2/competitions/1/events/featured?includeLive=false&page=1"
 	outfile = f"nhloutPB"
@@ -3197,6 +3224,7 @@ if __name__ == '__main__':
 	parser.add_argument("--notd", action="store_true", help="Not ATTD FTD")
 	parser.add_argument("--onlygoals", action="store_true")
 	parser.add_argument("--commit", action="store_true")
+	parser.add_argument("--circa", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--add", type=int)
 	parser.add_argument("--book", help="Book")
@@ -3229,6 +3257,9 @@ if __name__ == '__main__':
 
 	if args.mgm:
 		writeMGM(args.date)
+
+	if args.circa:
+		writeCirca()
 
 	if args.pb:
 		writePointsbet(args.date)
