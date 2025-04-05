@@ -9,7 +9,6 @@ import nodriver as uc
 import subprocess
 import threading
 import multiprocessing
-import bsky
 
 from bs4 import BeautifulSoup as BS
 from controllers.shared import *

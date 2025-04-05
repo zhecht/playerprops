@@ -135,7 +135,7 @@ def bvpReport(date):
 def dailyReport(date):
 	if not date:
 		date = str(datetime.now())[:10]
-	with open("static/dailyev/feed.json") as fh:
+	with open(f"static/splits/mlb_feed/{date}.json") as fh:
 		feed = json.load(fh)
 
 	with open("static/mlb/schedule.json") as fh:
@@ -145,27 +145,34 @@ def dailyReport(date):
 	games = [x["game"] for x in schedule[date]]
 	for game in games:
 		allFeed.extend(feed[game])
+
+	# 📈🚀📉💲🤑
 	homers = [x for x in allFeed if x["result"] == "Home Run"]
 	near = [x for x in allFeed if x["result"] != "Home Run" and x["hr/park"] and x["hr/park"].split("/")[0] != "0"]
 
-	post = f"{datetime.strptime(date, "%Y-%m-%d").strftime("%b %-d")}: {len(homers)} HRs ({round(len(homers) / len(games), 2)} per game)\n\n"
+	test = """Apr 4th Summary
+
+31 Homers (2.21 per game) 📈
+	Longest: Matt Olson 434 ft
+	Hardest: Riley Greene 114.3 Exit Velo
+
+Almost Homers: Sweeney 411 ft, Marte 410 ft, Siri 409 ft, Bailey 402 ft, Morel 402 ft
+"""
+
+	longest = [(int(x["dist"]), x) for x in homers]
+	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
+	post = f"""{m} {d}{getSuffix(int(d))} Summary
+
+{len(homers)} HRs ({round(len(homers) / len(games), 2)} per game)
+	Longest: 
+
+"""
 	for game in games:
 		for team in game.split(" @ "):
 			rows = ", ".join([y["player"].split(" ")[-1].title() for y in [x for x in homers if x["team"] == team]])
 			if rows:
 				post += f"{team.upper()}: {rows}\n"
 
-	nearPost = f"{len(near)} almost HRs\n\n"
-	for game in games:
-		for team in game.split(" @ "):
-			rows = [x for x in near if x["team"] == team]
-			s = []
-			for row in rows:
-				player = row["player"].split(" ")[-1].title()
-				n,d = map(int, row["hr/park"].split("/"))
-				s.append(f"{player} {row['dist']} ft")
-			if s:
-				nearPost += f"{team.upper()}: {', '.join(s)}\n"
 
 def batterReport():
 	date = str(datetime.now())[:10]
@@ -238,6 +245,7 @@ if __name__ == '__main__':
 	parser.add_argument("--sport")
 	parser.add_argument("--report", action="store_true")
 	parser.add_argument("--bvp", action="store_true")
+	parser.add_argument("--daily", action="store_true")
 
 	args = parser.parse_args()
 
@@ -246,5 +254,7 @@ if __name__ == '__main__':
 		bvpReport(args.date)
 	if args.report:
 		batterReport()
+	if args.daily:
+		dailyReport(args.date)
 
 	#postHomer({'player': 'aaron judge', 'game': 'ari @ nyy', 'hr/park': '14/30', 'pa': '6', 'dt': '2025-04-03 19:20:50', 'img': 'https://www.mlbstatic.com/team-logos/147.svg', 'team': 'nyy', 'in': '1', 'result': 'Home Run', 'evo': '112.1', 'la': '22', 'dist': '394'})
