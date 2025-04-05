@@ -660,7 +660,7 @@ def writeFeedSplits(date, data):
 
 		for player in splits[team]:
 			for key in splits[team][player]:
-				j[team][player][key] = splits[team][player][key]
+				j[player][key] = splits[team][player][key]
 		with open(f"static/splits/mlb_feed/{team}.json", "w") as fh:
 			json.dump(j, fh)
 
