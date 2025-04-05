@@ -696,7 +696,7 @@ async def writeFeed(date, loop):
 				if dt <= int(datetime.now().strftime("%H%M")):
 					games.append(gameData)
 		data = {}
-		parseFeed(data, times, liveGames, len(games), loop)
+		parseFeed(data, times, len(games), len(schedule[date]), loop)
 		i += 1
 
 		if not loop:
