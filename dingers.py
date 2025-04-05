@@ -445,9 +445,6 @@ async def writeFDFromBuilder(date):
 			player = parsePlayer(label.split(", ")[1])
 			odds = label.split(" ")[-1]
 
-			if player == "max muncy" and "lad" not in currGame:
-				continue
-
 			try:
 				team = btn.parent.parent.parent.find_all("img")[1]
 
