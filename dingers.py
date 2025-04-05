@@ -141,6 +141,8 @@ def mergeCirca():
 
 	for team in odds:
 		for player in odds[team]:
+			if player == "max muncy" and team != "lad":
+				continue
 			if player in circa:
 				odds[team][player]["circa"] = circa[player]
 
