@@ -68,7 +68,7 @@ def bvpReport(date):
 				#	homers[hrs].append((avg, player))
 				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 				if hrs:
-					homers.append(f"{player} ({hrs})")
+					homers.append(f"{player.title()} ({hrs})")
 			except:
 				pass
 
@@ -76,7 +76,7 @@ def bvpReport(date):
 		# 1:07 pm NYY @ DET: Stroman v Skubal
 		#	Mountcastle (3)
 		if homers:
-			print(f"""{t} {game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()}
+			print(f"""{game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()} ({t})
 	{", ".join(homers)}
 """)
 
