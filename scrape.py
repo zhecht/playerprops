@@ -503,7 +503,7 @@ def writeCirca(sport):
 	with open(f"static/{sport}/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-async def get365Links(sport, keep):
+async def get365Links(sport, keep, gameArg):
 	res = {}
 	urls = ["https://www.oh.bet365.com/?_h=CfVWPHD5idsD_8dFdjBYcw%3D%3D&btsffd=1#/AC/B12/C20426855/D47/E120593/F47/N7/", "https://www.oh.bet365.com/?_h=CfVWPHD5idsD_8dFdjBYcw%3D%3D&btsffd=1#/AC/B12/C20426855/D47/E120591/F47/"]
 	if sport == "nhl":
@@ -896,7 +896,7 @@ def getCountry(league):
 		return "wales"
 	return league
 
-async def getBRLinks(sport, tmrw):
+async def getBRLinks(sport, tmrw, gameArg):
 	url = "https://mi.betrivers.com/?page=sportsbook&group=1000093654&type=matches"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
@@ -926,6 +926,8 @@ async def getBRLinks(sport, tmrw):
 			home = convertCollege(home)
 
 		game = f"{away} @ {home}"
+		if gameArg and gameArg != game:
+			continue
 		res[game] = f"https://mi.betrivers.com/?page=sportsbook#event/{eventId}"
 		
 	browser.stop()
@@ -981,7 +983,7 @@ async def writeBRFromHTML(data, html, sport, game):
 def runBR(sport):
 	return uc.loop().run_until_complete(writeBR(sport))
 
-async def getESPNLinks(sport, tomorrow):
+async def getESPNLinks(sport, tomorrow, gameArg):
 	if not sport:
 		sport = "nfl"
 
@@ -1051,6 +1053,9 @@ async def getESPNLinks(sport, tomorrow):
 			home = convertCollege(home)
 		sep = "v" if sport == "soccer" else "@"
 		game = f"{away} {sep} {home}"
+
+		if gameArg and gameArg != game:
+			continue
 
 		article = teamsBS[i].find_previous("article")
 
@@ -1350,7 +1355,7 @@ async def writeESPN(sport, rosters):
 
 	browser.stop()
 
-async def getMGMLinks(sport=None, tomorrow=None):
+async def getMGMLinks(sport=None, tomorrow=None, gameArg=None):
 	if not sport:
 		sport = "nfl"
 	url = "https://sports.mi.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35"
@@ -1435,6 +1440,10 @@ async def getMGMLinks(sport=None, tomorrow=None):
 
 				sep = "v" if sport == "soccer" else "@"
 				game = f"{away} {sep} {home}"
+
+				if gameArg and gameArg != game:
+					continue
+
 				games[game] = link.get("href")+"?market=-1"
 
 				btns = link.parent.parent.find_all("ms-option")
@@ -1698,7 +1707,7 @@ async def writeMGM(sport):
 
 	browser.stop()
 
-async def getFDLinks(sport, tomorrow):
+async def getFDLinks(sport, tomorrow, gameArg):
 	games = {}
 	data = {}
 	url = f"https://sportsbook.fanduel.com/navigation/{sport}"
@@ -1737,6 +1746,8 @@ async def getFDLinks(sport, tomorrow):
 				away = convertMLBTeam(away)
 				home = convertMLBTeam(home)
 			game = f"{away} @ {home}"
+			if gameArg and gameArg != game:
+				continue
 			games[game] = url
 
 	browser.stop()
@@ -3677,6 +3688,7 @@ if __name__ == '__main__':
 
 	parser.add_argument("--threads", type=int, default=7)
 	parser.add_argument("--team", "-t")
+	parser.add_argument("--game", "-g")
 	parser.add_argument("--prop", "-p")
 	parser.add_argument("--sport")
 	parser.add_argument("--league")
@@ -3697,36 +3709,31 @@ if __name__ == '__main__':
 
 	games = {}
 	if args.bet365:
-		games = uc.loop().run_until_complete(get365Links(sport, args.keep))
+		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
 		#games["alternative-total"] = "https://www.oh.bet365.com/?_h=uIqVxgT5FXe3HZt4UKzGkA%3D%3D&btsffd=1#/AC/B18/C21008290/D47/E181286/F47/N0/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
-		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw))
+		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
 		runThreads("betrivers", sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
 		#games["kc @ mil"] = "/baseball/mlb/kansas-city-royals-@-milwaukee-brewers-34176901"
-		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw))
+		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game))
 		#print(games)
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", sport, games, totThreads, keep=True)
 
 	if args.espn:
 		#games["ole miss @ iowa state"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/ncaab-championship/event/eab40ca8-b46e-4a85-abbd-f573bf54f523/section/player-props"
-		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw))
+		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game))
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
 	if args.mgm:
-		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw))
+		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw, args.game))
 		#print(games)
 		#games["bryant @ michigan state"] = "/en/sports/events/bryant-at-michigan-state-neutral-venue-17231070?market=-1"
 		totThreads = min(args.threads, len(games))
 		runThreads("mgm", sport, games, totThreads, keep=True)
-
-	if args.dk:
-		games = uc.loop().run_until_complete(getDKLinks(sport))
-		#games["home-runs"] = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
-		runThreads("draftkings", sport, games, min(args.threads, len(games)), args.keep)
 
 	if args.circa:
 		writeCirca(sport)
