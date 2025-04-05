@@ -2231,7 +2231,7 @@ def writeDK(date, march):
 										lines[game][prop][player] = {}
 
 									line = str(float(outcome["label"].split("+")[0].split(" ")[-1]) - 0.5)
-									lines[game][prop][player][line] = f"{outcomes[0]['oddsAmerican']}"
+									lines[game][prop][player][line] = f"{outcome['oddsAmerican']}"
 							elif not alt and len(outcomes) > 2:
 								for i in range(0, len(outcomes), 2):
 									player = parsePlayer(outcomes[i]["participant"].split(" (")[0])
