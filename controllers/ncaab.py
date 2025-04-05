@@ -2084,7 +2084,7 @@ def writeDK(date, march):
 
 	propIds = {13202: "spread", 13201: "total", 12488: "pts", 13769: "pts", 12492: "reb", 13770: "reb", 12495: "ast", 13771: "ast", 12497: "3ptm", 16483: "pts+reb+ast", 16482: "pts+reb", 16481: "pts+ast", 9974: "reb+ast"}
 
-	if True:
+	if False:
 		mainCats = {
 			"player-points": 1215,
 		}
