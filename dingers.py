@@ -1290,6 +1290,8 @@ if __name__ == '__main__':
 			date = str(datetime.now())[:10]
 
 		while True:
+			writeEV(date, args.dinger)
+			printEV()
 			for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
 			#for book in ["espn", "mgm"]:
 				subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date])
