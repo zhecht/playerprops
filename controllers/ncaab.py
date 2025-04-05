@@ -370,11 +370,10 @@ def writeESPNTeamIds():
 		path = f"/mnt/c/Users/zhech/Documents/dailyev/logos/ncaab"
 		if not os.path.exists(path):
 			os.mkdir(path)
-		
-		print(team, teamId)
-		#if not os.path.exists(f"{path}/{teamName}.png"):
+
+		if not os.path.exists(f"{path}/{teamId}.png"):
 			#print(teamName)
-			#os.system(f"curl '{url}' -o '{path}/{teamName}.png'")
+			os.system(f"curl '{url}' -o '{path}/{teamId}.png'")
 
 def strip_accents(text):
 	try:
