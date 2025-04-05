@@ -656,8 +656,11 @@ def writeFeedSplits(date, data):
 			with open(f"static/splits/mlb_feed/{team}.json") as fh:
 				j = json.load(fh)
 		except:
-			j = {}
-		merge_dicts(j, splits[team], forceReplace=True)
+			j = nested_dict()
+
+		for player in splits[team]:
+			for key in splits[team][player]:
+				j[team][player][key] = splits[team][player][key]
 		with open(f"static/splits/mlb_feed/{team}.json", "w") as fh:
 			json.dump(j, fh)
 
