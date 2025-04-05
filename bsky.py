@@ -63,25 +63,23 @@ def bvpReport(date):
 				hrs = bvpStats["hr"]
 				avg = round(bvpStats["h"] / bvpStats["ab"], 3)
 				
-				#if hrs:
-				#	homers.setdefault(hrs, [])
-				#	homers[hrs].append((avg, player))
-				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 				if hrs:
-					homers.append(f"""{player.split(" ")[-1].title()} ({hrs})""")
+					homers.setdefault(hrs, [])
+					homers[hrs].append((avg, player))
+				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
+				
+				#if hrs:
+				#	homers.append(f"""{player.split(" ")[-1].title()} ({hrs})""")
 			except:
 				pass
 
 
 		# 1:07 pm NYY @ DET: Stroman v Skubal
 		#	Mountcastle (3)
-		if True or homers:
+		if False:
 			print(f"""{game.upper()}: {awayPitcher.split(" ")[-1].title()} v {homePitcher.split(" ")[-1].title()} ({t})
 	{", ".join(homers)}
 """)
-
-
-	return
 
 	posts = []
 	post = ""
