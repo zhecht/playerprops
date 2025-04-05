@@ -97,6 +97,11 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 		evData[player][f"implied"] = implied
 		evData[player][f"ev"] = ev
 
+def writeCirca():
+	dt = datetime.now().strftime("%Y-%-m-%-d")
+	file = f"MLB Props - {dt}.pdf"
+	
+
 async def getESPNLinks(date):
 	browser = await uc.start(no_sandbox=True)
 	url = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb"
@@ -1299,6 +1304,7 @@ if __name__ == '__main__':
 	parser.add_argument("--scrape", action="store_true")
 	parser.add_argument("--clear", action="store_true")
 	parser.add_argument("--stats", action="store_true")
+	parser.add_argument("--circa", action="store_true")
 
 	args = parser.parse_args()
 
@@ -1335,6 +1341,8 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeCZ(date, args.token))
 	if args.kambi:
 		writeKambi(date)
+	if args.circa:
+		writeCirca()
 
 	if args.weather:
 		uc.loop().run_until_complete(writeWeather(date))
