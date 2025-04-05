@@ -2027,7 +2027,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	ev = min(evs)
 
 	if book:
-		prefix = book
+		prefix = book+"_"
 
 	if player not in evData:
 		evData[player] = {}
