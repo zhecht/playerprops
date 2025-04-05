@@ -159,14 +159,18 @@ def dailyReport(date):
 Almost Homers: Sweeney 411 ft, Marte 410 ft, Siri 409 ft, Bailey 402 ft, Morel 402 ft
 """
 
-	longest = [(int(x["dist"]), x) for x in homers]
+	longest = sorted([x for x in homers if x["dist"]], key=lambda k: int(k["dist"]), reverse=True)[0]
+	#hardest = sorted([(int(x["evo"] or 0), x) for x in homers], reverse=True)[0][1]
+	almost = [f"""{x["player"].title()} {x["dist"]} ft""" for x in sorted(near, key=lambda x: int(x["dist"]), reverse=True)]
 	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
 	post = f"""{m} {d}{getSuffix(int(d))} Summary
 
 {len(homers)} HRs ({round(len(homers) / len(games), 2)} per game)
-	Longest: 
-
+	Longest: {longest["player"].title()} {longest["dist"]} ft
+	
+Almost Homers: {", ".join(almost[:20])}
 """
+	print(post)
 	for game in games:
 		for team in game.split(" @ "):
 			rows = ", ".join([y["player"].split(" ")[-1].title() for y in [x for x in homers if x["team"] == team]])
