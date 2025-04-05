@@ -1277,6 +1277,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 					data[game][prop][player][line] = f"{o}/{u}"
 
 async def writeESPN(sport, rosters):
+	#browser = await uc.start(no_sandbox=True)
 	browser = await uc.start(no_sandbox=True)
 	file = f"static/{sport}/espn.json"
 	while True:
