@@ -90,7 +90,7 @@ def bvpReport(date):
 
 		if row == 1:
 			seen = {}
-			for thresh in [750, 500, 250]:
+			for thresh in [333]:
 				ps = []
 				for p in players:
 					if p[1] >= thresh / 1000 and p[0] not in seen:
