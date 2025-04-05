@@ -95,6 +95,8 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 	evData.setdefault(player, {})
 	if book:
 		evData[player][f"{book}_ev"] = ev
+		evData[player][f"{book}_fairVal"] = fairVal
+		evData[player][f"{book}_implied"] = implied
 	else:
 		evData[player][f"fairVal"] = fairVal
 		evData[player][f"implied"] = implied
