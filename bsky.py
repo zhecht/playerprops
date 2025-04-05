@@ -68,7 +68,7 @@ def bvpReport(date):
 				#	homers[hrs].append((avg, player))
 				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 				if hrs:
-					homers.append(f"{player.title()} ({hrs})")
+					homers.append(f"""{player.split(" ")[-1].title()} ({hrs})""")
 			except:
 				pass
 
