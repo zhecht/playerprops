@@ -1945,7 +1945,7 @@ def writeFanduel():
 	with open(f"static/nhl/fanduel.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False, book=""):
 
 	prefix = ""
 	if sharp:
@@ -2026,11 +2026,13 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 
 	ev = min(evs)
 
+	if book:
+		prefix = book
+
 	if player not in evData:
 		evData[player] = {}
 	evData[player][f"{prefix}fairVal"] = fairVal
 	evData[player][f"{prefix}implied"] = implied
-	
 	evData[player][f"{prefix}ev"] = ev
 
 def writeDK(date=None, propArg=""):
