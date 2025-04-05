@@ -474,6 +474,29 @@ def convertNHLTeam(team):
 data = {}
 props = {}
 
+def writeCirca(sport):
+	date = str(datetime.now())[:10]
+	dt = datetime.now().strftime("%Y-%-m-%-d")
+	file = f"{sport.upper()} Props - {dt}.pdf"
+	pages = convert_from_path(f"{sport.upper()} Props - {dt}.pdf")
+	data = nested_dict()
+	for page in pages:
+		text = pytesseract.image_to_string(page).split("\n")
+
+		for row in text:
+			if row and "(" in row:
+				player = parsePlayer(row.split(" (")[0].lower())
+				team = convertMLBTeam(row.split("(")[-1].split(")")[0])
+				over = re.search(r"\+\d{3,4}", row)
+				under = re.search(r"-\d{3,4}", row)
+				over = over.group() if over else None
+				under = under.group() if under else None
+
+				data[player] = f"{over}/{under}"
+
+	with open("static/mlb/circa.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 async def get365Links(sport, keep):
 	res = {}
 	urls = ["https://www.oh.bet365.com/?_h=CfVWPHD5idsD_8dFdjBYcw%3D%3D&btsffd=1#/AC/B12/C20426855/D47/E120593/F47/N7/", "https://www.oh.bet365.com/?_h=CfVWPHD5idsD_8dFdjBYcw%3D%3D&btsffd=1#/AC/B12/C20426855/D47/E120591/F47/"]
@@ -3632,6 +3655,7 @@ if __name__ == '__main__':
 	parser.add_argument("--espn", action="store_true")
 	parser.add_argument("--mgm", action="store_true")
 	parser.add_argument("--dk", action="store_true")
+	parser.add_argument("--circa", action="store_true")
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--tomorrow", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
@@ -3692,3 +3716,5 @@ if __name__ == '__main__':
 		#games["home-runs"] = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
 		runThreads("draftkings", sport, games, min(args.threads, len(games)), args.keep)
 
+	if args.circa:
+		writeCirca(sport)
