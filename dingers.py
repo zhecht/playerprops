@@ -447,15 +447,19 @@ async def writeBR(date):
 	articles = await page.query_selector_all("article")
 
 	for article in articles:
+		if "live" in article.text_all.lower():
+			continue
 		await article.scroll_into_view()
 		if "Show more" in article.text_all:
-			show = await article.query_selector(".crRLLM")
-			print(article)
-			browser.stop()
-			exit()
-			if show:
-				await show.parent.click()
+			spans = await article.query_selector_all("span")
+			for span in spans:
+				if span.text == "Show more":
+					await span.scroll_into_view()
+					await span.parent.mouse_click()
+					time.sleep(0.2)
+					break
 
+	time.sleep(10)
 	html = await page.get_content()
 	soup = BS(html, "lxml")
 
@@ -1451,7 +1455,7 @@ if __name__ == '__main__':
 		while True:
 			writeEV(date, args.dinger)
 			printEV()
-			for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
+			for book in ["weather", "lineups", "cz", "dk", "bet365", "fd", "espn", "mgm"]:
 			#for book in ["espn", "mgm"]:
 				subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date])
 			subprocess.Popen(["python", "controllers/mlb.py", f"--pn", "-d", date])
