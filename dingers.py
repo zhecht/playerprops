@@ -696,7 +696,7 @@ async def writeFeed(date, loop):
 				if dt <= int(datetime.now().strftime("%H%M")):
 					games.append(gameData)
 		data = {}
-		parseFeed(data, times, len(games), loop)
+		parseFeed(data, times, liveGames, len(games), loop)
 		i += 1
 
 		if not loop:
@@ -710,11 +710,12 @@ async def writeFeed(date, loop):
 
 	browser.stop()
 
-def parseFeed(data, times, totGames, loop):
+def parseFeed(data, times, liveGames, totGames, loop):
 	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
 	allTable = soup.find("div", id="allMetrics")
 	hdrs = [th.text.lower() for th in allTable.find_all("th")]
 	data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
+	data["all"]["liveGames"] = liveGames
 	data["all"]["totGames"] = totGames
 	for div in soup.find_all("div", class_="game-container"):
 		away = div.find("div", class_="team-left")
