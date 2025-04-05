@@ -101,21 +101,37 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 		evData[player][f"ev"] = ev
 
 def writeCirca():
+	date = str(datetime.now())[:10]
+	with open("static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	games = [x["game"] for x in schedule[date]]
+	teamGame = {}
+	for game in games:
+		a,h = map(str, game.split(" @ "))
+		teamGame[a] = game
+		teamGame[h] = game
+
 	dt = datetime.now().strftime("%Y-%-m-%-d")
 	file = f"MLB Props - {dt}.pdf"
 	pages = convert_from_path(f"MLB Props - {dt}.pdf")
+	data = nested_dict()
 	for page in pages:
 		text = pytesseract.image_to_string(page).split("\n")
 
 		for row in text:
 			if row and "(" in row:
 				player = row.split(" (")[0].lower()
+				team = convertMLBTeam(row.split("(")[-1].split(")")[0])
+				game = teamGame[team]
 				over = re.search(r"\+\d{3,4}", row)
 				under = re.search(r"-\d{3,4}", row)
 				over = over.group() if over else None
 				under = under.group() if under else None
 
-				print(player, over, under)
+				data[game][player]["circa"] = f"{over}/{under}"
+
+	updateData(data)
 
 async def getESPNLinks(date):
 	browser = await uc.start(no_sandbox=True)
