@@ -1285,10 +1285,21 @@ if __name__ == '__main__':
 		date = args.date
 		if not date:
 			date = str(datetime.now())[:10]
-		for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
-		#for book in ["espn", "mgm"]:
-			subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date])
-		subprocess.Popen(["python", "controllers/mlb.py", f"--pn", "-d", date])
+
+		while True:
+			for book in ["weather", "lineups", "cz", "kambi", "dk", "bet365", "fd", "espn", "mgm"]:
+			#for book in ["espn", "mgm"]:
+				subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date])
+			subprocess.Popen(["python", "controllers/mlb.py", f"--pn", "-d", date])
+
+			if not args.loop:
+				break
+
+			# every 10m
+			time.sleep(60 * 5)
+			print(datetime.now())
+			writeEV(date)
+			printEV()
 
 		"""
 		uc.loop().run_until_complete(writeWeather(date))
