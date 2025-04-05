@@ -2,6 +2,7 @@
 import time
 import json
 import random
+import re
 import unicodedata
 import nodriver as uc
 import argparse
