@@ -3418,6 +3418,8 @@ if __name__ == '__main__':
 	if args.teams:
 		writeESPNTeams(args.date)
 
+	writeESPNTeamIds()
+
 	if args.action:
 		writeActionNetwork(args.date)
 
