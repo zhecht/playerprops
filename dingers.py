@@ -446,15 +446,14 @@ async def writeBR(date):
 	await page.wait_for(selector="article")
 	articles = await page.query_selector_all("article")
 
-	print(len(articles))
 	for article in articles:
 		await article.scroll_into_view()
-		print(article.text_all)
-		time.sleep(5)
 
-		show = await article.query_selector(".crRLLM")
-		if show:
-			await show.parent.click()
+		if "Show more" in article.text_all:
+			show = await article.query_selector(".crRLLM")
+			print(show)
+			if show:
+				await show.parent.click()
 
 	html = await page.get_content()
 	soup = BS(html, "lxml")
