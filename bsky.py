@@ -78,6 +78,8 @@ def bvpReport(date):
 """)
 
 
+	return
+	
 	posts = []
 	post = ""
 	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
