@@ -371,8 +371,6 @@ def writeESPNTeamIds():
 		if not os.path.exists(path):
 			os.mkdir(path)
 
-		if teamId == "aub":
-			print(f"{path}/{teamId}.png", os.path.exists(f"{path}/{teamId}.png"))
 		if not os.path.exists(f"{path}/{teamId}.png"):
 			#print(teamName)
 			os.system(f"curl '{url}' -o '{path}/{teamId}.png'")
@@ -3416,7 +3414,7 @@ if __name__ == '__main__':
 	if args.teams:
 		writeESPNTeams(args.date)
 
-	writeESPNTeamIds()
+	#writeESPNTeamIds()
 
 	if args.action:
 		writeActionNetwork(args.date)
