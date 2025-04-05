@@ -364,14 +364,10 @@ def writeESPNTeamIds():
 
 	for logo in soup.select(".Table .Logo"):
 		teamId = logo.get("alt").lower()
-		#team = 
-		if sport == "ncaab":
-			team = logo.parent.get("href").split("/")[-2]
-		else:
-			team = teamName
+		team = logo.parent.get("href").split("/")[-2]
 		
 		url = f"https://a.espncdn.com/combiner/i?img=/i/teamlogos/{sport.replace('ncaab', 'ncaa')}/500/{team}.png"
-		path = f"/mnt/c/Users/zhech/Documents/dailyev/logos/{sport}"
+		path = f"/mnt/c/Users/zhech/Documents/dailyev/logos/ncaab"
 		if not os.path.exists(path):
 			os.mkdir(path)
 		
