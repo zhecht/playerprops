@@ -3039,11 +3039,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					if True:
 						pass
 						#print(key, ou, line)
+						j = {b: o for o, b in zip(l, books)}
 						devig(evData, key, ou, line, prop=prop)
 						if pn:
 							if i == 1:
 								pn = f"{pn.split('/')[1]}/{pn.split('/')[0]}"
 							devig(evData, key, pn, line, prop=prop, sharp=True)
+
+						if "circa" in books:
+							devig(evData, key, j["circa"], line, prop=prop, book="vs-circa")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							#print(key)
@@ -3071,7 +3075,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						evData[key]["playerHandicap"] = playerHandicap
 						evData[key]["odds"] = l
 						evData[key]["player"] = player
-						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
 
