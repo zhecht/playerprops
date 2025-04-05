@@ -458,6 +458,9 @@ async def writeFDFromBuilder(date):
 			except:
 				game = currGame
 
+			if "unavailable" in odds:
+				continue
+
 			dingerData[game][player]["fd"] = odds
 			data[game]["hr"][player] = odds
 			currGame = game
