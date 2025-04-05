@@ -1068,6 +1068,8 @@ def writeEV(date, dinger):
 				devig(evData, player, ou, fd, book="fd-50%")
 			if "circa" in books:
 				devig(evData, player, data[game][player]["circa"], highest, book="vs-circa")
+			if "bet365" in books:
+				devig(evData, player, data[game][player]["bet365"], highest, book="vs-bet365")
 
 			if player not in evData:
 				continue
