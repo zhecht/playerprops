@@ -2172,9 +2172,9 @@ def writeDK(date, march):
 								elif "1st quarter" in prop:
 									prefix = "1q_"
 
-								print(prop)
-
-								if "moneyline" in prop:
+								if mainCat.startswith("player "):
+									prop = mainCat.split(" ")[-1].replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("threes", "3ptm")
+								elif "moneyline" in prop:
 									prop = "ml"
 								elif "spread" in prop:
 									prop = "spread"
