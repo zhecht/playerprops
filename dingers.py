@@ -845,7 +845,7 @@ def writeEV(date, dinger):
 		awayStats = {}
 		homeStats = {}
 
-		if int(datetime.now().strftime("%H%M")) > gameStart:
+		if date == str(datetime.now())[:10] and int(datetime.now().strftime("%H%M")) > gameStart:
 			continue
 			pass
 
