@@ -133,10 +133,6 @@ def parsePlayer(player):
 		return "sebastian aho"
 	elif player == "alex sarr":
 		return "alexandre sarr"
-	elif player == "mitchell marner":
-		return "mitch marner"
-	elif player == "alexander nylander":
-		return "alex nylander"
 	elif player == "nicolas claxton":
 		return "nic claxton"
 	elif player == "marc casado torras":
@@ -150,6 +146,14 @@ def parsePlayer(player):
 		return "cam atkinson"
 	elif player == "nick paul":
 		return "nicholas paul"
+	elif player == "mitchell marner":
+		return "mitch marner"
+	elif player == "mikey eyssimont":
+		return "michael eyssimont"
+	elif player == "john jason peterka":
+		return "jj peterka"
+	elif player == "alexander nylander":
+		return "alex nylander"
 	# MLB
 	elif player == "kike hernandez" or player == "e hernandez":
 		return "enrique hernandez"

@@ -298,7 +298,7 @@ def writeCZ(date):
 	for event in data["competitions"][0]["events"][:20]:
 		games.append(event["id"])
 
-	games = ["b9b8f2cb-bbae-4e89-a5bc-d11902f12678"]
+	#games = ["b9b8f2cb-bbae-4e89-a5bc-d11902f12678"]
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
@@ -376,7 +376,7 @@ def writeCZ(date):
 			elif "puck line" in prop:
 				prop = "spread"
 			else:
-				print(prop)
+				#print(prop)
 				continue
 
 			prop = f"{prefix}{prop}"
@@ -1487,22 +1487,6 @@ def writeOnlyGoals(date=None):
 
 	with open(f"{prefix}static/hockeyreference/parsed.json", "w") as fh:
 		json.dump(parsed, fh, indent=4)
-
-def parsePlayer(player):
-	player = strip_accents(player).split(" (")[0].lower().replace(".", "").replace("'", "").replace("-", " ").replace(" sr", "").replace(" jr", "").replace(" iii", "").replace(" ii", "")
-	if player == "mikey eyssimont":
-		return "michael eyssimont"
-	elif player == "john jason peterka":
-		return "jj peterka"
-	elif player == "alexander nylander":
-		return "alex nylander"
-	elif player == "matthew boldy":
-		return "matt boldy"
-	elif player == "cameron atkinson":
-		return "cam atkinson"
-	elif player == "nick paul":
-		return "nicholas paul"
-	return player
 
 def writeFanduelManual():
 	js = """
