@@ -895,6 +895,7 @@ def parseESPN(espnLines):
 def writeStatsPage(date):
 	if not date:
 		date = str(datetime.now())[:10]
+	lastYear = str(datetime.now().year - 1)
 	with open(f"static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -992,9 +993,8 @@ def writeStatsPage(date):
 			sortData["evo"].append((over100, player))
 
 			playerStats = teamStats.get(player, {})
-			dtSplits = []
-			logs = []
-			hitRate  = hitRateL10 = hitRateLYR = totGames = 0
+			dtSplits, logs = [], []
+			hitRate = hitRateL10 = hitRateLYR = totGames = 0
 			if playerStats:
 				dtSplits = playerStats["dt"]
 				totGames = len(dtSplits)
@@ -1003,6 +1003,20 @@ def writeStatsPage(date):
 				if totGames:
 					hitRate = round(len([x for x in logs if x > line]) * 100 / totGames)
 					hitRateL10 = round(len([x for x in logs[-10:] if x > line]) * 100 / min(totGames, 10))
+
+			playerStatsHist = teamStatsHist.get(player, {})
+			if lastYear in playerStatsHist:
+				playerStatsHist = playerStatsHist[lastYear]
+			else:
+				playerStatsHist = {}
+			dtSplitsLYR, logsLYR = [], []
+			if playerStatsHist:
+				dtSplitsLYR = playerStatsHist["date"]
+				totGamesLYR = len(dtSplitsLYR)
+				logsLYR = playerStatsHist.get(prop, [])
+
+				if totGamesLYR:
+					hitRateLYR = round(len([x for x in logsLYR if x > line]) * 100 / totGamesLYR)
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
