@@ -683,6 +683,10 @@ async def write365FromHTML(data, html, sport, prop):
 
 			if not odds:
 				continue
+			try:
+				int(odds)
+			except:
+				continue
 
 			if not p or p == "@":
 				player = parsePlayer(players[idx % len(players)].text)
