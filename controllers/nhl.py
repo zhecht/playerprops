@@ -2734,9 +2734,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 	with open(f"updated.json", "w") as fh:
 		json.dump(updated, fh, indent=4)
 
-	#with open(f"{prefix}static/nhl/bet365.json") as fh:
-	#	bet365Lines = json.load(fh)
-
 	#with open(f"{prefix}static/nhl/actionnetwork.json") as fh:
 	#	actionnetwork = json.load(fh)
 
