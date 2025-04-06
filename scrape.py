@@ -439,12 +439,12 @@ def convertNBATeam(team):
 
 def convertNHLTeam(team):
 	team = team.lower()
-	t = team[:3]
+	t = team[:3].strip()
 	if t == "was":
 		return "wsh"
 	elif t == "cal":
 		return "cgy"
-	elif t == "col" and "columbus" in team:
+	elif (t == "col" and "columbus" in team) or t == "clb":
 		return "cbj"
 	elif t == "flo":
 		return "fla"
@@ -454,7 +454,7 @@ def convertNHLTeam(team):
 		return "nsh"
 	elif t == "mon":
 		return "mtl"
-	elif t == "new":
+	elif t == "new" or t == "ny":
 		if "rangers" in team:
 			return "nyr"
 		elif "island" in team:
@@ -466,7 +466,7 @@ def convertNHLTeam(team):
 		return "tb"
 	elif t == "st.":
 		return "stl"
-	elif t == "veg":
+	elif t in ["veg", "vgk"]:
 		return "vgk"
 	elif t == "win":
 		return "wpg"
@@ -513,6 +513,7 @@ async def get365Links(sport, keep, gameArg):
 			res[prop] = f"https://www.oh.bet365.com/?_h=p2hqPA35Yw8_tTyHi3apXA%3D%3D&btsffd=1#/AC/B17/C20836572/D43/{id}/F43/N6/"
 
 		res["game-lines"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D48/E972/F10"
+		res["alternative-total"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D47/E170240/F47/N2/"
 		res["gift"] = f"https://www.oh.bet365.com/?_h=gG486m35XJf0T5lkRgCq7Q%3D%3D&btsffd=1#/AC/B17/C20836572/D522/E170376/F522/N3/"
 	elif sport == "nba":
 		props = ["pts-o/u", "pts-low", "pts-high", "pts", "ast-o/u", "ast", "reb-o/u", "reb", "stl-o/u", "to-o/u", "blk-o/u", "3ptm-o/u", "3ptm", "pts+ast-o/u", "pts+reb-o/u", "reb+ast-o/u", "pts+reb+ast-o/u", "stl+blk-o/u"]
@@ -3822,7 +3823,7 @@ if __name__ == '__main__':
 	games = {}
 	if args.bet365:
 		#games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		games["game-lines"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D48/E972/F10"
+		games["alternative-spread"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D47/E170226/F47/N2/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
