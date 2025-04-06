@@ -524,6 +524,7 @@ async def writeFDFromBuilder(date):
 		mores = await page.query_selector_all("div[aria-label='Show more']")
 		for more in mores:
 			await more.click()
+		time.sleep(1)
 
 		html = await page.get_content()
 		soup = BS(html, "html.parser")

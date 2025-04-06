@@ -1290,9 +1290,10 @@ def write_rankings():
 
 			rankClass = ""
 			if int(tds[0].text) <= 10:
-				rankClass = "positive"
+				rankClass = "positive" if "opp" not in ranking else "negative"
 			elif int(tds[0].text) >= 20:
-				rankClass = "negative"
+				rankClass = "negative" if "opp" not in ranking else "positive"
+
 			rankings[team][ranking] = {
 				"rank": int(tds[0].text),
 				"rankSuffix": addNumSuffix(int(tds[0].text)),
