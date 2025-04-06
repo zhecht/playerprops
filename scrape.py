@@ -514,6 +514,7 @@ async def get365Links(sport, keep, gameArg):
 
 		res["game-lines"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D48/E972/F10"
 		res["alternative-total"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D47/E170240/F47/N2/"
+		res["alternative-spread"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D47/E170226/F47/N2/"
 		res["gift"] = f"https://www.oh.bet365.com/?_h=gG486m35XJf0T5lkRgCq7Q%3D%3D&btsffd=1#/AC/B17/C20836572/D522/E170376/F522/N3/"
 	elif sport == "nba":
 		props = ["pts-o/u", "pts-low", "pts-high", "pts", "ast-o/u", "ast", "reb-o/u", "reb", "stl-o/u", "to-o/u", "blk-o/u", "3ptm-o/u", "3ptm", "pts+ast-o/u", "pts+reb-o/u", "reb+ast-o/u", "pts+reb+ast-o/u", "stl+blk-o/u"]
@@ -3822,8 +3823,8 @@ if __name__ == '__main__':
 
 	games = {}
 	if args.bet365:
-		#games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		games["alternative-spread"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D47/E170226/F47/N2/"
+		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
+		#games["alternative-spread"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D47/E170226/F47/N2/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
