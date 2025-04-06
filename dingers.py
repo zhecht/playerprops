@@ -972,6 +972,7 @@ def writeStatsPage(date):
 			bvp = ""
 			if bvpStats:
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
+				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 
 			savantData = expected[team].get(player, {})
 			babip = ""
