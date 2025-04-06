@@ -114,6 +114,12 @@ def strip_accents(text):
 	text = unicodedata.normalize('NFD', text).encode('ascii', 'ignore').decode("utf-8")
 	return str(text)
 
+
+def shortName(player):
+	if player == "kerry carpenter":
+		return "K Carpenter"
+	return player.split(" ")[-1].title()
+
 def parsePlayer(player):
 	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iv", "").replace(" iii", "").replace(" ii", "")
 	player = player.split(" (")[0]

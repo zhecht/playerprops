@@ -919,7 +919,7 @@ def writeStatsPage(date):
 		opps[h] = a
 
 	data = []
-	sortData = []
+	sortData = {}
 	for team in roster:
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
@@ -946,13 +946,16 @@ def writeStatsPage(date):
 			hrParks = [feed[player][k]["hr/park"].split("/")[0] for k in [k for k in feedKeys]]
 			results = [feed[player][k]["result"] for k in [k for k in feedKeys]]
 
-			#if player == "spencer torkelson":
+			#if player == "shohei ohtani":
 			#	print(player, results, evos, dists, hrParks)
-			try:
-				over100 = len([x for x in evos[-12:] if x and float(x) >= 100])
-				sortData.append((over100, player))
-			except:
-				pass
+
+			over300ft = len([x for x in dists[-12:] if x and int(x) >= 300])
+			sortData.setdefault("dist", [])
+			sortData["dist"].append((over300ft, player))
+
+			over100 = len([x for x in evos[-12:] if x and float(x) >= 100])
+			sortData.setdefault("evo", [])
+			sortData["evo"].append((over100, player))
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
@@ -967,11 +970,17 @@ def writeStatsPage(date):
 				}
 			})
 
-	print(f"""Most >100mph exit velo (last 12 AB)
-		{", ".join([x[1] for x in sorted(sortData, reverse=True)[:20]])}
+	print(sorted(sortData["evo"], reverse=True)[:50])
+	print(f"""💥 Leaders in 100+ MPH Hit Balls (L12 AB) 💥
+
+{", ".join([shortName(x[1]) for x in sorted(sortData["evo"], reverse=True)[:50]])}
 """)
-	for row in :
-		print(row)
+
+	print(sorted(sortData["dist"], reverse=True)[:50])
+	print(f"""🚀 Leaders in 300ft Hit Balls (L12 AB) 🚀
+
+{", ".join([shortName(x[1]) for x in sorted(sortData["dist"], reverse=True)[:50]])}
+""")
 
 	with open(f"static/mlb/stats.json", "w") as fh:
 		json.dump(data, fh)
