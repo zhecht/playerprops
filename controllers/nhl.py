@@ -811,8 +811,7 @@ def parsePinnacle(res, games, gameId, retry, debug):
 			else:
 				res[game][prop] = ou
 
-def writePinnacle(date):
-	debug = False
+def writePinnacle(date, debug):
 
 	if not date:
 		date = str(datetime.now())[:10]
@@ -3263,6 +3262,7 @@ if __name__ == '__main__':
 	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--circa", action="store_true")
 	parser.add_argument("--merge-circa", action="store_true")
+	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--add", type=int)
 	parser.add_argument("--book", help="Book")
@@ -3312,7 +3312,7 @@ if __name__ == '__main__':
 		writeKambi(args.date)
 
 	if args.pn:
-		writePinnacle(args.date)
+		writePinnacle(args.date, args.debug)
 
 	if args.bv:
 		writeBV()

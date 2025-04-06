@@ -1332,12 +1332,17 @@ async def writeOne(book):
 		writeKambi(data)
 
 	browser.stop()
-	with lock:
-		with open(f"static/dailyev/odds.json") as fh:
-			old = json.load(fh)
-		merge_dicts(old, data, forceReplace=True)
-		with open(f"static/dailyev/odds.json", "w") as fh:
-			json.dump(old, fh, indent=4)
+
+	if False:
+		try:
+			with lock:
+				with open(f"static/dailyev/odds.json") as fh:
+					old = json.load(fh)
+				merge_dicts(old, data, forceReplace=True)
+				with open(f"static/dailyev/odds.json", "w") as fh:
+					json.dump(old, fh, indent=4)
+		except:
+			pass
 
 def runThreads(book, games, totThreads):
 	threads = []

@@ -1,224 +1,266 @@
 {
-    "1607068045": {
-        "player": "francisco lindor",
-        "prop": "hr",
-        "over": 1607068046,
-        "under": 1607068047
+    "1607408865": {
+        "player": "sidney crosby",
+        "prop": "sog",
+        "over": 1607408866,
+        "under": 1607408867
     },
-    "1607068048": {
-        "player": "francisco lindor",
-        "prop": "tb",
-        "over": 1607068049,
-        "under": 1607068050
+    "1607408868": {
+        "player": "sidney crosby",
+        "prop": "atgs",
+        "over": 1607408869,
+        "under": 1607408870
     },
-    "1607068051": {
-        "player": "clay holmes",
-        "prop": "k",
-        "over": 1607068052,
-        "under": 1607068053
+    "1607408871": {
+        "player": "sidney crosby",
+        "prop": "ast",
+        "over": 1607408872,
+        "under": 1607408873
     },
-    "1607068054": {
-        "player": "clay holmes",
-        "prop": "h_allowed",
-        "over": 1607068055,
-        "under": 1607068056
+    "1607408874": {
+        "player": "sidney crosby",
+        "prop": "pts",
+        "over": 1607408875,
+        "under": 1607408876
     },
-    "1607068057": {
-        "player": "clay holmes",
-        "prop": "er",
-        "over": 1607068058,
-        "under": 1607068059
+    "1607408877": {
+        "player": "kris letang",
+        "prop": "sog",
+        "over": 1607408878,
+        "under": 1607408879
     },
-    "1607068060": {
-        "player": "brandon nimmo",
-        "prop": "hr",
-        "over": 1607068061,
-        "under": 1607068062
+    "1607408880": {
+        "player": "erik karlsson",
+        "prop": "sog",
+        "over": 1607408881,
+        "under": 1607408882
     },
-    "1607068063": {
-        "player": "brandon nimmo",
-        "prop": "tb",
-        "over": 1607068064,
-        "under": 1607068065
+    "1607408883": {
+        "player": "erik karlsson",
+        "prop": "ast",
+        "over": 1607408884,
+        "under": 1607408885
     },
-    "1607068066": {
-        "player": "jesse winker",
-        "prop": "hr",
-        "over": 1607068067,
-        "under": 1607068068
+    "1607408886": {
+        "player": "erik karlsson",
+        "prop": "pts",
+        "over": 1607408887,
+        "under": 1607408888
     },
-    "1607068069": {
-        "player": "jesse winker",
-        "prop": "tb",
-        "over": 1607068070,
-        "under": 1607068071
+    "1607408889": {
+        "player": "bryan rust",
+        "prop": "sog",
+        "over": 1607408890,
+        "under": 1607408891
     },
-    "1607068072": {
-        "player": "tyrone taylor",
-        "prop": "hr",
-        "over": 1607068073,
-        "under": 1607068074
+    "1607408892": {
+        "player": "bryan rust",
+        "prop": "atgs",
+        "over": 1607408893,
+        "under": 1607408894
     },
-    "1607068075": {
-        "player": "tyrone taylor",
-        "prop": "tb",
-        "over": 1607068076,
-        "under": 1607068077
+    "1607408895": {
+        "player": "bryan rust",
+        "prop": "ast",
+        "over": 1607408896,
+        "under": 1607408897
     },
-    "1607068078": {
-        "player": "pete alonso",
-        "prop": "hr",
-        "over": 1607068079,
-        "under": 1607068080
+    "1607408898": {
+        "player": "bryan rust",
+        "prop": "pts",
+        "over": 1607408899,
+        "under": 1607408900
     },
-    "1607068081": {
-        "player": "pete alonso",
-        "prop": "tb",
-        "over": 1607068082,
-        "under": 1607068083
+    "1607408901": {
+        "player": "rickard rakell",
+        "prop": "sog",
+        "over": 1607408902,
+        "under": 1607408903
     },
-    "1607068087": {
-        "player": "hayden senger",
-        "prop": "tb",
-        "over": 1607068088,
-        "under": 1607068089
+    "1607408904": {
+        "player": "rickard rakell",
+        "prop": "atgs",
+        "over": 1607408905,
+        "under": 1607408906
     },
-    "1607068090": {
-        "player": "juan soto",
-        "prop": "hr",
-        "over": 1607068091,
-        "under": 1607068092
+    "1607408907": {
+        "player": "rickard rakell",
+        "prop": "ast",
+        "over": 1607408908,
+        "under": 1607408909
     },
-    "1607068093": {
-        "player": "juan soto",
-        "prop": "tb",
-        "over": 1607068094,
-        "under": 1607068095
+    "1607408910": {
+        "player": "rickard rakell",
+        "prop": "pts",
+        "over": 1607408911,
+        "under": 1607408912
     },
-    "1607068096": {
-        "player": "mark vientos",
-        "prop": "hr",
-        "over": 1607068097,
-        "under": 1607068098
+    "1607408913": {
+        "player": "teuvo teravainen",
+        "prop": "atgs",
+        "over": 1607408914,
+        "under": 1607408915
     },
-    "1607068099": {
-        "player": "mark vientos",
-        "prop": "tb",
-        "over": 1607068100,
-        "under": 1607068101
+    "1607408916": {
+        "player": "teuvo teravainen",
+        "prop": "ast",
+        "over": 1607408917,
+        "under": 1607408918
     },
-    "1607068102": {
-        "player": "brett baty",
-        "prop": "hr",
-        "over": 1607068103,
-        "under": 1607068104
+    "1607408919": {
+        "player": "teuvo teravainen",
+        "prop": "pts",
+        "over": 1607408920,
+        "under": 1607408921
     },
-    "1607068105": {
-        "player": "brett baty",
-        "prop": "tb",
-        "over": 1607068106,
-        "under": 1607068107
+    "1607408922": {
+        "player": "tyler bertuzzi",
+        "prop": "atgs",
+        "over": 1607408923,
+        "under": 1607408924
     },
-    "1607069505": {
-        "player": "nick fortes",
-        "prop": "tb",
-        "over": 1607069506,
-        "under": 1607069507
+    "1607408925": {
+        "player": "tyler bertuzzi",
+        "prop": "ast",
+        "over": 1607408926,
+        "under": 1607408927
     },
-    "1607069508": {
-        "player": "griffin conine",
-        "prop": "hr",
-        "over": 1607069509,
-        "under": 1607069510
+    "1607408928": {
+        "player": "tyler bertuzzi",
+        "prop": "pts",
+        "over": 1607408929,
+        "under": 1607408930
     },
-    "1607069511": {
-        "player": "griffin conine",
-        "prop": "tb",
-        "over": 1607069512,
-        "under": 1607069513
+    "1607408931": {
+        "player": "ryan donato",
+        "prop": "sog",
+        "over": 1607408932,
+        "under": 1607408933
     },
-    "1607069514": {
-        "player": "dane myers",
-        "prop": "tb",
-        "over": 1607069515,
-        "under": 1607069516
+    "1607408934": {
+        "player": "ryan donato",
+        "prop": "atgs",
+        "over": 1607408935,
+        "under": 1607408936
     },
-    "1607069517": {
-        "player": "kyle stowers",
-        "prop": "hr",
-        "over": 1607069518,
-        "under": 1607069519
+    "1607408937": {
+        "player": "ryan donato",
+        "prop": "ast",
+        "over": 1607408938,
+        "under": 1607408939
     },
-    "1607069520": {
-        "player": "kyle stowers",
-        "prop": "tb",
-        "over": 1607069521,
-        "under": 1607069522
+    "1607408940": {
+        "player": "ryan donato",
+        "prop": "pts",
+        "over": 1607408941,
+        "under": 1607408942
     },
-    "1607069523": {
-        "player": "xavier edwards",
-        "prop": "tb",
-        "over": 1607069524,
-        "under": 1607069525
+    "1607408946": {
+        "player": "ilya mikheyev",
+        "prop": "sog",
+        "over": 1607408947,
+        "under": 1607408948
     },
-    "1607069526": {
-        "player": "matt mervis",
-        "prop": "hr",
-        "over": 1607069527,
-        "under": 1607069528
+    "1607408949": {
+        "player": "ilya mikheyev",
+        "prop": "atgs",
+        "over": 1607408950,
+        "under": 1607408951
     },
-    "1607069529": {
-        "player": "matt mervis",
-        "prop": "tb",
-        "over": 1607069530,
-        "under": 1607069531
+    "1607408952": {
+        "player": "ville koivunen",
+        "prop": "sog",
+        "over": 1607408953,
+        "under": 1607408954
     },
-    "1607069535": {
-        "player": "otto lopez",
-        "prop": "tb",
-        "over": 1607069536,
-        "under": 1607069537
+    "1607408955": {
+        "player": "ville koivunen",
+        "prop": "atgs",
+        "over": 1607408956,
+        "under": 1607408957
     },
-    "1607069538": {
-        "player": "jonah bride",
-        "prop": "tb",
-        "over": 1607069539,
-        "under": 1607069540
+    "1607408958": {
+        "player": "ville koivunen",
+        "prop": "ast",
+        "over": 1607408959,
+        "under": 1607408960
     },
-    "1607069541": {
-        "player": "connor gillispie",
-        "prop": "k",
-        "over": 1607069542,
-        "under": 1607069543
+    "1607408961": {
+        "player": "ville koivunen",
+        "prop": "pts",
+        "over": 1607408962,
+        "under": 1607408963
     },
-    "1607069544": {
-        "player": "connor gillispie",
-        "prop": "h_allowed",
-        "over": 1607069545,
-        "under": 1607069546
+    "1607408964": {
+        "player": "rutger mcgroarty",
+        "prop": "atgs",
+        "over": 1607408965,
+        "under": 1607408966
     },
-    "1607069547": {
-        "player": "connor gillispie",
-        "prop": "er",
-        "over": 1607069548,
-        "under": 1607069549
+    "1607408967": {
+        "player": "rutger mcgroarty",
+        "prop": "ast",
+        "over": 1607408968,
+        "under": 1607408969
     },
-    "1607069550": {
-        "player": "connor gillispie",
-        "prop": "outs",
-        "over": 1607069551,
-        "under": 1607069552
+    "1607408970": {
+        "player": "rutger mcgroarty",
+        "prop": "pts",
+        "over": 1607408971,
+        "under": 1607408972
     },
-    "1607069553": {
-        "player": "graham pauley",
-        "prop": "hr",
-        "over": 1607069554,
-        "under": 1607069555
+    "1607408973": {
+        "player": "frank nazar",
+        "prop": "sog",
+        "over": 1607408974,
+        "under": 1607408975
     },
-    "1607069556": {
-        "player": "graham pauley",
-        "prop": "tb",
-        "over": 1607069557,
-        "under": 1607069558
+    "1607408976": {
+        "player": "frank nazar",
+        "prop": "atgs",
+        "over": 1607408977,
+        "under": 1607408978
+    },
+    "1607408979": {
+        "player": "frank nazar",
+        "prop": "ast",
+        "over": 1607408980,
+        "under": 1607408981
+    },
+    "1607408982": {
+        "player": "frank nazar",
+        "prop": "pts",
+        "over": 1607408983,
+        "under": 1607408984
+    },
+    "1607408988": {
+        "player": "connor bedard",
+        "prop": "sog",
+        "over": 1607408989,
+        "under": 1607408990
+    },
+    "1607408991": {
+        "player": "connor bedard",
+        "prop": "atgs",
+        "over": 1607408992,
+        "under": 1607408993
+    },
+    "1607408994": {
+        "player": "connor bedard",
+        "prop": "ast",
+        "over": 1607408995,
+        "under": 1607408996
+    },
+    "1607408997": {
+        "player": "connor bedard",
+        "prop": "pts",
+        "over": 1607408998,
+        "under": 1607408999
+    },
+    "1607409501": {
+        "player": "evgeni malkin",
+        "prop": "atgs",
+        "over": 1607409502,
+        "under": 1607409503
     }
 }
