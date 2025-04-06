@@ -928,6 +928,10 @@ def writeStatsPage(date):
 	for team in roster:
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
+		with open(f"static/splits/mlb/{team}.json") as fh:
+			teamStats = json.load(fh)
+		with open(f"static/splits/mlb_historical/{team}.json") as fh:
+			teamStatsHist = json.load(fh)
 
 		opp = opps[team]
 		pitcher = lineups[opp]["pitcher"]
@@ -962,6 +966,18 @@ def writeStatsPage(date):
 			sortData.setdefault("evo", [])
 			sortData["evo"].append((over100, player))
 
+			playerStats = stats.get(player, {})
+			dtSplits = []
+			logs = []
+			hitRate = hitRateLYR = totGames = 0
+			if playerStats:
+				dtSplits = playerStats["dt"]
+				totGames = len(dtSplits)
+				logs = playerStats.get(prop, [])
+
+				if totGames:
+					hitRate = round(len([x for x in logs if x > 0.5]) * 100 / totGames)
+
 			data.append({
 				"player": player, "team": team, "opp": opp,
 				"game": teamGame[team]["game"], "start": teamGame[team]["start"],
@@ -972,7 +988,9 @@ def writeStatsPage(date):
 				"feed": {
 					"evo": evos, "dist": dists, "hr/park": hrParks,
 					"result": results, "keys": feedKeys
-				}
+				},
+				"logs": logs, "dtSplits": dtSplits,
+				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR
 			})
 
 	print(sorted(sortData["evo"], reverse=True)[:50])
