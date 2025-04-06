@@ -512,6 +512,7 @@ async def get365Links(sport, keep, gameArg):
 		for prop, id in zip(props, ids):
 			res[prop] = f"https://www.oh.bet365.com/?_h=p2hqPA35Yw8_tTyHi3apXA%3D%3D&btsffd=1#/AC/B17/C20836572/D43/{id}/F43/N6/"
 
+		res["game-lines"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D48/E972/F10"
 		res["gift"] = f"https://www.oh.bet365.com/?_h=gG486m35XJf0T5lkRgCq7Q%3D%3D&btsffd=1#/AC/B17/C20836572/D522/E170376/F522/N3/"
 	elif sport == "nba":
 		props = ["pts-o/u", "pts-low", "pts-high", "pts", "ast-o/u", "ast", "reb-o/u", "reb", "stl-o/u", "to-o/u", "blk-o/u", "3ptm-o/u", "3ptm", "pts+ast-o/u", "pts+reb-o/u", "reb+ast-o/u", "pts+reb+ast-o/u", "stl+blk-o/u"]
@@ -566,6 +567,8 @@ async def write365FromHTML(data, html, sport, prop):
 			game = spreadLabel.split(" spread ")[0].replace(" v ", " @ ")
 			if sport == "mlb":
 				away, home = convertMLBTeam(game.split(" @ ")[0]), convertMLBTeam(game.split(" @ ")[-1])
+			elif sport == "nhl":
+				away, home = convertNHLTeam(game.split(" @ ")[0]), convertNHLTeam(game.split(" @ ")[-1])
 			else:
 				away, home = convertCollege(game.split(" @ ")[0]), convertCollege(game.split(" @ ")[-1])
 			g = f"{away} @ {home}"
@@ -3818,8 +3821,8 @@ if __name__ == '__main__':
 
 	games = {}
 	if args.bet365:
-		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		#games["gift"] = f"https://www.oh.bet365.com/?_h=gG486m35XJf0T5lkRgCq7Q%3D%3D&btsffd=1#/AC/B17/C20836572/D522/E170376/F522/N3/"
+		#games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
+		games["game-lines"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D48/E972/F10"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
