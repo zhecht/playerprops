@@ -1015,6 +1015,10 @@ async def getESPNLinks(sport, tomorrow, gameArg):
 	teamsBS = soup.select("article .text-primary")
 
 	data = nested_dict()
+	if args.keep:
+		with open(f"static/{sport}/espn.json") as fh:
+			data = json.load(fh)
+
 	games = {}
 	for i in range(0, len(teams), 2):
 		div = teams[i].parent.parent.parent.parent.parent.parent
@@ -1097,6 +1101,9 @@ async def getESPNLinks(sport, tomorrow, gameArg):
 			games[game+"-game-props"] = f"{url}/event/{eventId}/section/game-props"
 		else:
 			games[game+"-game-props"] = f"{url}/event/{eventId}/section/game_props"
+
+		if sport == "mlb":
+			games[game+"-lines"] = f"{url}/event/{eventId}/section/lines"
 		#games[game+"-lines"] = f"{url}/event/{eventId}"
 
 	browser.stop()
@@ -1345,7 +1352,29 @@ async def writeESPN(sport, rosters):
 			continue
 
 		html = await page.get_content()
-		if game.endswith("-game-props") or game.endswith("-lines"):
+
+		if game.endswith("-lines"):
+			game = game.split("-")[0]
+			details = await page.query_selector_all("details")
+			for detail in details:
+				if detail.text_all.split(" ")[0] in ["Run", "Total"]:
+					prop = "total" if detail.text_all.startswith("Total") else "spread"
+					btns = await detail.query_selector_all("button")
+					if btns[-1].text == "See All Lines":
+						await btns[-1].click()
+						await page.wait_for(selector=".modal")
+						time.sleep(1)
+						modal = await page.query_selector(".modal")
+						btns = await modal.query_selector_all("button")
+						for i in range(1, len(btns), 2):
+							team = convertMLBTeam(btns[i].text_all)
+							line = str(float(btns[i].text_all.split(" ")[-2]))
+							ou = f"{btns[i].text_all.split(' ')[-1]}/{btns[i+1].text_all.split(' ')[-1]}"
+							data[game][prop][line] = ou.replace("Even", "+100")
+
+						btn = await page.query_selector(".modal--see-all-lines button")
+						await btn.click()
+		elif game.endswith("-game-props"):
 			await writeESPNGamePropsHTML(data, html, sport, game.replace("-game-props", "").replace("-lines", ""))
 		else:
 			await writeESPNFromHTML(data, html, sport, game, playerMap)
@@ -3782,8 +3811,8 @@ if __name__ == '__main__':
 		runThreads("fanduel", sport, games, totThreads, keep=True)
 
 	if args.espn:
-		#games["ole miss @ iowa state"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/ncaab-championship/event/eab40ca8-b46e-4a85-abbd-f573bf54f523/section/player-props"
 		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game))
+		#games["cle @ laa-lines"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/3cc51fbc-277d-4617-85fb-9d43f7ee7f99/section/lines"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
