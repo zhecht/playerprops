@@ -939,7 +939,10 @@ def writeStatsPage(date):
 
 			savantData = expected[team].get(player, {})
 			babip = ""
-			feedKeys = sorted(feed.get(player, {}).keys(), reverse=True)
+			feedKeys = sorted(feed.get(player, {}).keys())
+			evos = [feed[player][k]["evo"] for k in [k for k in feedKeys]]
+
+			#print(player, feedKeys, evos)
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
@@ -948,6 +951,7 @@ def writeStatsPage(date):
 				"order": order,
 				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
 				"ba": savantData.get("ba", 0), "xba": savantData.get("est_ba", 0),
+				"evo-logs": evos,
 				"feed": feed.get(player)
 			})
 
