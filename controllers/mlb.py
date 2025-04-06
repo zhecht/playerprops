@@ -1015,6 +1015,164 @@ def parsePinnacle(res, games, gameId, retry, debug):
 			else:
 				res[game][prop] = ou
 
+def writeMGM(date=None):
+
+	res = {}
+
+	if not date:
+		date = str(datetime.now())[:10]
+
+	url = "https://sports.mi.betmgm.com/en/sports/baseball-23/betting/usa-9/mlb-75"
+
+	url = f"https://sports.mi.betmgm.com/en/sports/api/widget/widgetdata?layoutSize=Large&page=CompetitionLobby&sportId=23&regionId=9&competitionId=75&compoundCompetitionId=1:75&widgetId=/mobilesports-v1.0/layout/layout_us/modules/competition/defaultcontainereventsfutures-redesign&shouldIncludePayload=true"
+	outfile = f"outMGM"
+
+	time.sleep(0.3)
+	os.system(f"curl -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0' -k \"{url}\" -o {outfile}")
+
+	with open(outfile) as fh:
+		data = json.load(fh)
+
+	rows = data["widgets"][0]["payload"]["items"][0]["activeChildren"][0]["payload"]["fixtures"]
+	ids = []
+	for row in rows:
+		if row["stage"].lower() == "live":
+			continue
+		if "2024/2025" in row["name"]["value"] or "2024/25" in row["name"]["value"]:
+			continue
+
+		if str(datetime.strptime(row["startDate"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
+			pass
+			#continue
+		ids.append(row["id"])
+
+	#ids = ["14632993"]
+	for mgmid in ids:
+		url = f"https://sports.mi.betmgm.com/cds-api/bettingoffer/fixture-view?x-bwin-accessid=NmFjNmUwZjAtMGI3Yi00YzA3LTg3OTktNDgxMGIwM2YxZGVh&lang=en-us&country=US&userCountry=US&subdivision=US-Michigan&offerMapping=All&scoreboardMode=Full&fixtureIds={mgmid}&state=Latest&includePrecreatedBetBuilder=true&supportVirtual=false&useRegionalisedConfiguration=true&includeRelatedFixtures=true"
+		time.sleep(0.3)
+		os.system(f"curl -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' \"{url}\" -o {outfile}")
+
+		with open(outfile) as fh:
+			data = json.load(fh)
+
+		data = data["fixture"]
+
+		if " at " not in data["name"]["value"]:
+			continue
+		game = strip_accents(data["name"]["value"].lower()).replace(" at ", " @ ")
+		game = game.replace(" (game 2)", "").replace(" (game 1)", "").replace(" (neutral venue)", "")
+		fullTeam1, fullTeam2 = game.split(" @ ")
+		game = convertFDTeam(f"{fullTeam1} @ {fullTeam2}")
+
+		res[game] = {}
+		d = data["games"]
+		if not d:
+			d = data["optionMarkets"]
+		for row in d:
+			prop = row["name"]["value"].lower()
+
+			prefix = player = ""
+			if "first 5 innings" in prop or "1st 5 innings" in prop:
+				prefix = "f5_"
+			elif "first 3 innings" in prop or "1st 3 innings" in prop:
+				prefix = "f3_"
+			elif "first 7 innings" in prop or "1st 7 innings" in prop:
+				prefix = "f7_"
+
+			if prop.endswith("money line"):
+				prop = "ml"
+			elif prop == "total games" or "totals" in prop:
+				prop = "total"
+			elif "spread" in prop:
+				prop = "spread"
+			elif "):" in prop:
+				player = parsePlayer(prop.split(" (")[0])
+				p = prop.split("): ")[-1]
+				if "home run" in p:
+					p = "hr"
+				elif p == "runs":
+					p = "r"
+				elif p == "hits":
+					p = "h"
+				elif p == "triples":
+					p = "triple"
+				elif p == "doubles":
+					p = "double"
+				elif p == "singles":
+					p = "single"
+				elif p == "bases":
+					p = "tb"
+				elif "strikeouts" in p:
+					p = "k"
+					if "batter" in prop:
+						p = "so"
+				elif p == "stolen bases":
+					p = "sb"
+				elif "walks" in p:
+					p = "bb"
+				elif p == "runs batted in":
+					p = "rbi"
+				elif p == "total hits, runs and rbis":
+					p = "h+r+rbi"
+				elif "earned runs" in p:
+					p = "er"
+				elif "hits allowed" in p:
+					p = "h_allowed"
+				prop = p
+			elif prop.endswith(": home runs"):
+				prop = "hr"
+			elif prop.endswith(": home runs"):
+				prop = "hr"
+			else:
+				continue
+
+			prop = prefix+prop
+
+			try:
+				results = row.get('results', row['options'])
+			except:
+				continue
+			price = results[0]
+			if "price" in price:
+				price = price["price"]
+			if "ml" in prop:
+				res[game][prop] = f"{price['americanOdds']}/{ results[1]['price']['americanOdds']}"
+			elif len(results) >= 2:
+				skip = 1 if prop == "attd" else 2
+				for idx in range(0, len(results), skip):
+					val = results[idx]["name"]["value"].lower()
+					if "over" not in val and "under" not in val and "spread" not in prop and prop not in ["attd"]:
+						continue
+					else:
+						val = val.split(" ")[-1]
+					
+					#print(game, prop, player)
+					ou = f"{results[idx].get('americanOdds', results[idx]['price']['americanOdds'])}"
+
+					try:
+						ou += f"/{results[idx+1].get('americanOdds', results[idx+1]['price']['americanOdds'])}"
+					except:
+						pass
+
+					if player:
+						player = parsePlayer(player)
+						if prop not in res[game]:
+							res[game][prop] = {}
+						if player not in res[game][prop]:
+							res[game][prop][player] = {}
+						res[game][prop][player][val] = ou
+					else:
+						if prop not in res[game]:
+							res[game][prop] = {}
+						try:
+							v = str(float(val))
+							res[game][prop][v] = ou
+						except:
+							pass
+
+	with open("static/mlb/mgm.json", "w") as fh:
+		json.dump(res, fh, indent=4)
+
 def writePinnacle(date, debug=False):
 
 	if not date:
@@ -1531,7 +1689,10 @@ def writeDK(date, propArg, keep):
 										lines[game][prop][player] = ou
 								elif "spread" in prop or "total" in prop:
 									line = str(float(outcome["line"]))
-									lines[game][prop][line] = ou + "/" + outcomes[i+1]["oddsAmerican"]
+									try:
+										lines[game][prop][line] = ou + "/" + outcomes[i+1]["oddsAmerican"]
+									except:
+										pass
 								else: #o/u
 									line = outcome.get("line", "")
 

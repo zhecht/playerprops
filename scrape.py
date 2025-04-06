@@ -1355,7 +1355,7 @@ async def writeESPN(sport, rosters):
 
 	browser.stop()
 
-async def getMGMLinks(sport=None, tomorrow=None, gameArg=None):
+async def getMGMLinks(sport=None, tomorrow=None, gameArg=None, main=False, keep=False):
 	if not sport:
 		sport = "nfl"
 	url = "https://sports.mi.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35"
@@ -1382,7 +1382,12 @@ async def getMGMLinks(sport=None, tomorrow=None, gameArg=None):
 
 	browser = await uc.start(no_sandbox=True)
 	games = {}
+
 	data = nested_dict()
+	if keep:
+		with open(f"static/{sport}/mgm.json") as fh:
+			data = json.load(fh)
+	
 	for url in urls:
 		tabs = [""]
 		#march madness
@@ -1444,7 +1449,14 @@ async def getMGMLinks(sport=None, tomorrow=None, gameArg=None):
 				if gameArg and gameArg != game:
 					continue
 
-				games[game] = link.get("href")+"?market=-1"
+				markets = ["-1"]
+				if main:
+					markets = ["Innings", "Totals"]
+				elif sport == "mlb":
+					markets = ["Players"]
+
+				for mkt in markets:
+					games[f"{game}_{mkt}"] = link.get("href")+f"?market={mkt}"
 
 				btns = link.parent.parent.find_all("ms-option")
 				if len(btns) == 6:
@@ -1473,14 +1485,31 @@ async def writeMGMFromHTML(data, html, sport, game):
 
 	for panel in panels:
 		prop = panel.find("span", class_="market-name").text.lower()
+		fullProp = prop
+
+		prefix = ""
+		if prop.startswith("first 3"):
+			prefix = "f3_"
+		elif prop.startswith("first 5"):
+			prefix = "f5_"
+		elif prop.startswith("first 7"):
+			prefix = "f7_"
+
 		#print(prop)
 		alt = False
 		if prop == "anytime goalscorer":
 			prop = "atgs"
 		elif prop == "first goalscorer":
 			prop = "fgs"
+		elif "money line" in prop:
+			prop = "ml"
+		elif prop.endswith("total runs"):
+			prop = "total"
+		elif prop.endswith("spread"):
+			prop = "spread"
 		elif prop == "totals":
 			prop = "total"
+			continue
 		elif prop.startswith("1st inning run"):
 			prop = "rfi"
 		elif prop.startswith("player") or prop.startswith("alternate player"):
@@ -1490,6 +1519,11 @@ async def writeMGMFromHTML(data, html, sport, game):
 			prop = prop.replace("player total ", "").replace("player ", "").replace("alternate ", "").replace("attempts", "att").replace("assists", "ast").replace("points", "pts").replace("rebounds", "reb").replace("three-pointers", "3ptm").replace("steals", "stl").replace("blocks", "blk").replace("shots", "sog").replace(" + ", "+").replace(" ", "_")
 		elif prop.startswith("batter") or prop.startswith("pitcher"):
 			prop = prop.replace("batter ", "").replace("pitcher ", "").replace("hits", "h").replace("earned runs", "er").replace("rbis", "rbi").replace("home runs", "hr").replace("total bases", "tb").replace("strikeouts", "k").replace("runs", "r").replace("stolen bases", "sb").replace("h+r+rbis", "h+r+rbi").replace(" ", "_")
+
+		prop = f"{prefix}{prop}"
+
+		if " either " in prop or "exact" in prop or prop.endswith("1st inning runs") or "winner" in prop:
+			continue
 
 		lines = panel.find_all("div", class_="name")
 		odds = panel.find_all("div", class_="value")
@@ -1501,21 +1535,21 @@ async def writeMGMFromHTML(data, html, sport, game):
 			data[game]["spread"][line] = odds[0].text+"/"+odds[3].text
 			line = str(float(lines[1].text.strip().replace("+", "").split(" ")[-1]))
 			data[game]["total"][line] = odds[1].text+"/"+odds[4].text
-		elif prop == "rfi":
-			data[game]["rfi"] = odds[0].text+"/"+odds[1].text
-		elif prop.endswith(": total points") or prop.endswith(": total runs") or prop in ["spread", "total"]:
+		elif prop in ["rfi"] or "ml" in prop:
+			data[game][prop] = odds[0].text+"/"+odds[1].text
+		elif prop.endswith(": total points") or prop.endswith(": total runs") or "spread" in prop or "total" in prop:
 			if sport == "nhl":
-				t = convertMGMNHLTeam(prop.split(":")[0])
+				t = convertMGMNHLTeam(fullProp.split(":")[0])
 			elif sport == "mlb":
-				t = convertMLBTeam(prop.split(":")[0])
+				t = convertMLBTeam(fullProp.split(":")[0])
 			else:
-				t = convertCollege(prop.split(":")[0])
-			
+				t = convertCollege(fullProp.split(":")[0])
+
 			if t == game.split(" @ ")[0]:
 				prop = "away_total"
 			elif t == game.split(" @ ")[-1]:
 				prop = "home_total"
-			elif prop not in ["spread", "total"]:
+			elif "spread" not in prop and "total" not in prop:
 				continue
 
 			for i in range(0, len(odds), 2):
@@ -1556,6 +1590,7 @@ async def writeMGM(sport):
 			q.task_done()
 			break
 
+		game, mkt = map(str, game.split("_"))
 		page = await browser.get("https://sports.mi.betmgm.com"+url)
 		try:
 			await page.wait_for(selector=".event-details-pills-list")
@@ -1581,11 +1616,14 @@ async def writeMGM(sport):
 				if not prop:
 					continue
 				prop = prop.text_all.lower()
+				fullProp = prop
 
 				multProps = False
 				alt = False
 				if prop.startswith("1st inning run"):
 					prop = "rfi"
+				elif "money line" in prop:
+					prop = "ml"
 				elif prop == "first td scorer":
 					prop = "ftd"
 				elif prop == "anytime td scorer":
@@ -1624,12 +1662,14 @@ async def writeMGM(sport):
 					prop = "total"
 					if sport == "nhl":
 						multProps = True
-				elif prop == "spread":
+				elif prop == "spread" or prop.endswith(": spread"):
 					prop = "spread"
-				elif prop.endswith(": total points") or (sport == "nhl" and ": goals" in prop):
+				elif prop.endswith(": total points") or (sport == "nhl" and ": goals" in prop) or prop.endswith(": total runs"):
 					#print(prop, convertMGMNHLTeam(prop.split(":")[0]))
 					if sport == "nhl":
 						team = convertMGMNHLTeam(prop.split(":")[0])
+					elif sport == "mlb":
+						team = convertMLBTeam(prop.split(":")[0])
 					else:
 						team = convertCollege(prop.split(":")[0].lower())
 					if team == game.split(" @ ")[0]:
@@ -1637,7 +1677,7 @@ async def writeMGM(sport):
 					elif team == game.split(" @ ")[-1]:
 						prop = "home_total"
 					else:
-						continue
+						prop = "total"
 				elif prop.endswith(": first touchdown scorer"):
 					prop = "team_ftd"
 				elif prop in ["rushing props", "defensive props", "quarterback props", "receiving props", "kicking props"]:
@@ -1698,7 +1738,25 @@ async def writeMGM(sport):
 					await show.click()
 					await show.scroll_into_view()
 					time.sleep(0.75)
-				continue
+				
+				if fullProp == "total":
+					for prefix in ["", "f3_", "f5_", "f7_"]:
+						if prefix:
+							lis = await panel.query_selector_all("li")
+							for li in lis:
+								if prefix[:-1] in li.text_all.replace("First ", "f"):
+									await li.click()
+									time.sleep(0.5)
+
+						odds = await panel.query_selector_all("ms-option")
+						for i in range(0, len(odds), 2):
+							line = await odds[i].query_selector(".name")
+							fullLine = line.text
+							line = str(float(fullLine.strip().split(" ")[-1]))
+							over = odds[i].text_all.replace(fullLine, "").strip()
+							under = odds[i+1].text_all.replace(fullLine.replace("O", "U"), "").strip()
+							data[game][f"{prefix}total"][line] = over+"/"+under
+
 
 		html = await page.get_content()
 		await writeMGMFromHTML(data, html, sport, game)
@@ -3679,6 +3737,7 @@ if __name__ == '__main__':
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--tomorrow", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
+	parser.add_argument("--main", action="store_true")
 
 	parser.add_argument("--nhl", action="store_true")
 	parser.add_argument("--mlb", action="store_true")
@@ -3729,7 +3788,7 @@ if __name__ == '__main__':
 		runThreads("espn", sport, games, totThreads, keep=True)
 
 	if args.mgm:
-		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw, args.game))
+		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw, args.game, args.main, args.keep))
 		#print(games)
 		#games["bryant @ michigan state"] = "/en/sports/events/bryant-at-michigan-state-neutral-venue-17231070?market=-1"
 		totThreads = min(args.threads, len(games))
