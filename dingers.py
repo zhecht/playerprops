@@ -910,6 +910,9 @@ def writeStatsPage(date):
 	with open(f"static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
+	with open(f"static/dailyev/weather.json") as fh:
+		weather = json.load(fh)
+
 	with open(f"static/baseballreference/expected.json") as fh:
 		expected = json.load(fh)
 
@@ -938,6 +941,10 @@ def writeStatsPage(date):
 		with open(f"static/splits/mlb_historical/{team}.json") as fh:
 			teamStatsHist = json.load(fh)
 
+		game = ""
+		if team in teamGame:
+			game = teamGame[team]["game"]
+		gameWeather = weather.get(game, {})
 		opp = opps[team]
 		oppRankings = rankings[opp].get(f"opp_{prop}")
 		pitcher = lineups[opp]["pitcher"]
@@ -1003,7 +1010,8 @@ def writeStatsPage(date):
 				},
 				"logs": logs, "dtSplits": dtSplits,
 				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
-				"oppRank": oppRank, "oppRankClass": oppRankClass
+				"oppRank": oppRank, "oppRankClass": oppRankClass,
+				"weather": gameWeather
 			})
 
 	if False:
