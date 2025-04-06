@@ -1181,7 +1181,7 @@ def writeEV(date, dinger):
 				devig(evData, player, ou, int(data[game][player]["fd"]), book="fd")
 				fd = int(data[game][player]["fd"])
 				fd = convertAmericanOdds(1 + (convertDecOdds(fd) - 1) * 1.50)
-				devig(evData, player, ou, fd, book="fd-50%")
+				devig(evData, player, ou, fd, book="fd-50")
 			if "circa" in books:
 				devig(evData, player, data[game][player]["circa"], highest, book="vs-circa")
 			if "365" in books:
