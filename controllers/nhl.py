@@ -475,6 +475,9 @@ def mergeCirca():
 	with open("static/nhl/circa-main.json") as fh:
 		circaMain = json.load(fh)
 
+	with open("static/nhl/circa-props.json") as fh:
+		circaProps = json.load(fh)
+
 	with open(f"static/hockeyreference/schedule.json") as fh:
 		schedule = json.load(fh)
 
@@ -492,8 +495,8 @@ def mergeCirca():
 	data.update(circaMain)
 	for team in roster:
 		for player in roster[team]:
-			if player in circa:
-				data[teamGame[team]]["atgs"][player] = circa[player]
+			if player in circaProps:
+				data[teamGame[team]]["atgs"][player] = circaProps[player]
 
 	with open("static/nhl/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
@@ -511,6 +514,27 @@ def writeCirca():
 		teamGame[h] = game
 
 	dt = datetime.now().strftime("%Y-%-m-%-d")
+
+	file = f"/mnt/c/Users/zhech/Downloads/NHL Props - {dt}.pdf"
+	pages = convert_from_path(file)
+	data = nested_dict()
+	for page in pages:
+		text = pytesseract.image_to_string(page).split("\n")
+
+		for row in text:
+			if row and "(" in row:
+				player = parsePlayer(row.split(" (")[0].lower())
+				team = convertMLBTeam(row.split("(")[-1].split(")")[0])
+				over = re.search(r"\+\d{3,4}", row)
+				under = re.search(r"-\d{3,4}", row)
+				over = over.group() if over else None
+				under = under.group() if under else None
+
+				data[player] = f"{over}/{under}"
+
+	with open("static/nhl/circa-props.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 	file = f"/mnt/c/Users/zhech/Downloads/NHL - {dt}.pdf"
 	pages = convert_from_path(file)
 	data = nested_dict()
