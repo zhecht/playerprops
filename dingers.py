@@ -941,8 +941,9 @@ def writeStatsPage(date):
 			babip = ""
 			feedKeys = sorted(feed.get(player, {}).keys())
 			evos = [feed[player][k]["evo"] for k in [k for k in feedKeys]]
+			results = [feed[player][k]["results"] for k in [k for k in feedKeys]]
 
-			#print(player, feedKeys, evos)
+			print(player, results, evos)
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
