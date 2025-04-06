@@ -634,6 +634,10 @@ async def write365FromHTML(data, html, sport, prop):
 				line = str(float(overLabel.split(" ")[-3]))
 				data[game][prop][line] = f"{overLabel.split(' ')[-1]}/{under.get('aria-label').split(' ')[-1]}"
 			continue
+		elif prop == "gift":
+			odds = gameDiv.select(".gl-Participant_General")
+			data[game][prop] = odds[0].text+"/"+odds[1].text
+			continue
 		elif prop == "alternative-team-totals":
 			lines = gameDiv.select(".gl-Market_General:nth-of-type(1) div[role=button]")
 			overs = gameDiv.select(".gl-Market_General:nth-of-type(2) div[role=button]")
@@ -3810,8 +3814,8 @@ if __name__ == '__main__':
 
 	games = {}
 	if args.bet365:
-		#games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		games["gift"] = f"https://www.oh.bet365.com/?_h=gG486m35XJf0T5lkRgCq7Q%3D%3D&btsffd=1#/AC/B17/C20836572/D522/E170376/F522/N3/"
+		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
+		#games["gift"] = f"https://www.oh.bet365.com/?_h=gG486m35XJf0T5lkRgCq7Q%3D%3D&btsffd=1#/AC/B17/C20836572/D522/E170376/F522/N3/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
