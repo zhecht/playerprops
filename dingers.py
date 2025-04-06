@@ -919,6 +919,7 @@ def writeStatsPage(date):
 		opps[h] = a
 
 	data = []
+	sortData = []
 	for team in roster:
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
@@ -945,8 +946,13 @@ def writeStatsPage(date):
 			hrParks = [feed[player][k]["hr/park"].split("/")[0] for k in [k for k in feedKeys]]
 			results = [feed[player][k]["result"] for k in [k for k in feedKeys]]
 
-			if player == "spencer torkelson":
-				print(player, results, evos, dists, hrParks)
+			#if player == "spencer torkelson":
+			#	print(player, results, evos, dists, hrParks)
+			try:
+				over100 = len([x for x in evos[-12:] if x and float(x) >= 100])
+				sortData.append((over100, player))
+			except:
+				pass
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
@@ -960,6 +966,9 @@ def writeStatsPage(date):
 					"result": results, "keys": feedKeys
 				}
 			})
+
+	for row in sorted(sortData):
+		print(row)
 
 	with open(f"static/mlb/stats.json", "w") as fh:
 		json.dump(data, fh)
