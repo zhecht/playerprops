@@ -906,6 +906,9 @@ def writeStatsPage(date):
 	with open(f"static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
+	with open(f"static/baseballreference/expected.json") as fh:
+		expected = json.load(fh)
+
 	teamGame = {}
 	opps = {}
 	for game in schedule[date]:
@@ -932,12 +935,20 @@ def writeStatsPage(date):
 			if bvpStats:
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
 
+			savantData = expected[team].get(player, {})
+			babip = ""
+			#if savantData:
+				#babip_dem = savantData["ab"] - savantData["so"] - savantData["hr"] + savantData.get("sf", 0)
+				#if babip_dem:
+				#	babip = format((savantData["h"] - savantData["hr"]) / babip_dem, '.3f')[1:]
 			data.append({
 				"player": player, "team": team, "opp": opp,
 				"game": teamGame[team]["game"], "start": teamGame[team]["start"],
 				"bvp": bvp, "pitcher": pitcher,
 				"order": order,
-				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0
+				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
+				"ba": savantData.get("ba", 0), "xba": savantData.get("est_ba", 0),
+				"babip": babip
 			})
 
 	with open(f"static/mlb/stats.json", "w") as fh:

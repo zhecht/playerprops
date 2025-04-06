@@ -22,9 +22,6 @@ def bvpReport(date):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
-
 	with open(f"static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
@@ -83,7 +80,7 @@ def bvpReport(date):
 
 	posts = []
 	post = ""
-	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
+	m,d = map(str, datetime.strptime(date, "%Y-%m-%d").strftime("%b %-d").split(" "))
 	hdr = f"HRs vs {m} {d}{getSuffix(int(d))} SP (sorted by avg)\n\n"
 	for row in sorted(homers, reverse=True):
 		players = [(x[1].split(" ")[-1].title(), x[0]) for x in sorted(homers[row], reverse=True)]

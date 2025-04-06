@@ -2211,11 +2211,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 			awayStats = json.load(fh)
 		with open(f"static/splits/mlb_historical/{away}.json") as fh:
 			awayHistStats = json.load(fh)
+		with open(f"static/splits/mlb_feed/{away}.json") as fh:
+			awayFeed = json.load(fh)
 
 		with open(f"static/splits/mlb/{home}.json") as fh:
 			homeStats = json.load(fh)
 		with open(f"static/splits/mlb_historical/{home}.json") as fh:
 			homeHistStats = json.load(fh)
+		with open(f"static/splits/mlb_feed/{home}.json") as fh:
+			homeFeed = json.load(fh)
 		props = {}
 		for book in lines:
 			if game not in lines[book]:
@@ -2324,6 +2328,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 					totalOver = total10Over = totalOverLastYear = 0
 					playerYears = []
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
+					feed = []
 					if prop == "away_total":
 						team = away
 						opp = home
@@ -2339,17 +2344,21 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							opp = away
 							stats = homeStats.get(player, {})
 							statsHist = homeHistStats.get(player, {})
+							feed = homeFeed.get(player, {})
 						elif player in roster[away]:
 							stats = awayStats.get(player, {})
 							statsHist = awayHistStats.get(player, {})
+							feed = awayFeed.get(player, {})
 						else:
 							stats = {}
 							statsHist = {}
+							feed = {}
 
 						ou = playerHandicap
 						if not ou.strip():
 							ou = "0.5"
 
+						#feed = sorted([(x,feed[x]) for x in feed])
 						dtSplits = ",".join(stats.get("dt", []))
 						totalSplits = ",".join([str(x) for x in stats.get(convertedProp, [])])
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
@@ -2533,6 +2542,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						evData[key]["handicap"] = handicap
 						evData[key]["playerHandicap"] = playerHandicap
 						evData[key]["playerYears"] = playerYears
+						#evData[key]["feed"] = feed
 						evData[key]["odds"] = l
 						evData[key]["player"] = player
 						evData[key]["pitcher"] = "" if not pitcher else f"{pitcher.title()} ({pitcherLR})"
