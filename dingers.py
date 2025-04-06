@@ -941,9 +941,12 @@ def writeStatsPage(date):
 			babip = ""
 			feedKeys = sorted(feed.get(player, {}).keys())
 			evos = [feed[player][k]["evo"] for k in [k for k in feedKeys]]
-			results = [feed[player][k]["results"] for k in [k for k in feedKeys]]
+			dists = [feed[player][k]["dist"] for k in [k for k in feedKeys]]
+			hrParks = [feed[player][k]["hr/park"].split("/")[0] for k in [k for k in feedKeys]]
+			results = [feed[player][k]["result"] for k in [k for k in feedKeys]]
 
-			print(player, results, evos)
+			if player == "spencer torkelson":
+				print(player, results, evos, dists, hrParks)
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
