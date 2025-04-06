@@ -955,8 +955,10 @@ def writeStatsPage(date):
 				"order": order,
 				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
 				"ba": savantData.get("ba", 0), "xba": savantData.get("est_ba", 0),
-				"evo-logs": evos,
-				"feed": feed.get(player)
+				"feed": {
+					"evo": evos, "dist": dists, "hr/park": hrParks,
+					"result": results, "keys": feedKeys
+				}
 			})
 
 	with open(f"static/mlb/stats.json", "w") as fh:
