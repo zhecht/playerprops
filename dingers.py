@@ -920,12 +920,14 @@ def writeStatsPage(date):
 
 	data = []
 	for team in roster:
+		with open(f"static/splits/mlb_feed/{team}.json") as fh:
+			feed = json.load(fh)
+
 		opp = opps[team]
 		pitcher = lineups[opp]["pitcher"]
 		pitcherLR = leftOrRight[opp].get(pitcher, "")
 
 		for player in roster[team]:
-
 			try:
 				order = lineups[team]["batters"].index(player)+1
 			except:

@@ -191,10 +191,8 @@ def batterReport():
 			feed = json.load(fh)
 
 		for player in feed:
-			pas = sorted(feed[player].keys())
-			if player == "colt keith":
-				print(pas)
-
+			keys = sorted(feed[player].keys(), reverse=True)
+			
 
 	exit()
 
