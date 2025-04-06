@@ -290,7 +290,10 @@ async def writeDK(data, browser):
 	url = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
 	page = await browser.get(url)
 
-	await page.wait_for(selector=".sportsbook-event-accordion__wrapper")
+	try:
+		await page.wait_for(selector=".sportsbook-event-accordion__wrapper")
+	except:
+		return
 	gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
 	for gameDiv in gameDivs:
 		game = gameDiv.children[0].children[1].text_all
