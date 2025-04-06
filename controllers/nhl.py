@@ -3332,7 +3332,7 @@ if __name__ == '__main__':
 	if args.update:
 		#writeFanduel()
 		print("pn")
-		writePinnacle(args.date)
+		writePinnacle(args.date, args.debug)
 		print("kambi")
 		writeKambi(args.date)
 		#print("dk")
