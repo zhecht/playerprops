@@ -922,6 +922,7 @@ def writeStatsPage(date):
 		opps[h] = a
 
 	prop = "hr"
+	line = 0.5
 
 	data = []
 	sortData = {}
@@ -966,17 +967,18 @@ def writeStatsPage(date):
 			sortData.setdefault("evo", [])
 			sortData["evo"].append((over100, player))
 
-			playerStats = stats.get(player, {})
+			playerStats = teamStats.get(player, {})
 			dtSplits = []
 			logs = []
-			hitRate = hitRateLYR = totGames = 0
+			hitRate  = hitRateL10 = hitRateLYR = totGames = 0
 			if playerStats:
 				dtSplits = playerStats["dt"]
 				totGames = len(dtSplits)
 				logs = playerStats.get(prop, [])
 
 				if totGames:
-					hitRate = round(len([x for x in logs if x > 0.5]) * 100 / totGames)
+					hitRate = round(len([x for x in logs if x > line]) * 100 / totGames)
+					hitRateL10 = round(len([x for x in logs[-10:] if x > line]) * 100 / min(totGames, 10))
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
