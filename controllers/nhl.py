@@ -3102,7 +3102,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 								pn = f"{pn.split('/')[1]}/{pn.split('/')[0]}"
 							devig(evData, key, pn, line, prop=prop, sharp=True)
 
-						if "circa" in books:
+						if "circa" in books and not j["circa"].startswith("-/"):
 							devig(evData, key, j["circa"], line, prop=prop, book="vs-circa")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
