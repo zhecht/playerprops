@@ -1574,7 +1574,7 @@ def writeDK(date, propArg, keep):
 				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
 				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
 				if startDt.day != int(date[-2:]):
-					#continue
+					continue
 					pass
 				game = event["name"].lower()
 				games = []
