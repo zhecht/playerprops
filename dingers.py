@@ -116,7 +116,7 @@ def writeCirca():
 
 	dt = datetime.now().strftime("%Y-%-m-%-d")
 	file = f"MLB Props - {dt}.pdf"
-	pages = convert_from_path(f"MLB Props - {dt}.pdf")
+	pages = convert_from_path(f"/mnt/c/Users/zhech/Downloads/MLB Props - {dt}.pdf")
 	data = nested_dict()
 	for page in pages:
 		text = pytesseract.image_to_string(page).split("\n")

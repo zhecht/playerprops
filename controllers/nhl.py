@@ -298,7 +298,7 @@ def writeCZ(date):
 	for event in data["competitions"][0]["events"][:20]:
 		games.append(event["id"])
 
-	#games = ["41550ae2-bbd8-4c44-8e34-6b3e4e165025"]
+	games = ["b9b8f2cb-bbae-4e89-a5bc-d11902f12678"]
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
@@ -376,7 +376,7 @@ def writeCZ(date):
 			elif "puck line" in prop:
 				prop = "spread"
 			else:
-				#print(prop)
+				print(prop)
 				continue
 
 			prop = f"{prefix}{prop}"
