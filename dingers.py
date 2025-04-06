@@ -1367,7 +1367,7 @@ async def writeOne(book):
 
 	browser.stop()
 
-	if False:
+	if True:
 		try:
 			with lock:
 				with open(f"static/dailyev/odds.json") as fh:
@@ -1541,7 +1541,7 @@ if __name__ == '__main__':
 			printEV()
 			for book in ["weather", "lineups", "cz", "dk", "bet365", "fd", "espn", "mgm"]:
 			#for book in ["espn", "mgm"]:
-				subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date, ">/dev/null", "2>&1"])
+				subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date])
 			subprocess.Popen(["python", "controllers/mlb.py", f"--pn", "-d", date])
 
 			if not args.loop:
