@@ -824,8 +824,6 @@ async def write365(sport):
 
 		html = await page.get_content()
 		await write365FromHTML(data, html, sport, prop)
-		with open("out", "w") as fh:
-			json.dump(data, fh, indent=4)
 		updateData(file, data)
 		q.task_done()
 

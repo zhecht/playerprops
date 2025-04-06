@@ -51,6 +51,8 @@ def merge_dicts(d1, d2, forceReplace=False):
 			merge_dicts(d1[k], v, forceReplace)
 		elif k in d1 and isinstance(v, str):
 			if "/" in d1[k]:
+				if len(d1[k].split("/")) != 2:
+					continue
 				o,u = map(int, d1[k].split("/"))
 			else:
 				o,u = d1[k],""
