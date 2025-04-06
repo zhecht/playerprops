@@ -921,6 +921,8 @@ def writeStatsPage(date):
 		opps[a] = h
 		opps[h] = a
 
+	prop = "hr"
+
 	data = []
 	sortData = {}
 	for team in roster:
