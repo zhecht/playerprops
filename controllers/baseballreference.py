@@ -1596,7 +1596,8 @@ def convertSavantTeam(team):
 	return team
 
 def writeSavantParkFactors():
-	url = "https://baseballsavant.mlb.com/leaderboard/statcast-park-factors?type=year&year=2024&batSide=&stat=index_wOBA&condition=All&rolling="
+	year = datetime.now().year
+	url = f"https://baseballsavant.mlb.com/leaderboard/statcast-park-factors?type=year&year={year}&batSide=&stat=index_wOBA&condition=All&rolling="
 	time.sleep(0.2)
 	outfile = "outmlb3"
 	call(["curl", "-k", url, "-o", outfile])
@@ -2170,7 +2171,7 @@ if __name__ == "__main__":
 	printStuff()
 	#readBirthdays()
 
-	writeSavantExpected()
+	#writeSavantExpected()
 	
 	#writeDailyHomers()
 

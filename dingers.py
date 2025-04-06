@@ -913,11 +913,15 @@ def writeStatsPage(date):
 	with open(f"static/dailyev/weather.json") as fh:
 		weather = json.load(fh)
 
+	# bbref
 	with open(f"static/baseballreference/expected.json") as fh:
 		expected = json.load(fh)
 
 	with open(f"static/baseballreference/rankings.json") as fh:
 		rankings = json.load(fh)
+
+	with open(f"static/baseballreference/parkFactors.json") as fh:
+		parkFactors = json.load(fh)
 
 	teamGame = {}
 	opps = {}
@@ -949,6 +953,9 @@ def writeStatsPage(date):
 		oppRankings = rankings[opp].get(f"opp_{prop}")
 		pitcher = lineups[opp]["pitcher"]
 		pitcherLR = leftOrRight[opp].get(pitcher, "")
+		stadiumRank = ""
+		if game:
+			stadiumRank = parkFactors[game.split(" @ ")[-1]]["hrRank"]
 
 		oppRank = oppRankClass = ""
 		if oppRankings:
@@ -1011,7 +1018,7 @@ def writeStatsPage(date):
 				"logs": logs, "dtSplits": dtSplits,
 				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
 				"oppRank": oppRank, "oppRankClass": oppRankClass,
-				"weather": gameWeather
+				"weather": gameWeather, "stadiumRank": stadiumRank
 			})
 
 	if False:
