@@ -967,7 +967,10 @@ def writeStatsPage(date):
 				}
 			})
 
-	for row in sorted(sortData):
+	print(f"""Most >100mph exit velo (last 12 AB)
+		{", ".join([x[1] for x in sorted(sortData, reverse=True)[:20]])}
+""")
+	for row in :
 		print(row)
 
 	with open(f"static/mlb/stats.json", "w") as fh:
