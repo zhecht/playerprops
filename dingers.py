@@ -939,10 +939,8 @@ def writeStatsPage(date):
 
 			savantData = expected[team].get(player, {})
 			babip = ""
-			#if savantData:
-				#babip_dem = savantData["ab"] - savantData["so"] - savantData["hr"] + savantData.get("sf", 0)
-				#if babip_dem:
-				#	babip = format((savantData["h"] - savantData["hr"]) / babip_dem, '.3f')[1:]
+			feedKeys = sorted(feed.get(player, {}).keys(), reverse=True)
+
 			data.append({
 				"player": player, "team": team, "opp": opp,
 				"game": teamGame[team]["game"], "start": teamGame[team]["start"],
@@ -950,7 +948,7 @@ def writeStatsPage(date):
 				"order": order,
 				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
 				"ba": savantData.get("ba", 0), "xba": savantData.get("est_ba", 0),
-				"babip": babip
+				"feed": feed.get(player)
 			})
 
 	with open(f"static/mlb/stats.json", "w") as fh:
