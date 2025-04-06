@@ -153,19 +153,27 @@ def dailyReport(date):
 	Longest: Matt Olson 434 ft
 	Hardest: Riley Greene 114.3 Exit Velo
 
-Almost Homers: Sweeney 411 ft, Marte 410 ft, Siri 409 ft, Bailey 402 ft, Morel 402 ft
+Almost Homers
+
+Sweeney 411 ft, Marte 410 ft, Siri 409 ft, Bailey 402 ft, Morel 402 ft
 """
 
 	longest = sorted([x for x in homers if x["dist"]], key=lambda k: int(k["dist"]), reverse=True)[0]
 	#hardest = sorted([(int(x["evo"] or 0), x) for x in homers], reverse=True)[0][1]
-	almost = [f"""{x["player"].title()} {x["dist"]} ft""" for x in sorted(near, key=lambda x: int(x["dist"]), reverse=True)]
+	almostRows = [x for x in sorted(near, key=lambda x: int(x["hr/park"].split("/")[0] or 0), reverse=True)]
+	almost10 = [f"""{x["player"].title()}""" for x in almostRows if x["hr/park"] and int(x["hr/park"].split("/")[0]) >= 10]
+	almost = [f"""{x["player"].title()}""" for x in almostRows if x["hr/park"] and 1 < int(x["hr/park"].split("/")[0] or "0") < 10]
 	m,d = map(str, datetime.now().strftime("%b %-d").split(" "))
 	post = f"""{m} {d}{getSuffix(int(d))} Summary
 
 {len(homers)} HRs ({round(len(homers) / len(games), 2)} per game)
 	Longest: {longest["player"].title()} {longest["dist"]} ft
 	
-Almost Homers: {", ".join(almost[:20])}
+Almost Homers
+
+10+ parks => {", ".join(almost10[:20])}
+
+<10 parks => {", ".join(almost[:20])}
 """
 	print(post)
 	for game in games:
@@ -176,6 +184,20 @@ Almost Homers: {", ".join(almost[:20])}
 
 
 def batterReport():
+
+	data = []
+	for team in os.listdir("static/splits/mlb/"):
+		with open(f"static/splits/mlb_feed/{team}") as fh:
+			feed = json.load(fh)
+
+		for player in feed:
+			pas = sorted(feed[player].keys())
+			if player == "colt keith":
+				print(pas)
+
+
+	exit()
+
 	date = str(datetime.now())[:10]
 	with open("static/dailyev/feed.json") as fh:
 		feed = json.load(fh)

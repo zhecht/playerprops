@@ -733,7 +733,7 @@ def writeFeedSplits(date, data):
 		if game == "all":
 			continue
 		for playData in data[game]:
-			splits[playData["team"]][playData["player"]][f"{date}-{playData['pa']}"] = {
+			splits[playData["team"]][playData["player"]][f"{date}-{playData['pa'].zfill(2)}"] = {
 				"hr/park": playData["hr/park"],
 				"pa": playData["pa"],
 				"in": playData["in"],
