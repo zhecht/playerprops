@@ -496,6 +496,7 @@ def mergeCirca():
 	for team in roster:
 		for player in roster[team]:
 			if player in circaProps:
+				data[teamGame[team]].setdefault("atgs", {})
 				data[teamGame[team]]["atgs"][player] = circaProps[player]
 
 	with open("static/nhl/circa.json", "w") as fh:
