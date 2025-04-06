@@ -912,6 +912,9 @@ def writeStatsPage(date):
 	with open(f"static/baseballreference/expected.json") as fh:
 		expected = json.load(fh)
 
+	with open(f"static/baseballreference/rankings.json") as fh:
+		rankings = json.load(fh)
+
 	teamGame = {}
 	opps = {}
 	for game in schedule[date]:
@@ -935,8 +938,14 @@ def writeStatsPage(date):
 			teamStatsHist = json.load(fh)
 
 		opp = opps[team]
+		oppRankings = rankings[opp].get(f"opp_{prop}")
 		pitcher = lineups[opp]["pitcher"]
 		pitcherLR = leftOrRight[opp].get(pitcher, "")
+
+		oppRank = oppRankClass = ""
+		if oppRankings:
+			oppRank = oppRankings["rankSuffix"]
+			oppRankClass = oppRankings["rankClass"]
 
 		for player in roster[team]:
 			try:
@@ -992,17 +1001,19 @@ def writeStatsPage(date):
 					"result": results, "keys": feedKeys
 				},
 				"logs": logs, "dtSplits": dtSplits,
-				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR
+				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
+				"oppRank": oppRank, "oppRankClass": oppRankClass
 			})
 
-	print(sorted(sortData["evo"], reverse=True)[:50])
-	print(f"""💥 Leaders in 100+ MPH Hit Balls (L12 AB) 💥
+	if False:
+		print(sorted(sortData["evo"], reverse=True)[:50])
+		print(f"""💥 Leaders in 100+ MPH Hit Balls (L12 AB) 💥
 
 {", ".join([shortName(x[1]) for x in sorted(sortData["evo"], reverse=True)[:50]])}
 """)
 
-	print(sorted(sortData["dist"], reverse=True)[:50])
-	print(f"""🚀 Leaders in 300ft Hit Balls (L12 AB) 🚀
+		print(sorted(sortData["dist"], reverse=True)[:50])
+		print(f"""🚀 Leaders in 300ft Hit Balls (L12 AB) 🚀
 
 {", ".join([shortName(x[1]) for x in sorted(sortData["dist"], reverse=True)[:50]])}
 """)
