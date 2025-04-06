@@ -1684,7 +1684,7 @@ if __name__ == "__main__":
 	#writeBPPlayerProps(date)
 	#writeGameLines(date)
 	#write_numberfire_projections()
-	#write_projections(date)
+	write_projections(date)
 	#writeBallparks(date)
 	#Walks Allowed (Proj) = (FantasyPros Projection) * (Pitches per Plate Appearance) * (Opponent BB Rank) * (K/BB) / (Season Average) * (Career Walk Average)
 
