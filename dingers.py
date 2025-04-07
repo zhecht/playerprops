@@ -285,17 +285,13 @@ async def writeESPN(rosters):
 		q.task_done()
 	browser.stop()
 
-async def write365(data, browser):
+async def write365(loop):
 	book = "365"
-	close = False
-	if not browser:
-		close = True
-		browser = await uc.start(no_sandbox=True)
+	browser = await uc.start(no_sandbox=True)
 	url = "https://www.oh.bet365.com/?_h=uvJ7Snn5ImZN352O9l7rPQ%3D%3D&btsffd=1#/AC/B16/C20525425/D43/E160301/F43/N2/"
 	page = await browser.get(url)
 
 	await page.wait_for(selector=".srb-MarketSelectionButton-selected")	
-
 	reject = await page.query_selector(".ccm-CookieConsentPopup_Reject")
 	if reject:
 		await reject.mouse_click()
@@ -310,63 +306,79 @@ async def write365(data, browser):
 				#time.sleep(round(random.uniform(0.9, 1.25), 2))
 				time.sleep(round(random.uniform(0.4, 0.9), 2))
 
-	players = await page.query_selector_all(".gl-Participant_General")
-	for player in players:
-		game = player.parent.parent.parent.parent.children[0].children[0].children[0].text
-		game = convertMLBTeam(game.split(" @ ")[0])+" @ "+convertMLBTeam(game.split(" @ ")[-1])
+	while True:
+		players = await page.query_selector_all(".gl-Participant_General")
+		data = nested_dict()
+		for player in players:
+			game = player.parent.parent.parent.parent.children[0].children[0].children[0].text
+			game = convertMLBTeam(game.split(" @ ")[0])+" @ "+convertMLBTeam(game.split(" @ ")[-1])
 
-		attrs = player.attributes
-		labelIdx = attrs.index("aria-label")
-		label = attrs[labelIdx+1].lower().strip()
+			attrs = player.attributes
+			labelIdx = attrs.index("aria-label")
+			label = attrs[labelIdx+1].lower().strip()
 
-		player = parsePlayer(label.split("  0.5")[0].replace("over ", "").replace("under ", ""))
-		odds = label.split(" ")[-1]
-		
-		data.setdefault(game, {})
-		data[game].setdefault(player, {})
+			player = parsePlayer(label.split("  0.5")[0].replace("over ", "").replace("under ", ""))
+			odds = label.split(" ")[-1]
+			
+			data.setdefault(game, {})
+			data[game].setdefault(player, {})
 
-		if label.startswith("over"):
-			data[game][player][book] = odds
-		else:
-			#data[game][player].setdefault(book, "-/")
-			data[game][player][book] += "/"+odds
+			if label.startswith("over"):
+				data[game][player][book] = odds
+			else:
+				data[game][player][book] += "/"+odds
 
-	if close:
-		browser.stop()
+		with open("static/dingers/updated_b365.json", "w") as fh:
+			fh.write(str(datetime.now()))
+		with open("static/dingers/b365.json", "w") as fh:
+			json.dump(data, fh, indent=4)
+
+		if not loop:
+			break
+
+	browser.stop()
 	
-async def writeDK(data, browser):
+async def writeDK(loop):
 	book = "dk"
-	close = False
-	if not browser:
-		close = True
-		browser = await uc.start(no_sandbox=True)
+	browser = await uc.start(no_sandbox=True)
 	url = "https://sportsbook.draftkings.com/leagues/baseball/mlb?category=batter-props&subcategory=home-runs"
 	page = await browser.get(url)
 
 	try:
 		await page.wait_for(selector=".sportsbook-event-accordion__wrapper")
 	except:
+		print("element not found")
 		return
-	gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
-	for gameDiv in gameDivs:
-		game = gameDiv.children[0].children[1].text_all
-		if " @ " not in game and " at " not in game:
-			continue
-		away, home = map(str, game.replace(" at ", " @ ").split(" @ "))
-		game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
-		data.setdefault(game, {})
 
-		odds = await gameDiv.query_selector_all("button[data-testid='sb-selection-picker__selection-0']")
-		for oIdx, odd in enumerate(odds):
-			player = parsePlayer(odd.parent.parent.parent.parent.parent.children[0].text.split(" (")[0])
-			ou = odd.text_all.split(" ")[-1]
-			if ou.endswith("+"):
+
+	while True:
+		data = nested_dict()
+		gameDivs = await page.query_selector_all(".sportsbook-event-accordion__wrapper")
+		for gameDiv in gameDivs:
+			game = gameDiv.children[0].children[1].text_all
+			if " @ " not in game and " at " not in game:
 				continue
-			data[game].setdefault(player, {})
-			data[game][player][book] = ou
+			away, home = map(str, game.replace(" at ", " @ ").split(" @ "))
+			game = f"{convertMLBTeam(away)} @ {convertMLBTeam(home)}"
 
-	if close:
-		browser.stop()
+			odds = await gameDiv.query_selector_all("button[data-testid='sb-selection-picker__selection-0']")
+			for oIdx, odd in enumerate(odds):
+				player = parsePlayer(odd.parent.parent.parent.parent.parent.children[0].text.split(" (")[0])
+				ou = odd.text_all.split(" ")[-1]
+				if ou.endswith("+"):
+					continue
+				data[game][player][book] = ou
+
+
+		with open("static/dingers/updated_dk.json", "w") as fh:
+			fh.write(str(datetime.now()))
+		with open("static/dingers/dk.json", "w") as fh:
+			json.dump(data, fh, indent=4)
+
+		if not loop:
+			break
+
+	browser.stop()
 
 async def getMGMLinks(date):
 	browser = await uc.start(no_sandbox=True)
@@ -628,6 +640,8 @@ def writeFDFromBuilderHTML(html, teamMap):
 		data[game]["hr"][player] = odds
 		currGame = game
 
+	with open("static/dingers/updated_fd.json", "w") as fh:
+		fh.write(str(datetime.now()))
 	with open("static/dingers/fd.json", "w") as fh:
 		json.dump(dingerData, fh, indent=4)
 	with open("static/mlb/fanduel.json") as fh:
@@ -1476,8 +1490,6 @@ async def writeOne(book):
 		await writeFD(data, browser)
 	elif book == "dk":
 		await writeDK(data, browser)
-	elif book == "b365":
-		await write365(data, browser)
 	elif book == "mgm":
 		await writeMGM(data, browser)
 	elif book == "espn":
@@ -1628,11 +1640,11 @@ if __name__ == '__main__':
 		#games['det @ lad'] = 'https://sports.mi.betmgm.com/en/sports/events/detroit-tigers-at-los-angeles-dodgers-17081448'
 		runThreads("mgm", games, min(args.threads, len(games)))
 	elif args.dk:
-		uc.loop().run_until_complete(writeOne("dk"))
+		uc.loop().run_until_complete(writeDK(args.loop))
 	elif args.br:
 		uc.loop().run_until_complete(writeBR(date))
 	elif args.bet365:
-		uc.loop().run_until_complete(writeOne("b365"))
+		uc.loop().run_until_complete(write365(args.loop))
 	elif args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(date))
 		#games['mil @ nyy'] = 'https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/b353fbf4-02ef-409b-8327-58fb3b0b1fa9/section/player_props'
@@ -1701,7 +1713,7 @@ if __name__ == '__main__':
 		writeOdds()
 
 	if args.commit:
-		commitChanges()
+		commitChanges(args.loop)
 
 	if False:
 		data = []

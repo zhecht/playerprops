@@ -3,14 +3,20 @@ import nodriver as uc
 import unicodedata
 import git
 
-def commitChanges():
-	repo = git.Repo(".")
-	repo.git.add(A=True)
-	repo.index.commit("test")
+def commitChanges(loop=False):
 
-	origin = repo.remote(name="origin")
-	origin.push()
-	#print("Successful commit")
+	while True:
+		repo = git.Repo(".")
+		repo.git.add(A=True)
+		repo.index.commit("test")
+
+		origin = repo.remote(name="origin")
+		origin.push()
+
+		if not loop:
+			break
+
+		time.sleep(5)
 
 def getSuffix(num):
 	if num >= 11 and num <= 13:
