@@ -979,9 +979,11 @@ def writeStatsPage(date):
 				order = "-"
 			bvpStats = bvpData[team].get(player+' v '+pitcher, {})
 			bvp = ""
+			bvpHR = 0
 			if bvpStats:
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
+				bvpHR = bvpStats["hr"]
 
 			savantData = expected[team].get(player, {})
 			babip = ""
@@ -1032,9 +1034,9 @@ def writeStatsPage(date):
 			data.append({
 				"player": player, "team": team, "opp": opp,
 				"game": game, "start": start,
-				"bvp": bvp, "pitcher": pitcher,
+				"bvp": bvp, "pitcher": pitcher, "bvpHR": bvpHR,
 				"order": order,
-				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
+				"prop": "", "book": "", "logs": [], 
 				"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
 				"feed": {
 					"evo": [float(x or 0.0) for x in evos],
