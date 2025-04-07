@@ -1282,10 +1282,10 @@ def write_player_rankings():
 		json.dump(rankings, fh, indent=4)
 
 
-def write_rankings():
+def writeRankings():
 	baseUrl = "https://www.teamrankings.com/mlb/stat/"
-	pages = ["at-bats-per-game", "strikeouts-per-game", "walks-per-game", "runs-per-game", "hits-per-game", "home-runs-per-game", "singles-per-game", "doubles-per-game", "rbis-per-game", "total-bases-per-game", "earned-run-average", "earned-runs-against-per-game", "strikeouts-per-9", "home-runs-per-9", "hits-per-9", "walks-per-9", "opponent-runs-per-game", "opponent-stolen-bases-per-game", "opponent-total-bases-per-game", "opponent-rbis-per-game", "opponent-at-bats-per-game", "opponent-singles-per-game", "opponent-doubles-per-game", "opponent-home-runs-per-game"]
-	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "h_allowed", "bb_allowed", "r_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab", "opp_1b", "opp_2b", "opp_hr"]
+	pages = ["at-bats-per-game", "strikeouts-per-game", "walks-per-game", "runs-per-game", "hits-per-game", "home-runs-per-game", "singles-per-game", "doubles-per-game", "rbis-per-game", "total-bases-per-game", "earned-run-average", "earned-runs-against-per-game", "strikeouts-per-9", "home-runs-per-9", "hits-per-9", "walks-per-9", "opponent-runs-per-game", "opponent-stolen-bases-per-game", "opponent-total-bases-per-game", "opponent-rbis-per-game", "opponent-at-bats-per-game", "opponent-singles-per-game", "opponent-doubles-per-game", "opponent-home-runs-per-game", "opponent-hits-per-game", "opponent-runs-per-game"]
+	ids = ["ab", "so", "bb", "r", "h", "hr", "1b", "2b", "rbi", "tb", "era", "er", "k", "hr_allowed", "h_allowed", "bb_allowed", "r_allowed", "opp_sb", "opp_tb", "opp_rbi", "opp_ab", "opp_1b", "opp_2b", "opp_hr", "opp_h", "opp_r"]
 
 	rankings = {}
 	for idx, page in enumerate(pages):
@@ -1365,19 +1365,19 @@ def write_rankings():
 		combined.append(j)
 
 	for idx, x in enumerate(sorted(combined, key=lambda k: k["season"], reverse=True)):
-		rankings[x["team"]][f"h+r+rbi_allowed"] = x.copy()
-		rankings[x["team"]][f"h+r+rbi_allowed"]["rank"] = idx+1
-		rankings[x["team"]][f"h+r+rbi_allowed"]["rankSuffix"] = addNumSuffix(idx+1)
+		rankings[x["team"]][f"opp_h+r+rbi"] = x.copy()
+		rankings[x["team"]][f"opp_h+r+rbi"]["rank"] = idx+1
+		rankings[x["team"]][f"opp_h+r+rbi"]["rankSuffix"] = addNumSuffix(idx+1)
 		rankClass = ""
 		if idx+1 <= 10:
 			rankClass = "positive"
 		elif idx+1 >= 20:
 			rankClass = "negative"
-		rankings[x["team"]][f"h+r+rbi_allowed"]["rankClass"] = rankClass
+		rankings[x["team"]][f"opp_h+r+rbi"]["rankClass"] = rankClass
 
 	for idx, x in enumerate(sorted(combined, key=lambda k: k["lastYear"], reverse=True)):
-		rankings[x["team"]][f"h+r+rbi_allowed"]["lastYearRank"] = idx+1
-		rankings[x["team"]][f"h+r+rbi_allowed"]["lastYearRankSuffix"] = addNumSuffix(idx+1)
+		rankings[x["team"]][f"opp_h+r+rbi"]["lastYearRank"] = idx+1
+		rankings[x["team"]][f"opp_h+r+rbi"]["lastYearRankSuffix"] = addNumSuffix(idx+1)
 
 	with open(f"{prefix}static/baseballreference/rankings.json", "w") as fh:
 		json.dump(rankings, fh, indent=4)
@@ -2157,7 +2157,7 @@ if __name__ == "__main__":
 		uc.loop().run_until_complete(writePH(args.player))
 		#writeBaseballReferencePH(args.player)
 	elif args.rankings:
-		write_rankings()
+		writeRankings()
 		write_player_rankings()
 	elif args.roster:
 		writeRoster()
@@ -2175,7 +2175,7 @@ if __name__ == "__main__":
 	elif args.trades:
 		writeTrades()
 	elif args.cron:
-		write_rankings()
+		writeRankings()
 		write_player_rankings()
 		write_batting_pitches()
 		write_pitching_pitches()
