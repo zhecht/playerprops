@@ -2090,7 +2090,8 @@ def writeDK(date=None, keep=False):
 		"quick hits": 1259,
 		"points": 1675,
 		"assists": 1676,
-		"bs": 1679
+		"bs": 1679,
+		"1st period": 548
 	}
 	
 	subCats = {
@@ -2098,6 +2099,7 @@ def writeDK(date=None, keep=False):
 		1064: [16550],
 		1190: [13808],
 		1189: [16544, 12040],
+		548: [4761],
 		550: [14305],
 		1193: [12055],
 		1259: [13750],
@@ -2109,9 +2111,9 @@ def writeDK(date=None, keep=False):
 		4999: "3-way", 13808: "atgs", 14496: "fgs", 16544: "sog-alt", 12040: "sog", 13189: "spread", 13192: "total", 10284: "goals_against", 12436: "shutout", 14305: "bs", 13750: "gift", 16545: "pts-alt", 16213: "pts", 16546: "ast-alt", 16215: "ast", 16550: "saves"
 	}
 
-	if False:
+	if True:
 		mainCats = {
-			"quick hits": 1259,
+			"1st period": 548
 		}
 
 		subCats = {
