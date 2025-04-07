@@ -559,7 +559,7 @@ async def writeFDFromBuilder(date):
 
 	if date not in schedule:
 		print("Date not in schedule")
-		exit()
+		return
 	games = [x["game"] for x in schedule[date]]
 	teamMap = {}
 	for game in games:
@@ -569,7 +569,10 @@ async def writeFDFromBuilder(date):
 	url = "https://sportsbook.fanduel.com/navigation/mlb?tab=parlay-builder"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
-	await page.wait_for(selector="div[role=button][aria-selected=true]")
+	try:
+		await page.wait_for(selector="div[role=button][aria-selected=true]")
+	except:
+		return
 	tab = await page.query_selector("div[role=button][aria-selected=true]")
 	data = nested_dict()
 	dingerData = nested_dict()
