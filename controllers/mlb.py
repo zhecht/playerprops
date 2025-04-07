@@ -1191,7 +1191,7 @@ def writePinnacle(date, debug=False):
 	seenGames = {}
 	for row in data:
 		if str(datetime.strptime(row["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			#continue
+			continue
 			pass
 		if row["type"] == "matchup" and not row["parent"]:
 			player1 = row["participants"][0]["name"].lower()
@@ -1200,10 +1200,12 @@ def writePinnacle(date, debug=False):
 			if "home runs" in game:
 				continue
 
-			if convertFDTeam(game) in seenGames:
-				continue
-			seenGames[convertFDTeam(game)] = True
-			games[str(row["id"])] = convertFDTeam(game)
+			team = convertFDTeam(game)
+			if team in seenGames:
+				#continue
+				pass
+			seenGames[team] = True
+			games[str(row["id"])] = team
 
 	res = {}
 	#games = {'1606945742': 'nym @ mia'}	
