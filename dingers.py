@@ -1087,7 +1087,7 @@ def writeStatsPage(date):
 				"game": game, "start": start,
 				"bvp": bvp, "pitcher": pitcher, "bvpHR": bvpHR, "bvpAvg": bvpAvg,
 				"order": order,
-				"prop": "", "book": "", "logs": [], 
+				"prop": prop, "book": "",
 				"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
 				"feed": {
 					"evo": [float(x or 0.0) for x in evos],
