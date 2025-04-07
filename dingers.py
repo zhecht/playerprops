@@ -1107,10 +1107,11 @@ def writeStatsPage(date):
 				sortData["evo"].append((over100, player))
 
 			playerStats = teamStats.get(player, {})
-			dtSplits, logs = [], []
+			dtSplits, logs, awayHomeSplits = [], [], []
 			hitRate = hitRateL10 = hitRateLYR = totGames = 0
 			if playerStats:
 				dtSplits = playerStats["dt"]
+				awayHomeSplits = playerStats["awayHome"]
 				totGames = len(dtSplits)
 				logs = playerStats.get(prop, [])
 
@@ -1146,7 +1147,7 @@ def writeStatsPage(date):
 					"hr/park": hrParks,
 					"result": results, "keys": feedKeys
 				},
-				"logs": logs, "dtSplits": dtSplits,
+				"logs": logs, "dtSplits": dtSplits, "awayHomeSplits": awayHomeSplits,
 				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
 				"oppRank": oppRank, "oppRankClass": oppRankClass,
 				"weather": gameWeather, "stadiumRank": stadiumRank,
