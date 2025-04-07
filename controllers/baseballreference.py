@@ -595,6 +595,12 @@ async def writeHistory(playerArg, force=False):
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
+	with open(f"{prefix}static/dailyev/odds.json") as fh:
+		odds = json.load(fh)
+	players = []
+	for game in odds:
+		players.extend(odds[game].keys())
+
 	historical = nested_dict()
 	urls = []
 	for team in roster:
@@ -610,6 +616,9 @@ async def writeHistory(playerArg, force=False):
 			if player in historical[team] and not force:
 				continue
 			elif playerArg and player != playerArg:
+				continue
+
+			if player not in players:
 				continue
 			pId = ids[team][player]
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
