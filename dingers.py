@@ -1667,7 +1667,7 @@ if __name__ == '__main__':
 		"""
 
 	if args.ev:
-		writeEV(args.date, args.dinger)
+		writeEV(date, args.dinger)
 	if args.print:
 		printEV()
 
