@@ -935,6 +935,7 @@ def writeStatsPage(date):
 
 	prop = "hr"
 	line = 0.5
+	lastAB = 8
 
 	data = []
 	sortData = {}
@@ -993,11 +994,11 @@ def writeStatsPage(date):
 			#if player == "shohei ohtani":
 			#	print(player, results, evos, dists, hrParks)
 
-			over300ft = len([x for x in dists[-12:] if x and int(x) >= 300])
+			over300ft = len([x for x in dists[-lastAB:] if x and int(x) >= 300])
 			sortData.setdefault("dist", [])
 			sortData["dist"].append((over300ft, player))
 
-			over100 = len([x for x in evos[-12:] if x and float(x) >= 100])
+			over100 = len([x for x in evos[-lastAB:] if x and float(x) >= 100])
 			sortData.setdefault("evo", [])
 			sortData["evo"].append((over100, player))
 
