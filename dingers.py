@@ -12,6 +12,7 @@ import threading
 import multiprocessing
 from pdf2image import convert_from_path
 import pytesseract
+from PIL import Image
 
 from bs4 import BeautifulSoup as BS
 from controllers.shared import *
@@ -102,8 +103,9 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=Fal
 		evData[player][f"implied"] = implied
 		evData[player][f"ev"] = ev
 
-def writeCirca():
-	date = str(datetime.now())[:10]
+def writeCirca(date):
+	if not date:
+		date = str(datetime.now())[:10]
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
@@ -118,6 +120,54 @@ def writeCirca():
 	file = f"MLB Props - {dt}.pdf"
 	pages = convert_from_path(f"/mnt/c/Users/zhech/Downloads/MLB Props - {dt}.pdf")
 	data = nested_dict()
+
+	for page in pages:
+		page.save("out.png", "PNG")
+		img = Image.open("out.png")
+		bottom = 2200
+		top = 400
+		#w,h = img.size
+		# l,t,r,b
+		playersImg = img.crop((0,top,400,bottom))
+		text = pytesseract.image_to_string(playersImg).split("\n")
+
+		players = []
+		for player in text:
+			if "(" not in player:
+				continue
+			team = convertMLBTeam(player.split(")")[0].split("(")[-1])
+			game = teamGame.get(team, "")
+			player = parsePlayer(player.lower().split(" (")[0])
+			players.append((player, game))
+
+		# strikeouts
+		#i = img.crop((770,1230,1035,1320))
+		#print(pytesseract.image_to_string(i).split("\n"))
+
+		oversImg = img.crop((540,top,600,bottom))
+		undersImg = img.crop((685,top,760,bottom))
+		oversArr = pytesseract.image_to_string(oversImg).split("\n")
+		undersArr = pytesseract.image_to_string(undersImg).split("\n")
+		overs = []
+		for over in oversArr:
+			o = re.search(r"\d{3,4}", over)
+			if not o:
+				continue
+			overs.append(over)
+		unders = []
+		for under in undersArr:
+			o = re.search(r"\d{3,4}", under)
+			if not o:
+				continue
+			unders.append(under)
+		
+		for p,o,u in zip(players, overs, unders):
+			data[p[-1]][p[0]]["circa"] = f"{o}/{u}"
+
+	with open("static/mlb/circa.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+	return
+
 	for page in pages:
 		text = pytesseract.image_to_string(page).split("\n")
 
@@ -1570,7 +1620,7 @@ if __name__ == '__main__':
 	if args.kambi:
 		writeKambi(date)
 	if args.circa:
-		writeCirca()
+		writeCirca(date)
 	if args.merge_circa:
 		mergeCirca()
 
