@@ -2212,7 +2212,7 @@ def writeDK(date=None, keep=False):
 								elif "3rd period" in prop:
 									prefix = "3p_"
 
-								if "moneyline" in prop:
+								if "moneyline" in prop or prop.startswith("tie no bet"):
 									prop = "ml"
 								elif "puck line" in prop:
 									prop = "spread"
