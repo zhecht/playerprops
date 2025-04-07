@@ -946,25 +946,28 @@ def writeStatsPage(date):
 		with open(f"static/splits/mlb_historical/{team}.json") as fh:
 			teamStatsHist = json.load(fh)
 
-		game = opp = ""
+		game = opp = stadiumRank = opp = pitcher = pitcherLR = ""
+		oppRank = oppRankClass = ""
 		if team not in teamGame:
 			continue
-		game = teamGame[team]["game"]
-		opp = opps[team]
-		oppRankings = rankings[opp].get(f"opp_{prop}")
-		pitcher = lineups[opp]["pitcher"]
-		pitcherLR = leftOrRight[opp].get(pitcher, "")
-		
-		gameWeather = weather.get(game, {})
-		
-		stadiumRank = ""
-		if game:
-			stadiumRank = parkFactors[game.split(" @ ")[-1]]["hrRank"]
 
-		oppRank = oppRankClass = ""
-		if oppRankings:
-			oppRank = oppRankings["rankSuffix"]
-			oppRankClass = oppRankings["rankClass"]
+		try: # game info
+			game = teamGame[team]["game"]
+			away,home = map(str, game.split(" @ "))
+			opp = opps[team]
+			oppRankings = rankings[opp].get(f"opp_{prop}")
+			pitcher = lineups[opp]["pitcher"]
+			pitcherLR = leftOrRight[opp].get(pitcher, "")
+			gameWeather = weather.get(game, {})
+
+			if home in parkFactors:
+				stadiumRank = parkFactors[home]["hrRank"]
+
+			if oppRankings:
+				oppRank = oppRankings["rankSuffix"]
+				oppRankClass = oppRankings["rankClass"]
+		except:
+			pass
 
 		for player in roster[team]:
 			try:
@@ -1492,6 +1495,7 @@ if __name__ == '__main__':
 	parser.add_argument("--sport")
 	parser.add_argument("--token")
 	parser.add_argument("--commit", action="store_true")
+	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("--date", "-d")
 	parser.add_argument("--print", "-p", action="store_true")
 	parser.add_argument("--update", "-u", action="store_true")
@@ -1525,7 +1529,9 @@ if __name__ == '__main__':
 
 	games = {}
 	date = args.date
-	if not date:
+	if args.tmrw:
+		date = str(datetime.now() + timedelta(days=1))[:10]
+	elif not date:
 		date = str(datetime.now())[:10]
 
 	if args.feed:
@@ -1607,7 +1613,7 @@ if __name__ == '__main__':
 		printEV()
 
 	if args.stats:
-		writeStatsPage(args.date)
+		writeStatsPage(date)
 
 	if args.scrape:
 		writeOdds()
