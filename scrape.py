@@ -2513,7 +2513,7 @@ async def writeFD(sport):
 			await page.wait_for(selector="div[data-testid=ArrowAction]")
 
 			if sport == "nhl":
-				if tab.text.lower() not in ["popular", "goals", "shots", "points/assists"]:
+				if tab.text.lower() not in ["popular", "goals", "shots", "points/assists", "1st period"]:
 					continue
 			elif sport in ["nba", "ncaab"]:
 				if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense"]:
