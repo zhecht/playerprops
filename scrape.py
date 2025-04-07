@@ -636,6 +636,8 @@ async def write365FromHTML(data, html, sport, prop):
 			unders = gameDiv.select(".gl-Market_General:nth-of-type(2) div[role=button]")
 			for over, under in zip(overs, unders):
 				overLabel = over.get("aria-label")
+				if "@" not in overLabel:
+					continue
 				line = str(float(overLabel.split(" ")[-3]))
 				data[game][prop][line] = f"{overLabel.split(' ')[-1]}/{under.get('aria-label').split(' ')[-1]}"
 			continue
