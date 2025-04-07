@@ -552,7 +552,7 @@ async def getFDLinks(date):
 def runFD():
 	uc.loop().run_until_complete(writeFD())
 
-async def writeFDFromBuilder(date):
+async def writeFDFromBuilder(date, loop):
 	book = "fd"
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
@@ -572,10 +572,9 @@ async def writeFDFromBuilder(date):
 	try:
 		await page.wait_for(selector="div[role=button][aria-selected=true]")
 	except:
+		print("tab not found")
 		return
 	tab = await page.query_selector("div[role=button][aria-selected=true]")
-	data = nested_dict()
-	dingerData = nested_dict()
 	if tab.text == "Parlay Builder":
 		arrow = await page.query_selector("div[data-testid=ArrowAction]")
 		await arrow.click()
@@ -584,36 +583,50 @@ async def writeFDFromBuilder(date):
 		for more in mores:
 			await more.click()
 		time.sleep(1)
+	else:
+		print("parlay builder not found")
+		return
 
+	while True:
 		html = await page.get_content()
-		soup = BS(html, "html.parser")
-		btns = soup.select("div[role=button]")
-		currGame = ""
-		for btn in btns:
-			label = btn.get("aria-label")
-			if not label:
+		writeFDFromBuilderHTML(html, teamMap)
+		if not loop:
+			break
+		time.sleep(5)
+
+	browser.stop()
+
+def writeFDFromBuilderHTML(html, teamMap):
+	soup = BS(html, "html.parser")
+	btns = soup.select("div[role=button]")
+	data = nested_dict()
+	dingerData = nested_dict()
+	currGame = ""
+	for btn in btns:
+		label = btn.get("aria-label")
+		if not label:
+			continue
+		if not label.startswith("To Hit A Home Run"):
+			continue
+		player = parsePlayer(label.split(", ")[1])
+		odds = label.split(" ")[-1]
+
+		try:
+			team = btn.parent.parent.parent.find_all("img")[1]
+
+			if "/team/" not in team.get("src"):
 				continue
-			if not label.startswith("To Hit A Home Run"):
-				continue
-			player = parsePlayer(label.split(", ")[1])
-			odds = label.split(" ")[-1]
+			team = convertMLBTeam(team.get("src").split("/")[-1].replace(".png", "").replace("_", " "))
+			game = teamMap.get(team, currGame)
+		except:
+			game = currGame
 
-			try:
-				team = btn.parent.parent.parent.find_all("img")[1]
+		if "unavailable" in odds:
+			continue
 
-				if "/team/" not in team.get("src"):
-					continue
-				team = convertMLBTeam(team.get("src").split("/")[-1].replace(".png", "").replace("_", " "))
-				game = teamMap.get(team, currGame)
-			except:
-				game = currGame
-
-			if "unavailable" in odds:
-				continue
-
-			dingerData[game][player]["fd"] = odds
-			data[game]["hr"][player] = odds
-			currGame = game
+		dingerData[game][player]["fd"] = odds
+		data[game]["hr"][player] = odds
+		currGame = game
 
 	with open("static/dingers/fd.json", "w") as fh:
 		json.dump(dingerData, fh, indent=4)
@@ -622,7 +635,6 @@ async def writeFDFromBuilder(date):
 	merge_dicts(d, data, forceReplace=True)
 	with open("static/mlb/fanduel.json", "w") as fh:
 		json.dump(d, fh, indent=4)
-	browser.stop()
 
 async def writeFD():
 	book = "fd"
@@ -1610,7 +1622,7 @@ if __name__ == '__main__':
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
 		#runThreads("fd", games, min(args.threads, len(games)))
-		uc.loop().run_until_complete(writeFDFromBuilder(date))
+		uc.loop().run_until_complete(writeFDFromBuilder(date, args.loop))
 	elif args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(date))
 		#games['det @ lad'] = 'https://sports.mi.betmgm.com/en/sports/events/detroit-tigers-at-los-angeles-dodgers-17081448'
