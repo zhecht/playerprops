@@ -752,6 +752,8 @@ async def writeCZ(date, token=None):
 				player = parsePlayer(selection["name"].replace("|", ""))
 				res[game][player][book] = ou
 
+	with open("static/dingers/updated_cz.json", "w") as fh:
+		fh.write(str(datetime.now()))
 	updateData(book, res)
 
 def writeKambi(date):
@@ -1528,6 +1530,9 @@ def runThreads(book, games, totThreads):
 		q.put((game,url))
 
 	q.join()
+
+	with open(f"static/dingers/updated_{book}.json", "w") as fh:
+		fh.write(str(datetime.now()))
 
 	for _ in range(totThreads):
 		q.put((None,None))
