@@ -613,7 +613,7 @@ async def writeFDFromBuilder(date):
 			currGame = game
 
 	with open("static/dingers/fd.json", "w") as fh:
-		json.dump(data, fh, indent=4)
+		json.dump(dingerData, fh, indent=4)
 	with open("static/mlb/fanduel.json") as fh:
 		d = json.load(fh)
 	merge_dicts(d, data, forceReplace=True)
