@@ -2116,7 +2116,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 	with open(f"updated.json") as fh:
 		updated = json.load(fh)
-	#updated["mlb"] = str(datetime.now())
+	updated["mlb"] = str(datetime.now())
 	with open(f"updated.json", "w") as fh:
 		json.dump(updated, fh, indent=4)
 
@@ -2370,6 +2370,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							for i,h in enumerate(j.get("h", [])):
 								arr.append(h + j["r"][i] + j["rbi"][i])
 							logsLYR = arr[::-1]
+							print(logsLYR)
 
 						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("date", [])[::-1])
 						if logsLYR:
