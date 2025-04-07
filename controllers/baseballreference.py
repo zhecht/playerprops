@@ -619,7 +619,7 @@ async def writeHistory(playerArg, force=False):
 					if "h+r+rbi" in historical[team][player][y]:
 						found = True
 						break
-
+				# if we need to update HRR, continue
 				if found:
 					continue
 			elif playerArg and player != playerArg:
