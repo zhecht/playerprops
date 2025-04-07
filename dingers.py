@@ -1028,8 +1028,8 @@ def writeStatsPage(date):
 		opps[a] = h
 		opps[h] = a
 
-	prop = "hr"
-	line = 0.5
+	prop = "h+r+rbi"
+	line = 1.5
 	lastAB = 0
 
 	data = []
