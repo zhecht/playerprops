@@ -993,14 +993,15 @@ def writeStatsPage(date):
 
 			#if player == "shohei ohtani":
 			#	print(player, results, evos, dists, hrParks)
+			over100 = over300ft = 0
+			if len(dists[-lastAB:]):
+				over300ft = len([x for x in dists[-lastAB:] if x and int(x) >= 300]) * 100 / len(dists[-lastAB:])
+				sortData.setdefault("dist", [])
+				sortData["dist"].append((over300ft, player))
 
-			over300ft = len([x for x in dists[-lastAB:] if x and int(x) >= 300])
-			sortData.setdefault("dist", [])
-			sortData["dist"].append((over300ft, player))
-
-			over100 = len([x for x in evos[-lastAB:] if x and float(x) >= 100])
-			sortData.setdefault("evo", [])
-			sortData["evo"].append((over100, player))
+				over100 = len([x for x in evos[-lastAB:] if x and float(x) >= 100]) * 100 / len(evos[-lastAB:])
+				sortData.setdefault("evo", [])
+				sortData["evo"].append((over100, player))
 
 			playerStats = teamStats.get(player, {})
 			dtSplits, logs = [], []
