@@ -614,7 +614,14 @@ async def writeHistory(playerArg, force=False):
 
 		for player in roster[team]:
 			if player in historical[team] and not force:
-				continue
+				found = False
+				for y in historical[team][player]:
+					if "h+r+rbi" in historical[team][player][y]:
+						found = True
+						break
+
+				if found:
+					continue
 			elif playerArg and player != playerArg:
 				continue
 
