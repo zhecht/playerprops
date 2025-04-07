@@ -19,7 +19,10 @@ from controllers.shared import *
 from datetime import datetime, timedelta
 
 q = queue.Queue()
-lock = threading.Lock()
+locks = {}
+for book in ["fd", "dk", "cz", "espn", "mgm", "kambi", "b365"]:
+	locks[book] = threading.Lock()
+#lock = threading.Lock()
 
 def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", dinger=False, book=""):
 	impliedOver = impliedUnder = 0
@@ -276,7 +279,7 @@ async def writeESPN(rosters):
 				data[game][player][book] = over+"/"+under
 
 		try:
-			updateData(data)
+			updateData(book, data)
 		except:
 			print("espn fail", data)
 		q.task_done()
@@ -473,7 +476,7 @@ async def writeMGM():
 			data[game][player][book] = ou
 
 		try:
-			updateData(data)
+			updateData(book, data)
 		except:
 			print(data)
 			pass
@@ -481,12 +484,14 @@ async def writeMGM():
 
 	browser.stop()
 
-def updateData(data):
-	file = "static/dailyev/odds.json"
-	with lock:
-		with open(file) as fh:
-			d = json.load(fh)
-		merge_dicts(d, data, forceReplace=True)
+def updateData(book, data):
+	file = f"static/dingers/{book}.json"
+	with locks[book]:
+		d = {}
+		if os.path.exists(file):
+			with open(file) as fh:
+				d = json.load(fh)
+		d.update(data)
 		with open(file, "w") as fh:
 			json.dump(d, fh, indent=4)
 
@@ -560,6 +565,7 @@ async def writeFDFromBuilder(date):
 	for game in games:
 		for t in game.split(" @ "):
 			teamMap[t] = game
+
 	url = "https://sportsbook.fanduel.com/navigation/mlb?tab=parlay-builder"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
@@ -606,7 +612,8 @@ async def writeFDFromBuilder(date):
 			data[game]["hr"][player] = odds
 			currGame = game
 
-	updateData(dingerData)
+	with open("static/dingers/fd.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 	with open("static/mlb/fanduel.json") as fh:
 		d = json.load(fh)
 	merge_dicts(d, data, forceReplace=True)
@@ -652,7 +659,7 @@ async def writeFD():
 
 			data[game][player][book] = labelSplit[-1]
 
-		updateData(data)
+		updateData(book, data)
 		q.task_done()
 
 	browser.stop()
@@ -716,8 +723,7 @@ async def writeCZ(date, token=None):
 				player = parsePlayer(selection["name"].replace("|", ""))
 				res[game][player][book] = ou
 
-	updateData(res)
-
+	updateData(book, res)
 
 def writeKambi(date):
 	book = "kambi"
@@ -775,7 +781,7 @@ def writeKambi(date):
 				under = betOffer["outcomes"][1]["oddsAmerican"]
 				data[game][player][book] = f"{over}/{under}"
 
-	updateData(data)
+	updateData(book, data)
 
 def writeFeedSplits(date, data):
 	with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
@@ -1121,8 +1127,17 @@ def writeStatsPage(date):
 def writeEV(date, dinger):
 	if not date:
 		date = str(datetime.now())[:10]
-	with open(f"static/dailyev/odds.json") as fh:
-		data = json.load(fh)
+
+	data = {}
+	for book in ["fd", "espn", "dk", "cz", "b365"]:
+		path = f"static/dingers/{book}.json"
+		if os.path.exists(path):
+			with open(path) as fh:
+				d = json.load(fh)
+			merge_dicts(data, d)
+
+	with open(f"static/dailyev/odds.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 
 	with open(f"static/baseballreference/bvp.json") as fh:
 		bvpData = json.load(fh)
@@ -1427,21 +1442,6 @@ def writeLineups(date):
 	with open(f"static/baseballreference/leftOrRight.json", "w") as fh:
 		json.dump(leftOrRight, fh, indent=4)
 
-
-def writeAll():
-
-	threads = []
-	for b in ["fd", "dk", "365", "mgm", "kambi"]:
-		thread = threading.Thread(target=runThread, args=(b,))
-		threads.append(thread)
-		thread.start()
-
-	for thread in threads:
-		thread.join()
-
-	writeEV()
-	printEV()
-
 async def writeOne(book):
 	#with open(f"static/dailyev/odds.json") as fh:
 	#	data = json.load(fh)
@@ -1452,7 +1452,7 @@ async def writeOne(book):
 		await writeFD(data, browser)
 	elif book == "dk":
 		await writeDK(data, browser)
-	elif book == "365":
+	elif book == "b365":
 		await write365(data, browser)
 	elif book == "mgm":
 		await writeMGM(data, browser)
@@ -1464,15 +1464,14 @@ async def writeOne(book):
 	browser.stop()
 
 	if True:
-		try:
-			with lock:
-				with open(f"static/dailyev/odds.json") as fh:
+		with locks[book]:
+			old = {}
+			if os.path.exists(f"static/dingers/{book}.json"):
+				with open(f"static/dingers/{book}.json") as fh:
 					old = json.load(fh)
-				merge_dicts(old, data, forceReplace=True)
-				with open(f"static/dailyev/odds.json", "w") as fh:
-					json.dump(old, fh, indent=4)
-		except:
-			pass
+			old.update(data)
+			with open(f"static/dingers/{book}.json", "w") as fh:
+				json.dump(old, fh, indent=4)
 
 def runThreads(book, games, totThreads):
 	threads = []
@@ -1609,7 +1608,7 @@ if __name__ == '__main__':
 	elif args.br:
 		uc.loop().run_until_complete(writeBR(date))
 	elif args.bet365:
-		uc.loop().run_until_complete(writeOne("365"))
+		uc.loop().run_until_complete(writeOne("b365"))
 	elif args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(date))
 		#games['mil @ nyy'] = 'https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/b353fbf4-02ef-409b-8327-58fb3b0b1fa9/section/player_props'
