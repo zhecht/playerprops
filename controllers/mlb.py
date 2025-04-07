@@ -2374,6 +2374,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("date", [])[::-1])
 						if logsLYR:
 							hitRateLYR = round(len([x for x in logsLYR if x > float(ou)]) * 100 / len(logsLYR))
+							if prop == "h+r+rbi":
+								print(hitRateLYR)
 
 						if convertedProp in stats:
 							arr = stats.get(convertedProp, [])
