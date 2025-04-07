@@ -3836,7 +3836,6 @@ if __name__ == '__main__':
 	if args.fd:
 		games["stl @ wpg"] = "/ice-hockey/nhl/st.-louis-blues-@-winnipeg-jets-34196006"
 		#games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game))
-		#print(games)
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", sport, games, totThreads, keep=True)
 
