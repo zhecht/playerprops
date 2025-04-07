@@ -1586,6 +1586,8 @@ async def writeMGMFromHTML(data, html, sport, game):
 		elif prop == "gift":
 			data[game][prop] = odds[0].text
 		elif prop in ["rfi"] or "ml" in prop:
+			if not odds:
+				continue
 			data[game][prop] = odds[0].text+"/"+odds[1].text
 		elif prop.endswith(": total points") or prop.endswith(": total runs") or "spread" in prop or "total" in prop:
 			if sport == "nhl":
