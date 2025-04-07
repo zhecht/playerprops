@@ -1152,7 +1152,8 @@ def writeStatsPage(date):
 				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
 				"oppRank": oppRank, "oppRankClass": oppRankClass,
 				"weather": gameWeather, "stadiumRank": stadiumRank,
-				"100-evo": over100, "300-ft": over300ft
+				"100-evo": over100, "300-ft": over300ft,
+				"playerYears": playerYears
 			})
 
 	if False:
