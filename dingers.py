@@ -1141,7 +1141,7 @@ def writeEV(date, dinger):
 		date = str(datetime.now())[:10]
 
 	data = {}
-	for book in ["fd", "espn", "dk", "cz", "b365"]:
+	for book in ["fd", "espn", "dk", "cz", "b365", "mgm"]:
 		path = f"static/dingers/{book}.json"
 		if os.path.exists(path):
 			with open(path) as fh:
