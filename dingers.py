@@ -1034,7 +1034,7 @@ def writeStatsPage(date):
 				"bvp": bvp, "pitcher": pitcher,
 				"order": order,
 				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
-				"ba": savantData.get("ba", 0), "xba": savantData.get("est_ba", 0),
+				"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
 				"feed": {
 					"evo": evos, "dist": dists, "hr/park": hrParks,
 					"result": results, "keys": feedKeys
