@@ -378,6 +378,8 @@ async def writeDK(loop):
 		if not loop:
 			break
 
+		time.sleep(5)
+
 	browser.stop()
 
 async def getMGMLinks(date):
