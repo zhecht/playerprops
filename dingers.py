@@ -1569,7 +1569,7 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeWeather(date))
 
 	if args.lineups:
-		writeLineups(args.date)
+		writeLineups(date)
 
 	if args.update:
 		date = args.date
