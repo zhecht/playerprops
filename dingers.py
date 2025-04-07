@@ -1696,7 +1696,8 @@ if __name__ == '__main__':
 		while True:
 			writeEV(date, args.dinger)
 			printEV()
-			for book in ["weather", "lineups", "cz", "dk", "bet365", "fd", "espn", "mgm"]:
+			#for book in ["weather", "lineups", "cz", "dk", "bet365", "fd", "espn", "mgm"]:
+			for book in ["weather", "lineups", "cz", "bet365", "espn", "mgm"]:
 			#for book in ["espn", "mgm"]:
 				subprocess.Popen(["python", "dingers.py", f"--{book}", "-d", date])
 			subprocess.Popen(["python", "controllers/mlb.py", f"--pn", "-d", date])
@@ -1747,7 +1748,7 @@ if __name__ == '__main__':
 	if args.commit:
 		commitChanges()
 
-	if True:
+	if False:
 		data = []
 		plays = [("aaron judge", 230), ("eugenio suarez", 470), ("shohei ohtani", 285), ("francisco lindor", 440), ("brandon nimmo", 630), ("mark vientos", 450), ("juan soto", 350), ("pete alonso", 350), ("byron buxton", 470), ("corbin carroll", 540)]
 		with open("static/dailyev/ev.json") as fh:
