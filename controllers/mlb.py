@@ -2381,6 +2381,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							total10Over = round(len([x for x in arr[-10:] if int(x) > float(ou)]) * 100 / len(arr[-10:]))
 
 						logsLYR = ",".join([str(x) for x in logsLYR])
+						if prop == "h+r+rbi" and player == "cody bellinger":
+							print(logsLYR, hitRateLYR)
 
 						if i == 1:
 							#if total10Over:
