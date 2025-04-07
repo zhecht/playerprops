@@ -2235,6 +2235,7 @@ def writeDK(date=None, keep=False):
 								elif prop.endswith("blocks"):
 									prop = "bs"
 								else:
+									print(prop)
 									continue
 
 
