@@ -722,6 +722,15 @@ async def writePlayerHistory():
 								data[player][year][k] = []	
 							data[player][year][k].append(v)
 
+			
+			if "rbi" in data[player][year]:
+				k = "h+r+rbi"
+				if k not in data[player][year]:
+					data[player][year][k] = []
+
+				for h,r,rbi in zip(data[player][year]["h"],data[player][year]["r"],data[player][year]["rbi"]):
+					data[player][year][k].append(h+r+rbi)
+
 		with historyLock:
 			path = f"static/splits/mlb_historical/{team}.json"
 			try:
