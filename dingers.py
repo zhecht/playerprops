@@ -167,7 +167,7 @@ def writeCirca(date):
 		for p,o,u in zip(players, overs, unders):
 			data[p[-1]][p[0]]["circa"] = f"{o}/{u}"
 
-	with open("static/mlb/circa.json", "w") as fh:
+	with open("static/dingers/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 	return
 
@@ -1141,7 +1141,7 @@ def writeEV(date, dinger):
 		date = str(datetime.now())[:10]
 
 	data = {}
-	for book in ["fd", "espn", "dk", "cz", "b365", "mgm", "pn"]:
+	for book in ["fd", "espn", "dk", "cz", "b365", "mgm", "pn", "circa"]:
 		path = f"static/dingers/{book}.json"
 		if os.path.exists(path):
 			with open(path) as fh:
