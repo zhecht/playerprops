@@ -1033,7 +1033,8 @@ def writeStatsPage(date):
 				"logs": logs, "dtSplits": dtSplits,
 				"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
 				"oppRank": oppRank, "oppRankClass": oppRankClass,
-				"weather": gameWeather, "stadiumRank": stadiumRank
+				"weather": gameWeather, "stadiumRank": stadiumRank,
+				"100-evo": over100, "300-ft": over300ft
 			})
 
 	if False:
