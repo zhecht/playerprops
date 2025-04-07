@@ -949,10 +949,12 @@ def writeStatsPage(date):
 		game = opp = stadiumRank = opp = pitcher = pitcherLR = ""
 		oppRank = oppRankClass = ""
 		if team not in teamGame:
-			continue
+			#continue
+			pass
 
 		try: # game info
 			game = teamGame[team]["game"]
+			start = teamGame[team]["start"]
 			away,home = map(str, game.split(" @ "))
 			opp = opps[team]
 			oppRankings = rankings[opp].get(f"opp_{prop}")
@@ -1027,7 +1029,7 @@ def writeStatsPage(date):
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
-				"game": teamGame[team]["game"], "start": teamGame[team]["start"],
+				"game": game, "start": start,
 				"bvp": bvp, "pitcher": pitcher,
 				"order": order,
 				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
