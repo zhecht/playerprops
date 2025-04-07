@@ -1059,7 +1059,7 @@ def writeLeftRightSplits():
 def write_numberfire_projections():
 	projections = {}
 	for t in ["batters", "pitchers"]:
-		url = "https://www.numberfire.com/mlb/daily-fantasy/daily-baseball-projections/"+t
+		url = f"https://www.fanduel.com/research/mlb/fantasy/dfs-projections/{t}"
 
 		outfile = "outmlb2"
 		time.sleep(0.2)
@@ -1683,8 +1683,8 @@ if __name__ == "__main__":
 
 	#writeBPPlayerProps(date)
 	#writeGameLines(date)
-	#write_numberfire_projections()
-	write_projections(date)
+	write_numberfire_projections()
+	#write_projections(date)
 	#writeBallparks(date)
 	#Walks Allowed (Proj) = (FantasyPros Projection) * (Pitches per Plate Appearance) * (Opponent BB Rank) * (K/BB) / (Season Average) * (Career Walk Average)
 
