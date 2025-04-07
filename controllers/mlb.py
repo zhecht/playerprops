@@ -1218,7 +1218,7 @@ def writePinnacle(date, debug=False):
 
 	with open("static/mlb/pinnacle.json", "w") as fh:
 		json.dump(res, fh, indent=4)
-	with open("static/dingers/updated_pn.json", "w") as fh:
+	with open("static/dingers/updated_pn", "w") as fh:
 		fh.write(str(datetime.now()))
 
 	data = nested_dict()

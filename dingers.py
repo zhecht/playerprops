@@ -328,7 +328,7 @@ async def write365(loop):
 			else:
 				data[game][player][book] += "/"+odds
 
-		with open("static/dingers/updated_b365.json", "w") as fh:
+		with open("static/dingers/updated_b365", "w") as fh:
 			fh.write(str(datetime.now()))
 		with open("static/dingers/b365.json", "w") as fh:
 			json.dump(data, fh, indent=4)
@@ -370,7 +370,7 @@ async def writeDK(loop):
 				data[game][player][book] = ou
 
 
-		with open("static/dingers/updated_dk.json", "w") as fh:
+		with open("static/dingers/updated_dk", "w") as fh:
 			fh.write(str(datetime.now()))
 		with open("static/dingers/dk.json", "w") as fh:
 			json.dump(data, fh, indent=4)
@@ -640,7 +640,7 @@ def writeFDFromBuilderHTML(html, teamMap):
 		data[game]["hr"][player] = odds
 		currGame = game
 
-	with open("static/dingers/updated_fd.json", "w") as fh:
+	with open("static/dingers/updated_fd", "w") as fh:
 		fh.write(str(datetime.now()))
 	with open("static/dingers/fd.json", "w") as fh:
 		json.dump(dingerData, fh, indent=4)
@@ -752,7 +752,7 @@ async def writeCZ(date, token=None):
 				player = parsePlayer(selection["name"].replace("|", ""))
 				res[game][player][book] = ou
 
-	with open("static/dingers/updated_cz.json", "w") as fh:
+	with open("static/dingers/updated_cz", "w") as fh:
 		fh.write(str(datetime.now()))
 	updateData(book, res)
 
@@ -1169,12 +1169,19 @@ def writeEV(date, dinger, silent=False):
 		date = str(datetime.now())[:10]
 
 	data = {}
+	updated = {}
 	for book in ["fd", "espn", "dk", "cz", "b365", "mgm", "pn", "circa"]:
 		path = f"static/dingers/{book}.json"
 		if os.path.exists(path):
 			with open(path) as fh:
 				d = json.load(fh)
 			merge_dicts(data, d)
+
+		upd = f"static/dingers/updated_{book}"
+		if os.path.exists(upd):
+			with open(upd) as fh:
+				j = fh.read()
+			updated[book] = j
 
 	with open(f"static/dailyev/odds.json", "w") as fh:
 		json.dump(data, fh, indent=4)
@@ -1207,10 +1214,11 @@ def writeEV(date, dinger, silent=False):
 		gameTimes[gameData["game"]] = dt
 
 	with open(f"updated.json") as fh:
-		updated = json.load(fh)
-	updated["dingers"] = str(datetime.now())
+		u = json.load(fh)
+	#u["dingers"] = str(datetime.now())
+	u["dingers"] = updated
 	with open(f"updated.json", "w") as fh:
-		json.dump(updated, fh, indent=4)
+		json.dump(u, fh, indent=4)
 
 	evData = {}
 
@@ -1531,7 +1539,7 @@ def runThreads(book, games, totThreads):
 
 	q.join()
 
-	with open(f"static/dingers/updated_{book}.json", "w") as fh:
+	with open(f"static/dingers/updated_{book}", "w") as fh:
 		fh.write(str(datetime.now()))
 
 	for _ in range(totThreads):
