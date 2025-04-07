@@ -2,6 +2,7 @@ from collections import defaultdict
 import nodriver as uc
 import unicodedata
 import git
+import time
 
 def commitChanges(loop=False):
 
