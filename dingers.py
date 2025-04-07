@@ -971,6 +971,9 @@ def writeStatsPage(date):
 		weather = json.load(fh)
 
 	# bbref
+	with open(f"static/baseballreference/advanced.json") as fh:
+		advanced = json.load(fh)
+
 	with open(f"static/baseballreference/expected.json") as fh:
 		expected = json.load(fh)
 
@@ -1028,6 +1031,12 @@ def writeStatsPage(date):
 		except:
 			pass
 
+		pitcherSummary = ""
+		babip = ""
+		if pitcher in advanced:
+			p = pitcher
+			pitcherSummary = f"{advanced[p]['p_era']} ERA, {advanced[p]['batting_avg']} AVG, {advanced[p]['xba']} xAVG, {babip} BABIP, {advanced[p]['slg_percent']} SLG, {advanced[p]['xslg']} xSLG, {advanced[p]['woba']} WOBA, {advanced[p]['xwoba']} xWOBA, {advanced[p]['barrel_batted_rate']}% Barrel Batted"
+
 		for player in roster[team]:
 			try:
 				order = lineups[team]["batters"].index(player)+1
@@ -1043,7 +1052,6 @@ def writeStatsPage(date):
 				bvpAvg = bvpStats["h"] / bvpStats["ab"]
 
 			savantData = expected[team].get(player, {})
-			babip = ""
 			feedKeys = sorted(feed.get(player, {}).keys())
 			evos = [feed[player][k]["evo"] for k in [k for k in feedKeys]]
 			dists = [feed[player][k]["dist"] for k in [k for k in feedKeys]]
@@ -1091,7 +1099,8 @@ def writeStatsPage(date):
 			data.append({
 				"player": player, "team": team, "opp": opp,
 				"game": game, "start": start,
-				"bvp": bvp, "pitcher": pitcher, "bvpHR": bvpHR, "bvpAvg": bvpAvg,
+				"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
+				"bvpHR": bvpHR, "bvpAvg": bvpAvg,
 				"order": order,
 				"prop": prop, "book": "",
 				"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
