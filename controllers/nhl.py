@@ -2109,7 +2109,7 @@ def writeDK(date=None, keep=False):
 		4999: "3-way", 13808: "atgs", 14496: "fgs", 16544: "sog-alt", 12040: "sog", 13189: "spread", 13192: "total", 10284: "goals_against", 12436: "shutout", 14305: "bs", 13750: "gift", 16545: "pts-alt", 16213: "pts", 16546: "ast-alt", 16215: "ast", 16550: "saves"
 	}
 
-	if True:
+	if False:
 		mainCats = {
 			"quick hits": 1259,
 		}
