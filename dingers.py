@@ -1701,6 +1701,15 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeOne("365"))
 		"""
 
+	if args.commit and args.loop:
+		while True:
+			if args.ev:
+				writeEV(date, args.dinger)
+			if args.print:
+				printEV()
+			commitChanges()
+			time.sleep(5)
+
 	if args.ev:
 		writeEV(date, args.dinger)
 	if args.print:
@@ -1713,7 +1722,7 @@ if __name__ == '__main__':
 		writeOdds()
 
 	if args.commit:
-		commitChanges(args.loop)
+		commitChanges()
 
 	if False:
 		data = []

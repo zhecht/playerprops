@@ -2,22 +2,15 @@ from collections import defaultdict
 import nodriver as uc
 import unicodedata
 import git
-import time
 
-def commitChanges(loop=False):
+def commitChanges():
+	repo = git.Repo(".")
+	repo.git.add(A=True)
+	repo.index.commit("test")
 
-	while True:
-		repo = git.Repo(".")
-		repo.git.add(A=True)
-		repo.index.commit("test")
-
-		origin = repo.remote(name="origin")
-		origin.push()
-
-		if not loop:
-			break
-
-		time.sleep(5)
+	origin = repo.remote(name="origin")
+	origin.push()
+	#print("Successful commit")
 
 def getSuffix(num):
 	if num >= 11 and num <= 13:
