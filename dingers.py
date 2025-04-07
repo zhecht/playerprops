@@ -1036,7 +1036,9 @@ def writeStatsPage(date):
 				"prop": "", "book": "", "logs": [], "hitRate": 0, "hitRateL10": 0, "hitRateLYR": 0,
 				"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
 				"feed": {
-					"evo": [float(x or 0.0) for x in evos], "dist": dists, "hr/park": hrParks,
+					"evo": [float(x or 0.0) for x in evos],
+					"dist": [int(x or 0) for x in dists],
+					"hr/park": hrParks,
 					"result": results, "keys": feedKeys
 				},
 				"logs": logs, "dtSplits": dtSplits,
