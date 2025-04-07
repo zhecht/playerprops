@@ -946,14 +946,17 @@ def writeStatsPage(date):
 		with open(f"static/splits/mlb_historical/{team}.json") as fh:
 			teamStatsHist = json.load(fh)
 
-		game = ""
-		if team in teamGame:
-			game = teamGame[team]["game"]
-		gameWeather = weather.get(game, {})
+		game = opp = ""
+		if team not in teamGame:
+			continue
+		game = teamGame[team]["game"]
 		opp = opps[team]
 		oppRankings = rankings[opp].get(f"opp_{prop}")
 		pitcher = lineups[opp]["pitcher"]
 		pitcherLR = leftOrRight[opp].get(pitcher, "")
+		
+		gameWeather = weather.get(game, {})
+		
 		stadiumRank = ""
 		if game:
 			stadiumRank = parkFactors[game.split(" @ ")[-1]]["hrRank"]
