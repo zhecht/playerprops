@@ -1749,8 +1749,12 @@ if __name__ == '__main__':
 			if player in ev:
 				devig(evData, player, ev[player]["ou"], odds)
 				betEV = evData[player]["ev"]
+				if "circa" in ev[player]["bookOdds"]:
+					evData = {}
+					devig(evData, player, ev[player]["bookOdds"]["circa"], odds)
+					circaEV = evData[player]["ev"]
 			else:
-				betEV = ""
+				betEV = circaEV = ""
 			data.append({
 				"book": "fd",
 				"sport": "mlb",
@@ -1759,6 +1763,7 @@ if __name__ == '__main__':
 				"odds": odds,
 				"ev": ev.get(player, {}),
 				"betEV": betEV,
+				"circaEV": circaEV,
 			})
 
 		with open("plays.json", "w") as fh:
