@@ -2364,12 +2364,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
 						playerYears = sorted(list(statsHist.keys()), reverse=True)
 						logsLYR = statsHist.get(str(lastYear), {}).get(convertedProp, [])[::-1]
-						if prop == "h+r+rbi":
-							arr = []
-							j = statsHist.get(str(lastYear), {})
-							for i,h in enumerate(j.get("h", [])):
-								arr.append(h + j["r"][i] + j["rbi"][i])
-							logsLYR = arr[::-1]
 
 						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("date", [])[::-1])
 						if logsLYR:
