@@ -2370,7 +2370,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 							for i,h in enumerate(j.get("h", [])):
 								arr.append(h + j["r"][i] + j["rbi"][i])
 							logsLYR = arr[::-1]
-							print(logsLYR)
 
 						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("date", [])[::-1])
 						if logsLYR:
