@@ -1162,7 +1162,7 @@ def writeStatsPage(date):
 	with open(f"static/mlb/stats.json", "w") as fh:
 		json.dump(data, fh)
 
-def writeEV(date, dinger):
+def writeEV(date, dinger, silent=False):
 	if not date:
 		date = str(datetime.now())[:10]
 
@@ -1338,7 +1338,7 @@ def writeEV(date, dinger):
 
 			if player not in evData:
 				continue
-			elif evData[player]["ev"] > 0:
+			elif evData[player]["ev"] > 0 and not silent:
 				print(f"{player} {evBook} +{highest}, FV={evData[player]['fairVal']}")
 
 			try:
@@ -1704,7 +1704,7 @@ if __name__ == '__main__':
 	if args.commit and args.loop:
 		while True:
 			if args.ev:
-				writeEV(date, args.dinger)
+				writeEV(date, args.dinger, silent=True)
 			if args.print:
 				printEV()
 			commitChanges()
