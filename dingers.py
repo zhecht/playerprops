@@ -1739,9 +1739,9 @@ if __name__ == '__main__':
 	if args.commit:
 		commitChanges()
 
-	if False:
+	if True:
 		data = []
-		plays = [("adolis garcia", 420), ("rhys hoskins", 500), ("corey seager", 290)]
+		plays = [("aaron judge", 230), ("eugenio suarez", 470), ("shohei ohtani", 285), ("francisco lindor", 440), ("brandon nimmo", 630), ("mark vientos", 450), ("juan soto", 350), ("pete alonso", 350), ("byron buxton", 470), ("corbin carroll", 540)]
 		with open("static/dailyev/ev.json") as fh:
 			ev = json.load(fh)
 		for player, odds in plays:
