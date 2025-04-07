@@ -2116,7 +2116,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 	with open(f"updated.json") as fh:
 		updated = json.load(fh)
-	updated["mlb"] = str(datetime.now())
+	#updated["mlb"] = str(datetime.now())
 	with open(f"updated.json", "w") as fh:
 		json.dump(updated, fh, indent=4)
 
@@ -2364,6 +2364,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 						awayHomeSplits = ",".join([str(x) for x in stats.get("awayHome", [])])
 						playerYears = sorted(list(statsHist.keys()), reverse=True)
 						logsLYR = statsHist.get(str(lastYear), {}).get(convertedProp, [])[::-1]
+						if prop == "h+r+rbi":
+							arr = []
+							j = statsHist.get(str(lastYear), {})
+							for i,h in enumerate(j.get("h", [])):
+								arr.append(h + j["r"][i] + j["rbi"][i])
+							logsLYR = arr[::-1]
+
 						dtSplitsLYR = ",".join(statsHist.get(str(lastYear), {}).get("date", [])[::-1])
 						if logsLYR:
 							hitRateLYR = round(len([x for x in logsLYR if x > float(ou)]) * 100 / len(logsLYR))

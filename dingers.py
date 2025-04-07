@@ -613,6 +613,9 @@ async def writeFDFromBuilder(date, loop):
 def writeFDFromBuilderHTML(html, teamMap):
 	soup = BS(html, "html.parser")
 	btns = soup.select("div[role=button]")
+
+	lines = {}
+	#with open("static/dingers")
 	data = nested_dict()
 	dingerData = nested_dict()
 	currGame = ""
