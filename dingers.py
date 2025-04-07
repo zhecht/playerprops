@@ -1107,7 +1107,7 @@ def writeStatsPage(date):
 				sortData["evo"].append((over100, player))
 
 			playerStats = teamStats.get(player, {})
-			dtSplits, logs, awayHomeSplits = [], [], []
+			dtSplits, logs, awayHomeSplits, playerYears = [], [], [], []
 			hitRate = hitRateL10 = hitRateLYR = totGames = 0
 			if playerStats:
 				dtSplits = playerStats["dt"]
@@ -1120,6 +1120,7 @@ def writeStatsPage(date):
 					hitRateL10 = round(len([x for x in logs[-10:] if x > line]) * 100 / min(totGames, 10))
 
 			playerStatsHist = teamStatsHist.get(player, {})
+			playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
 			if lastYear in playerStatsHist:
 				playerStatsHist = playerStatsHist[lastYear]
 			else:
