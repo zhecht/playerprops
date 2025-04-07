@@ -1219,18 +1219,14 @@ def writePinnacle(date, debug=False):
 	with open("static/mlb/pinnacle.json", "w") as fh:
 		json.dump(res, fh, indent=4)
 
-	with open("static/dailyev/odds.json") as fh:
-		dingers = json.load(fh)
-
+	data = nested_dict()
 	for game in res:
-		dingers.setdefault(game, {})
 		if "hr" in res[game]:
 			for player in res[game]["hr"]:
-				dingers[game].setdefault(player, {})
-				dingers[game][player]["pn"] = res[game]["hr"][player]["0.5"]
+				data[game][player]["pn"] = res[game]["hr"][player]["0.5"]
 
-	with open("static/dailyev/odds.json", "w") as fh:
-		json.dump(dingers, fh, indent=4)
+	with open("static/dingers/pn.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 
 def writeBV():
 	url = "https://www.bovada.lv/sports/baseball/mlb"
