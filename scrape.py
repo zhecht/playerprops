@@ -664,7 +664,7 @@ async def write365FromHTML(data, html, sport, prop):
 				if prop == "f5_total":
 					data[game][prop][str(float(line.text))] = over.text+"/"+under.text
 				else:
-					data[game]["total"][str(float(line.text))] = over.text+"/"+under.text
+					data[game][f"{prefix}total"][str(float(line.text))] = over.text+"/"+under.text
 			continue
 
 		players = gameDiv.find_all("div", class_="srb-ParticipantLabelWithTeam_Name")
