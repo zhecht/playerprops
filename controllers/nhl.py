@@ -563,7 +563,7 @@ def writeCirca():
 			unders.append(under)
 		
 		for p,o,u in zip(players, overs, unders):
-			data[p[-1]][p[0]]["circa"] = f"{o}/{u}"
+			data[p[-1]][p[0]]["circa"] = f"{o}/{u}".replace("\u201c", "-")
 
 		bottom = 2060
 
@@ -589,7 +589,7 @@ def writeCirca():
 			elif team in ["co!", "ct"]:
 				team = "col"
 			game = teamGame.get(team, "")
-			data[game][prop][player] = ""
+			data[game][prop][player] = "".replace("\u201c", "-")
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
 
