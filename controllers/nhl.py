@@ -572,20 +572,24 @@ def writeCirca():
 
 		w,h = img.size
 		boxW, boxH = 355, 135
-		boxLeft, boxTop = 855, 975
+		boxLeft, boxTop = 855, 915
 
+		boxH = 128
+
+		continue
+		
 		props = ["pts", "sog"]
 		props = ["pts"]
 		for propIdx, prop in enumerate(props):
 			for boxIdx in range(8):
 				props_img = img.crop((boxLeft,boxTop,boxLeft+boxW,boxTop+boxH))
+				props_img.save(f"outnhl-{pageIdx}-{boxIdx}.png", "PNG")
 				propsW,propsH = props_img.size
 				player_img = props_img.crop((0,0,propsW,40))
 				#player_img.save("out.png", "PNG")
 				text = pytesseract.image_to_string(player_img).split("\n")
 				player = parsePlayer(text[0].split(" (")[0])
 				team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
-				print(player, team)
 				if team == "nyt":
 					team = "nyi"
 				elif team == "vgi":
