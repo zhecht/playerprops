@@ -184,7 +184,7 @@ def mergeCirca():
 			circaMain[game]["hr"][player] = circa[game][player]["circa"]
 
 	with open("static/mlb/circa.json", "w") as fh:
-		json.dump(odds, fh, indent=4)
+		json.dump(circaMain, fh, indent=4)
 
 async def getESPNLinks(date):
 	browser = await uc.start(no_sandbox=True)
