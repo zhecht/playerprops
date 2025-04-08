@@ -2536,8 +2536,8 @@ async def writeFD(sport):
 				#if tab.text.lower() not in ["player combos"]:
 					continue
 			elif sport == "mlb":
-				if tab.text.lower() not in ["popular", "batter props"]:
-				#if tab.text.lower() not in ["pitcher props"]:
+				if tab.text.lower() not in ["popular", "batter props", "first 5 innings"]:
+				#if tab.text.lower() not in ["first 5 innings"]:
 					continue
 			else:
 				if tab.text.lower() not in ["popular", "td scorer props", "passing props", "receiving props", "rushing props"]:
@@ -2592,8 +2592,11 @@ async def writeFD(sport):
 					prop = "ml"
 				elif label == "1st period goal in first ten minutes":
 					prop = "gift"
-				elif label.endswith("run line"):
+				elif label.endswith("run line") or label.endswith("run lines"):
 					prop = "spread"
+					if "alternate" in label:
+						skip = 1
+						alt = True
 				elif label.endswith("total runs"):
 					if label == f"{awayFull} total runs":
 						prop = "away_total"
@@ -2607,6 +2610,10 @@ async def writeFD(sport):
 						continue
 					elif label == f"{homeFull} alt. total runs":
 						prop = "home_total"
+						skip = 1
+						alt = True
+					elif "alternate" in label:
+						prop = "total"
 						skip = 1
 						alt = True
 					else:
@@ -2770,6 +2777,7 @@ async def writeFD(sport):
 					continue
 
 				prop = f"{prefix}{prop}"
+				#print(label, prop)
 
 				if prop.endswith("gift"):
 					prop = "gift"
@@ -2790,11 +2798,15 @@ async def writeFD(sport):
 					#await div.wait_for(selector="div[role=button]")
 					#await div.wait_for(selector="div[aria-label='Show more']")
 
-				if "Show more" in div.children[-1].text_all:
-					el = await div.children[-1].query_selector("div[aria-label='Show more']")
-					if el:
-						await el.click()
-						#await div.wait_for(selector="div[aria-label='Show less']")
+				mores = await page.query_selector_all("div[aria-label='Show more']")
+				for more in mores:
+					await more.click()
+
+				#if "Show more" in div.children[-1].text_all:
+				#	el = await div.children[-1].query_selector("div[aria-label='Show more']")
+				#	if el:
+				#		await el.click()
+						#await page.wait_for(selector="div[aria-label='Show less']")
 						#print(prop, div.text_all)
 
 				btns = await div.query_selector_all("div[role=button]")
@@ -2863,36 +2875,61 @@ async def writeFD(sport):
 						data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]+"/"+btns[i+2].attributes[labelIdx].split(", ")[-1]
 					elif "ml" in prop:
 						data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
-					elif "spread" in prop and sport == "mlb":
-						line = str(float(fields[-2]))
-						data[game][prop][line] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
 					elif "spread" in prop:
 						line = fields[-2].split(" ")[-1]
-						team = convertNHLTeam(fields[-2].replace(f" {line}", ""))
+						team = ""
+						if sport == "nhl":
+							team = convertNHLTeam(fields[-2].replace(f" {line}", ""))
+						elif sport == "mlb":
+							team = convertMLBTeam(fields[-2].replace(f" {line}", ""))
 						line = line.replace("+", "")
 						isAway = True
 						if team == game.split(" @ ")[-1]:
 							line = str(float(line) * -1)
 							isAway = False
 
-						if line not in data[game][prop]:
-							if not isAway:
-								continue
-							data[game][prop][line] = odds
-						else:
-							data[game][prop][line] += "/"+odds
+						o,u = "",""
+						if line in data[game][prop]:
+							o = data[game][prop][line].split("/")[0]
+							if "/" in data[game][prop][line]:
+								u = data[game][prop][line].split("/")[-1]
+
+						if isAway and (not o or int(odds) > int(o)):
+							o = odds
+						elif not isAway and (not u or int(odds) > int(u)):
+							u = odds
+
+						data[game][prop][line] = o
+						if u:
+							data[game][prop][line] += "/"+u
 					elif "total" in prop:
 						if prop in ["away_total", "home_total", "f5_total", "1p_total", "2p_total", "3p_total"]:
 							line = fields[-2].split(" ")[-1].replace("(", "").replace(")", "")
 						else:
 							line = fields[-2].split(" ")[0]
 						ou = odds
+						isUnder = "Under" in fields[-2]
+
 						if alt and line in data[game][prop]:
-							#print(prop, line, ou)
-							data[game][prop][line] += "/"+ou
+							o = data[game][prop][line].split("/")[0]
+							u = ""
+							if "/" in data[game][prop][line]:
+								u = data[game][prop][line].split("/")[-1]
+
+							if not isUnder and int(odds) > int(o):
+								o = odds
+							elif isUnder and (not u or int(odds) > int(u)):
+								u = odds
+
+							data[game][prop][line] = f"{o}"
+							if u:
+								data[game][prop][line] += "/"+u
 						else:
 							if skip == 2:
 								ou += "/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
+
+							if isUnder:
+								continue
 							data[game][prop][line] = ou
 					elif prop == "kicking_pts":
 						player = parsePlayer(arrow.text.lower().split(" total ")[0])
@@ -3850,7 +3887,7 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
 		runThreads("betrivers", sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
-		#games["stl @ wpg"] = "/ice-hockey/nhl/st.-louis-blues-@-winnipeg-jets-34196006"
+		#games["chw @ cle"] = "/baseball/mlb/chicago-white-sox-@-cleveland-guardians-34198386"
 		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game))
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", sport, games, totThreads, keep=True)
