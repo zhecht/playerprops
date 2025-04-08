@@ -520,7 +520,8 @@ def writeCirca():
 	file = f"/mnt/c/Users/zhech/Downloads/NHL Props - {dt}.pdf"
 	pages = convert_from_path(file)
 	data = nested_dict()
-	for page in pages:
+	props = nested_dict()
+	for pageIdx, page in enumerate(pages):
 		page.save("outnhl.png", "PNG")
 		img = Image.open("outnhl.png")
 		text = pytesseract.image_to_string(page).split("\n")
@@ -540,18 +541,22 @@ def writeCirca():
 
 		# l,t,r,b
 		# pts -> 545,625,545+230,bottom
-		w,h = img.size
-		props_img = img.crop((855,975,855+355,bottom))
-		boxHeight = 135
 
-		propsW,propsH = props_img.size
-		player_img = props_img.crop((0,0,propsW,40))
-		player_img.save("out.png", "PNG")
-		text = pytesseract.image_to_string(player_img).split("\n")
-		player = parsePlayer(text[0].split(" (")[0])
-		team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
-		print(player, team, teamGame.get(team))
-		exit()
+		if pageIdx == 0:
+			w,h = img.size
+			props_img = img.crop((855,975,855+355,bottom))
+			boxHeight = 135
+
+			prop = "pts"
+			propsW,propsH = props_img.size
+			player_img = props_img.crop((0,0,propsW,40))
+			player_img.save("out.png", "PNG")
+			text = pytesseract.image_to_string(player_img).split("\n")
+			player = parsePlayer(text[0].split(" (")[0])
+			team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
+
+			game = teamGame.get(team, "")
+			props[game]["pts"][player] = ""
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
 
