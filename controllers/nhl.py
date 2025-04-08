@@ -594,6 +594,7 @@ def writeCirca():
 					team = "col"
 				game = teamGame.get(team, "")
 				data[game][prop][player] = "".replace("\u201c", "-")
+				boxTop += boxH
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
 
