@@ -556,12 +556,9 @@ def writeCirca():
 			team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
 
 			game = teamGame.get(team, "")
-			props[game]["pts"][player] = ""
+			data[game]["pts"][player] = ""
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
-
-	with open("static/nhl/circa-props.json", "w") as fh:
-		json.dump(data, fh, indent=4)
 
 	with open("static/nhl/circa-props.json", "w") as fh:
 		json.dump(data, fh, indent=4)
