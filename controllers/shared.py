@@ -325,6 +325,43 @@ def convertSavantLogoId(logoId):
 	elif logoId == "144":
 		return "atl"
 
+def convertNHLTeam(team):
+	team = team.lower()
+	t = team[:3].strip()
+	if t == "was":
+		return "wsh"
+	elif t == "cal":
+		return "cgy"
+	elif (t == "col" and "columbus" in team) or t == "clb":
+		return "cbj"
+	elif t == "flo":
+		return "fla"
+	elif t == "los":
+		return "la"
+	elif t == "nas":
+		return "nsh"
+	elif t == "mon":
+		return "mtl"
+	elif t == "new" or t == "ny":
+		if "rangers" in team:
+			return "nyr"
+		elif "island" in team:
+			return "nyi"
+		return "nj"
+	elif t == "san":
+		return "sj"
+	elif t == "tam":
+		return "tb"
+	elif t == "st.":
+		return "stl"
+	elif t in ["veg", "vgk"]:
+		return "vgk"
+	elif t == "win":
+		return "wpg"
+	elif t == "uta":
+		return "utah"
+	return t
+
 def convertSoccer(team):
 	team = team.lower().replace("-", " ").replace(".", "").replace("/", " ").replace("'", "")
 	team = team.replace("munchen", "munich").replace(" utd", " united").replace(" city", "").replace(" town", "").replace(" county", "").replace(" rovers", "")
