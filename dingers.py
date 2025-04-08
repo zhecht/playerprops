@@ -599,7 +599,6 @@ async def writeFDFromBuilder(date, loop):
 			dt = datetime.strptime(gameData["start"], "%I:%M %p")
 			dt = int(dt.strftime("%H%M"))
 			gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
-		print(gameStarted)
 		writeFDFromBuilderHTML(html, teamMap, date, gameStarted)
 		if not loop:
 			break
