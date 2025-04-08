@@ -571,26 +571,28 @@ def writeCirca():
 		# pts -> 545,625,545+230,bottom
 
 		w,h = img.size
-		props_img = img.crop((855,975,855+355,bottom))
-		boxHeight = 135
+		boxW, boxH = 355, 135
+		boxLeft, boxTop = 855, 975
 
 		props = ["pts", "sog"]
 		props = ["pts"]
 		for propIdx, prop in enumerate(props):
-			propsW,propsH = props_img.size
-			player_img = props_img.crop((0,0,propsW,40))
-			#player_img.save("out.png", "PNG")
-			text = pytesseract.image_to_string(player_img).split("\n")
-			player = parsePlayer(text[0].split(" (")[0])
-			team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
-			if team == "nyt":
-				team = "nyi"
-			elif team == "vgi":
-				team = "vgk"
-			elif team in ["co!", "ct"]:
-				team = "col"
-			game = teamGame.get(team, "")
-			data[game][prop][player] = "".replace("\u201c", "-")
+			for boxIdx in range(8):
+				props_img = img.crop((boxLeft,boxTop,boxLeft+boxW,boxTop+boxH))
+				propsW,propsH = props_img.size
+				player_img = props_img.crop((0,0,propsW,40))
+				#player_img.save("out.png", "PNG")
+				text = pytesseract.image_to_string(player_img).split("\n")
+				player = parsePlayer(text[0].split(" (")[0])
+				team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
+				if team == "nyt":
+					team = "nyi"
+				elif team == "vgi":
+					team = "vgk"
+				elif team in ["co!", "ct"]:
+					team = "col"
+				game = teamGame.get(team, "")
+				data[game][prop][player] = "".replace("\u201c", "-")
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
 
