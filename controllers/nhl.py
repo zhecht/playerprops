@@ -544,17 +544,21 @@ def writeCirca():
 		undersImg = img.crop((685,top,760,bottom))
 		oversArr = pytesseract.image_to_string(oversImg).split("\n")
 		undersArr = pytesseract.image_to_string(undersImg).split("\n")
-
-		for row in text:
-			if row and "(" in row:
-				player = parsePlayer(row.split(" (")[0].lower())
-				team = convertMLBTeam(row.split("(")[-1].split(")")[0])
-				over = re.search(r"\+\d{3,4}", row)
-				under = re.search(r"-\d{3,4}", row)
-				over = over.group() if over else None
-				under = under.group() if under else None
-
-				data[player] = f"{over}/{under}"
+		overs = []
+		for over in oversArr:
+			o = re.search(r"\d{3,4}", over)
+			if not o:
+				continue
+			overs.append(over)
+		unders = []
+		for under in undersArr:
+			o = re.search(r"\d{3,4}", under)
+			if not o:
+				continue
+			unders.append(under)
+		
+		for p,o,u in zip(players, overs, unders):
+			data[p[-1]][p[0]]["circa"] = f"{o}/{u}"
 
 		bottom = 2060
 
