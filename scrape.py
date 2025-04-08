@@ -519,9 +519,13 @@ async def write365FromHTML(data, html, sport, prop):
 	if "1st-half" in prop:
 		pre = "1h_"
 
-	if prop == "game-lines" or prop == "1st-half":
+	if prop == "game-lines" or prop == "1st-half" or prop == "1p":
 		start = 0
-		gameDivs = soup.select(".sbb-ParticipantTwoWayWithPitchersBaseball:not(.Hidden)")
+		gameDivs = []
+		if sport == "mlb":
+			gameDivs = soup.select(".sbb-ParticipantTwoWayWithPitchersBaseball:not(.Hidden)")
+		elif sport == "nhl":
+			gameDivs = soup.select(".sci-ParticipantFixtureDetailsHigherIceHockey:not(.Hidden)")
 		for game in gameDivs:
 			if "live" in game.text.lower():
 				start += 1
@@ -531,6 +535,8 @@ async def write365FromHTML(data, html, sport, prop):
 		start *= 2 # since we're going team-team
 		if sport == "mlb":
 			teams = soup.select(".sbb-ParticipantTwoWayWithPitchersBaseball_Team")
+		elif sport == "nhl":
+			teams = soup.select(".sci-ParticipantFixtureDetailsHigherIceHockey_Team")
 		else:
 			teams = soup.select(".scb-ParticipantFixtureDetailsHigherBasketball_Team")
 		spreads = soup.select(".gl-Market_General:nth-of-type(2) div[role=button]")
