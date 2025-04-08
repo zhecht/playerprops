@@ -203,11 +203,11 @@ def convertMGMTeam(team):
 		return "atl"
 	elif team == "orioles":
 		return "bal"
-	elif team == "red sox":
+	elif team.replace(" ", "") == "redsox":
 		return "bos"
 	elif team == "cubs":
 		return "chc"
-	elif team == "white sox":
+	elif team.replace(" ", "") == "whitesox":
 		return "chw"
 	elif team == "reds":
 		return "cin"
@@ -253,7 +253,7 @@ def convertMGMTeam(team):
 		return "tb"
 	elif team == "rangers":
 		return "tex"
-	elif team == "blue jays":
+	elif team.replace(" ", "") == "bluejays":
 		return "tor"
 	elif team == "nationals":
 		return "wsh"

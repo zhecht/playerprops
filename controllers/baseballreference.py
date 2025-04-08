@@ -6,6 +6,7 @@ import operator
 import re
 import threading
 import queue
+import requests
 import time
 import nodriver as uc
 import csv
@@ -1808,10 +1809,41 @@ def writeBVP(dateArg):
 
 	with open(f"{prefix}static/baseballreference/bvp.json") as fh:
 		bvp = json.load(fh)
+	bvp = nested_dict()
 
 	date = str(datetime.now())[:10]
 	if int(dateArg.split("-")[-1]) > int(date.split("-")[-1]):
 		date = str(datetime.now() + timedelta(days=1))[:10]
+
+	url = f"https://swishanalytics.com/optimus/mlb/batter-vs-pitcher-stats?date={date}"
+	#response = requests.get(url)
+	#soup = BS(response.text, "html.parser")
+
+	soup = BS(open("out"), "html.parser")
+	hdrs = []
+	for row in soup.find("tr").find_all("th"):
+		hdrs.append(row.text.lower())
+
+	print(len(soup.select("#stat-table tbody tr")))
+	for row in soup.select("#stat-table tbody tr"):
+		tds = row.find_all("td")
+		player = parsePlayer(tds[0].find("span").text)
+		pitcher = parsePlayer(tds[1].find("span").text)
+
+		j = {}
+		for hdr, col in zip(hdrs[2:], tds[2:]):
+			try:
+				j[hdr] = int(col.text)
+			except:
+				try:
+					j[hdr] = float(col.text)
+				except:
+					j[hdr] = col.text
+		bvp[team][f"{player} v {pitcher}"] = j
+
+	with open("static/baseballreference/bvp.json", "w") as fh:
+		json.dump(bvp, fh, indent=4)
+	exit()
 
 	for hotCold in ["hot", "cold"]:
 		outfile = "outmlb3"

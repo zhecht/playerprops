@@ -950,6 +950,49 @@ def parseFeed(data, times, liveGames, totGames, loop):
 	with open("static/dailyev/feed_times.json", "w") as fh:
 		json.dump(times, fh, indent=4)
 
+async def writeBVP(date):
+	with open(f"static/baseballreference/bvp.json") as fh:
+		bvp = json.load(fh)
+	#bvp = nested_dict()
+
+	url = f"https://swishanalytics.com/optimus/mlb/batter-vs-pitcher-stats?date={date}"
+	browser = await uc.start(no_sandbox=True)
+	page = await browser.get(url)
+
+	await page.wait_for(selector=".batter-name")
+	html = await page.get_content()
+
+	#with open("out.html", "w") as fh:
+	#	fh.write(html)
+
+	soup = BS(html, "html.parser")
+	hdrs = []
+	for row in soup.find("tr").find_all("th"):
+		hdrs.append(row.text.lower())
+
+	for row in soup.select(".stat-table tr"):
+		tds = row.find_all("td")
+		team = convertMGMTeam(tds[0].find("img").get("src").split("/")[-1].replace(".png", ""))
+		player = parsePlayer(tds[0].find("span").text.strip())
+		pitcher = parsePlayer(tds[1].find("span").text.strip())
+
+		j = {}
+		for hdr, col in zip(hdrs[2:], tds[2:]):
+			try:
+				j[hdr] = int(col.text)
+			except:
+				try:
+					j[hdr] = float(col.text)
+				except:
+					j[hdr] = col.text
+		bvp.setdefault(team, {})
+		bvp[team][f"{player} v {pitcher}"] = j
+
+	with open("static/baseballreference/bvp.json", "w") as fh:
+		json.dump(bvp, fh, indent=4)
+
+	browser.stop()
+
 def parseESPN(espnLines):
 	with open("static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
@@ -1082,10 +1125,11 @@ def writeStatsPage(date):
 			bvp = ""
 			bvpHR = bvpAvg = 0
 			if bvpStats:
-				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
+				#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
 				bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 				bvpHR = bvpStats["hr"]
-				bvpAvg = bvpStats["h"] / bvpStats["ab"]
+				if bvpStats["ab"]:
+					bvpAvg = bvpStats["h"] / bvpStats["ab"]
 
 			savantData = expected[team].get(player, {})
 			feedKeys = sorted(feed.get(player, {}).keys())
@@ -1616,6 +1660,7 @@ if __name__ == '__main__':
 	parser.add_argument("--date", "-d")
 	parser.add_argument("--print", "-p", action="store_true")
 	parser.add_argument("--update", "-u", action="store_true")
+	parser.add_argument("--bvp", action="store_true")
 	parser.add_argument("--bet365", action="store_true")
 	parser.add_argument("--espn", action="store_true")
 	parser.add_argument("--cz", action="store_true")
@@ -1650,6 +1695,9 @@ if __name__ == '__main__':
 		date = str(datetime.now() + timedelta(days=1))[:10]
 	elif not date:
 		date = str(datetime.now())[:10]
+
+	if args.bvp:
+		uc.loop().run_until_complete(writeBVP(date))
 
 	if args.feed:
 		uc.loop().run_until_complete(writeFeed(args.date, args.loop))
