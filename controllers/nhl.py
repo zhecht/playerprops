@@ -550,7 +550,7 @@ def writeCirca():
 		text = pytesseract.image_to_string(player_img).split("\n")
 		player = parsePlayer(text[0].split(" (")[0])
 		team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
-		print(text)
+		print(player, team, teamGame.get(team))
 		exit()
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
