@@ -548,6 +548,8 @@ def writeCirca():
 		player_img = props_img.crop((0,0,propsW,40))
 		player_img.save("out.png", "PNG")
 		text = pytesseract.image_to_string(player_img).split("\n")
+		player = parsePlayer(text[0].split(" (")[0])
+		team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
 		print(text)
 		exit()
 		#text = pytesseract.image_to_string(props_img).split("\n")
