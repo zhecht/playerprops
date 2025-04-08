@@ -3893,7 +3893,7 @@ if __name__ == '__main__':
 	games = {}
 	if args.bet365:
 		#games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		games["1p-alternative-total"] = "https://www.oh.bet365.com/?_h=e7RdY135g2O4m4S3xKSa1Q%3D%3D&btsffd=1#/AC/B17/C20836572/D517/E170397/F517/N3/"
+		games["1p-alternative-spread"] = "https://www.oh.bet365.com/?_h=e7RdY135g2O4m4S3xKSa1Q%3D%3D&btsffd=1#/AC/B17/C20836572/D517/E170393/F517/N3/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
