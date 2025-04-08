@@ -545,7 +545,7 @@ def writeCirca():
 			player = parsePlayer(player.lower().split(" (")[0])
 			players.append((player, game))
 
-		oversImg = img.crop((540,top,600,bottom))
+		oversImg = img.crop((600,top,685,bottom))
 		undersImg = img.crop((685,top,760,bottom))
 		oversArr = pytesseract.image_to_string(oversImg).split("\n")
 		undersArr = pytesseract.image_to_string(undersImg).split("\n")
