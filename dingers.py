@@ -1279,10 +1279,13 @@ def writeEV(date, dinger, silent=False):
 		schedule = json.load(fh)
 
 	gameTimes = {}
+	gameStarted = {}
 	for gameData in schedule[date]:
 		dt = datetime.strptime(gameData["start"], "%I:%M %p")
 		dt = int(dt.strftime("%H%M"))
 		gameTimes[gameData["game"]] = dt
+		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
+		
 
 	with open(f"updated.json") as fh:
 		u = json.load(fh)
@@ -1304,7 +1307,7 @@ def writeEV(date, dinger, silent=False):
 		awayStats = {}
 		homeStats = {}
 
-		if date == str(datetime.now())[:10] and int(datetime.now().strftime("%H%M")) > gameStart:
+		if date == str(datetime.now())[:10] and gameStarted[game]:
 			continue
 			pass
 
