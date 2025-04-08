@@ -1819,7 +1819,7 @@ async def writeMGM(sport):
 
 							odds = await panel.query_selector_all("ms-option")
 							if "ml" in prop:
-								data[game][f"{prefix}ml"] = odds[-2].text_all+"/"+odds[-1].text_all
+								data[game][f"{prefix}_ml"] = odds[-2].text_all+"/"+odds[-1].text_all
 								continue
 
 							for i in range(0, len(odds), 2):
@@ -1828,7 +1828,7 @@ async def writeMGM(sport):
 								line = str(float(fullLine.strip().split(" ")[-1]))
 								over = odds[i].text_all.replace(fullLine, "").strip()
 								under = odds[i+1].text_all.replace(fullLine.replace("O", "U"), "").strip()
-								data[game][f"{prefix}total"][line] = over+"/"+under
+								data[game][f"{prefix}_total"][line] = over+"/"+under
 
 		html = await page.get_content()
 		await writeMGMFromHTML(data, html, sport, game)
