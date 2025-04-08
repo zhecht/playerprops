@@ -2195,6 +2195,12 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		"circa": circaLines
 	}
 
+	gameStarted = {}
+	for gameData in schedule[date]:
+		dt = datetime.strptime(gameData["start"], "%I:%M %p")
+		dt = int(dt.strftime("%H%M"))
+		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
+
 	with open(f"{prefix}static/mlb/ev.json") as fh:
 		evData = json.load(fh)
 
@@ -2219,7 +2225,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		hasStarted = False
 		dt = datetime.strptime(gameData["start"], "%I:%M %p")
 		dt = int(dt.strftime("%H%M"))
-		if date == dt and dt <= int(datetime.now().strftime("%H%M")):
+		if date == dt and gameStarted[game]:
 			continue
 		with open(f"static/splits/mlb/{away}.json") as fh:
 			awayStats = json.load(fh)
