@@ -536,7 +536,7 @@ def writeCirca():
 
 				data[player] = f"{over}/{under}"
 
-		bottom = 2200
+		bottom = 2060
 
 		# l,t,r,b
 		# pts -> 545,625,545+230,bottom
