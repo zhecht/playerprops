@@ -1300,6 +1300,7 @@ def writeEV(date, dinger, silent=False):
 		homeStats = {}
 
 		if date == str(datetime.now())[:10] and gameStarted[game]:
+			print(game)
 			continue
 			pass
 
