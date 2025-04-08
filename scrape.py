@@ -1816,6 +1816,10 @@ async def writeMGM(sport):
 									time.sleep(0.5)
 
 							odds = await panel.query_selector_all("ms-option")
+							if "ml" in prop:
+								data[game][f"{prefix}ml"] = odds[-2].text_all+"/"+odds[-1].text_all
+								continue
+
 							for i in range(0, len(odds), 2):
 								line = await odds[i].query_selector(".name")
 								fullLine = line.text
