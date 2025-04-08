@@ -2171,6 +2171,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/baseballreference/rankings.json") as fh:
 		rankings = json.load(fh)
 
+	with open(f"{prefix}static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+
+	date = str(datetime.now())[:10]
 	year = datetime.now().year
 	lastYear = year - 1
 	with open(f"{prefix}static/mlbprops/stats/{lastYear}.json") as fh:
@@ -2194,11 +2198,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	evData = {}
 
 	teamGame = {}
-	for game in fdLines:
-		away, home = map(str, game.split(" @ "))
+	for gameData in schedule[date]:
+		away, home = map(str, gameData["game"].split(" @ "))
 		teamGame[away] = teamGame[home] = game
 
-	for game in fdLines:
+	for gameData in schedule[date]:
+		game = gameData["game"]
 		if "gm2" in game:
 			continue
 		if teamArg:
@@ -2207,6 +2212,12 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 
 		away, home = map(str, game.split(" @ "))
 		gameWeather = weather.get(game, {})
+		start = gameData["start"]
+		hasStarted = False
+		dt = datetime.strptime(gameData["start"], "%I:%M %p")
+		dt = int(dt.strftime("%H%M"))
+		if dt <= int(datetime.now().strftime("%H%M")):
+			continue
 		with open(f"static/splits/mlb/{away}.json") as fh:
 			awayStats = json.load(fh)
 		with open(f"static/splits/mlb_historical/{away}.json") as fh:
