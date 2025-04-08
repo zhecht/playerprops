@@ -1712,7 +1712,7 @@ async def writeMGM(sport):
 					prop = "total"
 					if sport == "nhl":
 						multProps = True
-				elif prop == "spread" or prop.endswith(": spread"):
+				elif prop == "spread" or prop.endswith(": spread") or prop.endswith(" period spread"):
 					prop = "spread"
 				elif prop.endswith(": total points") or (sport == "nhl" and ": goals" in prop) or prop.endswith(": total runs"):
 					#print(prop, convertMGMNHLTeam(prop.split(":")[0]))
