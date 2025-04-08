@@ -566,18 +566,19 @@ def writeCirca():
 	with open("static/nhl/circa-props.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-	file = f"/mnt/c/Users/zhech/Downloads/NHL - {dt}.pdf"
-	pages = convert_from_path(file)
-	data = nested_dict()
-	for page in pages:
-		text = pytesseract.image_to_string(page).split("\n")
+	if False:
+		file = f"/mnt/c/Users/zhech/Downloads/NHL - {dt}.pdf"
+		pages = convert_from_path(file)
+		data = nested_dict()
+		for page in pages:
+			text = pytesseract.image_to_string(page).split("\n")
 
-		for row in text:
-			#print(row)
-			pass
+			for row in text:
+				#print(row)
+				pass
 
-	with open("static/nhl/circa-main.json", "w") as fh:
-		json.dump(data, fh, indent=4)
+		with open("static/nhl/circa-main.json", "w") as fh:
+			json.dump(data, fh, indent=4)
 
 def writePointsbet(date=None):
 	url = "https://api.mi.pointsbet.com/api/v2/competitions/1/events/featured?includeLive=false&page=1"
