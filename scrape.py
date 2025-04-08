@@ -519,7 +519,7 @@ async def write365FromHTML(data, html, sport, prop):
 	if "1st-half" in prop:
 		pre = "1h_"
 	elif prop == "1p":
-		pre = "1p"
+		pre = "1p_"
 
 	if prop == "game-lines" or prop == "1st-half" or prop == "1p":
 		start = 0
