@@ -1264,6 +1264,8 @@ def writeEV(date, dinger, silent=False):
 	evData = {}
 
 	for game in data:
+		if not game:
+			continue
 		away, home = map(str, game.split(" @ "))
 		if game not in gameTimes:
 			continue
