@@ -2182,13 +2182,13 @@ if __name__ == "__main__":
 	elif args.trades:
 		writeTrades()
 	elif args.cron:
-		writeRankings()
+		#writeRankings()
 		write_player_rankings()
 		write_batting_pitches()
 		write_pitching_pitches()
 		writeBVP(date)
-		write_schedule(date)
-		write_stats(date)
+		#write_schedule(date)
+		#write_stats(date)
 		writeSavantExpected()
 		writeSavantParkFactors()
 		writeSavantExpectedHR()
