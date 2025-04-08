@@ -362,7 +362,8 @@ async def writeDK(loop):
 		if not loop:
 			break
 
-		time.sleep(5)
+		#time.sleep(5)
+		time.sleep(60 * 10)
 
 	browser.stop()
 
@@ -590,7 +591,9 @@ async def writeFDFromBuilder(date, loop):
 		writeFDFromBuilderHTML(html, teamMap)
 		if not loop:
 			break
-		time.sleep(5)
+		
+		#time.sleep(5)
+		time.sleep(60 * 10)
 
 	browser.stop()
 
@@ -1764,7 +1767,9 @@ if __name__ == '__main__':
 			if args.print:
 				printEV()
 			commitChanges()
-			time.sleep(5)
+			
+			#time.sleep(5)
+			time.sleep(60 * 10)
 
 	if args.ev:
 		writeEV(date, args.dinger)
