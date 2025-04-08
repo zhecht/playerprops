@@ -609,6 +609,7 @@ def writeFDFromBuilderHTML(html, teamMap, date):
 	hist.setdefault(date, {})
 	for game in lines:
 		for player in lines[game]:
+			hist[date].setdefault(game, {})
 			hist[date][game][player] = lines[game][player]["fd"]
 	with open("static/dingers/fd_historical.json", "w") as fh:
 		json.dump(hist, fh)
