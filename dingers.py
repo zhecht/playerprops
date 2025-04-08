@@ -139,6 +139,12 @@ def writeCirca(date):
 			if "(" not in player:
 				continue
 			team = convertMLBTeam(player.split(")")[0].split("(")[-1])
+			if team == "art":
+				team = "ari"
+			elif team == "nyn":
+				team = "nym"
+			elif team == "nil":
+				team = "mil"
 			game = teamGame.get(team, "")
 			player = parsePlayer(player.lower().split(" (")[0])
 			players.append((player, game))

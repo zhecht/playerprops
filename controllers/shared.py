@@ -157,6 +157,10 @@ def parsePlayer(player):
 	# MLB
 	elif player == "kike hernandez" or player == "e hernandez":
 		return "enrique hernandez"
+	elif player == "brandon nimno":
+		return "brandon nimmo"
+	elif player == "c encarnacion strand":
+		return "christian encarnacion strand"
 
 	return player
 
