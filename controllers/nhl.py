@@ -520,6 +520,8 @@ def writeCirca():
 	pages = convert_from_path(file)
 	data = nested_dict()
 	for page in pages:
+		page.save("outnhl.png", "PNG")
+		img = Image.open("outnhl.png")
 		text = pytesseract.image_to_string(page).split("\n")
 
 		for row in text:
@@ -532,6 +534,16 @@ def writeCirca():
 				under = under.group() if under else None
 
 				data[player] = f"{over}/{under}"
+
+		bottom = 2200
+
+		# l,t,r,b
+		# pts -> 545,625,545+230,bottom
+		props_img = img.crop((545,625,545+230,bottom))
+		props_img.save("out.png", "PNG")
+		exit()
+		#text = pytesseract.image_to_string(props_img).split("\n")
+
 
 	with open("static/nhl/circa-props.json", "w") as fh:
 		json.dump(data, fh, indent=4)
