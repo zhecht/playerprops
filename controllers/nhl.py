@@ -524,7 +524,31 @@ def writeCirca():
 	for pageIdx, page in enumerate(pages):
 		page.save("outnhl.png", "PNG")
 		img = Image.open("outnhl.png")
-		text = pytesseract.image_to_string(page).split("\n")
+
+		bottom = 2200
+		top = 400
+		playersImg = img.crop((0,top,400,bottom))
+		text = pytesseract.image_to_string(playersImg).split("\n")
+
+		players = []
+		for player in text:
+			if "(" not in player:
+				continue
+			team = convertMLBTeam(player.split(")")[0].split("(")[-1])
+			if team == "art":
+				team = "ari"
+			elif team == "nyn":
+				team = "nym"
+			elif team == "nil":
+				team = "mil"
+			game = teamGame.get(team, "")
+			player = parsePlayer(player.lower().split(" (")[0])
+			players.append((player, game))
+
+		oversImg = img.crop((540,top,600,bottom))
+		undersImg = img.crop((685,top,760,bottom))
+		oversArr = pytesseract.image_to_string(oversImg).split("\n")
+		undersArr = pytesseract.image_to_string(undersImg).split("\n")
 
 		for row in text:
 			if row and "(" in row:
