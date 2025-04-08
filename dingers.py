@@ -1285,14 +1285,6 @@ def writeEV(date, dinger, silent=False):
 		dt = int(dt.strftime("%H%M"))
 		gameTimes[gameData["game"]] = dt
 		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
-		
-
-	with open(f"updated.json") as fh:
-		u = json.load(fh)
-	#u["dingers"] = str(datetime.now())
-	u["dingers"] = updated
-	with open(f"updated.json", "w") as fh:
-		json.dump(u, fh, indent=4)
 
 	evData = {}
 
