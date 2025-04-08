@@ -1767,9 +1767,9 @@ if __name__ == '__main__':
 			if args.print:
 				printEV()
 			commitChanges()
-			
-			#time.sleep(5)
-			time.sleep(60 * 10)
+
+			time.sleep(5)
+			#time.sleep(60 * 10)
 
 	if args.ev:
 		writeEV(date, args.dinger)
