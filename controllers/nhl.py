@@ -299,7 +299,7 @@ def writeCZ(date):
 	for event in data["competitions"][0]["events"][:20]:
 		games.append(event["id"])
 
-	games = ["7e06c1b1-0be9-404e-b81d-665bc8088ada"]
+	#games = ["7e06c1b1-0be9-404e-b81d-665bc8088ada"]
 
 	res = {}
 	for gameId in games:
