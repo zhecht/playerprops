@@ -563,6 +563,9 @@ def writeCirca():
 	with open("static/nhl/circa-props.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
+	with open("static/nhl/circa-props.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+
 	file = f"/mnt/c/Users/zhech/Downloads/NHL - {dt}.pdf"
 	pages = convert_from_path(file)
 	data = nested_dict()
@@ -570,7 +573,8 @@ def writeCirca():
 		text = pytesseract.image_to_string(page).split("\n")
 
 		for row in text:
-			print(row)
+			#print(row)
+			pass
 
 	with open("static/nhl/circa-main.json", "w") as fh:
 		json.dump(data, fh, indent=4)
