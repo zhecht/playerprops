@@ -538,7 +538,7 @@ def writeCZ(date=None):
 	games = []
 	for event in data["competitions"][0]["events"]:
 		if str(datetime.strptime(event["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			#continue
+			continue
 			pass
 		games.append(event["id"])
 
@@ -1745,7 +1745,7 @@ def writeKambi(date):
 		if "event" not in event:
 			continue
 		if str(datetime.strptime(event["event"]["start"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			#continue
+			continue
 			pass
 		game = f"{event['event']['awayName']} @ {event['event']['homeName']}"
 		away, home = map(str, game.split(" @ "))
