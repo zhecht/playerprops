@@ -2549,6 +2549,15 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 								o,u = map(str, j["circa"].split("/"))
 								o = f"{u}/{o}"
 							devig(evData, key, o, line, prop=prop, book="vs-circa")
+
+						if "espn" in books:
+							line = int(j["espn"].split("/")[0])
+							if i == 1:
+								if "/" in j["espn"]:
+									line = int(j["espn"].split("/")[-1])
+									devig(evData, key, ou, line, prop=prop, book="espn")
+							else:
+								devig(evData, key, ou, line, prop=prop, book="espn")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							print(key)
