@@ -586,7 +586,7 @@ async def writeFDFromBuilder(date, loop):
 
 	while True:
 		html = await page.get_content()
-		writeFDFromBuilderHTML(html, teamMap)
+		writeFDFromBuilderHTML(html, teamMap, date)
 		if not loop:
 			break
 		
@@ -595,12 +595,25 @@ async def writeFDFromBuilder(date, loop):
 
 	browser.stop()
 
-def writeFDFromBuilderHTML(html, teamMap):
+def writeFDFromBuilderHTML(html, teamMap, date):
 	soup = BS(html, "html.parser")
 	btns = soup.select("div[role=button]")
 
+	with open("static/dingers/fd.json") as fh:
+		lines = json.load(fh)
+
+	hist = {}
+	if os.path.exists("static/dingers/fd_historical.json"):
+		with open("static/dingers/fd_historical.json") as fh:
+			hist = json.load(fh)
+	hist.setdefault(date, {})
+	for game in lines:
+		for player in lines[game]:
+			hist[date][game][player] = lines[game][player]["fd"]
+	with open("static/dingers/fd_historical.json", "w") as fh:
+		json.dump(hist, fh)
+
 	lines = {}
-	#with open("static/dingers")
 	data = nested_dict()
 	dingerData = nested_dict()
 	currGame = ""
