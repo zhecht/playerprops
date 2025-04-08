@@ -1254,6 +1254,12 @@ def writeEV(date, dinger, silent=False):
 		else:
 			updated[book] = ""
 
+	with open("updated.json") as fh:
+		u = json.load(fh)
+	u["dingers"] = updated
+	with open("updated.json", "w") as fh:
+		json.dump(u, fh, indent=4)
+
 	with open(f"static/dailyev/odds.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
