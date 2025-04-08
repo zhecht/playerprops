@@ -541,7 +541,7 @@ def writeCirca():
 		# l,t,r,b
 		# pts -> 545,625,545+230,bottom
 		w,h = img.size
-		props_img = img.crop((850,970,850+355,bottom))
+		props_img = img.crop((855,970,855+355,bottom))
 		props_img.save("out.png", "PNG")
 		exit()
 		#text = pytesseract.image_to_string(props_img).split("\n")
