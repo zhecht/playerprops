@@ -535,6 +535,7 @@ def writeCirca():
 			if "(" not in player:
 				continue
 			team = convertNHLTeam(player.split(")")[0].split("(")[-1])
+			print(team)
 			game = teamGame.get(team, "")
 			player = parsePlayer(player.lower().split(" (")[0])
 			players.append((player, game))
