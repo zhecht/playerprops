@@ -545,7 +545,7 @@ def writeCirca():
 		boxHeight = 135
 
 		propsW,propsH = props_img.size
-		player_img = props_img.crop((0,0,propsW,boxHeight))
+		player_img = props_img.crop((0,0,propsW,40))
 		player_img.save("out.png", "PNG")
 		text = pytesseract.image_to_string(player_img).split("\n")
 		print(text)
