@@ -1153,6 +1153,8 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				prop = "home_total"
 			else:
 				prop = "total"
+		elif prop.startswith("1st period goal") and prop.endswith("first ten minutes"):
+			prop = "gift"
 		else:
 			continue
 
