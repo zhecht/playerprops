@@ -1281,10 +1281,13 @@ def writeEV(date, dinger, silent=False):
 	gameTimes = {}
 	gameStarted = {}
 	for gameData in schedule[date]:
-		dt = datetime.strptime(gameData["start"], "%I:%M %p")
-		dt = int(dt.strftime("%H%M"))
-		gameTimes[gameData["game"]] = dt
-		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
+		if gameData["start"] == "LIVE":
+			gameStarted[gameData["game"]] = True
+		else:
+			dt = datetime.strptime(gameData["start"], "%I:%M %p")
+			dt = int(dt.strftime("%H%M"))
+			gameTimes[gameData["game"]] = dt
+			gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 
 	evData = {}
 
@@ -1300,7 +1303,6 @@ def writeEV(date, dinger, silent=False):
 		homeStats = {}
 
 		if date == str(datetime.now())[:10] and gameStarted[game]:
-			print(game)
 			continue
 			pass
 
