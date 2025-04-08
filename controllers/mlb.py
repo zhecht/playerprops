@@ -2201,6 +2201,8 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		dt = int(dt.strftime("%H%M"))
 		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 
+	print(gameStarted)
+
 	with open(f"{prefix}static/mlb/ev.json") as fh:
 		evData = json.load(fh)
 
