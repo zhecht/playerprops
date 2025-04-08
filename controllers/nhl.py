@@ -380,7 +380,7 @@ def writeCZ(date):
 			elif "puck line" in prop:
 				prop = "spread"
 			else:
-				print(prop)
+				#print(prop)
 				continue
 
 			prop = f"{prefix}{prop}"
