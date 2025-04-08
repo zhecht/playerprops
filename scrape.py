@@ -1138,6 +1138,10 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			if prop == "quarter moneyline":
 				continue
 			prop = "ml"
+		elif prop.startswith("draw no bet"):
+			prop = "dnb"
+		elif "both teams to score" in prop:
+			prop = "btts"
 		elif "run line" in prop or "spread" in prop:
 			if "&" in prop:
 				continue
@@ -1155,14 +1159,22 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				prop = "total"
 		elif prop.startswith("1st period goal") and prop.endswith("first ten minutes"):
 			prop = "gift"
+		elif prop.startswith("1st period goal") and prop.endswith("first five minutes"):
+			prop = "giff"
 		else:
+			continue
+
+		btns = detail.find_all("button")
+
+		if prop.startswith("gif") or prop in ["dnb", "btts"]:
+			ou = btns[-2].find_all("span")[-1].text+"/"+btns[-1].find_all("span")[-1].text
+			data[game][prop] = ou.replace("Even", "+100")
 			continue
 
 		prop = f"{pre}{prop}"
 
 		#print(prop)
 
-		btns = detail.find_all("button")
 		for idx in range(0, len(btns), 2):
 			ou = btns[idx].find_all("span")[-1].text
 			#print(game, prop, ou)
@@ -3860,7 +3872,7 @@ if __name__ == '__main__':
 
 	if args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game))
-		#games["sea @ utah"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/6d6ed235-ebb7-4937-a354-e943c38e96c4/section/player_props"
+		#games["sea @ utah-game-props"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/6d6ed235-ebb7-4937-a354-e943c38e96c4/section/game_props"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
