@@ -3109,7 +3109,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							else:
 								devig(evData, key, ou, line, prop=prop, book="mgm")
 
-							if i == 1:
+							if i == 0:
 								line = convertAmericanOdds(1 + (convertDecOdds(line) - 1) * 1.20)
 								devig(evData, key, ou, line, prop=prop, book="mgm-20")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
