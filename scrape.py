@@ -556,6 +556,15 @@ async def write365FromHTML(data, html, sport, prop):
 		pre = "1h_"
 
 	if prop == "game-lines" or prop == "1st-half":
+		start = 0
+		gameDivs = soup.select(".sbb-ParticipantTwoWayWithPitchersBaseball:not(.Hidden)")
+		for game in gameDivs:
+			if "live" in game.text.lower():
+				start += 1
+			else:
+				break
+
+		start *= 2 # since we're going team-team
 		if sport == "mlb":
 			teams = soup.select(".sbb-ParticipantTwoWayWithPitchersBaseball_Team")
 		else:
@@ -563,7 +572,7 @@ async def write365FromHTML(data, html, sport, prop):
 		spreads = soup.select(".gl-Market_General:nth-of-type(2) div[role=button]")
 		totals = soup.select(".gl-Market_General:nth-of-type(3) div[role=button]")
 		mls = soup.select(".gl-Market_General:nth-of-type(4) div[role=button]")
-		for spread, total, ml in zip(spreads, totals, mls):
+		for spread, total, ml in zip(spreads[start:], totals[start:], mls[start:]):
 			spreadLabel = spread.get("aria-label").lower()
 			totalLabel = total.get("aria-label").lower()
 			game = spreadLabel.split(" spread ")[0].replace(" v ", " @ ")
@@ -573,6 +582,9 @@ async def write365FromHTML(data, html, sport, prop):
 				away, home = convertNHLTeam(game.split(" @ ")[0]), convertNHLTeam(game.split(" @ ")[-1])
 			else:
 				away, home = convertCollege(game.split(" @ ")[0]), convertCollege(game.split(" @ ")[-1])
+
+			if away == "otb":
+				continue
 			g = f"{away} @ {home}"
 
 			p = f"{pre}ml"
@@ -3832,7 +3844,7 @@ if __name__ == '__main__':
 	games = {}
 	if args.bet365:
 		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		#games["alternative-spread"] = "https://www.oh.bet365.com/?_h=ji2EGJf5aYaLExhFbL8Mhw%3D%3D&btsffd=1#/AC/B17/C20836572/D47/E170226/F47/N2/"
+		#games["game-lines"] = "https://www.oh.bet365.com/?_h=0iH-PW_5DwBrvAOFCUiMdw%3D%3D&btsffd=1#/AC/B16/C20525425/D48/E1096/F10/N0/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
