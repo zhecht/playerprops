@@ -3108,6 +3108,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 									devig(evData, key, ou, line, prop=prop, book="mgm")
 							else:
 								devig(evData, key, ou, line, prop=prop, book="mgm")
+							line = convertAmericanOdds(1 + (convertDecOdds(line) - 1) * 1.20)
+							devig(evData, key, ou, line, prop=prop, book="mgm-20")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							#print(key)
