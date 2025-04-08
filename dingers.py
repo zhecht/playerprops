@@ -171,19 +171,17 @@ def writeCirca(date):
 		json.dump(data, fh, indent=4)
 
 def mergeCirca():
-	with open("static/mlb/circa.json") as fh:
+	with open("static/dingers/circa.json") as fh:
 		circa = json.load(fh)
 	with open("static/mlb/circa-main.json") as fh:
 		circaMain = json.load(fh)
-	with open("static/dailyev/odds.json") as fh:
-		odds = json.load(fh)
 
-	for team in odds:
-		for player in odds[team]:
-			if player == "max muncy" and team != "lad":
-				continue
-			if player in circa:
-				odds[team][player]["circa"] = circa[player]
+
+	for game in circa:
+		for player in circa[game]:
+			circaMain.setdefault(game, {})
+			circaMain[game].setdefault("hr", {})
+			circaMain[game]["hr"][player] = circa[game][player]["circa"]
 
 	with open("static/mlb/circa.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
