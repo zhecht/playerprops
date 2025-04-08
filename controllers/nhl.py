@@ -3112,6 +3112,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							if i == 0:
 								line = convertAmericanOdds(1 + (convertDecOdds(line) - 1) * 1.20)
 								devig(evData, key, ou, line, prop=prop, book="mgm-20")
+
+								if "circa" in books:
+									devig(evData, key, j["circa"], line, prop=prop, book="mgm-20-vs-circa")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							#print(key)
