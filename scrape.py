@@ -3901,8 +3901,8 @@ if __name__ == '__main__':
 		runThreads("espn", sport, games, totThreads, keep=True)
 
 	if args.mgm:
-		#games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw, args.game, args.main, args.keep))
-		games["car @ buf_Periods"] = "/en/sports/events/carolina-hurricanes-at-buffalo-sabres-17264751?market=Periods"
+		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw, args.game, args.main, args.keep))
+		#games["car @ buf_Periods"] = "/en/sports/events/carolina-hurricanes-at-buffalo-sabres-17264751?market=Periods"
 		totThreads = min(args.threads, len(games))
 		runThreads("mgm", sport, games, totThreads, keep=True)
 
