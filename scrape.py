@@ -768,7 +768,9 @@ async def write365(sport):
 		elif "spread" in prop:
 			if prop == "alternative spread":
 				alt = False
-			prop = "spread"
+			if "1st period" in prop:
+				prefix = "1p_"
+			prop = f"{prefix}spread"
 		elif prop.endswith("team-totals"):
 			prop = prop
 		elif prop == "alternative total":
