@@ -299,7 +299,8 @@ def writeCZ(date):
 	for event in data["competitions"][0]["events"][:20]:
 		games.append(event["id"])
 
-	#games = ["b9b8f2cb-bbae-4e89-a5bc-d11902f12678"]
+	games = ["7e06c1b1-0be9-404e-b81d-665bc8088ada"]
+	
 	res = {}
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
