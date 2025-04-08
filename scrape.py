@@ -1809,11 +1809,13 @@ async def writeMGM(sport):
 				elif mkt == "Periods":
 					if prop in ["ml", "total"]:
 						for prefix in ["1p", "2p", "3p"]:
-							lis = await panel.query_selector_all("li")
-							for li in lis:
-								if prefix[0] == li.text_all[0]:
-									await li.click()
-									time.sleep(0.5)
+
+							if prefix != "1p":
+								lis = await panel.query_selector_all("li")
+								for li in lis:
+									if prefix[0] == li.text_all[0]:
+										await li.click()
+										time.sleep(0.5)
 
 							odds = await panel.query_selector_all("ms-option")
 							if "ml" in prop:
