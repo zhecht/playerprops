@@ -2200,7 +2200,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	teamGame = {}
 	for gameData in schedule[date]:
 		away, home = map(str, gameData["game"].split(" @ "))
-		teamGame[away] = teamGame[home] = game
+		teamGame[away] = teamGame[home] = gameData
 
 	for gameData in schedule[date]:
 		game = gameData["game"]
