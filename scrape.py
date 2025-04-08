@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup as BS
 from pdf2image import convert_from_path
 import pytesseract
 
-from controllers.shared import convertSoccer, parsePlayer, strip_accents, convertMLBTeam, convertMGMMLBTeam, nested_dict, merge_dicts
+from controllers.shared import convertSoccer, parsePlayer, strip_accents, convertMLBTeam, convertMGMMLBTeam, nested_dict, merge_dicts, convertNHLTeam
 from datetime import datetime, timedelta
 
 q = queue.Queue()
@@ -433,43 +433,6 @@ def convertNBATeam(team):
 		return "gs"
 	elif t == "bro":
 		return "bkn"
-	elif t == "uta":
-		return "utah"
-	return t
-
-def convertNHLTeam(team):
-	team = team.lower()
-	t = team[:3].strip()
-	if t == "was":
-		return "wsh"
-	elif t == "cal":
-		return "cgy"
-	elif (t == "col" and "columbus" in team) or t == "clb":
-		return "cbj"
-	elif t == "flo":
-		return "fla"
-	elif t == "los":
-		return "la"
-	elif t == "nas":
-		return "nsh"
-	elif t == "mon":
-		return "mtl"
-	elif t == "new" or t == "ny":
-		if "rangers" in team:
-			return "nyr"
-		elif "island" in team:
-			return "nyi"
-		return "nj"
-	elif t == "san":
-		return "sj"
-	elif t == "tam":
-		return "tb"
-	elif t == "st.":
-		return "stl"
-	elif t in ["veg", "vgk"]:
-		return "vgk"
-	elif t == "win":
-		return "wpg"
 	elif t == "uta":
 		return "utah"
 	return t
