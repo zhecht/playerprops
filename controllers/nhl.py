@@ -575,7 +575,7 @@ def writeCirca():
 		boxHeight = 135
 
 		props = ["pts", "sog"]
-
+		props = ["pts"]
 		for propIdx, prop in enumerate(props):
 			propsW,propsH = props_img.size
 			player_img = props_img.crop((0,0,propsW,40))
