@@ -2110,7 +2110,7 @@ def clear():
 	with open(f"{prefix}static/mlb/espn.json", "w") as fh:
 		json.dump({}, fh)
 
-def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
+def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 	if not boost:
 		boost = 1
 
@@ -2174,7 +2174,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 	with open(f"{prefix}static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	date = str(datetime.now())[:10]
 	year = datetime.now().year
 	lastYear = year - 1
 	with open(f"{prefix}static/mlbprops/stats/{lastYear}.json") as fh:
@@ -2216,7 +2215,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, unde
 		hasStarted = False
 		dt = datetime.strptime(gameData["start"], "%I:%M %p")
 		dt = int(dt.strftime("%H%M"))
-		if dt <= int(datetime.now().strftime("%H%M")):
+		if date == dt and dt <= int(datetime.now().strftime("%H%M")):
 			continue
 		with open(f"static/splits/mlb/{away}.json") as fh:
 			awayStats = json.load(fh)
@@ -2772,7 +2771,7 @@ if __name__ == '__main__':
 		#writeBV()
 
 	if args.ev:
-		writeEV(propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under)
+		writeEV(date, propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under)
 
 	if args.print:
 		sortEV(args.prop)
