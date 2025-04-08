@@ -535,7 +535,12 @@ def writeCirca():
 			if "(" not in player:
 				continue
 			team = convertNHLTeam(player.split(")")[0].split("(")[-1])
-			print(team)
+			if team == "nyt":
+				team = "nyi"
+			elif team == "vgi":
+				team = "vgk"
+			elif team in ["co!", "ct"]:
+				team = "col"
 			game = teamGame.get(team, "")
 			player = parsePlayer(player.lower().split(" (")[0])
 			players.append((player, game))
@@ -577,7 +582,12 @@ def writeCirca():
 			text = pytesseract.image_to_string(player_img).split("\n")
 			player = parsePlayer(text[0].split(" (")[0])
 			team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
-
+			if team == "nyt":
+				team = "nyi"
+			elif team == "vgi":
+				team = "vgk"
+			elif team in ["co!", "ct"]:
+				team = "col"
 			game = teamGame.get(team, "")
 			data[game][prop][player] = ""
 		#text = pytesseract.image_to_string(props_img).split("\n")
