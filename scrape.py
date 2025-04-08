@@ -652,7 +652,7 @@ async def write365FromHTML(data, html, sport, prop):
 			line = btns[2].get("aria-label").split(" ")[-3]
 			data[game][f"{pre}home_total"][line] = btns[2].get("aria-label").split(" ")[-1]+"/"+btns[3].get("aria-label").split(" ")[-1]
 			continue
-		elif prop in ["total", "f5_total"] or prop == "alternative-total" or prop == "alternative-game-total":
+		elif prop in ["total", "f5_total"] or prop.endswith("alternative-total") or prop == "alternative-game-total":
 			lines = gameDiv.select(".gl-Market_General:nth-of-type(1) .srb-ParticipantLabelCentered_Name")
 			lines.extend(gameDiv.select(".gl-Market_General:nth-of-type(4) .srb-ParticipantLabelCentered_Name"))
 			overs = gameDiv.select(".gl-Market_General:nth-of-type(2) div[role=button]")
