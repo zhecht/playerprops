@@ -617,7 +617,7 @@ async def write365FromHTML(data, html, sport, prop):
 			home = convertMLBTeam(home)
 		game = f"{away} {sep} {home}"
 
-		if prop in ["spread", "f5_spread"]:
+		if "spread" in prop:
 			overs = gameDiv.select(".gl-Market_General:nth-of-type(1) div[role=button]")
 			unders = gameDiv.select(".gl-Market_General:nth-of-type(2) div[role=button]")
 			for over, under in zip(overs, unders):
