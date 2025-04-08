@@ -563,6 +563,12 @@ async def writeFDFromBuilder(date, loop):
 	if date not in schedule:
 		print("Date not in schedule")
 		return
+
+	gameStarted = {}
+	for gameData in schedule[date]:
+		dt = datetime.strptime(gameData["start"], "%I:%M %p")
+		dt = int(dt.strftime("%H%M"))
+		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 	games = [x["game"] for x in schedule[date]]
 	teamMap = {}
 	for game in games:
@@ -592,7 +598,7 @@ async def writeFDFromBuilder(date, loop):
 
 	while True:
 		html = await page.get_content()
-		writeFDFromBuilderHTML(html, teamMap, date)
+		writeFDFromBuilderHTML(html, teamMap, date, gameStarted)
 		if not loop:
 			break
 		
@@ -601,7 +607,7 @@ async def writeFDFromBuilder(date, loop):
 
 	browser.stop()
 
-def writeFDFromBuilderHTML(html, teamMap, date):
+def writeFDFromBuilderHTML(html, teamMap, date, gameStarted):
 	soup = BS(html, "html.parser")
 	btns = soup.select("div[role=button]")
 
@@ -614,6 +620,8 @@ def writeFDFromBuilderHTML(html, teamMap, date):
 			hist = json.load(fh)
 	hist.setdefault(date, {})
 	for game in lines:
+		if gameStarted[game]:
+			continue
 		for player in lines[game]:
 			hist[date].setdefault(game, {})
 			hist[date][game][player] = lines[game][player]["fd"]
@@ -646,9 +654,12 @@ def writeFDFromBuilderHTML(html, teamMap, date):
 		if "unavailable" in odds:
 			continue
 
+		currGame = game
+		if gameStarted[game]:
+			continue
 		dingerData[game][player]["fd"] = odds
 		data[game]["hr"][player] = odds
-		currGame = game
+		
 
 	with open("static/dingers/updated_fd", "w") as fh:
 		fh.write(str(datetime.now()))
