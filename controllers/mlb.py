@@ -2201,8 +2201,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		dt = int(dt.strftime("%H%M"))
 		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 
-	print(gameStarted)
-
 	with open(f"{prefix}static/mlb/ev.json") as fh:
 		evData = json.load(fh)
 
@@ -2224,11 +2222,9 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		away, home = map(str, game.split(" @ "))
 		gameWeather = weather.get(game, {})
 		start = gameData["start"]
-		hasStarted = False
-		dt = datetime.strptime(gameData["start"], "%I:%M %p")
-		dt = int(dt.strftime("%H%M"))
-		if date == dt and gameStarted[game]:
+		if gameStarted[game]:
 			continue
+			
 		with open(f"static/splits/mlb/{away}.json") as fh:
 			awayStats = json.load(fh)
 		with open(f"static/splits/mlb_historical/{away}.json") as fh:
