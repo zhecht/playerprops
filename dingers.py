@@ -564,11 +564,6 @@ async def writeFDFromBuilder(date, loop):
 		print("Date not in schedule")
 		return
 
-	gameStarted = {}
-	for gameData in schedule[date]:
-		dt = datetime.strptime(gameData["start"], "%I:%M %p")
-		dt = int(dt.strftime("%H%M"))
-		gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 	games = [x["game"] for x in schedule[date]]
 	teamMap = {}
 	for game in games:
@@ -598,6 +593,12 @@ async def writeFDFromBuilder(date, loop):
 
 	while True:
 		html = await page.get_content()
+		
+		gameStarted = {}
+		for gameData in schedule[date]:
+			dt = datetime.strptime(gameData["start"], "%I:%M %p")
+			dt = int(dt.strftime("%H%M"))
+			gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 		writeFDFromBuilderHTML(html, teamMap, date, gameStarted)
 		if not loop:
 			break
