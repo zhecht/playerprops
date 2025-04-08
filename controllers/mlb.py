@@ -1887,7 +1887,7 @@ def writeKambi(date):
 	with open(f"static/mlb/kambi.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False, book=""):
 
 	prefix = ""
 	if sharp:
@@ -1948,6 +1948,9 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 		evs.append(ev)
 
 	ev = min(evs)
+
+	if book:
+		prefix = book+"_"
 
 	if player not in evData:
 		evData[player] = {}
