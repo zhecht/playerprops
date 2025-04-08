@@ -403,7 +403,7 @@ def writeCZ(date):
 					if selections[i]["name"].lower().replace("|", "") in ["under", "home"]:
 						ou = f"{selections[i+1]['price']['a']}/{selections[i]['price']['a']}"
 
-				if "ml" in prop:
+				if "ml" in prop or prop in ["btts"]:
 					res[game][prop] = ou
 				elif "3-way" in prop:
 					res[game][prop] = f"{selections[0]['price']['a']}/{selections[-1]['price']['a']}"
