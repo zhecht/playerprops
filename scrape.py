@@ -3857,8 +3857,8 @@ if __name__ == '__main__':
 		runThreads("fanduel", sport, games, totThreads, keep=True)
 
 	if args.espn:
-		#games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game))
-		games["sea @ utah"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/6d6ed235-ebb7-4937-a354-e943c38e96c4/section/player_props"
+		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game))
+		#games["sea @ utah"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/6d6ed235-ebb7-4937-a354-e943c38e96c4/section/player_props"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
