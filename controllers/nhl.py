@@ -3094,7 +3094,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							devig(evData, key, pn, line, prop=prop, sharp=True)
 
 						if "circa" in books and not j["circa"].startswith("-/"):
-							devig(evData, key, j["circa"], line, prop=prop, book="vs-circa")
+							o = j["circa"]
+							if i == 1:
+								o,u = map(str, j["circa"].split("/"))
+								o = f"{u}/{o}"
+							devig(evData, key, o, line, prop=prop, book="vs-circa")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							#print(key)
