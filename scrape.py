@@ -1494,6 +1494,8 @@ async def getMGMLinks(sport=None, tomorrow=None, gameArg=None, main=False, keep=
 					markets = ["Innings", "Totals"]
 				elif sport == "mlb":
 					markets = ["Players"]
+				elif sport == "nhl":
+					markets = ["Periods", "All"]
 
 				for mkt in markets:
 					games[f"{game}_{mkt}"] = link.get("href")+f"?market={mkt}"
