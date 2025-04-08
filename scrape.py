@@ -625,7 +625,7 @@ async def write365FromHTML(data, html, sport, prop):
 				if "@" not in overLabel:
 					continue
 				line = str(float(overLabel.split(" ")[-3]))
-				data[game][pre+prop][line] = f"{overLabel.split(' ')[-1]}/{under.get('aria-label').split(' ')[-1]}"
+				data[game][prop][line] = f"{overLabel.split(' ')[-1]}/{under.get('aria-label').split(' ')[-1]}"
 			continue
 		elif prop == "gift":
 			odds = gameDiv.select(".gl-Participant_General")
