@@ -570,15 +570,16 @@ def writeCirca():
 		# l,t,r,b
 		# pts -> 545,625,545+230,bottom
 
-		if pageIdx == 0:
-			w,h = img.size
-			props_img = img.crop((855,975,855+355,bottom))
-			boxHeight = 135
+		w,h = img.size
+		props_img = img.crop((855,975,855+355,bottom))
+		boxHeight = 135
 
-			prop = "pts"
+		props = ["pts", "sog"]
+
+		for propIdx, prop in enumerate(props):
 			propsW,propsH = props_img.size
 			player_img = props_img.crop((0,0,propsW,40))
-			player_img.save("out.png", "PNG")
+			#player_img.save("out.png", "PNG")
 			text = pytesseract.image_to_string(player_img).split("\n")
 			player = parsePlayer(text[0].split(" (")[0])
 			team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
