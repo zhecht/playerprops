@@ -556,7 +556,7 @@ def writeCirca():
 			team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
 
 			game = teamGame.get(team, "")
-			data[game]["pts"][player] = ""
+			data[game][prop][player] = ""
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
 
