@@ -340,6 +340,8 @@ def writeCZ(date):
 
 			if "money line" in prop:
 				prop = "ml"
+			elif "both teams to score" in prop:
+				prop = "btts"
 			elif prop == "60 minutes betting":
 				prop = "3-way"
 			elif prop == "player to score a goal" or prop == "anytime goal scorer":
