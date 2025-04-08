@@ -2150,6 +2150,9 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 	with open(f"{prefix}static/mlb/espn.json") as fh:
 		espnLines = json.load(fh)
 
+	with open(f"{prefix}static/mlb/circa-main.json") as fh:
+		circaLines = json.load(fh)
+
 	with open(f"{prefix}static/mlb/lineups.json") as fh:
 		lineups = json.load(fh)
 
@@ -2188,7 +2191,8 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		"dk": dkLines,
 		"cz": czLines,
 		"espn": espnLines,
-		"365": bet365Lines
+		"365": bet365Lines,
+		"circa": circaLines
 	}
 
 	with open(f"{prefix}static/mlb/ev.json") as fh:

@@ -169,28 +169,12 @@ def writeCirca(date):
 
 	with open("static/dingers/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
-	return
-
-	for page in pages:
-		text = pytesseract.image_to_string(page).split("\n")
-
-		for row in text:
-			if row and "(" in row:
-				player = parsePlayer(row.split(" (")[0].lower())
-				team = convertMLBTeam(row.split("(")[-1].split(")")[0])
-				over = re.search(r"\+\d{3,4}", row)
-				under = re.search(r"-\d{3,4}", row)
-				over = over.group() if over else None
-				under = under.group() if under else None
-
-				data[player] = f"{over}/{under}"
-
-	with open("static/mlb/circa.json", "w") as fh:
-		json.dump(data, fh, indent=4)
 
 def mergeCirca():
 	with open("static/mlb/circa.json") as fh:
 		circa = json.load(fh)
+	with open("static/mlb/circa-main.json") as fh:
+		circaMain = json.load(fh)
 	with open("static/dailyev/odds.json") as fh:
 		odds = json.load(fh)
 
@@ -201,7 +185,7 @@ def mergeCirca():
 			if player in circa:
 				odds[team][player]["circa"] = circa[player]
 
-	with open("static/dailyev/odds.json", "w") as fh:
+	with open("static/mlb/circa.json", "w") as fh:
 		json.dump(odds, fh, indent=4)
 
 async def getESPNLinks(date):
