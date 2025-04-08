@@ -563,7 +563,7 @@ def writeCirca():
 			unders.append(under)
 		
 		for p,o,u in zip(players, overs, unders):
-			data[p[-1]][p[0]]["circa"] = f"{o}/{u}".replace("\u201c", "-")
+			data[p[-1]][p[0]]["atgs"] = f"{o}/{u}".replace("\u201c", "-")
 
 		bottom = 2060
 
@@ -577,7 +577,7 @@ def writeCirca():
 		boxH = 128
 
 		continue
-		
+
 		props = ["pts", "sog"]
 		props = ["pts"]
 		for propIdx, prop in enumerate(props):
