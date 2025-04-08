@@ -2224,7 +2224,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		start = gameData["start"]
 		if gameStarted[game]:
 			continue
-			
+
 		with open(f"static/splits/mlb/{away}.json") as fh:
 			awayStats = json.load(fh)
 		with open(f"static/splits/mlb_historical/{away}.json") as fh:
@@ -2538,6 +2538,14 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							if i == 1:
 								pn = f"{pn.split('/')[1]}/{pn.split('/')[0]}"
 							devig(evData, key, pn, line, prop=prop, sharp=True)
+
+						j = {b: o for o, b in zip(l, books)}
+						if "circa" in books and not j["circa"].startswith("-/"):
+							o = j["circa"]
+							if i == 1:
+								o,u = map(str, j["circa"].split("/"))
+								o = f"{u}/{o}"
+							devig(evData, key, o, line, prop=prop, book="vs-circa")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							print(key)
@@ -2566,7 +2574,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 						evData[key]["player"] = player
 						evData[key]["pitcher"] = "" if not pitcher else f"{pitcher.title()} ({pitcherLR})"
 						evData[key]["bvp"] = bvp
-						j = {b: o for o, b in zip(l, books)}
 						j[evBook] = maxOU
 						evData[key]["bookOdds"] = j
 						evData[key]["logsLYR"] = logsLYR
