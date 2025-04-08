@@ -338,7 +338,7 @@ def writeCZ(date):
 			elif "3rd period" in prop:
 				prefix = "3p_"
 
-			if prop in ["money line"]:
+			if "money line" in prop:
 				prop = "ml"
 			elif prop == "60 minutes betting":
 				prop = "3-way"
