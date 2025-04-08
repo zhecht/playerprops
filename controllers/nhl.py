@@ -542,7 +542,11 @@ def writeCirca():
 		# pts -> 545,625,545+230,bottom
 		w,h = img.size
 		props_img = img.crop((855,975,855+355,bottom))
-		props_img.save("out.png", "PNG")
+		boxHeight = 135
+
+		propsW,propsH = props_img.size
+		player_img = props_img.crop((0,0,propsW,boxHeight))
+		player_img.save("out.png", "PNG")
 		exit()
 		#text = pytesseract.image_to_string(props_img).split("\n")
 
