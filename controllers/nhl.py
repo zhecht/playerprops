@@ -17,6 +17,7 @@ from twilio.rest import Client
 import nodriver as uc
 from pdf2image import convert_from_path
 import pytesseract
+from PIL import Image
 
 nhl_blueprint = Blueprint('nhl', __name__, template_folder='views')
 
