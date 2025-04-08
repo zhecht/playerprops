@@ -735,7 +735,11 @@ async def write365(sport):
 			break
 
 		page = await browser.get(url)
-		await page.wait_for(selector=".srb-MarketSelectionButton-selected")
+		try:
+			await page.wait_for(selector=".srb-MarketSelectionButton-selected")
+		except:
+			q.task_done()
+			continue
 
 		prefix = ""
 		if "1st half" in prop:

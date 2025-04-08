@@ -2686,6 +2686,7 @@ if __name__ == '__main__':
 	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--leftRight", action="store_true")
 	parser.add_argument("--keep", action="store_true")
+	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--year", type=int)
 	parser.add_argument("--book", help="Book")
@@ -2705,6 +2706,12 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
+	date = args.date
+	if args.tmrw:
+		date = str(datetime.now() + timedelta(days=1))[:10]
+	elif not date:
+		date = str(datetime.now())[:10]
+
 	if args.writeGamelogs:
 		writeGamelogs()
 
@@ -2715,32 +2722,32 @@ if __name__ == '__main__':
 		arb()
 
 	if args.action:
-		writeActionNetwork(args.date)
+		writeActionNetwork(date)
 
 	if args.fd:
 		writeFanduel()
 
 	if args.mgm:
-		writeMGM(args.date)
+		writeMGM(date)
 
 	if args.pb:
-		writePointsbet(args.date)
+		writePointsbet(date)
 
 	if args.dk:
-		writeDK(args.date, args.prop, args.keep)
+		writeDK(date, args.prop, args.keep)
 
 	if args.kambi:
-		writeKambi(args.date)
+		writeKambi(date)
 
 	if args.pn:
-		writePinnacle(args.date, args.debug)
+		writePinnacle(date, args.debug)
 
 	if args.bv:
 		writeBV()
 
 	if args.cz:
 		uc.loop().run_until_complete(writeCZToken())
-		writeCZ(args.date)
+		writeCZ(date)
 
 	if args.clear:
 		clear()
@@ -2748,19 +2755,19 @@ if __name__ == '__main__':
 	if args.update:
 		#writeFanduel()
 		print("pn")
-		writePinnacle(args.date)
+		writePinnacle(date)
 		print("kambi")
-		writeKambi(args.date)
+		writeKambi(date)
 		#print("mgm")
 		#writeMGM(args.date)
 		if not args.skipdk:
 			print("dk")
-			writeDK(args.date, args.prop, args.keep)
+			writeDK(date, args.prop, args.keep)
 		#writeBPP(args.date)
 		#writeActionNetwork(args.date)
 		print("cz")
 		uc.loop().run_until_complete(writeCZToken())
-		writeCZ(args.date)
+		writeCZ(date)
 		#print("bv")
 		#writeBV()
 
