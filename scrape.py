@@ -1266,6 +1266,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 					data[game][prop][player][line] = f"{ou}"
 		else:
 			btns = detail.find_all("button")
+			btns = [x for x in btns if "See All Lines" not in x.text]
 			for idx in range(0, len(btns), skip):
 				if skip == 2:
 					player = strip_accents(btns[idx].find_previous("header").text.lower())
