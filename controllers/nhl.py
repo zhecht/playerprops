@@ -3069,6 +3069,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					except:
 						pass
 
+					circaLine = ""
+					try:
+						bookIdx = books.index("circa")
+						circaLine = odds[bookIdx]
+						odds.remove(circaLine)
+						books.remove("circa")
+					except:
+						pass
+
 					evBook = ""
 					l = odds
 					if bookArg:
@@ -3120,6 +3129,10 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					if pn:
 						books.append("pn")
 						l.append(pn)
+
+					if circaLine:
+						books.append("circa")
+						l.append(circaLine)
 
 					avgOver = []
 					avgUnder = []
