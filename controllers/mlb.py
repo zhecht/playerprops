@@ -7,6 +7,7 @@ import json
 import os
 import re
 import argparse
+import requests
 import unicodedata
 import time
 import csv
@@ -2156,12 +2157,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 	with open(f"{prefix}static/mlb/espn.json") as fh:
 		espnLines = json.load(fh)
 
-	with open(f"{prefix}static/mlb/circa.json") as fh:
-		circaLines = json.load(fh)
-
-	with open(f"{prefix}static/mlb/lineups.json") as fh:
-		lineups = json.load(fh)
-
 	with open(f"static/baseballreference/bvp.json") as fh:
 		bvpData = json.load(fh)
 
@@ -2171,9 +2166,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 	with open(f"static/mlb/leftRightSplits.json") as fh:
 		leftRightSplits = json.load(fh)
 
-	with open(f"static/dailyev/weather.json") as fh:
-		weather = json.load(fh)
-
 	with open(f"{prefix}static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -2182,6 +2174,19 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 
 	with open(f"{prefix}static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
+
+	b = "https://raw.githubusercontent.com/zhecht/lines/master/static"
+	
+	response = requests.get(f"{b}/mlb/lineups.json")
+	lineups = response.json()
+	response = requests.get(f"{b}/mlb/circa.json")
+	circaLines = response.json()
+	response = requests.get(f"{b}/mlb/weather.json")
+	weather = response.json()
+
+
+	with open(f"{prefix}static/mlb/circa.json") as fh:
+		circaLines = json.load(fh)
 
 	year = datetime.now().year
 	lastYear = year - 1
