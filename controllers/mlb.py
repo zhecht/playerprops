@@ -2437,14 +2437,18 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							oppRankLastYear = 30 - oppRankLastYear
 						oppRankLastYear = f"{oppRankLastYear}{getSuffix(oppRankLastYear)}"
 
-					pn = ""
-					try:
-						bookIdx = books.index("pn")
-						pn = odds[bookIdx]
-						odds.remove(pn)
-						books.remove("pn")
-					except:
-						pass
+					removed = {}
+					removedBooks = ["pn", "circa", "365"]
+					for book in removedBooks:
+						#removed[book] = ""
+						try:
+							bookIdx = books.index(book)
+							o = odds[bookIdx]
+							odds.remove(o)
+							books.remove(book)
+							removed[book] = o
+						except:
+							pass
 
 					evBook = ""
 					l = odds
@@ -2500,9 +2504,9 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 						l.remove(maxOU)
 						books.remove(evBook)
 
-					if pn:
-						books.append("pn")
-						l.append(pn)
+					for book in removed:
+						books.append(book)
+						l.append(removed[book])
 
 					avgOver = []
 					avgUnder = []
@@ -2540,13 +2544,14 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 					if True:
 						pass
 						#print(key, ou, line)
-						devig(evData, key, ou, line, prop=prop)
-						if pn:
-							if i == 1:
-								pn = f"{pn.split('/')[1]}/{pn.split('/')[0]}"
-							devig(evData, key, pn, line, prop=prop, sharp=True)
-
 						j = {b: o for o, b in zip(l, books)}
+						devig(evData, key, ou, line, prop=prop)
+						if j.get("pn"):
+							o = j["pn"]
+							if i == 1:
+								o = f"{o.split('/')[1]}/{o.split('/')[0]}"
+							devig(evData, key, o, line, prop=prop, sharp=True)
+
 						if "circa" in books and not j["circa"].startswith("-/"):
 							o = j["circa"]
 							if i == 1:
