@@ -884,7 +884,7 @@ async def writeFeed(date, loop):
 
 		games = []
 		for gameData in schedule[date]:
-			if gameData["start"]:
+			if gameData["start"] and gameData["start"] != "LIVE":
 				dt = datetime.strptime(gameData["start"], "%I:%M %p")
 				dt = int(dt.strftime("%H%M"))
 				#print(dt, int(datetime.now().strftime("%H%M")))
@@ -1672,6 +1672,7 @@ if __name__ == '__main__':
 	parser.add_argument("--token")
 	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
+	parser.add_argument("--yest", action="store_true")
 	parser.add_argument("--date", "-d")
 	parser.add_argument("--print", "-p", action="store_true")
 	parser.add_argument("--update", "-u", action="store_true")
@@ -1712,6 +1713,8 @@ if __name__ == '__main__':
 	date = args.date
 	if args.tmrw:
 		date = str(datetime.now() + timedelta(days=1))[:10]
+	elif args.yest:
+		date = str(datetime.now() - timedelta(days=1))[:10]
 	elif not date:
 		date = str(datetime.now())[:10]
 
@@ -1719,7 +1722,7 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeBVP(date))
 
 	if args.feed:
-		uc.loop().run_until_complete(writeFeed(args.date, args.loop))
+		uc.loop().run_until_complete(writeFeed(date, args.loop))
 	elif args.fd:
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"

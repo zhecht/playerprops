@@ -503,8 +503,9 @@ def mergeCirca():
 	with open("static/nhl/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-def writeCirca():
-	date = str(datetime.now())[:10]
+def writeCirca(date):
+	if not date:
+		date = str(datetime.now())[:10]
 	with open("static/hockeyreference/schedule.json") as fh:
 		schedule = json.load(fh)
 
@@ -515,7 +516,8 @@ def writeCirca():
 		teamGame[a] = game
 		teamGame[h] = game
 
-	dt = datetime.now().strftime("%Y-%-m-%-d")
+	today = datetime.strptime(date, "%Y-%m-%d")
+	dt = today.strftime("%Y-%-m-%-d")
 
 	file = f"/mnt/c/Users/zhech/Downloads/NHL Props - {dt}.pdf"
 	pages = convert_from_path(file)
@@ -585,7 +587,7 @@ def writeCirca():
 		for propIdx, prop in enumerate(props):
 			tot = 8 if pageIdx == 0 else 10
 			boxLeft = 855 if propIdx == 0 else (1230 if pageIdx == 0 else 1200)
-			boxTop = 980 if pageIdx == 0 else 915
+			boxTop = 980 if pageIdx == 0 else (915 if pageIdx == 0 else 925)
 			for boxIdx in range(tot):
 				props_img = img.crop((boxLeft,boxTop,boxLeft+boxW,boxTop+boxH))
 				props_img.save(f"outnhl-{pageIdx}-{boxIdx}.png", "PNG")
@@ -621,7 +623,9 @@ def writeCirca():
 				elif team in ["co!", "ct"]:
 					team = "col"
 				game = teamGame.get(team, "")
-				#print(player, team, ou)
+
+				if pageIdx == 1:
+					print(player, lines, ous)
 				line = "0.5"
 				if lines[0] in ["1", "2", "3"]:
 					line = lines[0]+".5"
@@ -3444,7 +3448,7 @@ if __name__ == '__main__':
 		writeMGM(args.date)
 
 	if args.circa:
-		writeCirca()
+		writeCirca(args.date)
 
 	if args.merge_circa:
 		mergeCirca()
