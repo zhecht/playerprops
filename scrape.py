@@ -996,7 +996,7 @@ async def writeBRFromHTML(data, html, sport, game):
 def runBR(sport):
 	return uc.loop().run_until_complete(writeBR(sport))
 
-async def getESPNLinks(sport, tomorrow, gameArg):
+async def getESPNLinks(sport, tomorrow, gameArg, keep):
 	if not sport:
 		sport = "nfl"
 
@@ -1028,7 +1028,7 @@ async def getESPNLinks(sport, tomorrow, gameArg):
 	teamsBS = soup.select("article .text-primary")
 
 	data = nested_dict()
-	if args.keep:
+	if keep:
 		with open(f"static/{sport}/espn.json") as fh:
 			data = json.load(fh)
 
@@ -3939,7 +3939,7 @@ if __name__ == '__main__':
 		runThreads("fanduel", sport, games, totThreads, keep=True)
 
 	if args.espn:
-		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game))
+		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
 		#games["sea @ utah-game-props"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/6d6ed235-ebb7-4937-a354-e943c38e96c4/section/game_props"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
