@@ -614,7 +614,10 @@ async def writeHistory(playerArg, force=False):
 				json.dump({}, fh)
 
 		for player in roster[team]:
-			if player in historical[team] and not force:
+			if playerArg and player != playerArg:
+				continue
+			
+			if not playerArg and player in historical[team] and not force:
 				found = False
 				for y in historical[team][player]:
 					if "h+r+rbi" in historical[team][player][y]:
@@ -623,8 +626,6 @@ async def writeHistory(playerArg, force=False):
 				# if we need to update HRR, continue
 				if found:
 					continue
-			elif playerArg and player != playerArg:
-				continue
 
 			if player not in players:
 				continue
