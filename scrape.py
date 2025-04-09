@@ -1190,6 +1190,8 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 
 		prop = f"{pre}{prop}"
 
+		if sport == "nhl" and prop in ["away_total", "home_total"]:
+			prop += "_no_OT"
 		#print(prop)
 
 		for idx in range(0, len(btns), 2):
