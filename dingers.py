@@ -1105,6 +1105,8 @@ def writeStatsPage(date):
 			#continue
 			pass
 
+		start = ""
+		gameWeather = {}
 		try: # game info
 			game = teamGame[team]["game"]
 			start = teamGame[team]["start"]
