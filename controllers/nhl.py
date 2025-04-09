@@ -2946,7 +2946,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 			if propArg and prop != propArg:
 				continue
 
-			if not propArg and (prop in ["spread", "pp_pts", "3ml"] or "total" in prop):
+			if not propArg and (prop in ["pp_pts", "3-way"]):
 				#pass
 				continue
 
