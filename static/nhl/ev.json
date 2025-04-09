@@ -6543,10 +6543,10 @@
         "opp": "",
         "game": "tor @ tb",
         "prop": "atgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
             "mgm",
-            "fd",
+            "espn",
             "dk",
             "cz",
             "365"
@@ -6561,11 +6561,11 @@
         "player": "scott laughton",
         "bookOdds": {
             "mgm": "+750",
-            "fd": "+600/-1400",
+            "espn": "+600/-1400",
             "dk": "+600",
             "cz": "700",
             "365": "+800",
-            "espn": "+800"
+            "fd": "+800"
         }
     },
     "tor @ tb scott laughton atgs under": {
@@ -6583,7 +6583,7 @@
         "opp": "",
         "game": "tor @ tb",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -6602,8 +6602,8 @@
         "player": "scott laughton",
         "bookOdds": {
             "mgm": "+750",
-            "fd": "+600/-1400",
-            "espn": "+800",
+            "fd": "+800",
+            "espn": "+600/-1400",
             "dk": "+600",
             "cz": "700",
             "365": "+800"
@@ -6942,16 +6942,16 @@
         "handicap": "luke glendening",
         "playerHandicap": "0.5",
         "odds": [
-            "+800/-2800",
             "+1000",
+            "+800/-2800",
             "+850",
             "950",
             "+1000"
         ],
         "player": "luke glendening",
         "bookOdds": {
-            "fd": "+800/-2800",
-            "espn": "+1000",
+            "fd": "+1000",
+            "espn": "+800/-2800",
             "dk": "+850",
             "cz": "950",
             "365": "+1000",
@@ -6973,7 +6973,7 @@
         "opp": "",
         "game": "tor @ tb",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -6992,8 +6992,8 @@
         "player": "luke glendening",
         "bookOdds": {
             "mgm": "+1200",
-            "fd": "+800/-2800",
-            "espn": "+1000",
+            "fd": "+1000",
+            "espn": "+800/-2800",
             "dk": "+850",
             "cz": "950",
             "365": "+1000"
@@ -7301,12 +7301,6 @@
         "fairVal": 3716,
         "implied": 2.62,
         "ev": -50.2,
-        "mgm_fairVal": 3716,
-        "mgm_implied": 2.62,
-        "mgm_ev": -52.8,
-        "mgm-20_fairVal": 3716,
-        "mgm-20_implied": 2.62,
-        "mgm-20_ev": -43.9,
         "lastYearTotal": 0,
         "totalOver": 0,
         "total10Over": 0,
@@ -7318,10 +7312,10 @@
         "opp": "",
         "game": "tor @ tb",
         "prop": "atgs",
-        "book": "espn",
+        "book": "mgm",
         "books": [
-            "mgm",
             "fd",
+            "espn",
             "dk",
             "cz",
             "365"
@@ -7332,15 +7326,21 @@
         "fullLine": "+1800",
         "handicap": "brandon carlo",
         "playerHandicap": "0.5",
-        "odds": 2040,
+        "odds": [
+            "+1700",
+            "+1100/-5000",
+            "+1200",
+            "1500",
+            "+1800"
+        ],
         "player": "brandon carlo",
         "bookOdds": {
-            "mgm": "+1700",
-            "fd": "+1100/-5000",
+            "fd": "+1700",
+            "espn": "+1100/-5000",
             "dk": "+1200",
             "cz": "1500",
             "365": "+1800",
-            "espn": "+1800"
+            "mgm": "+1800"
         }
     },
     "tor @ tb brandon carlo atgs under": {
@@ -7358,7 +7358,7 @@
         "opp": "",
         "game": "tor @ tb",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -7373,12 +7373,12 @@
         "fullLine": "+1100/-5000",
         "handicap": "brandon carlo",
         "playerHandicap": "0.5",
-        "odds": 1700,
+        "odds": 1800,
         "player": "brandon carlo",
         "bookOdds": {
-            "mgm": "+1700",
-            "fd": "+1100/-5000",
-            "espn": "+1800",
+            "mgm": "+1800",
+            "fd": "+1700",
+            "espn": "+1100/-5000",
             "dk": "+1200",
             "cz": "1500",
             "365": "+1800"
@@ -11509,9 +11509,9 @@
         "opp": "",
         "game": "tor @ tb",
         "prop": "fgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
-            "espn",
+            "fd",
             "cz",
             "365"
         ],
@@ -11528,10 +11528,10 @@
         ],
         "player": "gage goncalves",
         "bookOdds": {
-            "espn": "+3500",
+            "fd": "+3500",
             "cz": "3000",
             "365": "+3500",
-            "fd": "+4000"
+            "espn": "+4000"
         }
     },
     "tor @ tb max domi fgs over": {
@@ -11842,14 +11842,14 @@
         "handicap": "luke glendening",
         "playerHandicap": "0.5",
         "odds": [
-            "+4000",
             "+5000",
+            "+4000",
             "+5000"
         ],
         "player": "luke glendening",
         "bookOdds": {
-            "fd": "+4000",
-            "espn": "+5000",
+            "fd": "+5000",
+            "espn": "+4000",
             "365": "+5000",
             "cz": "5500"
         }
@@ -14452,66 +14452,13 @@
         "vs-circa_ev": -1.9,
         "mgm_fairVal": -144,
         "mgm_implied": 59.01,
-        "mgm_ev": -5.4,
+        "mgm_ev": -5.0,
         "mgm-20_fairVal": -144,
         "mgm-20_implied": 59.01,
-        "mgm-20_ev": 1.8,
+        "mgm-20_ev": 2.4,
         "mgm-20-vs-circa_fairVal": -151,
         "mgm-20-vs-circa_implied": 60.09,
-        "mgm-20-vs-circa_ev": 3.8,
-        "lastYearTotal": 0,
-        "totalOver": 0,
-        "total10Over": 0,
-        "totalSplits": "",
-        "dtSplits": "",
-        "winLossSplits": "",
-        "awayHomeSplits": "",
-        "team": "",
-        "opp": "",
-        "game": "phi @ nyr",
-        "prop": "spread",
-        "book": "fd",
-        "books": [
-            "mgm",
-            "espn",
-            "dk",
-            "cz",
-            "pn",
-            "circa",
-            "365"
-        ],
-        "ou": "-156/131",
-        "under": false,
-        "line": -155,
-        "fullLine": "-155/+130",
-        "handicap": "1.5",
-        "playerHandicap": "",
-        "odds": -135,
-        "player": "",
-        "bookOdds": {
-            "mgm": "-162/+126",
-            "espn": "-160/+135",
-            "dk": "-155/+130",
-            "cz": "-155/130",
-            "pn": "-141/125",
-            "circa": "-160/140",
-            "365": "-160/+135",
-            "fd": "-155/+130"
-        }
-    },
-    "phi @ nyr 1.5 spread under": {
-        "fairVal": 143,
-        "implied": 41.08,
-        "ev": -3.5,
-        "pn_fairVal": 133,
-        "pn_implied": 42.87,
-        "pn_ev": 0.7,
-        "vs-circa_fairVal": 151,
-        "vs-circa_implied": 39.91,
-        "vs-circa_ev": -6.2,
-        "mgm_fairVal": 143,
-        "mgm_implied": 41.08,
-        "mgm_ev": -7.2,
+        "mgm-20-vs-circa_ev": 4.5,
         "lastYearTotal": 0,
         "totalOver": 0,
         "total10Over": 0,
@@ -14533,23 +14480,81 @@
             "circa",
             "365"
         ],
+        "ou": "-156/131",
+        "under": false,
+        "line": -155,
+        "fullLine": "-155/+130",
+        "handicap": "1.5",
+        "playerHandicap": "",
+        "odds": -133,
+        "player": "",
+        "bookOdds": {
+            "mgm": "-160/+135",
+            "fd": "-162/+126",
+            "dk": "-155/+130",
+            "cz": "-155/130",
+            "pn": "-141/125",
+            "circa": "-160/140",
+            "365": "-160/+135",
+            "espn": "-155/+130"
+        }
+    },
+    "phi @ nyr 1.5 spread under": {
+        "fairVal": 143,
+        "implied": 41.08,
+        "ev": -3.5,
+        "pn_fairVal": 133,
+        "pn_implied": 42.87,
+        "pn_ev": 0.7,
+        "vs-circa_fairVal": 151,
+        "vs-circa_implied": 39.91,
+        "vs-circa_ev": -6.2,
+        "lastYearTotal": 0,
+        "totalOver": 0,
+        "total10Over": 0,
+        "totalSplits": "",
+        "dtSplits": "",
+        "winLossSplits": "",
+        "awayHomeSplits": "",
+        "team": "",
+        "opp": "",
+        "game": "phi @ nyr",
+        "prop": "spread",
+        "book": "mgm",
+        "books": [
+            "fd",
+            "espn",
+            "dk",
+            "cz",
+            "pn",
+            "circa",
+            "365"
+        ],
         "ou": "131/-155",
         "under": true,
         "line": 135,
         "fullLine": "-160/+135",
         "handicap": "1.5",
         "playerHandicap": "",
-        "odds": 126,
+        "odds": [
+            "-162/+126",
+            "-155/+130",
+            "-155/+130",
+            "-155/130",
+            "-141/125",
+            "-160/140",
+            "-160/+135"
+        ],
         "player": "",
         "bookOdds": {
-            "mgm": "-162/+126",
-            "fd": "-155/+130",
+            "fd": "-162/+126",
+            "espn": "-155/+130",
             "dk": "-155/+130",
             "cz": "-155/130",
             "pn": "-141/125",
             "circa": "-160/140",
             "365": "-160/+135",
-            "espn": "-160/+135"
+            "mgm": "-160/+135"
         }
     },
     "phi @ nyr -1.5 spread over": {
@@ -15122,24 +15127,15 @@
         }
     },
     "phi @ nyr 5.5 total over": {
-        "fairVal": -115,
-        "implied": 53.55,
-        "ev": -0.4,
+        "fairVal": -114,
+        "implied": 53.33,
+        "ev": -2.7,
         "pn_fairVal": -118,
         "pn_implied": 54.12,
-        "pn_ev": 0.8,
+        "pn_ev": -1.2,
         "vs-circa_fairVal": -105,
         "vs-circa_implied": 51.16,
-        "vs-circa_ev": -4.5,
-        "mgm_fairVal": -115,
-        "mgm_implied": 53.55,
-        "mgm_ev": -2.3,
-        "mgm-20_fairVal": -115,
-        "mgm-20_implied": 53.55,
-        "mgm-20_ev": 6.6,
-        "mgm-20-vs-circa_fairVal": -105,
-        "mgm-20-vs-circa_implied": 51.16,
-        "mgm-20-vs-circa_ev": 2.2,
+        "vs-circa_ev": -6.3,
         "lastYearTotal": 0,
         "totalOver": 0,
         "total10Over": 0,
@@ -15151,33 +15147,41 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "total",
-        "book": "cz",
+        "book": "mgm",
         "books": [
-            "mgm",
             "fd",
             "espn",
             "dk",
+            "cz",
             "pn",
             "circa",
             "365"
         ],
-        "ou": "-127/104",
+        "ou": "-126/103",
         "under": false,
-        "line": -115,
-        "fullLine": "-115/-105",
+        "line": -120,
+        "fullLine": "-120/+100",
         "handicap": "5.5",
         "playerHandicap": "",
-        "odds": 100,
+        "odds": [
+            "-138/+108",
+            "-125/+105",
+            "-125/+105",
+            "-142/104",
+            "-127/109",
+            "-115/-105",
+            "-115/-105"
+        ],
         "player": "",
         "bookOdds": {
-            "mgm": "-120/+100",
             "fd": "-138/+108",
             "espn": "-125/+105",
-            "dk": "-142/104",
+            "dk": "-125/+105",
+            "cz": "-142/104",
             "pn": "-127/109",
             "circa": "-115/-105",
-            "365": "-125/+105",
-            "cz": "-115/-105"
+            "365": "-115/-105",
+            "mgm": "-120/+100"
         }
     },
     "phi @ nyr 5.5 total under": {
@@ -15225,11 +15229,11 @@
         "bookOdds": {
             "mgm": "-120/+100",
             "espn": "-125/+105",
-            "dk": "-142/104",
-            "cz": "-115/-105",
+            "dk": "-125/+105",
+            "cz": "-142/104",
             "pn": "-127/109",
             "circa": "-115/-105",
-            "365": "-125/+105",
+            "365": "-115/-105",
             "fd": "-138/+108"
         }
     },
@@ -16976,10 +16980,10 @@
         "pn_ev": -21.5,
         "mgm_fairVal": 354,
         "mgm_implied": 22.01,
-        "mgm_ev": -23.0,
+        "mgm_ev": -20.8,
         "mgm-20_fairVal": 354,
         "mgm-20_implied": 22.01,
-        "mgm-20_ev": -12.0,
+        "mgm-20_ev": -9.3,
         "lastYearTotal": 37,
         "totalOver": 29,
         "total10Over": 20,
@@ -17006,12 +17010,12 @@
         "fullLine": "+280",
         "handicap": "chris kreider",
         "playerHandicap": "0.5",
-        "odds": 300,
+        "odds": 312,
         "player": "chris kreider",
         "bookOdds": {
-            "mgm": "+250/-370",
-            "fd": "+275/-450",
-            "espn": "+260",
+            "mgm": "+260",
+            "fd": "+250/-370",
+            "espn": "+275/-450",
             "cz": "255",
             "pn": "275/-467",
             "365": "+260",
@@ -17036,9 +17040,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "mgm",
+        "book": "fd",
         "books": [
-            "fd",
+            "mgm",
             "espn",
             "dk",
             "cz",
@@ -17051,23 +17055,16 @@
         "fullLine": "+250/-370",
         "handicap": "chris kreider",
         "playerHandicap": "0.5",
-        "odds": [
-            "+275/-450",
-            "+260",
-            "+280",
-            "255",
-            "275/-467",
-            "+260"
-        ],
+        "odds": 260,
         "player": "chris kreider",
         "bookOdds": {
-            "fd": "+275/-450",
-            "espn": "+260",
+            "mgm": "+260",
+            "espn": "+275/-450",
             "dk": "+280",
             "cz": "255",
             "pn": "275/-467",
             "365": "+260",
-            "mgm": "+250/-370"
+            "fd": "+250/-370"
         }
     },
     "phi @ nyr vincent trocheck atgs over": {
@@ -17385,13 +17382,13 @@
         "vs-circa_ev": -9.0,
         "mgm_fairVal": 250,
         "mgm_implied": 28.59,
-        "mgm_ev": -17.1,
+        "mgm_ev": -14.2,
         "mgm-20_fairVal": 250,
         "mgm-20_implied": 28.59,
-        "mgm-20_ev": -6.2,
+        "mgm-20_ev": -2.8,
         "mgm-20-vs-circa_fairVal": 246,
         "mgm-20-vs-circa_implied": 28.89,
-        "mgm-20-vs-circa_ev": -5.2,
+        "mgm-20-vs-circa_ev": -1.8,
         "lastYearTotal": 0,
         "totalOver": 30,
         "total10Over": 30,
@@ -17419,12 +17416,12 @@
         "fullLine": "+215",
         "handicap": "jt miller",
         "playerHandicap": "0.5",
-        "odds": 228,
+        "odds": 240,
         "player": "jt miller",
         "bookOdds": {
-            "mgm": "+190/-260",
-            "fd": "+200/-300",
-            "espn": "+200",
+            "mgm": "+200",
+            "fd": "+190/-260",
+            "espn": "+200/-300",
             "cz": "195",
             "pn": "217/-333",
             "circa": "215/-270",
@@ -17453,9 +17450,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "mgm",
+        "book": "fd",
         "books": [
-            "fd",
+            "mgm",
             "espn",
             "dk",
             "cz",
@@ -17469,25 +17466,17 @@
         "fullLine": "+190/-260",
         "handicap": "jt miller",
         "playerHandicap": "0.5",
-        "odds": [
-            "+200/-300",
-            "+200",
-            "+215",
-            "195",
-            "217/-333",
-            "215/-270",
-            "+200"
-        ],
+        "odds": 200,
         "player": "jt miller",
         "bookOdds": {
-            "fd": "+200/-300",
-            "espn": "+200",
+            "mgm": "+200",
+            "espn": "+200/-300",
             "dk": "+215",
             "cz": "195",
             "pn": "217/-333",
             "circa": "215/-270",
             "365": "+200",
-            "mgm": "+190/-260"
+            "fd": "+190/-260"
         }
     },
     "phi @ nyr artemi panarin atgs over": {
@@ -17539,9 +17528,9 @@
         "odds": 168,
         "player": "artemi panarin",
         "bookOdds": {
-            "mgm": "+140/-185",
-            "fd": "+135/-190",
-            "espn": "+140",
+            "mgm": "+140",
+            "fd": "+140/-185",
+            "espn": "+135/-190",
             "cz": "140",
             "pn": "144/-203",
             "circa": "150/-185",
@@ -17570,9 +17559,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "mgm",
+        "book": "fd",
         "books": [
-            "fd",
+            "mgm",
             "espn",
             "dk",
             "cz",
@@ -17586,25 +17575,17 @@
         "fullLine": "+140/-185",
         "handicap": "artemi panarin",
         "playerHandicap": "0.5",
-        "odds": [
-            "+135/-190",
-            "+140",
-            "+150",
-            "140",
-            "144/-203",
-            "150/-185",
-            "+140"
-        ],
+        "odds": 140,
         "player": "artemi panarin",
         "bookOdds": {
-            "fd": "+135/-190",
-            "espn": "+140",
+            "mgm": "+140",
+            "espn": "+135/-190",
             "dk": "+150",
             "cz": "140",
             "pn": "144/-203",
             "circa": "150/-185",
             "365": "+140",
-            "mgm": "+140/-185"
+            "fd": "+140/-185"
         }
     },
     "phi @ nyr jonny brodzinski atgs over": {
@@ -17753,9 +17734,9 @@
         "odds": 240,
         "player": "travis konecny",
         "bookOdds": {
-            "mgm": "+200/-280",
-            "fd": "+210/-320",
-            "espn": "+200",
+            "mgm": "+200",
+            "fd": "+200/-280",
+            "espn": "+210/-320",
             "cz": "200",
             "pn": "220/-340",
             "circa": "220/-275",
@@ -17784,9 +17765,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "mgm",
+        "book": "fd",
         "books": [
-            "fd",
+            "mgm",
             "espn",
             "dk",
             "cz",
@@ -17800,25 +17781,17 @@
         "fullLine": "+200/-280",
         "handicap": "travis konecny",
         "playerHandicap": "0.5",
-        "odds": [
-            "+210/-320",
-            "+200",
-            "+220",
-            "200",
-            "220/-340",
-            "220/-275",
-            "+200"
-        ],
+        "odds": 200,
         "player": "travis konecny",
         "bookOdds": {
-            "fd": "+210/-320",
-            "espn": "+200",
+            "mgm": "+200",
+            "espn": "+210/-320",
             "dk": "+220",
             "cz": "200",
             "pn": "220/-340",
             "circa": "220/-275",
             "365": "+200",
-            "mgm": "+200/-280"
+            "fd": "+200/-280"
         }
     },
     "phi @ nyr owen tippett atgs over": {
@@ -17951,8 +17924,8 @@
         "handicap": "ryan poehling",
         "playerHandicap": "0.5",
         "odds": [
-            "+380/-700",
             "+500",
+            "+380/-700",
             "+400",
             "430",
             "392/-825",
@@ -17960,8 +17933,8 @@
         ],
         "player": "ryan poehling",
         "bookOdds": {
-            "fd": "+380/-700",
-            "espn": "+500",
+            "fd": "+500",
+            "espn": "+380/-700",
             "dk": "+400",
             "cz": "430",
             "pn": "392/-825",
@@ -17987,10 +17960,10 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
-            "espn",
+            "fd",
             "dk",
             "cz",
             "pn",
@@ -18006,12 +17979,12 @@
         "player": "ryan poehling",
         "bookOdds": {
             "mgm": "+500",
-            "espn": "+500",
+            "fd": "+500",
             "dk": "+400",
             "cz": "430",
             "pn": "392/-825",
             "365": "+500",
-            "fd": "+380/-700"
+            "espn": "+380/-700"
         }
     },
     "phi @ nyr alexis lafreniere atgs over": {
@@ -18664,7 +18637,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -18683,8 +18656,8 @@
         "player": "brennan othmann",
         "bookOdds": {
             "mgm": "+500",
-            "fd": "+600/-1400",
-            "espn": "+500",
+            "fd": "+500",
+            "espn": "+600/-1400",
             "dk": "+600",
             "cz": "525",
             "365": "+500"
@@ -18705,7 +18678,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -18724,8 +18697,8 @@
         "player": "brennan othmann",
         "bookOdds": {
             "mgm": "+500",
-            "fd": "+600/-1400",
-            "espn": "+500",
+            "fd": "+500",
+            "espn": "+600/-1400",
             "dk": "+600",
             "cz": "525",
             "365": "+500"
@@ -18935,16 +18908,16 @@
         "handicap": "jakob pelletier",
         "playerHandicap": "0.5",
         "odds": [
-            "+700/-2000",
             "+800",
+            "+700/-2000",
             "+750",
             "750",
             "+800"
         ],
         "player": "jakob pelletier",
         "bookOdds": {
-            "fd": "+700/-2000",
-            "espn": "+800",
+            "fd": "+800",
+            "espn": "+700/-2000",
             "dk": "+750",
             "cz": "750",
             "365": "+800",
@@ -18966,7 +18939,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -18985,8 +18958,8 @@
         "player": "jakob pelletier",
         "bookOdds": {
             "mgm": "+800",
-            "fd": "+700/-2000",
-            "espn": "+800",
+            "fd": "+800",
+            "espn": "+700/-2000",
             "dk": "+750",
             "cz": "750",
             "365": "+800"
@@ -19031,8 +19004,8 @@
         "player": "jamie drysdale",
         "bookOdds": {
             "mgm": "+800",
-            "fd": "+800/-2800",
-            "espn": "+800",
+            "fd": "+800",
+            "espn": "+800/-2800",
             "cz": "800",
             "365": "+800",
             "dk": "+850"
@@ -19053,7 +19026,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -19072,8 +19045,8 @@
         "player": "jamie drysdale",
         "bookOdds": {
             "mgm": "+800",
-            "fd": "+800/-2800",
-            "espn": "+800",
+            "fd": "+800",
+            "espn": "+800/-2800",
             "dk": "+850",
             "cz": "800",
             "365": "+800"
@@ -19109,16 +19082,16 @@
         "handicap": "travis sanheim",
         "playerHandicap": "0.5",
         "odds": [
-            "+800/-2800",
             "+800",
+            "+800/-2800",
             "+850",
             "800",
             "+800"
         ],
         "player": "travis sanheim",
         "bookOdds": {
-            "fd": "+800/-2800",
-            "espn": "+800",
+            "fd": "+800",
+            "espn": "+800/-2800",
             "dk": "+850",
             "cz": "800",
             "365": "+800",
@@ -19140,7 +19113,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -19159,8 +19132,8 @@
         "player": "travis sanheim",
         "bookOdds": {
             "mgm": "+850",
-            "fd": "+800/-2800",
-            "espn": "+800",
+            "fd": "+800",
+            "espn": "+800/-2800",
             "dk": "+850",
             "cz": "800",
             "365": "+800"
@@ -19230,16 +19203,16 @@
         "handicap": "carson soucy",
         "playerHandicap": "0.5",
         "odds": [
-            "+1000/-4000",
             "+1000",
+            "+1000/-4000",
             "+1000",
             "950",
             "+1000"
         ],
         "player": "carson soucy",
         "bookOdds": {
-            "fd": "+1000/-4000",
-            "espn": "+1000",
+            "fd": "+1000",
+            "espn": "+1000/-4000",
             "dk": "+1000",
             "cz": "950",
             "365": "+1000",
@@ -19261,7 +19234,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -19280,8 +19253,8 @@
         "player": "carson soucy",
         "bookOdds": {
             "mgm": "+1000",
-            "fd": "+1000/-4000",
-            "espn": "+1000",
+            "fd": "+1000",
+            "espn": "+1000/-4000",
             "dk": "+1000",
             "cz": "950",
             "365": "+1000"
@@ -19677,6 +19650,12 @@
         "fairVal": 3019,
         "implied": 3.21,
         "ev": -42.3,
+        "mgm_fairVal": 3019,
+        "mgm_implied": 3.21,
+        "mgm_ev": -45.5,
+        "mgm-20_fairVal": 3019,
+        "mgm-20_implied": 3.21,
+        "mgm-20_ev": -35.2,
         "lastYearTotal": 1,
         "totalOver": 4,
         "total10Over": 0,
@@ -19688,9 +19667,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "mgm",
+        "book": "fd",
         "books": [
-            "fd",
+            "mgm",
             "espn",
             "dk",
             "cz",
@@ -19702,21 +19681,15 @@
         "fullLine": "+1700",
         "handicap": "nick seeler",
         "playerHandicap": "0.5",
-        "odds": [
-            "+1000/-4000",
-            "+1600",
-            "+1100",
-            "1200",
-            "+1600"
-        ],
+        "odds": 1920,
         "player": "nick seeler",
         "bookOdds": {
-            "fd": "+1000/-4000",
-            "espn": "+1600",
+            "mgm": "+1600",
+            "espn": "+1000/-4000",
             "dk": "+1100",
             "cz": "1200",
             "365": "+1600",
-            "mgm": "+1700"
+            "fd": "+1700"
         }
     },
     "phi @ nyr nick seeler atgs under": {
@@ -19734,7 +19707,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -19749,12 +19722,12 @@
         "fullLine": "+1000/-4000",
         "handicap": "nick seeler",
         "playerHandicap": "0.5",
-        "odds": 1700,
+        "odds": 1600,
         "player": "nick seeler",
         "bookOdds": {
-            "mgm": "+1700",
-            "fd": "+1000/-4000",
-            "espn": "+1600",
+            "mgm": "+1600",
+            "fd": "+1700",
+            "espn": "+1000/-4000",
             "dk": "+1100",
             "cz": "1200",
             "365": "+1600"
@@ -19947,9 +19920,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "dk",
             "cz",
             "365"
@@ -19968,11 +19941,11 @@
         ],
         "player": "braden schneider",
         "bookOdds": {
-            "fd": "+950/-3500",
+            "espn": "+950/-3500",
             "dk": "+950",
             "cz": "1000",
             "365": "+1400",
-            "espn": "+1400"
+            "fd": "+1400"
         }
     },
     "phi @ nyr braden schneider atgs under": {
@@ -19990,7 +19963,7 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "fd",
             "espn",
@@ -20005,16 +19978,16 @@
         "handicap": "braden schneider",
         "playerHandicap": "0.5",
         "odds": [
-            "-/-3500",
             "+1400",
+            "-/-3500",
             "+950",
             "1000",
             "+1400"
         ],
         "player": "braden schneider",
         "bookOdds": {
-            "fd": "+950/-3500",
-            "espn": "+1400",
+            "fd": "+1400",
+            "espn": "+950/-3500",
             "dk": "+950",
             "cz": "1000",
             "365": "+1400"
@@ -23960,9 +23933,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "fgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "cz",
             "365"
         ],
@@ -23979,10 +23952,10 @@
         ],
         "player": "braden schneider",
         "bookOdds": {
-            "fd": "+4000",
+            "espn": "+4000",
             "cz": "6000",
             "365": "+6500",
-            "espn": "+6500"
+            "fd": "+6500"
         }
     },
     "phi @ nyr urho vaakanainen fgs over": {
@@ -24120,9 +24093,9 @@
         "opp": "",
         "game": "phi @ nyr",
         "prop": "fgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "cz",
             "365"
         ],
@@ -24139,10 +24112,10 @@
         ],
         "player": "nick seeler",
         "bookOdds": {
-            "fd": "+4000",
+            "espn": "+4000",
             "cz": "6500",
             "365": "+8000",
-            "espn": "+8000"
+            "fd": "+8000"
         }
     },
     "phi @ nyr egor zamula fgs over": {
@@ -28555,9 +28528,9 @@
         "opp": "",
         "game": "cgy @ ana",
         "prop": "atgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "dk",
             "cz",
             "pn",
@@ -28578,12 +28551,12 @@
         ],
         "player": "ryan strome",
         "bookOdds": {
-            "fd": "+400/-750",
+            "espn": "+400/-750",
             "dk": "+425",
             "cz": "460",
             "pn": "396/-839",
             "365": "+550",
-            "espn": "+550"
+            "fd": "+550"
         }
     },
     "cgy @ ana ryan strome atgs under": {
@@ -28604,9 +28577,9 @@
         "opp": "",
         "game": "cgy @ ana",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
-            "espn",
+            "fd",
             "dk",
             "cz",
             "pn",
@@ -28627,12 +28600,12 @@
         ],
         "player": "ryan strome",
         "bookOdds": {
-            "espn": "+550",
+            "fd": "+550",
             "dk": "+425",
             "cz": "460",
             "pn": "396/-839",
             "365": "+550",
-            "fd": "+400/-750"
+            "espn": "+400/-750"
         }
     },
     "cgy @ ana frank vatrano atgs over": {
@@ -28861,9 +28834,9 @@
         "opp": "",
         "game": "cgy @ ana",
         "prop": "atgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "dk",
             "cz",
             "pn",
@@ -28884,12 +28857,12 @@
         ],
         "player": "trevor zegras",
         "bookOdds": {
-            "fd": "+275/-450",
+            "espn": "+275/-450",
             "dk": "+300",
             "cz": "310",
             "pn": "286/-494",
             "365": "+350",
-            "espn": "+350"
+            "fd": "+350"
         }
     },
     "cgy @ ana trevor zegras atgs under": {
@@ -28910,9 +28883,9 @@
         "opp": "",
         "game": "cgy @ ana",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
-            "espn",
+            "fd",
             "dk",
             "cz",
             "pn",
@@ -28933,12 +28906,12 @@
         ],
         "player": "trevor zegras",
         "bookOdds": {
-            "espn": "+350",
+            "fd": "+350",
             "dk": "+300",
             "cz": "310",
             "pn": "286/-494",
             "365": "+350",
-            "fd": "+275/-450"
+            "espn": "+275/-450"
         }
     },
     "cgy @ ana sam colangelo atgs over": {
@@ -35325,9 +35298,9 @@
         "opp": "",
         "game": "cgy @ ana",
         "prop": "fgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "cz",
             "365"
         ],
@@ -35344,10 +35317,10 @@
         ],
         "player": "troy terry",
         "bookOdds": {
-            "fd": "+1700",
+            "espn": "+1700",
             "cz": "1750",
             "365": "+1800",
-            "espn": "+1800"
+            "fd": "+1800"
         }
     },
     "cgy @ ana leo carlsson fgs over": {
@@ -37436,66 +37409,13 @@
         "vs-circa_ev": -2.3,
         "mgm_fairVal": 119,
         "mgm_implied": 45.67,
-        "mgm_ev": -5.0,
+        "mgm_ev": -4.1,
         "mgm-20_fairVal": 119,
         "mgm-20_implied": 45.67,
-        "mgm-20_ev": 5.0,
+        "mgm-20_ev": 6.0,
         "mgm-20-vs-circa_fairVal": 120,
         "mgm-20-vs-circa_implied": 45.46,
-        "mgm-20-vs-circa_ev": 4.6,
-        "lastYearTotal": 0,
-        "totalOver": 0,
-        "total10Over": 0,
-        "totalSplits": "",
-        "dtSplits": "",
-        "winLossSplits": "",
-        "awayHomeSplits": "",
-        "team": "",
-        "opp": "",
-        "game": "sj @ min",
-        "prop": "spread",
-        "book": "fd",
-        "books": [
-            "mgm",
-            "espn",
-            "dk",
-            "cz",
-            "pn",
-            "circa",
-            "365"
-        ],
-        "ou": "109/-129",
-        "under": false,
-        "line": 115,
-        "fullLine": "+115/-135",
-        "handicap": "1.5",
-        "playerHandicap": "",
-        "odds": 130,
-        "player": "",
-        "bookOdds": {
-            "mgm": "+108/-138",
-            "espn": "-105/-115",
-            "dk": "110/-130",
-            "cz": "110/-130",
-            "pn": "118/-133",
-            "circa": "110/-130",
-            "365": "+110/-130",
-            "fd": "+115/-135"
-        }
-    },
-    "sj @ min 1.5 spread under": {
-        "fairVal": -122,
-        "implied": 54.96,
-        "ev": 2.2,
-        "pn_fairVal": -126,
-        "pn_implied": 55.68,
-        "pn_ev": 3.7,
-        "vs-circa_fairVal": -120,
-        "vs-circa_implied": 54.54,
-        "vs-circa_ev": 1.5,
-        "mgm_fairVal": -122,
-        "mgm_implied": 54.96,
-        "mgm_ev": -5.7,
+        "mgm-20-vs-circa_ev": 5.5,
         "lastYearTotal": 0,
         "totalOver": 0,
         "total10Over": 0,
@@ -37517,23 +37437,81 @@
             "circa",
             "365"
         ],
-        "ou": "-132/112",
-        "under": true,
-        "line": -115,
-        "fullLine": "-105/-115",
+        "ou": "109/-129",
+        "under": false,
+        "line": 115,
+        "fullLine": "+115/-135",
         "handicap": "1.5",
         "playerHandicap": "",
-        "odds": -138,
+        "odds": 132,
         "player": "",
         "bookOdds": {
-            "mgm": "+108/-138",
-            "fd": "+115/-135",
-            "dk": "110/-130",
+            "mgm": "110/-130",
+            "fd": "+108/-138",
+            "dk": "+110/-130",
             "cz": "110/-130",
             "pn": "118/-133",
             "circa": "110/-130",
-            "365": "+110/-130",
-            "espn": "-105/-115"
+            "365": "-105/-115",
+            "espn": "+115/-135"
+        }
+    },
+    "sj @ min 1.5 spread under": {
+        "fairVal": -119,
+        "implied": 54.43,
+        "ev": -4.2,
+        "pn_fairVal": -126,
+        "pn_implied": 55.68,
+        "pn_ev": -1.9,
+        "vs-circa_fairVal": -120,
+        "vs-circa_implied": 54.54,
+        "vs-circa_ev": -4.0,
+        "lastYearTotal": 0,
+        "totalOver": 0,
+        "total10Over": 0,
+        "totalSplits": "",
+        "dtSplits": "",
+        "winLossSplits": "",
+        "awayHomeSplits": "",
+        "team": "",
+        "opp": "",
+        "game": "sj @ min",
+        "prop": "spread",
+        "book": "mgm",
+        "books": [
+            "fd",
+            "espn",
+            "dk",
+            "cz",
+            "pn",
+            "circa",
+            "365"
+        ],
+        "ou": "-130/109",
+        "under": true,
+        "line": -130,
+        "fullLine": "110/-130",
+        "handicap": "1.5",
+        "playerHandicap": "",
+        "odds": [
+            "+108/-138",
+            "+115/-135",
+            "+110/-130",
+            "110/-130",
+            "118/-133",
+            "110/-130",
+            "-105/-115"
+        ],
+        "player": "",
+        "bookOdds": {
+            "fd": "+108/-138",
+            "espn": "+115/-135",
+            "dk": "+110/-130",
+            "cz": "110/-130",
+            "pn": "118/-133",
+            "circa": "110/-130",
+            "365": "-105/-115",
+            "mgm": "110/-130"
         }
     },
     "sj @ min 2.5 spread over": {
@@ -43278,10 +43256,10 @@
         "opp": "",
         "game": "sj @ min",
         "prop": "atgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
             "mgm",
-            "fd",
+            "espn",
             "dk",
             "cz",
             "365"
@@ -43296,11 +43274,11 @@
         "player": "jonas brodin",
         "bookOdds": {
             "mgm": "+850",
-            "fd": "+750/-2500",
+            "espn": "+750/-2500",
             "dk": "+850",
             "cz": "800",
             "365": "+900",
-            "espn": "+900"
+            "fd": "+900"
         }
     },
     "sj @ min jonas brodin atgs under": {
@@ -43318,7 +43296,7 @@
         "opp": "",
         "game": "sj @ min",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -43337,8 +43315,8 @@
         "player": "jonas brodin",
         "bookOdds": {
             "mgm": "+850",
-            "fd": "+750/-2500",
-            "espn": "+900",
+            "fd": "+900",
+            "espn": "+750/-2500",
             "dk": "+850",
             "cz": "800",
             "365": "+900"
@@ -43475,6 +43453,12 @@
         "fairVal": 2842,
         "implied": 3.4,
         "ev": -59.2,
+        "mgm_fairVal": 2842,
+        "mgm_implied": 3.4,
+        "mgm_ev": -62.6,
+        "mgm-20_fairVal": 2842,
+        "mgm-20_implied": 3.4,
+        "mgm-20_ev": -55.8,
         "lastYearTotal": 0,
         "totalOver": 14,
         "total10Over": 20,
@@ -43486,9 +43470,9 @@
         "opp": "",
         "game": "sj @ min",
         "prop": "atgs",
-        "book": "mgm",
+        "book": "fd",
         "books": [
-            "fd",
+            "mgm",
             "espn",
             "dk",
             "cz",
@@ -43500,21 +43484,15 @@
         "fullLine": "+1100",
         "handicap": "jack thompson",
         "playerHandicap": "0.5",
-        "odds": [
-            "+1000/-4000",
-            "+1000",
-            "+1100",
-            "1000",
-            "+1000"
-        ],
+        "odds": 1200,
         "player": "jack thompson",
         "bookOdds": {
-            "fd": "+1000/-4000",
-            "espn": "+1000",
+            "mgm": "+1000",
+            "espn": "+1000/-4000",
             "dk": "+1100",
             "cz": "1000",
             "365": "+1000",
-            "mgm": "+1100"
+            "fd": "+1100"
         }
     },
     "sj @ min jack thompson atgs under": {
@@ -43532,7 +43510,7 @@
         "opp": "",
         "game": "sj @ min",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -43547,12 +43525,12 @@
         "fullLine": "+1000/-4000",
         "handicap": "jack thompson",
         "playerHandicap": "0.5",
-        "odds": 1100,
+        "odds": 1000,
         "player": "jack thompson",
         "bookOdds": {
-            "mgm": "+1100",
-            "fd": "+1000/-4000",
-            "espn": "+1000",
+            "mgm": "+1000",
+            "fd": "+1100",
+            "espn": "+1000/-4000",
             "dk": "+1100",
             "cz": "1000",
             "365": "+1000"
@@ -48047,9 +48025,9 @@
         "opp": "",
         "game": "sj @ min",
         "prop": "fgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "cz",
             "365"
         ],
@@ -48066,10 +48044,10 @@
         ],
         "player": "mats zuccarello",
         "bookOdds": {
-            "fd": "+1300",
+            "espn": "+1300",
             "cz": "1200",
             "365": "+1400",
-            "espn": "+1400"
+            "fd": "+1400"
         }
     },
     "sj @ min tyler toffoli fgs over": {
@@ -48555,9 +48533,9 @@
         "opp": "",
         "game": "sj @ min",
         "prop": "fgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "cz",
             "365"
         ],
@@ -48574,10 +48552,10 @@
         ],
         "player": "jared spurgeon",
         "bookOdds": {
-            "fd": "+2900",
+            "espn": "+2900",
             "cz": "3000",
             "365": "+3500",
-            "espn": "+3500"
+            "fd": "+3500"
         }
     },
     "sj @ min barclay goodrow fgs over": {
@@ -48795,9 +48773,9 @@
         "opp": "",
         "game": "sj @ min",
         "prop": "fgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "cz",
             "365"
         ],
@@ -48814,10 +48792,10 @@
         ],
         "player": "jack thompson",
         "bookOdds": {
-            "fd": "+4000",
+            "espn": "+4000",
             "cz": "4500",
             "365": "+5000",
-            "espn": "+5000"
+            "fd": "+5000"
         }
     },
     "sj @ min carl grundstrom fgs over": {
@@ -52079,15 +52057,6 @@
         "vs-circa_fairVal": 105,
         "vs-circa_implied": 48.84,
         "vs-circa_ev": -4.6,
-        "mgm_fairVal": 101,
-        "mgm_implied": 49.65,
-        "mgm_ev": -5.6,
-        "mgm-20_fairVal": 101,
-        "mgm-20_implied": 49.65,
-        "mgm-20_ev": 3.3,
-        "mgm-20-vs-circa_fairVal": 105,
-        "mgm-20-vs-circa_implied": 48.84,
-        "mgm-20-vs-circa_ev": 1.6,
         "lastYearTotal": 0,
         "totalOver": 0,
         "total10Over": 0,
@@ -52099,10 +52068,10 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "total",
-        "book": "espn",
+        "book": "mgm",
         "books": [
-            "mgm",
             "fd",
+            "espn",
             "dk",
             "cz",
             "pn",
@@ -52115,32 +52084,37 @@
         "fullLine": "-105/-115",
         "handicap": "5.5",
         "playerHandicap": "",
-        "odds": 108,
+        "odds": [
+            "-111/-115",
+            "-105/-115",
+            "-105/-115",
+            "-105/-115",
+            "-106/-106",
+            "-105/-115",
+            "-120/+100"
+        ],
         "player": "",
         "bookOdds": {
-            "mgm": "-111/-115",
-            "fd": "-120/+100",
+            "fd": "-111/-115",
+            "espn": "-105/-115",
             "dk": "-105/-115",
             "cz": "-105/-115",
             "pn": "-106/-106",
             "circa": "-105/-115",
-            "365": "-105/-115",
-            "espn": "-105/-115"
+            "365": "-120/+100",
+            "mgm": "-105/-115"
         }
     },
     "stl @ edm 5.5 total under": {
-        "fairVal": -104,
-        "implied": 50.93,
-        "ev": 1.7,
+        "fairVal": -101,
+        "implied": 50.35,
+        "ev": -5.9,
         "pn_fairVal": 100,
         "pn_implied": 50.0,
-        "pn_ev": 0.0,
+        "pn_ev": -6.5,
         "vs-circa_fairVal": -105,
         "vs-circa_implied": 51.16,
-        "vs-circa_ev": 2.2,
-        "mgm_fairVal": -104,
-        "mgm_implied": 50.93,
-        "mgm_ev": -4.9,
+        "vs-circa_ev": -4.5,
         "lastYearTotal": 0,
         "totalOver": 0,
         "total10Over": 0,
@@ -52152,9 +52126,9 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "total",
-        "book": "fd",
+        "book": "mgm",
         "books": [
-            "mgm",
+            "fd",
             "espn",
             "dk",
             "cz",
@@ -52162,23 +52136,31 @@
             "circa",
             "365"
         ],
-        "ou": "-114/-106",
+        "ou": "-111/-108",
         "under": true,
-        "line": 100,
-        "fullLine": "-120/+100",
+        "line": -115,
+        "fullLine": "-105/-115",
         "handicap": "5.5",
         "playerHandicap": "",
-        "odds": -115,
+        "odds": [
+            "-111/-115",
+            "-105/-115",
+            "-105/-115",
+            "-105/-115",
+            "-106/-106",
+            "-105/-115",
+            "-120/+100"
+        ],
         "player": "",
         "bookOdds": {
-            "mgm": "-111/-115",
+            "fd": "-111/-115",
             "espn": "-105/-115",
             "dk": "-105/-115",
             "cz": "-105/-115",
             "pn": "-106/-106",
             "circa": "-105/-115",
-            "365": "-105/-115",
-            "fd": "-120/+100"
+            "365": "-120/+100",
+            "mgm": "-105/-115"
         }
     },
     "stl @ edm 4.5 total over": {
@@ -53413,8 +53395,8 @@
         "player": "viktor arvidsson",
         "bookOdds": {
             "mgm": "+250",
-            "fd": "+250/-390",
-            "espn": "+240",
+            "fd": "+240",
+            "espn": "+250/-390",
             "cz": "245",
             "pn": "258/-426",
             "365": "+240",
@@ -53439,10 +53421,10 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
-            "espn",
+            "fd",
             "dk",
             "cz",
             "pn",
@@ -53458,12 +53440,12 @@
         "player": "viktor arvidsson",
         "bookOdds": {
             "mgm": "+250",
-            "espn": "+240",
+            "fd": "+240",
             "dk": "+260",
             "cz": "245",
             "pn": "258/-426",
             "365": "+240",
-            "fd": "+250/-390"
+            "espn": "+250/-390"
         }
     },
     "stl @ edm jordan kyrou atgs over": {
@@ -54195,6 +54177,12 @@
         "fairVal": 914,
         "implied": 9.86,
         "ev": -35.9,
+        "mgm_fairVal": 914,
+        "mgm_implied": 9.86,
+        "mgm_ev": -45.8,
+        "mgm-20_fairVal": 914,
+        "mgm-20_implied": 9.86,
+        "mgm-20_ev": -36.9,
         "lastYearTotal": 0,
         "totalOver": 9,
         "total10Over": 10,
@@ -54206,9 +54194,9 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "atgs",
-        "book": "mgm",
+        "book": "fd",
         "books": [
-            "fd",
+            "mgm",
             "espn",
             "dk",
             "cz",
@@ -54220,21 +54208,15 @@
         "fullLine": "+550",
         "handicap": "vasily podkolzin",
         "playerHandicap": "0.5",
-        "odds": [
-            "+550/-1200",
-            "+450",
-            "+550",
-            "500",
-            "+450"
-        ],
+        "odds": 540,
         "player": "vasily podkolzin",
         "bookOdds": {
-            "fd": "+550/-1200",
-            "espn": "+450",
+            "mgm": "+450",
+            "espn": "+550/-1200",
             "dk": "+550",
             "cz": "500",
             "365": "+450",
-            "mgm": "+550"
+            "fd": "+550"
         }
     },
     "stl @ edm vasily podkolzin atgs under": {
@@ -54252,7 +54234,7 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -54267,12 +54249,12 @@
         "fullLine": "+550/-1200",
         "handicap": "vasily podkolzin",
         "playerHandicap": "0.5",
-        "odds": 550,
+        "odds": 450,
         "player": "vasily podkolzin",
         "bookOdds": {
-            "mgm": "+550",
-            "fd": "+550/-1200",
-            "espn": "+450",
+            "mgm": "+450",
+            "fd": "+550",
+            "espn": "+550/-1200",
             "dk": "+550",
             "cz": "500",
             "365": "+450"
@@ -54648,16 +54630,16 @@
         "handicap": "darnell nurse",
         "playerHandicap": "0.5",
         "odds": [
-            "+600/-1400",
             "+700",
+            "+600/-1400",
             "+600",
             "650",
             "+700"
         ],
         "player": "darnell nurse",
         "bookOdds": {
-            "fd": "+600/-1400",
-            "espn": "+700",
+            "fd": "+700",
+            "espn": "+600/-1400",
             "dk": "+600",
             "cz": "650",
             "365": "+700",
@@ -54679,7 +54661,7 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "mgm",
             "fd",
@@ -54698,8 +54680,8 @@
         "player": "darnell nurse",
         "bookOdds": {
             "mgm": "+700",
-            "fd": "+600/-1400",
-            "espn": "+700",
+            "fd": "+700",
+            "espn": "+600/-1400",
             "dk": "+600",
             "cz": "650",
             "365": "+700"
@@ -55661,9 +55643,9 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "atgs",
-        "book": "espn",
+        "book": "fd",
         "books": [
-            "fd",
+            "espn",
             "dk",
             "cz",
             "365"
@@ -55682,11 +55664,11 @@
         ],
         "player": "nick leddy",
         "bookOdds": {
-            "fd": "+1100/-5000",
+            "espn": "+1100/-5000",
             "dk": "+1200",
             "cz": "1200",
             "365": "+1400",
-            "espn": "+1400"
+            "fd": "+1400"
         }
     },
     "stl @ edm nick leddy atgs under": {
@@ -55704,7 +55686,7 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "atgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
             "fd",
             "espn",
@@ -55719,16 +55701,16 @@
         "handicap": "nick leddy",
         "playerHandicap": "0.5",
         "odds": [
-            "-/-5000",
             "+1400",
+            "-/-5000",
             "+1200",
             "1200",
             "+1400"
         ],
         "player": "nick leddy",
         "bookOdds": {
-            "fd": "+1100/-5000",
-            "espn": "+1400",
+            "fd": "+1400",
+            "espn": "+1100/-5000",
             "dk": "+1200",
             "cz": "1200",
             "365": "+1400"
@@ -60704,9 +60686,9 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "fgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
-            "espn",
+            "fd",
             "cz",
             "365"
         ],
@@ -60723,10 +60705,10 @@
         ],
         "player": "robert thomas",
         "bookOdds": {
-            "espn": "+1600",
+            "fd": "+1600",
             "cz": "1500",
             "365": "+1600",
-            "fd": "+1700"
+            "espn": "+1700"
         }
     },
     "stl @ edm jeff skinner fgs over": {
@@ -60784,9 +60766,9 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "fgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
-            "espn",
+            "fd",
             "cz",
             "365"
         ],
@@ -60803,10 +60785,10 @@
         ],
         "player": "pavel buchnevich",
         "bookOdds": {
-            "espn": "+1600",
+            "fd": "+1600",
             "cz": "1500",
             "365": "+1600",
-            "fd": "+1700"
+            "espn": "+1700"
         }
     },
     "stl @ edm adam henrique fgs over": {
@@ -60824,9 +60806,9 @@
         "opp": "",
         "game": "stl @ edm",
         "prop": "fgs",
-        "book": "fd",
+        "book": "espn",
         "books": [
-            "espn",
+            "fd",
             "cz",
             "365"
         ],
@@ -60843,10 +60825,10 @@
         ],
         "player": "adam henrique",
         "bookOdds": {
-            "espn": "+1600",
+            "fd": "+1600",
             "cz": "1750",
             "365": "+1600",
-            "fd": "+2000"
+            "espn": "+2000"
         }
     },
     "stl @ edm jake neighbours fgs over": {

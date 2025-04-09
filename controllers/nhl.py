@@ -3112,7 +3112,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						try:
 							bookIdx = books.index(book)
 							o = odds[bookIdx]
-							odds.remove(o)
+							del odds[bookIdx]
+							#odds.remove(o)
 							books.remove(book)
 							removed[book] = o
 						except:
