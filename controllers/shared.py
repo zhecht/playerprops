@@ -24,7 +24,15 @@ def getSuffix(num):
 	return "th"
 
 # Write open/closing line values
-def writeHistorical(date, gameStarted, book):
+def writeHistorical(date, book, gameStarted=None):
+	if not gameStarted:
+		with open("static/mlb/schedule.json") as fh:
+			schedule = json.load(fh)
+		gameStarted = {}
+		for gameData in schedule[date]:
+			dt = datetime.strptime(gameData["start"], "%I:%M %p")
+			dt = int(dt.strftime("%H%M"))
+			gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 	hist = {}
 	with open(f"static/dingers/{book}.json") as fh:
 		lines = json.load(fh)

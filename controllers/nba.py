@@ -3418,6 +3418,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nba/caesars.json") as fh:
 		czLines = json.load(fh)
 
+	with open(f"{prefix}static/nba/circa.json") as fh:
+		circaLines = json.load(fh)
+
 	with open(f"{prefix}static/nba/espn.json") as fh:
 		espnLines = json.load(fh)
 
@@ -3465,7 +3468,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 		"dk": dkLines,
 		"cz": czLines,
 		"espn": espnLines,
-		"365": bet365Lines
+		"365": bet365Lines,
+		"circa": circaLines
 	}
 
 	with open(f"{prefix}static/nba/ev.json") as fh:
@@ -3700,6 +3704,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					except:
 						pass
 
+					circa = ""
+					try:
+						bookIdx = books.index("circa")
+						circa = odds[bookIdx]
+						odds.remove(circa)
+						books.remove("circa")
+					except:
+						pass
+
 					evBook = ""
 					l = odds
 					if bookArg:
@@ -3743,6 +3756,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 					if pn:
 						books.append("pn")
 						l.append(pn)
+					if circa:
+						books.append("circa")
+						l.append(circa)
 
 					avgOver = []
 					avgUnder = []
@@ -4192,6 +4208,7 @@ if __name__ == '__main__':
 	parser.add_argument("--historical", action="store_true")
 	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
 	parser.add_argument("--ranks", action="store_true")
+	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--token")
@@ -4298,3 +4315,6 @@ if __name__ == '__main__':
 
 	if args.ranks:
 		writeRanks()
+
+	if args.commit:
+		commitChanges()
