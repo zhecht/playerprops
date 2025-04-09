@@ -1159,6 +1159,7 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			prop = "dnb"
 		elif "both teams to score" in prop:
 			prop = "btts"
+			continue
 		elif "run line" in prop or "spread" in prop:
 			if "&" in prop:
 				continue
