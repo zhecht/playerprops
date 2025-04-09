@@ -1649,7 +1649,10 @@ def writeDK(date, propArg, keep):
 
 							outcomes = row["outcomes"]
 							if "ml" in prop:
-								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
+								try:
+									lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
+								except:
+									continue
 							elif prop == "rfi":
 								outcomes = [x for x in outcomes if x["line"] == 0.5]
 								lines[game][prop] = outcomes[0]["oddsAmerican"]+"/"+outcomes[1]["oddsAmerican"]
@@ -2550,14 +2553,14 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 								o = f"{u}/{o}"
 							devig(evData, key, o, line, prop=prop, book="vs-circa")
 
-						if "espn" in books:
-							line = int(j["espn"].split("/")[0])
+						if "espn" in books and not j["espn"].startswith("-/"):
+							l = int(j["espn"].split("/")[0])
 							if i == 1:
 								if "/" in j["espn"]:
-									line = int(j["espn"].split("/")[-1])
-									devig(evData, key, ou, line, prop=prop, book="espn")
+									l = int(j["espn"].split("/")[-1])
+									devig(evData, key, ou, l, prop=prop, book="espn")
 							else:
-								devig(evData, key, ou, line, prop=prop, book="espn")
+								devig(evData, key, ou, l, prop=prop, book="espn")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							print(key)

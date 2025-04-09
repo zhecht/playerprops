@@ -586,11 +586,11 @@ def writeCirca(date):
 		#props = ["pts"]
 		for propIdx, prop in enumerate(props):
 			tot = 8 if pageIdx == 0 else 10
-			boxLeft = 855 if propIdx == 0 else (1230 if pageIdx == 0 else 1200)
+			boxLeft = 855 if propIdx == 0 else (1230 if pageIdx == 0 else 1210)
 			boxTop = 980 if pageIdx == 0 else (915 if pageIdx == 0 else 925)
 			for boxIdx in range(tot):
 				props_img = img.crop((boxLeft,boxTop,boxLeft+boxW,boxTop+boxH))
-				props_img.save(f"outnhl-{pageIdx}-{boxIdx}.png", "PNG")
+				props_img.save(f"outnhl-{pageIdx}-{propIdx}-{boxIdx}.png", "PNG")
 				propsW,propsH = props_img.size
 				player_img = props_img.crop((0,0,propsW,40))
 				#player_img.save("out.png", "PNG")
@@ -609,10 +609,14 @@ def writeCirca(date):
 				ou = o+"/"+u
 				ou = ou.replace("~", "-").replace("EVEN", "+100")
 
-				ho = 100 if pageIdx == 0 else 50
-				line_img = props_img.crop((propsW-100,propsH-ho,propsW-75,propsH-20)) #l,t,r,b
-				#line_img.save(f"outnhl-{pageIdx}-{boxIdx}.png", "PNG")
-				lines = pytesseract.image_to_string(line_img).split("\n")
+				#ho = 100 if pageIdx == 0 else 50
+				to,bo,ri,le = 100,20,75,100
+				if propIdx != 0:
+					to,bo,ri,le = 100,20,60,105
+
+				line_img = props_img.crop((propsW-le,propsH-to,propsW-ri,propsH-bo)) #l,t,r,b
+				line_img.save(f"outnhl-{pageIdx}-{propIdx}-{boxIdx}-line.png", "PNG")
+				lines = pytesseract.image_to_string(line_img, config="digits").split("\n")
 
 				player = parsePlayer(text[0].split(" (")[0])
 				team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
@@ -624,7 +628,7 @@ def writeCirca(date):
 					team = "col"
 				game = teamGame.get(team, "")
 
-				if pageIdx == 1:
+				if pageIdx == 1 and propIdx == 1:
 					print(player, lines, ous)
 				line = "0.5"
 				if lines[0] in ["1", "2", "3"]:
