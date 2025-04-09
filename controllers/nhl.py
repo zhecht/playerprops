@@ -882,6 +882,8 @@ def parsePinnacle(res, games, gameId, retry, debug):
 			prefix = "2p_"
 		elif keys[1] == "3":
 			prefix = "3p_"
+		elif keys[1] == "6":
+			continue
 
 		if row["matchupId"] != int(gameId):
 			if row["matchupId"] not in relatedData:
@@ -935,6 +937,8 @@ def parsePinnacle(res, games, gameId, retry, debug):
 
 			if "points" in prices[0]:
 				handicap = str(float(prices[switched]["points"]))
+				#if game == "tor @ tb" and prop == "spread" and handicap == "1.0":
+				#	print(row)
 				if prop not in res[game]:
 					res[game][prop] = {}
 
@@ -967,7 +971,7 @@ def writePinnacle(date, debug):
 			player2 = row["participants"][1]["name"].lower()
 			games[str(row["id"])] = f"{convertFDTeam(player2)} @ {convertFDTeam(player1)}"
 
-	#games = {'1584388030': 'dal @ det'}
+	#games = {'1607444353': 'tor @ tb'}
 
 	res = {}
 	retry = []
