@@ -670,7 +670,11 @@ async def write365FromHTML(data, html, sport, prop):
 
 		players = gameDiv.find_all("div", class_="srb-ParticipantLabelWithTeam_Name")
 		for idx, btn in enumerate(gameDiv.find_all("div", class_="gl-Participant_General")):
-			label = btn.get("aria-label").lower().strip()
+			try:
+				label = btn.get("aria-label").lower().strip()
+			except:
+				print(game, prop)
+				continue
 			odds = label.split(" ")[-1]
 			p = label.split(" ")[0]
 
