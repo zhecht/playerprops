@@ -2982,8 +2982,14 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 				lastTotalOver = lastTotalGames = 0
 				totalOver = total10Over = totalGames = 0
 				totalSplits = dtSplits = winLossSplits = awayHomeSplits = ""
-				team = ""
-				if player:
+				team = opp = ""
+				if prop == "away_total":
+					team = away
+					opp = home
+				elif prop == "home_total":
+					team = home
+					opp = away
+				elif player:
 					convertedProp = prop.replace("sog", "s").replace("ast", "a").replace("saves", "sv").replace("atgs", "g")
 					#print(prop, game)
 					away, home = map(str, game.split(" @ "))
@@ -3249,6 +3255,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 						evData[key]["winLossSplits"] = winLossSplits
 						evData[key]["awayHomeSplits"] = awayHomeSplits
 						evData[key]["team"] = team
+						evData[key]["opp"] = opp
 						evData[key]["game"] = game
 						evData[key]["prop"] = prop
 						evData[key]["book"] = evBook
