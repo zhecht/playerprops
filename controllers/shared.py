@@ -23,6 +23,27 @@ def getSuffix(num):
 		return "rd"
 	return "th"
 
+# Write open/closing line values
+def writeHistorical(date, gameStarted, book):
+	hist = {}
+	with open(f"static/dingers/{book}.json") as fh:
+		lines = json.load(fh)
+	if os.path.exists(f"static/dingers/{book}_historical.json"):
+		with open(f"static/dingers/{book}_historical.json") as fh:
+			hist = json.load(fh)
+	hist.setdefault(date, {})
+	for game in lines:
+		if gameStarted[game]:
+			continue
+		for player in lines[game]:
+			hist[date].setdefault(game, {})
+			hist[date][game].setdefault(player, {})
+			hist[date][game][player]["close"] = lines[game][player]["fd"]
+			if "open" not in hist[date][game][player]:
+				hist[date][game][player]["open"] = lines[game][player]["fd"]
+	with open(f"static/dingers/{book}_historical.json", "w") as fh:
+		json.dump(hist, fh)
+
 async def writeCZToken():
 	url = f"https://sportsbook.caesars.com/us/mi/bet/"
 	browser = await uc.start(no_sandbox=True)
