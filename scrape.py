@@ -1512,7 +1512,7 @@ async def getMGMLinks(sport=None, tomorrow=None, gameArg=None, main=False, keep=
 				elif sport == "mlb":
 					markets = ["Players"]
 				elif sport == "nhl":
-					markets = ["Periods", "-1"]
+					markets = ["Spread", "Periods", "-1"]
 
 				for mkt in markets:
 					games[f"{game}_{mkt}"] = link.get("href")+f"?market={mkt}"
@@ -1568,6 +1568,8 @@ async def writeMGMFromHTML(data, html, sport, game):
 			prop = "total"
 		elif prop.endswith("spread"):
 			prop = "spread"
+			if sport == "nhl":
+				return
 		elif prop == "totals":
 			prop = "total"
 			continue
@@ -1846,6 +1848,24 @@ async def writeMGM(sport):
 								over = odds[i].text_all.replace(fullLine, "").strip()
 								under = odds[i+1].text_all.replace(fullLine.replace("O", "U"), "").strip()
 								data[game][f"{prefix}_total"][line] = over+"/"+under
+				elif mkt == "Spread":
+					for prefix in ["", "1p_", "2p_", "3p_"]:
+
+						if prefix:
+							lis = await panel.query_selector_all("li")
+							for li in lis:
+								if prefix[0] == li.text_all[0]:
+									await li.click()
+									time.sleep(0.5)
+
+						odds = await panel.query_selector_all("ms-option")
+						for i in range(0, len(odds), 2):
+							line = await odds[i].query_selector(".name")
+							fullLine = line.text
+							line = str(float(fullLine.strip().split(" ")[-1]))
+							over = odds[i].text_all.replace(fullLine, "").strip()
+							under = odds[i+1].text_all.replace(fullLine.replace("O", "U"), "").strip()
+							data[game][f"{prefix}spread"][line] = over+"/"+under.split(" ")[-1]
 
 		html = await page.get_content()
 		await writeMGMFromHTML(data, html, sport, game)
@@ -3919,7 +3939,7 @@ if __name__ == '__main__':
 
 	if args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw, args.game, args.main, args.keep))
-		#games["car @ buf_Periods"] = "/en/sports/events/carolina-hurricanes-at-buffalo-sabres-17264751?market=Periods"
+		#games["phi @ nyr_Spreads"] = "/en/sports/events/philadelphia-flyers-at-new-york-rangers-17264543?market=Spread"
 		totThreads = min(args.threads, len(games))
 		runThreads("mgm", sport, games, totThreads, keep=True)
 
