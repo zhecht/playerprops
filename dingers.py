@@ -7,6 +7,7 @@ import queue
 import re
 import time
 import nodriver as uc
+import requests
 import subprocess
 import threading
 import multiprocessing
@@ -1052,11 +1053,15 @@ def writeStatsPage(date):
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	with open(f"static/mlb/lineups.json") as fh:
-		lineups = json.load(fh)
+	b = "https://raw.githubusercontent.com/zhecht/lines/master/static"
+	
+	u = f"{b}/mlb/lineups.json"
+	response = requests.get(u)
+	lineups = response.json()
 
-	with open(f"static/dailyev/weather.json") as fh:
-		weather = json.load(fh)
+	u = f"{b}/mlb/weather.json"
+	response = requests.get(u)
+	weather = response.json()
 
 	# bbref
 	with open(f"static/baseballreference/advanced.json") as fh:
