@@ -2184,10 +2184,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 	response = requests.get(f"{b}/mlb/weather.json")
 	weather = response.json()
 
-
-	with open(f"{prefix}static/mlb/circa.json") as fh:
-		circaLines = json.load(fh)
-
 	year = datetime.now().year
 	lastYear = year - 1
 	with open(f"{prefix}static/mlbprops/stats/{lastYear}.json") as fh:
