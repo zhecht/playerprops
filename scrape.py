@@ -2631,6 +2631,8 @@ async def writeFD(sport):
 					prop = "ml"
 				elif label == "1st period goal in first ten minutes":
 					prop = "gift"
+				elif label == "1st period goal in first five minutes":
+					prop = "giff"
 				elif label.endswith("run line") or label.endswith("run lines"):
 					prop = "spread"
 					if "alternate" in label:
@@ -2820,6 +2822,8 @@ async def writeFD(sport):
 
 				if prop.endswith("gift"):
 					prop = "gift"
+				elif prop.endswith("giff"):
+					prop = "giff"
 
 				if prop == "rush+rec_yd":
 					prop = "rush+rec"
@@ -2899,7 +2903,7 @@ async def writeFD(sport):
 					if "Show more" in label or "Show less" in label or "unavailable" in label:
 						continue
 
-					if prop in ["rfi", "gift"]:
+					if prop in ["rfi", "gift", "giff"]:
 						data[game][prop] = label.split(", ")[-1]+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]
 						continue
 
