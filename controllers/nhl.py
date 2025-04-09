@@ -521,6 +521,12 @@ def writeCirca():
 	pages = convert_from_path(file)
 	data = nested_dict()
 	props = nested_dict()
+
+
+
+	pages = [pages[0]]
+	
+
 	for pageIdx, page in enumerate(pages):
 		page.save("outnhl.png", "PNG")
 		img = Image.open("outnhl.png")
@@ -574,20 +580,32 @@ def writeCirca():
 		boxW, boxH = 355, 135
 		boxLeft, boxTop = 855, 915
 
-		boxH = 128
+		boxH = 135
+		boxTop = 980
 
-		continue
+		#continue
 
 		props = ["pts", "sog"]
 		props = ["pts"]
 		for propIdx, prop in enumerate(props):
 			for boxIdx in range(8):
 				props_img = img.crop((boxLeft,boxTop,boxLeft+boxW,boxTop+boxH))
-				props_img.save(f"outnhl-{pageIdx}-{boxIdx}.png", "PNG")
+				#props_img.save(f"outnhl-{pageIdx}-{boxIdx}.png", "PNG")
 				propsW,propsH = props_img.size
 				player_img = props_img.crop((0,0,propsW,40))
 				#player_img.save("out.png", "PNG")
 				text = pytesseract.image_to_string(player_img).split("\n")
+
+				ou_img = props_img.crop((propsW-65,propsH-100,propsW,propsH)) #l,t,r,b
+
+				ous = pytesseract.image_to_string(ou_img).split("\n")
+				ou_img.save(f"outnhl-{pageIdx}-{boxIdx}.png", "PNG")
+
+				u = ous[1]
+				if len(u) == 4 and u.startswith("7"):
+					u = "-"+u[1:]
+				ou = ous[0]+"/"+u
+
 				player = parsePlayer(text[0].split(" (")[0])
 				team = convertNHLTeam(text[0].split(" (")[-1].split(")")[0])
 				if team == "nyt":
@@ -597,9 +615,10 @@ def writeCirca():
 				elif team in ["co!", "ct"]:
 					team = "col"
 				game = teamGame.get(team, "")
-				data[game][prop][player] = "".replace("\u201c", "-")
-				boxTop += boxH
-		#text = pytesseract.image_to_string(props_img).split("\n")
+				print(player, team, ou)
+				data[game][prop][player] = ou.replace("\u201c", "-")
+				boxTop += boxH + 5
+				#text = pytesseract.image_to_string(props_img).split("\n")
 
 
 	with open("static/nhl/circa-props.json", "w") as fh:
