@@ -2,6 +2,9 @@ from collections import defaultdict
 import nodriver as uc
 import unicodedata
 import git
+import json
+import os
+from datetime import datetime
 
 def commitChanges():
 	repo = git.Repo(".")
@@ -25,14 +28,18 @@ def getSuffix(num):
 
 # Write open/closing line values
 def writeHistorical(date, book, gameStarted=None):
+	book = book.replace("365", "b365")
 	if not gameStarted:
 		with open("static/mlb/schedule.json") as fh:
 			schedule = json.load(fh)
 		gameStarted = {}
 		for gameData in schedule[date]:
-			dt = datetime.strptime(gameData["start"], "%I:%M %p")
-			dt = int(dt.strftime("%H%M"))
-			gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
+			if gameData["start"] == "LIVE":
+				gameStarted[gameData["game"]] = True
+			else:
+				dt = datetime.strptime(gameData["start"], "%I:%M %p")
+				dt = int(dt.strftime("%H%M"))
+				gameStarted[gameData["game"]] = int(datetime.now().strftime("%H%M")) > dt
 	hist = {}
 	with open(f"static/dingers/{book}.json") as fh:
 		lines = json.load(fh)
@@ -41,7 +48,7 @@ def writeHistorical(date, book, gameStarted=None):
 			hist = json.load(fh)
 	hist.setdefault(date, {})
 	for game in lines:
-		if gameStarted[game]:
+		if gameStarted.get(game, True):
 			continue
 		for player in lines[game]:
 			hist[date].setdefault(game, {})

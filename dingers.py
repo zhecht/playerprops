@@ -1701,6 +1701,10 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if args.clear:
+		for book in ["fd", "espn", "dk", "cz", "b365", "mgm", "pn", "circa"]:
+			path = f"static/dingers/{book}.json"
+			with open(path, "w") as fh:
+				json.dump({}, fh)
 		with open("static/dailyev/odds.json", "w") as fh:
 			json.dump({}, fh)
 
