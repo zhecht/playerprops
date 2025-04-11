@@ -1062,7 +1062,7 @@ def writeStatsPage(date):
 
 	url = "https://api.github.com/repos/zhecht/lines/contents/static/mlb/weather.json"
 	response = requests.get(url, headers=headers)
-	lineups = response.json()
+	weather = response.json()
 
 	# bbref
 	with open(f"static/baseballreference/advanced.json") as fh:
