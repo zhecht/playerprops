@@ -1053,15 +1053,16 @@ def writeStatsPage(date):
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	b = "https://raw.githubusercontent.com/zhecht/lines/master/static"
 	
-	u = f"{b}/mlb/lineups.json"
-	response = requests.get(u)
+	headers = {"Accept": "application/vnd.github.v3.raw"}
+	
+	url = "https://api.github.com/repos/zhecht/lines/contents/static/mlb/lineups.json"
+	response = requests.get(url, headers=headers)
 	lineups = response.json()
 
-	u = f"{b}/mlb/weather.json"
-	response = requests.get(u)
-	weather = response.json()
+	url = "https://api.github.com/repos/zhecht/lines/contents/static/mlb/weather.json"
+	response = requests.get(url, headers=headers)
+	lineups = response.json()
 
 	# bbref
 	with open(f"static/baseballreference/advanced.json") as fh:
