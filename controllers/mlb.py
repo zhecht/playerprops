@@ -2175,13 +2175,16 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 	with open(f"{prefix}static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	b = "https://raw.githubusercontent.com/zhecht/lines/master/static"
+	b = "https://api.github.com/repos/zhecht/lines/contents/static/mlb"
+	headers = {"Accept": "application/vnd.github.v3.raw"}
 	
-	response = requests.get(f"{b}/mlb/lineups.json")
+	response = requests.get(f"{b}/lineups.json", headers=headers)
 	lineups = response.json()
-	response = requests.get(f"{b}/mlb/circa.json")
+
+	response = requests.get(f"{b}/circa.json", headers=headers)
 	circaLines = response.json()
-	response = requests.get(f"{b}/mlb/weather.json")
+
+	response = requests.get(f"{b}/weather.json", headers=headers)
 	weather = response.json()
 
 	year = datetime.now().year
