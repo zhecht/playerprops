@@ -19,6 +19,11 @@ from bs4 import BeautifulSoup as BS
 from controllers.shared import *
 from datetime import datetime, timedelta
 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 q = queue.Queue()
 locks = {}
 for book in ["fd", "dk", "cz", "espn", "mgm", "kambi", "b365"]:
@@ -863,56 +868,41 @@ def writeFeedSplits(date, data):
 		with open(f"static/splits/mlb_feed/{team}.json", "w") as fh:
 			json.dump(j, fh)
 
-async def writeFeed(date, loop):
+def writeFeed(date):
 	if not date:
 		date = str(datetime.now())[:10]
-	url = f"https://baseballsavant.mlb.com/gamefeed?date={date}"
-	browser = await uc.start(no_sandbox=True)
-	page = await browser.get(url)
-	await page.wait_for(selector=".container-open")
-
-	with open("static/dailyev/feed_times.json") as fh:
-		times = json.load(fh)
-
-	with open("static/mlb/schedule.json") as fh:
+	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	i = 0
-	while True:
-		html = await page.get_content()
-		with open(f"static/dailyev/feed.html", "w") as fh:
-			fh.write(html)
+	url = f"https://baseballsavant.mlb.com/gamefeed?hf=exitVelocity&date={date}"
+	driver = webdriver.Firefox()
+	driver.get(f"https://baseballsavant.mlb.com/gamefeed?hf=exitVelocity&date={date}")
+	try:
+		element = WebDriverWait(driver, 10).until(
+			EC.presence_of_element_located((By.CLASS_NAME, "container-open"))
+		)
+	except:
+		driver.quit()
 
-		games = []
-		for gameData in schedule[date]:
-			if gameData["start"] and gameData["start"] != "LIVE":
-				dt = datetime.strptime(gameData["start"], "%I:%M %p")
-				dt = int(dt.strftime("%H%M"))
-				#print(dt, int(datetime.now().strftime("%H%M")))
-				if dt <= int(datetime.now().strftime("%H%M")):
-					games.append(gameData)
-		data = {}
-		parseFeed(data, times, len(games), len(schedule[date]), loop)
-		i += 1
-
-		if not loop:
-			writeFeedSplits(date, data)	
-			break
-		
-		time.sleep(1)
-		if i >= 5:
-			commitChanges()
-			i = 0
-
-	browser.stop()
-
-def parseFeed(data, times, liveGames, totGames, loop):
-	soup = BS(open("static/dailyev/feed.html", 'rb').read(), "lxml")
+	soup = BS(driver.page_source, "html.parser")
 	allTable = soup.find("div", id="allMetrics")
 	hdrs = [th.text.lower() for th in allTable.find_all("th")]
+	data = nested_dict()
+	starts = {}
+	gameIdxs = {}
+	liveGames = 0
+	for gameIdx, game in enumerate(schedule[date]):
+		starts[game["game"]] = game["start"]
+		gameIdxs[game["game"]] = gameIdx
+		if game["start"] and game["start"] != "LIVE" and game["start"] != "Postponed":
+			dt = datetime.strptime(game["start"], "%I:%M %p")
+			dt = int(dt.strftime("%H%M"))
+			if dt <= int(datetime.now().strftime("%H%M")):
+				liveGames += 1
+
 	data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
 	data["all"]["liveGames"] = liveGames
-	data["all"]["totGames"] = totGames
+	data["all"]["totGames"] = len(schedule[date])
 	for div in soup.find_all("div", class_="game-container"):
 		away = div.find("div", class_="team-left")
 		home = div.find("div", class_="team-right")
@@ -920,45 +910,39 @@ def parseFeed(data, times, liveGames, totGames, loop):
 		home = convertMLBTeam(home.text.strip())
 		game = f"{away} @ {home}"
 		data[game] = []
-		if game not in times:
-			times[game] = {}
-		table = div.find("div", class_="mini-ev-table")
-		if not table:
+		table = div.find("div", class_="exit-velocity-table")
+		if not table or not table.find("tbody"):
 			continue
 		for tr in table.find("tbody").find_all("tr"):
 			tds = tr.find_all("td")
-			player = parsePlayer(tds[1].text.strip())
-			img = tds[0].find("img").get("src")
+			player = parsePlayer(tds[2].text.strip())
+			pitcher = parsePlayer(tds[4].text.strip())
+			img = tr.find("img").get("src")
 			team = convertSavantLogoId(img.split("/")[-1].replace(".svg", ""))
 			hrPark = tds[-1].text.strip()
 
-			pa = tds[2].text.strip()
-			seen = pa in times[game]
-			dt = times[game].get(pa, str(datetime.now()).split(".")[0])
-			times[game][pa] = dt
+			pa = tds[5].text.strip()
 			j = {
 				"player": player,
+				"pitcher": pitcher,
 				"game": game,
+				"gameIdx": gameIdxs[game],
 				"hr/park": hrPark,
 				"pa": pa,
-				"dt": dt,
+				"dt": "",
 				"img": img,
-				"team": team
+				"team": team,
+				"start": starts[game]
 			}
-			i = 3
-			for hdr in ["in", "result", "evo", "la", "dist"]:
+			i = 6
+			for hdr in ["in", "result", "evo", "la", "dist", "speed", "mph", "xba"]:
 				j[hdr] = tds[i].text.strip()
 				i += 1
 
-			if loop and not seen and j["result"] == "Home Run":
-				#bsky.postHomer(j)
-				pass
 			data[game].append(j)
 
-	with open("static/dailyev/feed.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-	with open("static/dailyev/feed_times.json", "w") as fh:
-		json.dump(times, fh, indent=4)
+	driver.close()
+	writeFeedSplits(date, data)
 
 async def writeBVP(date):
 	with open(f"static/baseballreference/bvp.json") as fh:
@@ -1730,7 +1714,7 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeBVP(date))
 
 	if args.feed:
-		uc.loop().run_until_complete(writeFeed(date, args.loop))
+		writeFeed(date)
 	elif args.fd:
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
