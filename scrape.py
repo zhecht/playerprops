@@ -3886,6 +3886,7 @@ def updateData(file, data):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--bet365", action="store_true")
+	parser.add_argument("--b365", action="store_true")
 	parser.add_argument("--br", action="store_true")
 	parser.add_argument("--fd", action="store_true")
 	parser.add_argument("--espn", action="store_true")
@@ -3925,7 +3926,7 @@ if __name__ == '__main__':
 		sport = "ncaab"
 
 	games = {}
-	if args.bet365:
+	if args.bet365 or args.b365:
 		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
 		#games["1p-alternative-spread"] = "https://www.oh.bet365.com/?_h=e7RdY135g2O4m4S3xKSa1Q%3D%3D&btsffd=1#/AC/B17/C20836572/D517/E170393/F517/N3/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)

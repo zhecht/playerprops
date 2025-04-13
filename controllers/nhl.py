@@ -3223,20 +3223,23 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 							devig(evData, key, o, line, prop=prop, book="vs-circa")
 
 						if "mgm" in books:
-							l = int(j["mgm"].split("/")[0])
-							if i == 1:
-								if "/" in j["mgm"]:
-									l = int(j["mgm"].split("/")[-1])
+							try:
+								l = int(j["mgm"].split("/")[0])
+								if i == 1:
+									if "/" in j["mgm"] and j["mgm"].split("/")[-1] != "-":
+										l = int(j["mgm"].split("/")[-1])
+										devig(evData, key, ou, l, prop=prop, book="mgm")
+								else:
 									devig(evData, key, ou, l, prop=prop, book="mgm")
-							else:
-								devig(evData, key, ou, l, prop=prop, book="mgm")
 
-							if i == 0:
-								l = convertAmericanOdds(1 + (convertDecOdds(l) - 1) * 1.20)
-								devig(evData, key, ou, l, prop=prop, book="mgm-20")
+								if i == 0:
+									l = convertAmericanOdds(1 + (convertDecOdds(l) - 1) * 1.20)
+									devig(evData, key, ou, l, prop=prop, book="mgm-20")
 
-								if "circa" in books:
-									devig(evData, key, j["circa"], l, prop=prop, book="mgm-20-vs-circa")
+									if "circa" in books:
+										devig(evData, key, j["circa"], l, prop=prop, book="mgm-20-vs-circa")
+							except:
+								pass
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							#print(key)
