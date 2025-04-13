@@ -368,6 +368,8 @@ def convertNHLTeam(team):
 		return "wsh"
 	elif t == "cal":
 		return "cgy"
+	elif t in ["co!", "ct"]:
+		return "col"
 	elif (t == "col" and "columbus" in team) or t == "clb":
 		return "cbj"
 	elif t == "flo":
@@ -378,6 +380,8 @@ def convertNHLTeam(team):
 		return "nsh"
 	elif t == "mon":
 		return "mtl"
+	elif t == "nyt":
+		return "nyi"
 	elif t == "new" or t == "ny":
 		if "rangers" in team:
 			return "nyr"
@@ -390,7 +394,7 @@ def convertNHLTeam(team):
 		return "tb"
 	elif t == "st.":
 		return "stl"
-	elif t in ["veg", "vgk"]:
+	elif t in ["veg", "vgk", "vgi"]:
 		return "vgk"
 	elif t == "win":
 		return "wpg"

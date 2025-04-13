@@ -30,6 +30,7 @@ elif os.path.exists("/home/playerprops/playerprops"):
 	prefix = "/home/playerprops/playerprops/"
 
 def convertFDTeam(team):
+	team = team.lower()
 	if team.endswith("predators"):
 		team = "nsh"
 	elif team.endswith("lightning"):
@@ -503,6 +504,61 @@ def mergeCirca():
 	with open("static/nhl/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
+def writeCircaMain(page, data):
+	page.save("outnhlmain.png", "PNG")
+	img = Image.open("outnhlmain.png")
+	bottom, top = 2250, 495
+	left,right = 295, 1575
+
+	game_top = top
+	game_img = img.crop((left,game_top,right,game_top+75)) # l,t,r,b
+	game_img.save("outnhlgame.png", "PNG")
+
+	game_w, game_h = game_img.size
+	ml_img = game_img.crop((0,0,300,game_h))
+	ml_img.save("outnhlml.png", "PNG")
+	ml_text = pytesseract.image_to_string(ml_img).split("\n")
+
+	away = convertFDTeam(ml_text[0].split(" ")[0])
+	home = convertFDTeam(ml_text[1].split(" ")[0])
+	game = f"{away} @ {home}"
+	data[game]["ml"] = ml_text[0].split(" ")[-1]+"/"+ml_text[1].split(" ")[-1]
+
+	tot_img = game_img.crop((300,0,400,game_h))
+	tot_text = pytesseract.image_to_string(tot_img).split("\n")
+	line = tot_text[1].split(" ")[0].replace("%", ".5")
+	data[game]["total"][line] = tot_text[0]+"/"+tot_text[1].split(" ")[-1]
+
+	sp_img = game_img.crop((420,0,420+125,game_h))
+	sp_img.save("outnhlsp.png", "PNG")
+	sp_text = pytesseract.image_to_string(sp_img).split("\n")
+	line = sp_text[0].split(" ")[0]
+	if len(line) == 3 and line.endswith("4"):
+		line = line.replace("4", ".5")
+	line = str(float(line))
+	data[game]["spread"][line] = sp_text[0].split(" ")[-1]+"/"+sp_text[1].split(" ")[-1]
+
+	ml_1p_img = game_img.crop((610,0,675,game_h))
+	ml_1p_text = pytesseract.image_to_string(ml_1p_img).split("\n")
+	ml_1p_text = [x for x in ml_1p_text if x.strip()]
+	data[game]["1p_ml"] = ml_1p_text[0]+"/"+ml_1p_text[1]
+
+	sp_1p_img = game_img.crop((780,0,890,game_h))
+	sp_1p_text = pytesseract.image_to_string(sp_1p_img).split("\n")
+	line = "0.5" if sp_1p_text[0].startswith("+") else "-0.5"
+	data[game]["1p_spread"][line] = sp_1p_text[0].split(" ")[-1]+"/"+sp_1p_text[1].split(" ")[-1]
+
+	alt_sp_img = game_img.crop((980,0,1095,game_h))
+	alt_sp_text = pytesseract.image_to_string(alt_sp_img).split("\n")
+	line = alt_sp_text[0].split(" ")[0].replace("%", ".5")
+	line = str(float(line))
+	data[game]["spread"][line] = alt_sp_text[0].split(" ")[-1]+"/"+alt_sp_text[1].split(" ")[-1]
+
+	gift_img = game_img.crop((1220,0,game_w,game_h))
+	gift_text = pytesseract.image_to_string(gift_img).split("\n")
+	gift_text = [x for x in gift_text if x.strip()]
+	data[game]["gift"] = gift_text[0]+"/"+gift_text[1]
+
 def writeCirca(date):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -519,11 +575,18 @@ def writeCirca(date):
 	today = datetime.strptime(date, "%Y-%m-%d")
 	dt = today.strftime("%Y-%-m-%-d")
 
-	file = f"/mnt/c/Users/zhech/Downloads/NHL Props - {dt}.pdf"
+	file = f"/mnt/c/Users/zhech/Downloads/NHL - {dt}.pdf"
 	pages = convert_from_path(file)
 	data = nested_dict()
 	props = nested_dict()
+
+
 	#pages = [pages[1]]
+	writeCircaMain(pages[0], data)
+
+	with open("static/nhl/circa.json", "w") as fh:
+		json.dump(data, fh, indent=4)
+	exit()
 	
 	for pageIdx, page in enumerate(pages):
 		page.save("outnhl.png", "PNG")
