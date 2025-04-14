@@ -2012,8 +2012,8 @@ def writeGamelogs():
 			homeAB,homeH,homeHR = int(row[49]),int(row[49+1]),int(row[49+4])
 
 			data[year][date][game] = {
-				"hr": awayHR + homeHR
-				"hr": awayHR + homeHR
+				"hr": awayHR + homeHR,
+				"h": awayH + homeH
 			}
 
 	with open("static/baseballreference/gamelogs.json", "w") as fh:
