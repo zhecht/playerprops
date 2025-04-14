@@ -2591,7 +2591,8 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 								"ou": ou,
 								"line": float(playerHandicap.strip() or 0),
 								"odds": line,
-								"ev": evData[key]["ev"]
+								"ev": evData[key]["ev"],
+								"bookOdds": j
 							}
 
 						evData[key]["weather"] = gameWeather
