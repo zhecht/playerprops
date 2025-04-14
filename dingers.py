@@ -1097,14 +1097,12 @@ def writeMonths():
 			except:
 				hr = 0
 			hr_g = round(hr / yearData[dt]["totGames"], 2)
-			monthData.setdefault(m, {"hr": [], "g": [], "hr/g": [], "dt": []})
-			monthData[m]["hr"].append(hr)
-			monthData[m]["g"].append(yearData[dt]["totGames"])
-			monthData[m]["hr/g"].append(round(hr / yearData[dt]["totGames"], 2))
-			monthData[m]["dt"].append(dt)
+			monthData[year].setdefault(m, {"hr": [], "g": [], "hr/g": [], "dt": []})
+			monthData[year][m]["hr"].append(hr)
+			monthData[year][m]["g"].append(yearData[dt]["totGames"])
+			monthData[year][m]["hr/g"].append(round(hr / yearData[dt]["totGames"], 2))
+			monthData[year][m]["dt"].append(dt)
 
-			if dt == "2025-04-06":
-				print(hr)
 			data.setdefault(year, {"hr": [], "g": [], "hr/g": [], "dt": []})
 			data[year]["hr"].append(hr)
 			data[year]["g"].append(yearData[dt]["totGames"])
