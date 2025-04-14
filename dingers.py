@@ -1113,6 +1113,8 @@ def writeMonths():
 
 	with open("static/splits/mlb_feed/feed_xy.json", "w") as fh:
 		json.dump(data, fh)
+	with open("static/splits/mlb_feed/month_xy.json", "w") as fh:
+		json.dump(monthData, fh)
 
 async def writeBVP(date):
 	with open(f"static/baseballreference/bvp.json") as fh:
