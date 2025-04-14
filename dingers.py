@@ -1296,7 +1296,7 @@ def writeStatsPage(date):
 			except:
 				order = "-"
 
-			dailyLines = {}
+			dailyLines = {"line": line}
 			try:
 				dailyLines = daily[date][game][prop][player]
 			except:
@@ -1340,8 +1340,8 @@ def writeStatsPage(date):
 				logs = playerStats.get(prop, [])
 
 				if totGames:
-					hitRate = round(len([x for x in logs if x > line]) * 100 / totGames)
-					hitRateL10 = round(len([x for x in logs[-10:] if x > line]) * 100 / min(totGames, 10))
+					hitRate = round(len([x for x in logs if x > dailyLines["line"]]) * 100 / totGames)
+					hitRateL10 = round(len([x for x in logs[-10:] if x > dailyLines["line"]]) * 100 / min(totGames, 10))
 
 			playerStatsHist = teamStatsHist.get(player, {})
 			playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
@@ -1356,7 +1356,7 @@ def writeStatsPage(date):
 				logsLYR = playerStatsHist.get(prop, [])
 
 				if totGamesLYR:
-					hitRateLYR = round(len([x for x in logsLYR if x > line]) * 100 / totGamesLYR)
+					hitRateLYR = round(len([x for x in logsLYR if x > dailyLines["line"]]) * 100 / totGamesLYR)
 
 			data.append({
 				"player": player, "team": team, "opp": opp,
@@ -1364,7 +1364,7 @@ def writeStatsPage(date):
 				"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
 				"bvpHR": bvpHR, "bvpAvg": bvpAvg,
 				"order": order,
-				"prop": prop, "line": line, "book": "", "bookOdds": {},
+				"prop": prop, "line": dailyLines["line"], "book": "", "bookOdds": {},
 				"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
 				"feed": {
 					"evo": [float(x or 0.0) for x in evos],

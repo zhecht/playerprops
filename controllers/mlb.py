@@ -2589,7 +2589,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							daily[date][game][prop][player] = {
 								"book": evBook,
 								"ou": ou,
-								"line": playerHandicap,
+								"line": float(playerHandicap.strip() or 0),
 								"odds": line,
 								"ev": evData[key]["ev"]
 							}
