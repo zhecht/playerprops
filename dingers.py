@@ -1055,7 +1055,7 @@ def fixFeed():
 		year = str(year)
 		totals = nested_dict()
 		for team in os.listdir(f"static/splits/mlb_feed/{year}/"):
-			if team == "logs.zip" or "-" in team:
+			if team == "logs.zip" or "-" in team or team == "None":
 				continue
 			with open(f"static/splits/mlb_feed/{year}/{team}") as fh:
 				feed = json.load(fh)
