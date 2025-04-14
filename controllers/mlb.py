@@ -2588,6 +2588,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							daily[date][game].setdefault(prop, {})
 							daily[date][game][prop][player] = {
 								"book": evBook,
+								"ou": ou,
 								"line": playerHandicap,
 								"odds": line,
 								"ev": evData[key]["ev"]
