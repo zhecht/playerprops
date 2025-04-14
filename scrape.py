@@ -593,6 +593,7 @@ async def write365FromHTML(data, html, sport, prop):
 			data[game]["rfi"] = f"{over.text}/{under.text}"
 		return
 
+	seen = {}
 	for gameDiv in soup.select(".gl-MarketGroupPod"):
 		game = gameDiv.find("div", class_="src-FixtureSubGroupButton_Text")
 		sep = "v" if sport == "soccer" else "@"
@@ -616,6 +617,9 @@ async def write365FromHTML(data, html, sport, prop):
 			away = convertMLBTeam(away)
 			home = convertMLBTeam(home)
 		game = f"{away} {sep} {home}"
+		if game in seen:
+			game += "-gm2"
+		seen[game] = True
 
 		if "spread" in prop:
 			overs = gameDiv.select(".gl-Market_General:nth-of-type(1) div[role=button]")
