@@ -1231,6 +1231,9 @@ def writeStatsPage(date):
 	with open(f"static/baseballreference/parkFactors.json") as fh:
 		parkFactors = json.load(fh)
 
+	with open(f"static/mlb/daily.json") as fh:
+		daily = json.load(fh)
+
 	teamGame = {}
 	opps = {}
 	for game in schedule[date]:
@@ -1278,6 +1281,12 @@ def writeStatsPage(date):
 			if oppRankings:
 				oppRank = oppRankings["rankSuffix"]
 				oppRankClass = oppRankings["rankClass"]
+		except:
+			pass
+
+		dailyLines = {}
+		try:
+			dailyLines = daily[date][game][prop][player]
 		except:
 			pass
 
@@ -1368,7 +1377,8 @@ def writeStatsPage(date):
 				"oppRank": oppRank, "oppRankClass": oppRankClass,
 				"weather": gameWeather, "stadiumRank": stadiumRank,
 				"100-evo": over100, "300-ft": over300ft,
-				"playerYears": playerYears
+				"playerYears": playerYears,
+				"daily": dailyLines
 			})
 
 	if False:

@@ -2174,6 +2174,11 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 	with open(f"{prefix}static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
+	with open(f"{prefix}static/mlb/daily.json") as fh:
+		daily = json.load(fh)
+
+	daily.setdefault(date, {})
+
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/mlb"
 	headers = {"Accept": "application/vnd.github.v3.raw"}
 	
@@ -2578,6 +2583,16 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
 
+						if player and i == 0:
+							daily[date].setdefault(game, {})
+							daily[date][game].setdefault(prop, {})
+							daily[date][game][prop][player] = {
+								"book": evBook,
+								"line": playerHandicap,
+								"odds": line,
+								"ev": evData[key]["ev"]
+							}
+
 
 						evData[key]["weather"] = gameWeather
 						evData[key]["implied"] = implied
@@ -2611,6 +2626,9 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 						evData[key]["totalOverLastYear"] = totalOverLastYear
 						evData[key]["oppRank"] = oppRank
 						evData[key]["oppRankLastYear"] = oppRankLastYear
+
+	with open(f"{prefix}static/mlb/daily.json", "w") as fh:
+		json.dump(daily, fh, indent=4)
 
 	with open(f"{prefix}static/mlb/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
