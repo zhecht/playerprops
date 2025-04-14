@@ -527,7 +527,7 @@ def writeCircaProps(page, data, teamGame):
 		team = convertNHLTeam(player.split(")")[0].split("(")[-1])
 		game = teamGame.get(team, "")
 		player = parsePlayer(player.lower().split(" (")[0])
-		data[game][player] = over_text[playerIdx]+"/"+under_text[playerIdx]
+		data[game][player]["atgs"] = over_text[playerIdx]+"/"+under_text[playerIdx]
 
 def writeCircaMain(page, data):
 	page.save("outnhlmain.png", "PNG")
