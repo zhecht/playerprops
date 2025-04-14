@@ -1284,12 +1284,6 @@ def writeStatsPage(date):
 		except:
 			pass
 
-		dailyLines = {}
-		try:
-			dailyLines = daily[date][game][prop][player]
-		except:
-			pass
-
 		pitcherSummary = ""
 		babip = ""
 		if pitcher in advanced:
@@ -1301,6 +1295,12 @@ def writeStatsPage(date):
 				order = lineups[team]["batters"].index(player)+1
 			except:
 				order = "-"
+
+			dailyLines = {}
+			try:
+				dailyLines = daily[date][game][prop][player]
+			except:
+				pass
 			bvpStats = bvpData[team].get(player+' v '+pitcher, {})
 			bvp = ""
 			bvpHR = bvpAvg = 0

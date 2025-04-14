@@ -2594,7 +2594,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 								"ev": evData[key]["ev"]
 							}
 
-
 						evData[key]["weather"] = gameWeather
 						evData[key]["implied"] = implied
 						evData[key]["team"] = team
