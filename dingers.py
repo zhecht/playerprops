@@ -845,26 +845,27 @@ def writeFeed(date):
 	base = f"https://baseballsavant.mlb.com/gamefeed?date="
 	dates = [date]
 	
-	seasonStarts = {
-		"2024": [datetime(2024,3,20), datetime(2024,9,30)],
-		"2023": [datetime(2023,3,30), datetime(2023,10,1)],
-		"2022": [datetime(2022,4,7), datetime(2022,10,5)],
-		"2021": [datetime(2021,4,1), datetime(2021,10,3)],
-		"2020": [datetime(2020,7,23), datetime(2020,9,27)],
-		"2019": [datetime(2019,3,28), datetime(2019,9,29)],
-		"2018": [datetime(2018,3,29), datetime(2018,9,30)],
-		"2017": [datetime(2017, 4, 2), datetime(2017, 10, 1)],
-		"2016": [datetime(2016, 4, 3), datetime(2016, 10, 2)],
-		#"2015": [datetime(2015, 4, 5), datetime(2015, 10, 4)],
-	}
-	seasonStarts = {"2023": seasonStarts["2023"]}
-	print(seasonStarts.keys())
-	dates = []
-	for y in seasonStarts:
-		start_dt = seasonStarts[y][0]
-		d = [(start_dt + timedelta(days=i)).strftime("%Y-%m-%d")
-				for i in range((seasonStarts[y][1] - start_dt).days + 1)]
-		dates.extend(d)
+	if False:
+		seasonStarts = {
+			"2024": [datetime(2024,3,20), datetime(2024,9,30)],
+			"2023": [datetime(2023,3,30), datetime(2023,10,1)],
+			"2022": [datetime(2022,4,7), datetime(2022,10,5)],
+			"2021": [datetime(2021,4,1), datetime(2021,10,3)],
+			"2020": [datetime(2020,7,23), datetime(2020,9,27)],
+			"2019": [datetime(2019,3,28), datetime(2019,9,29)],
+			"2018": [datetime(2018,3,29), datetime(2018,9,30)],
+			"2017": [datetime(2017, 4, 2), datetime(2017, 10, 1)],
+			"2016": [datetime(2016, 4, 3), datetime(2016, 10, 2)],
+			#"2015": [datetime(2015, 4, 5), datetime(2015, 10, 4)],
+		}
+		seasonStarts = {"2023": seasonStarts["2023"]}
+		print(seasonStarts.keys())
+		dates = []
+		for y in seasonStarts:
+			start_dt = seasonStarts[y][0]
+			d = [(start_dt + timedelta(days=i)).strftime("%Y-%m-%d")
+					for i in range((seasonStarts[y][1] - start_dt).days + 1)]
+			dates.extend(d)
 
 	for dt in dates:
 		date = dt
@@ -898,10 +899,7 @@ def writeFeed(date):
 		#print(dt, len(hdrs))
 		data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
 		data["all"]["liveGames"] = liveGames
-		if sameYear:
-			data["all"]["totGames"] = len(schedule[date])
-		else:
-			data["all"]["totGames"] = len(soup.find_all("div", class_="game-container"))
+		#data["all"]["totGames"] = len(soup.find_all("div", class_="game-container"))
 
 		for div in soup.find_all("div", class_="game-container"):
 			away = div.find("div", class_="team-left")
@@ -909,6 +907,10 @@ def writeFeed(date):
 			away = convertMLBTeam(away.text.strip())
 			home = convertMLBTeam(home.text.strip())
 			game = f"{away} @ {home}"
+
+			if "POSTPONED" in div.text:
+				continue
+			data["all"]["totGames"] = data["all"].get("totGames", 0) + 1
 			if (date == "2025-03-18" or date == "2025-03-19") and "lad" not in game:
 				continue
 			if (date == "2024-03-20" or date == "2024-03-21") and "lad" not in game:
@@ -999,6 +1001,33 @@ def writeFeedSplits(date, data, sameYear):
 				j[player][key] = splits[team][player][key]
 		with open(f"{base}/{team}.json", "w") as fh:
 			json.dump(j, fh)
+
+def writeMonths():
+	monthData = nested_dict()
+	data = nested_dict()
+	for year in range(2015,2026):
+		year = str(year)
+		with open(f"static/splits/mlb_feed/{year}.json") as fh:
+			yearData = json.load(fh)
+		dts = sorted(yearData)
+		for dt in dts:
+			if yearData[dt]["totGames"] == 0:
+				continue
+			y,m,d = map(str, dt.split("-"))
+			hr = int(yearData[dt]["hr"])
+			hr_g = round(hr / yearData[dt]["totGames"], 2)
+			monthData.setdefault(m, {"hr": [], "g": [], "dt": []})
+			monthData[m]["hr"].append(hr)
+			monthData[m]["g"].append(yearData[dt]["totGames"])
+			monthData[m]["dt"].append(dt)
+
+			data.setdefault(year, {"hr": [], "g": [], "dt": []})
+			data[year]["hr"].append(hr)
+			data[year]["g"].append(yearData[dt]["totGames"])
+			data[year]["dt"].append(dt)
+
+	with open("static/splits/mlb_feed/feed_xy.json", "w") as fh:
+		json.dump(data, fh)
 
 async def writeBVP(date):
 	with open(f"static/baseballreference/bvp.json") as fh:
@@ -1745,6 +1774,7 @@ if __name__ == '__main__':
 	parser.add_argument("--clear", action="store_true")
 	parser.add_argument("--stats", action="store_true")
 	parser.add_argument("--circa", action="store_true")
+	parser.add_argument("--months", action="store_true")
 	parser.add_argument("--merge-circa", action="store_true")
 
 	args = parser.parse_args()
@@ -1771,6 +1801,8 @@ if __name__ == '__main__':
 
 	if args.feed:
 		writeFeed(date)
+	elif args.months:
+		writeMonths()
 	elif args.fd:
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
