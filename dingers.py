@@ -855,7 +855,7 @@ def writeFeed(date, yearArg):
 			"2018": [datetime(2018,3,29), datetime(2018,9,30)],
 			"2017": [datetime(2017, 4, 2), datetime(2017, 10, 1)],
 			"2016": [datetime(2016, 4, 3), datetime(2016, 10, 2)],
-			#"2015": [datetime(2015, 4, 5), datetime(2015, 10, 4)],
+			"2015": [datetime(2015, 4, 5), datetime(2015, 10, 4)],
 		}
 		if not yearArg:
 			print("need year")
