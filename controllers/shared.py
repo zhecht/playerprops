@@ -3,6 +3,7 @@ import nodriver as uc
 import unicodedata
 import git
 import json
+import numpy as np
 import os
 from datetime import datetime
 
@@ -25,6 +26,20 @@ def getSuffix(num):
 	elif num % 10 == 3:
 		return "rd"
 	return "th"
+
+def linearRegression(x, y):
+	n = len(x)
+	sum_x = np.sum(x)
+	sum_y = np.sum(y)
+	sum_xy = np.sum(np.multiply(x, y))
+	sum_xx = np.sum(np.square(x))
+
+	slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x ** 2)
+	intercept = (sum_y - slope * sum_x) / n
+
+	predicted_y = [slope * xi + intercept for xi in x]
+
+	return {"slope": slope, "intercept": intercept, "predicted_y": predicted_y}
 
 # Write open/closing line values
 def writeHistorical(date, book, gameStarted=None):

@@ -834,13 +834,11 @@ def writeKambi(date):
 
 	updateData(book, data)
 
-def writeFeed(date):
+def writeFeed(date, yearArg):
 	if not date:
 		date = str(datetime.now())[:10]
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
-
-	driver = webdriver.Firefox()
 
 	base = f"https://baseballsavant.mlb.com/gamefeed?date="
 	dates = [date]
@@ -859,7 +857,10 @@ def writeFeed(date):
 			"2016": [datetime(2016, 4, 3), datetime(2016, 10, 2)],
 			#"2015": [datetime(2015, 4, 5), datetime(2015, 10, 4)],
 		}
-		seasonStarts = {"2025": seasonStarts["2025"]}
+		if not yearArg:
+			print("need year")
+			exit()
+		seasonStarts = {yearArg: seasonStarts[yearArg]}
 		print(seasonStarts.keys())
 		dates = []
 		for y in seasonStarts:
@@ -867,6 +868,8 @@ def writeFeed(date):
 			d = [(start_dt + timedelta(days=i)).strftime("%Y-%m-%d")
 					for i in range((seasonStarts[y][1] - start_dt).days + 1)]
 			dates.extend(d)
+
+	driver = webdriver.Firefox()
 
 	for dt in dates:
 		date = dt
@@ -1003,6 +1006,37 @@ def writeFeedSplits(date, data, sameYear):
 				j[player][key] = splits[team][player][key]
 		with open(f"{base}/{team}.json", "w") as fh:
 			json.dump(j, fh)
+
+def writeHot():
+	CUTOFF = 12
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+	trends = []
+	for team in roster:
+		with open(f"static/splits/mlb_feed/{team}.json") as fh:
+			feed = json.load(fh)
+		for player in feed:
+			bip = []
+			for key in sorted(feed[player]):
+				if int(feed[player][key]["dist"] or "0") == 0:
+					continue
+				feed[player][key]["dt"] = "-".join(key.split("-")[:-1])
+				bip.append(int(feed[player][key]["dist"]))
+
+			if len(bip) < CUTOFF:
+				continue
+
+			regression = linearRegression(range(min(CUTOFF, len(bip))), bip[-CUTOFF:])
+			trends.append({
+				"team": team, "player": player,
+				"slope": regression["slope"],
+				"predictedY": regression["predicted_y"],
+				"y": bip[-CUTOFF:]
+			})
+
+	trends.sort(key=lambda k: k["slope"], reverse=True)
+	with open("static/mlb/trends.json", "w") as fh:
+		json.dump(trends, fh)
 
 def writeMonths():
 	monthData = nested_dict()
@@ -1757,6 +1791,7 @@ if __name__ == '__main__':
 	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("--yest", action="store_true")
 	parser.add_argument("--date", "-d")
+	parser.add_argument("--year")
 	parser.add_argument("--print", "-p", action="store_true")
 	parser.add_argument("--update", "-u", action="store_true")
 	parser.add_argument("--bvp", action="store_true")
@@ -1782,6 +1817,7 @@ if __name__ == '__main__':
 	parser.add_argument("--circa", action="store_true")
 	parser.add_argument("--months", action="store_true")
 	parser.add_argument("--merge-circa", action="store_true")
+	parser.add_argument("--hot", action="store_true")
 
 	args = parser.parse_args()
 
@@ -1806,9 +1842,11 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeBVP(date))
 
 	if args.feed:
-		writeFeed(date)
+		writeFeed(date, args.year)
 	elif args.months:
 		writeMonths()
+	elif args.hot:
+		writeHot()
 	elif args.fd:
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
