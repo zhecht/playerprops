@@ -1016,14 +1016,16 @@ def writeMonths():
 			y,m,d = map(str, dt.split("-"))
 			hr = int(yearData[dt]["hr"])
 			hr_g = round(hr / yearData[dt]["totGames"], 2)
-			monthData.setdefault(m, {"hr": [], "g": [], "dt": []})
+			monthData.setdefault(m, {"hr": [], "g": [], "hr/g": [], "dt": []})
 			monthData[m]["hr"].append(hr)
 			monthData[m]["g"].append(yearData[dt]["totGames"])
+			monthData[m]["hr/g"].append(round(hr / yearData[dt]["totGames"], 2))
 			monthData[m]["dt"].append(dt)
 
-			data.setdefault(year, {"hr": [], "g": [], "dt": []})
+			data.setdefault(year, {"hr": [], "g": [], "hr/g": [], "dt": []})
 			data[year]["hr"].append(hr)
 			data[year]["g"].append(yearData[dt]["totGames"])
+			data[year]["hr/g"].append(round(hr / yearData[dt]["totGames"], 2))
 			data[year]["dt"].append(dt)
 
 	with open("static/splits/mlb_feed/feed_xy.json", "w") as fh:
