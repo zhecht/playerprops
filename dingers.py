@@ -1092,7 +1092,10 @@ def writeMonths():
 			if yearData[dt]["totGames"] == 0:
 				continue
 			y,m,d = map(str, dt.split("-"))
-			hr = int(yearData[dt]["hr"])
+			try:
+				hr = int(yearData[dt]["hr"])
+			except:
+				hr = 0
 			hr_g = round(hr / yearData[dt]["totGames"], 2)
 			monthData.setdefault(m, {"hr": [], "g": [], "hr/g": [], "dt": []})
 			monthData[m]["hr"].append(hr)
