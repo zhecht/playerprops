@@ -843,7 +843,7 @@ def writeFeed(date, yearArg):
 	base = f"https://baseballsavant.mlb.com/gamefeed?date="
 	dates = [date]
 	
-	if True:
+	if yearArg:
 		seasonStarts = {
 			"2025": [datetime(2025,3,28), datetime.now()],
 			"2024": [datetime(2024,3,20), datetime(2024,9,30)],
@@ -857,9 +857,6 @@ def writeFeed(date, yearArg):
 			"2016": [datetime(2016, 4, 3), datetime(2016, 10, 2)],
 			"2015": [datetime(2015, 4, 5), datetime(2015, 10, 4)],
 		}
-		if not yearArg:
-			print("need year")
-			exit()
 		seasonStarts = {yearArg: seasonStarts[yearArg]}
 		print(seasonStarts.keys())
 		dates = []
@@ -882,7 +879,7 @@ def writeFeed(date, yearArg):
 			)
 		except:
 			continue
-		time.sleep(1)
+		time.sleep(1.5)
 
 		soup = BS(driver.page_source, "html.parser")
 		allTable = soup.find("div", id="allMetrics")
@@ -921,6 +918,9 @@ def writeFeed(date, yearArg):
 			if (date == "2024-03-20" or date == "2024-03-21") and "lad" not in game:
 				continue
 
+			if game in data:
+				game += "-gm2"
+
 			data[game] = []
 			table = div.find("div", class_="mini-ev-table")
 			if not table or not table.find("tbody"):
@@ -954,7 +954,13 @@ def writeFeed(date, yearArg):
 
 				data[game].append(j)
 		writeFeedSplits(date, data, sameYear)
+	
 	driver.close()
+
+	if yearArg:
+		base = f"static/splits/mlb_feed/{yearArg}"
+		os.system(f"zip -r {base}/logs.zip {base}/ -i {base}/{yearArg}-*")
+		os.system(f"rm {base}/{yearArg}-*")
 
 def writeFeedSplits(date, data, sameYear):
 	year = date.split("-")[0]
@@ -1017,26 +1023,60 @@ def writeHot():
 			feed = json.load(fh)
 		for player in feed:
 			bip = []
+			evos = []
 			for key in sorted(feed[player]):
 				if int(feed[player][key]["dist"] or "0") == 0:
 					continue
 				feed[player][key]["dt"] = "-".join(key.split("-")[:-1])
 				bip.append(int(feed[player][key]["dist"]))
+				evos.append(float(feed[player][key]["evo"] or "0"))
 
 			if len(bip) < CUTOFF:
 				continue
 
 			regression = linearRegression(range(min(CUTOFF, len(bip))), bip[-CUTOFF:])
+			evo_regression = linearRegression(range(min(CUTOFF, len(evos))), evos[-CUTOFF:])
 			trends.append({
 				"team": team, "player": player,
 				"slope": regression["slope"],
 				"predictedY": regression["predicted_y"],
-				"y": bip[-CUTOFF:]
+				"y": bip[-CUTOFF:],
+				"evoPredictedY": evo_regression["predicted_y"],
+				"evoY": evos[-CUTOFF:],
 			})
 
 	trends.sort(key=lambda k: k["slope"], reverse=True)
 	with open("static/mlb/trends.json", "w") as fh:
 		json.dump(trends, fh)
+
+def fixFeed():
+	for year in range(2015,2026):
+		year = str(year)
+		totals = nested_dict()
+		for team in os.listdir(f"static/splits/mlb_feed/{year}/"):
+			if team == "logs.zip" or "-" in team:
+				continue
+			with open(f"static/splits/mlb_feed/{year}/{team}") as fh:
+				feed = json.load(fh)
+			for player in feed:
+				for play in feed[player]:
+					if feed[player][play]["result"] == "Home Run":
+						y,m,d,pa = map(str, play.split("-"))
+						dt = f"{y}-{m}-{d}"
+						if dt == "2015-05-09":
+							print(team, player, play)
+						totals[dt].setdefault("hr", 0)
+						totals[dt]["hr"] += 1
+			
+		with open(f"static/splits/mlb_feed/{year}.json") as fh:
+			yearData = json.load(fh)
+
+		for dt in yearData:
+			allHr = int(yearData[dt]["hr"])
+			if allHr != totals.get(dt, {}).get("hr", 0):
+				print(dt, allHr, totals[dt]["hr"])
+				exit()
+
 
 def writeMonths():
 	monthData = nested_dict()
@@ -1817,6 +1857,7 @@ if __name__ == '__main__':
 	parser.add_argument("--circa", action="store_true")
 	parser.add_argument("--months", action="store_true")
 	parser.add_argument("--merge-circa", action="store_true")
+	parser.add_argument("--fix-feed", action="store_true")
 	parser.add_argument("--hot", action="store_true")
 
 	args = parser.parse_args()
@@ -1843,6 +1884,8 @@ if __name__ == '__main__':
 
 	if args.feed:
 		writeFeed(date, args.year)
+	elif args.fix_feed:
+		fixFeed()
 	elif args.months:
 		writeMonths()
 	elif args.hot:
