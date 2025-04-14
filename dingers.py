@@ -834,49 +834,15 @@ def writeKambi(date):
 
 	updateData(book, data)
 
-def writeFeedSplits(date, data):
-	with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
-		json.dump(data, fh)
-
-	allFeed = []
-	splits = nested_dict()
-	for game in data:
-		if game == "all":
-			continue
-		for playData in data[game]:
-			splits[playData["team"]][playData["player"]][f"{date}-{playData['pa'].zfill(2)}"] = {
-				"hr/park": playData["hr/park"],
-				"pa": playData["pa"],
-				"in": playData["in"],
-				"result": playData["result"],
-				"evo": playData["evo"],
-				"la": playData["la"],
-				"dist": playData["dist"],
-			}
-
-	for team in splits:
-		j = nested_dict()
-		try:
-			with open(f"static/splits/mlb_feed/{team}.json") as fh:
-				j.update(json.load(fh))
-		except:
-			pass
-
-		for player in splits[team]:
-			for key in splits[team][player]:
-				j[player][key] = splits[team][player][key]
-		with open(f"static/splits/mlb_feed/{team}.json", "w") as fh:
-			json.dump(j, fh)
-
 def writeFeed(date):
 	if not date:
 		date = str(datetime.now())[:10]
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	url = f"https://baseballsavant.mlb.com/gamefeed?hf=exitVelocity&date={date}"
+	url = f"https://baseballsavant.mlb.com/gamefeed?date={date}"
 	driver = webdriver.Firefox()
-	driver.get(f"https://baseballsavant.mlb.com/gamefeed?hf=exitVelocity&date={date}")
+	driver.get(url)
 	try:
 		element = WebDriverWait(driver, 10).until(
 			EC.presence_of_element_located((By.CLASS_NAME, "container-open"))
@@ -909,33 +875,37 @@ def writeFeed(date):
 		away = convertMLBTeam(away.text.strip())
 		home = convertMLBTeam(home.text.strip())
 		game = f"{away} @ {home}"
+		if (date == "2025-03-18" or date == "2025-03-19") and "lad" not in game:
+			continue
+
 		data[game] = []
-		table = div.find("div", class_="exit-velocity-table")
+		table = div.find("div", class_="mini-ev-table")
 		if not table or not table.find("tbody"):
 			continue
 		for tr in table.find("tbody").find_all("tr"):
 			tds = tr.find_all("td")
-			player = parsePlayer(tds[2].text.strip())
-			pitcher = parsePlayer(tds[4].text.strip())
+			player = parsePlayer(tds[1].text.strip())
+			#print(player)
+			#pitcher = parsePlayer(tds[4].text.strip())
 			img = tr.find("img").get("src")
 			team = convertSavantLogoId(img.split("/")[-1].replace(".svg", ""))
 			hrPark = tds[-1].text.strip()
 
-			pa = tds[5].text.strip()
+			pa = tds[2].text.strip()
 			j = {
 				"player": player,
-				"pitcher": pitcher,
+				#"pitcher": pitcher,
 				"game": game,
-				"gameIdx": gameIdxs[game],
+				"gameIdx": gameIdxs.get(game, 0),
 				"hr/park": hrPark,
 				"pa": pa,
 				"dt": "",
 				"img": img,
 				"team": team,
-				"start": starts[game]
+				"start": starts.get(game, "")
 			}
-			i = 6
-			for hdr in ["in", "result", "evo", "la", "dist", "speed", "mph", "xba"]:
+			i = 3
+			for hdr in ["in", "result", "evo", "la", "dist"]:
 				j[hdr] = tds[i].text.strip()
 				i += 1
 
@@ -943,6 +913,54 @@ def writeFeed(date):
 
 	driver.close()
 	writeFeedSplits(date, data)
+
+def writeFeedSplits(date, data):
+	with open(f"static/splits/mlb_feed/{date}.json", "w") as fh:
+		json.dump(data, fh)
+
+	year = date.split("-")[0]
+	yearData = nested_dict()
+	if os.path.exists(f"static/splits/mlb_feed/{year}.json"):
+		with open(f"static/splits/mlb_feed/{year}.json") as fh:
+			yearData = json.load(fh)
+
+	yearData[date] = data["all"]
+
+	allFeed = []
+	splits = nested_dict()
+	for game in data:
+		if game == "all":
+			continue
+		elif date in ["2025-03-18", "2025-03-19"] and "lad" not in game:
+			continue #preseason
+		for playData in data[game]:
+			splits[playData["team"]][playData["player"]][f"{date}-{playData['pa'].zfill(2)}"] = {
+				"hr/park": playData["hr/park"],
+				"pa": playData["pa"],
+				"in": playData["in"],
+				"result": playData["result"],
+				"evo": playData["evo"],
+				"la": playData["la"],
+				"dist": playData["dist"],
+			}
+
+	for team in splits:
+		j = nested_dict()
+		try:
+			pass
+			with open(f"static/splits/mlb_feed/{team}.json") as fh:
+				j.update(json.load(fh))
+		except:
+			pass
+
+		for player in splits[team]:
+			for key in splits[team][player]:
+				j[player][key] = splits[team][player][key]
+		with open(f"static/splits/mlb_feed/{team}.json", "w") as fh:
+			json.dump(j, fh)
+
+	with open(f"static/splits/mlb_feed/{year}.json", "w") as fh:
+		json.dump(yearData, fh)
 
 async def writeBVP(date):
 	with open(f"static/baseballreference/bvp.json") as fh:
@@ -1714,7 +1732,15 @@ if __name__ == '__main__':
 		uc.loop().run_until_complete(writeBVP(date))
 
 	if args.feed:
-		writeFeed(date)
+		if False:
+			with open("static/mlb/schedule.json") as fh:
+				schedule = json.load(fh)
+			for dt in list(schedule.keys()):
+				if dt == "2025-04-10":
+					break
+				writeFeed(dt)
+		else:
+			writeFeed(date)
 	elif args.fd:
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"

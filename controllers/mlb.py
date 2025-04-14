@@ -1986,7 +1986,7 @@ def convertRetroTeam(team):
 	return team
 
 def writeGamelogs():
-	data = {}
+	data = nested_dict()
 	# headers https://www.retrosheet.org/gamelogs/glfields.txt
 	for file in glob(f"static/mlbprops/gamelogs/*"):
 		with open(file) as fh:
@@ -2008,14 +2008,13 @@ def writeGamelogs():
 				home += " gm3"
 			game = f"{away} @ {home}"
 
-			awayHR = int(row[21+4])
-			homeHR = int(row[49+4])
+			awayAB,awayH,awayHR = int(row[21]),int(row[21+1]),int(row[21+4])
+			homeAB,homeH,homeHR = int(row[49]),int(row[49+1]),int(row[49+4])
 
-			if year not in data:
-				data[year] = {}
-			if date not in data[year]:
-				data[year][date] = {}
-			data[year][date][game] = awayHR + homeHR
+			data[year][date][game] = {
+				"hr": awayHR + homeHR
+				"hr": awayHR + homeHR
+			}
 
 	with open("static/baseballreference/gamelogs.json", "w") as fh:
 		json.dump(data, fh, indent=4)
