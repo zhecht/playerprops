@@ -1050,7 +1050,8 @@ def writeHot():
 		json.dump(trends, fh)
 
 def fixFeed():
-	for year in range(2015,2026):
+	#for year in range(2015,2026):
+	for year in range(2020,2025):
 		year = str(year)
 		totals = nested_dict()
 		for team in os.listdir(f"static/splits/mlb_feed/{year}/"):
@@ -1063,8 +1064,6 @@ def fixFeed():
 					if feed[player][play]["result"] == "Home Run":
 						y,m,d,pa = map(str, play.split("-"))
 						dt = f"{y}-{m}-{d}"
-						if dt == "2015-05-09":
-							print(team, player, play)
 						totals[dt].setdefault("hr", 0)
 						totals[dt]["hr"] += 1
 			
@@ -1074,8 +1073,11 @@ def fixFeed():
 		for dt in yearData:
 			allHr = int(yearData[dt]["hr"])
 			if allHr != totals.get(dt, {}).get("hr", 0):
-				print(dt, allHr, totals[dt]["hr"])
-				exit()
+				#print(dt, allHr, totals[dt]["hr"])
+				yearData[dt]["hr"] = max(allHr, totals.get(dt, {}).get("hr", 0))
+
+		with open(f"static/splits/mlb_feed/{year}.json", "w") as fh:
+			json.dump(yearData, fh)
 
 
 def writeMonths():
