@@ -845,8 +845,9 @@ def writeFeed(date):
 	base = f"https://baseballsavant.mlb.com/gamefeed?date="
 	dates = [date]
 	
-	if False:
+	if True:
 		seasonStarts = {
+			"2025": [datetime(2025,3,28), datetime.now()],
 			"2024": [datetime(2024,3,20), datetime(2024,9,30)],
 			"2023": [datetime(2023,3,30), datetime(2023,10,1)],
 			"2022": [datetime(2022,4,7), datetime(2022,10,5)],
@@ -858,7 +859,7 @@ def writeFeed(date):
 			"2016": [datetime(2016, 4, 3), datetime(2016, 10, 2)],
 			#"2015": [datetime(2015, 4, 5), datetime(2015, 10, 4)],
 		}
-		seasonStarts = {"2023": seasonStarts["2023"]}
+		seasonStarts = {"2025": seasonStarts["2025"]}
 		print(seasonStarts.keys())
 		dates = []
 		for y in seasonStarts:
@@ -878,6 +879,7 @@ def writeFeed(date):
 			)
 		except:
 			continue
+		time.sleep(1)
 
 		soup = BS(driver.page_source, "html.parser")
 		allTable = soup.find("div", id="allMetrics")
@@ -1022,6 +1024,8 @@ def writeMonths():
 			monthData[m]["hr/g"].append(round(hr / yearData[dt]["totGames"], 2))
 			monthData[m]["dt"].append(dt)
 
+			if dt == "2025-04-06":
+				print(hr)
 			data.setdefault(year, {"hr": [], "g": [], "hr/g": [], "dt": []})
 			data[year]["hr"].append(hr)
 			data[year]["g"].append(yearData[dt]["totGames"])
