@@ -1705,8 +1705,7 @@ def writeSavantPitcherAdvanced():
 	year = datetime.now().year
 	lastYear = year - 1
 	for yr in [year, lastYear]:
-		url = f"https://baseballsavant.mlb.com/leaderboard/custom?year={yr}&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
-		
+		url = f"https://baseballsavant.mlb.com/leaderboard/custom?year={yr}&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=babip,p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,hard_hit_percent,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
 		time.sleep(0.2)
 		outfile = "outmlb3"
 		call(["curl", "-k", url, "-o", outfile])
