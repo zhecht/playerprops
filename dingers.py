@@ -1114,7 +1114,6 @@ def writeHot(date):
 		teamGame[a] = game
 		teamGame[h] = game
 
-
 	trends = []
 	for team in roster:
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
