@@ -1366,9 +1366,9 @@ def writeStatsPage(date):
 
 	props = [("h+r+rbi", 1.5), ("hr", 0.5)]
 
-	data = []
-	sortData = {}
 	for prop, line in props:
+		data = []
+		sortData = {}
 		for team in roster:
 			with open(f"static/splits/mlb_feed/{team}.json") as fh:
 				feed = json.load(fh)
