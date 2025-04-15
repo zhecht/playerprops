@@ -1119,7 +1119,8 @@ def writeHot(date):
 	for team in roster:
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
-		game = teamGame.get(team, "")
+		gameData = teamGame.get(team, "")
+		game = gameData["game"]
 		for player in feed:
 			bip = []
 			evos = []
@@ -1143,6 +1144,7 @@ def writeHot(date):
 						b = book
 				ou = str(m)
 				evBook = b
+				#print(player, ou, evBook)
 			except:
 				ou = ""
 				evBook = ""
