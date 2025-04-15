@@ -846,6 +846,10 @@ def wait_for_stable(driver, selector, timeout=20, poll_frequency=0.5):
 		return False
 	return WebDriverWait(driver, timeout, poll_frequency).until(check_stable)
 
+def checkHR(driver, totHomers):
+	els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
+	return False if len(els) < 3 else int(els[-3].text or 0) >= totHomers
+
 def writeFeed(date, yearArg):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -854,6 +858,9 @@ def writeFeed(date, yearArg):
 
 	base = f"https://baseballsavant.mlb.com/gamefeed?date="
 	dates = [date]
+
+	with open("static/baseballreference/gamelogs_debug.json") as fh:
+		totHomers = json.load(fh)
 
 	allStarGames = {
 		"2024": datetime(2024, 7, 16),
@@ -870,7 +877,8 @@ def writeFeed(date, yearArg):
 	if yearArg:
 		seasonStarts = {
 			"2025": [datetime(2025,3,28), datetime.now()],
-			"2024": [datetime(2024,3,20), datetime(2024,9,30)],
+			#"2024": [datetime(2024,3,20), datetime(2024,9,30)],
+			"2024": [datetime(2024,4,1), datetime(2024,9,30)],
 			"2023": [datetime(2023,3,30), datetime(2023,10,1)],
 			"2022": [datetime(2022,4,7), datetime(2022,10,5)],
 			"2021": [datetime(2021,4,1), datetime(2021,10,3)],
@@ -901,14 +909,59 @@ def writeFeed(date, yearArg):
 		driver.get(f"{base}{dt}")
 
 		try:
-			#wait_for_stable(driver, "#allMetrics-tr_0 td:last-child")
-			WebDriverWait(driver, 20).until(
-				lambda d: d.find_element(By.CSS_SELECTOR, "#allMetrics-tr_0 td:last-child").is_displayed()
+			WebDriverWait(driver, 10).until(
+				lambda d: d.find_element(By.CSS_SELECTOR, ".game-container").is_displayed()
 			)
+			pass
+		except:
+			continue
+
+		els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
+		hr = 0 if len(els) < 3 else (els[-3].text or 0)
+		totHR = totHomers[year].get(date[5:]) or 0
+		while int(hr) < totHR:
+			time.sleep(1)
+			try:
+				els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
+				hr = 0 if len(els) < 3 else (els[-3].text or 0)
+			except:
+				continue
+			#print(date, hr, totHR)
+
+		try:
+			#WebDriverWait(driver, 10).until(
+			#	lambda d: d.find_element(By.CSS_SELECTOR, ".game-container").is_displayed()
+			#)
+			pass
+		except:
+			continue
+
+		if False:
+			soup = BS(driver.page_source, "html.parser")
+			totGames = len([x for x in soup.find_all("div", class_="game-container") if "POSTPONED" not in x.text])
+			if not totGames:
+				continue
+
+		#minABs = totGames * (9*3 + 8*3)
+		#elements = WebDriverWait(driver, 30).until(lambda d: checkHR(d, totHomers[year].get(date[5:]) or 0))
+		try:
+			#elements = WebDriverWait(driver, 30).until(lambda d: len(d.find_elements(By.CSS_SELECTOR, ".mini-ev-table tr")) >= minABs)
+			#elements = WebDriverWait(driver, 30).until(
+			#	lambda d: checkHR(d, totHomers[year].get(date[5:]) or 0))
+			pass
+		except:
+			continue
+		#debug[year].get(date[5:]) or 0
+		try:
+			#WebDriverWait(driver, 60).until(
+			#	lambda d: d.find_element(By.CSS_SELECTOR, "#allMetrics-tr_0 td:last-child").is_displayed()
+			#)
+			pass
 		except:
 			pass
 
 		soup = BS(driver.page_source, "html.parser")
+		totGames = len([x for x in soup.find_all("div", class_="game-container") if "POSTPONED" not in x.text])
 		allTable = soup.find("div", id="allMetrics")
 		hdrs = [th.text.lower() for th in allTable.find_all("th")]
 		data = nested_dict()
@@ -927,7 +980,7 @@ def writeFeed(date, yearArg):
 
 		#print(dt, len(hdrs))
 		data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
-		#print(data["all"])
+		#print(date, data["all"].get("hr"), totHomers[year].get(date[5:]))
 		data["all"]["liveGames"] = liveGames
 		totGames = len([x for x in soup.find_all("div", class_="game-container") if "POSTPONED" not in x.text])
 		data["all"]["totGames"] = totGames
@@ -1109,32 +1162,30 @@ def fixFeed():
 
 
 def writeMonths():
+	with open("static/baseballreference/gamelogs.json") as fh:
+		hrs = json.load(fh)
+
 	monthData = nested_dict()
 	data = nested_dict()
-	for year in range(2015,2026):
+	for year in range(2015,2025):
 		year = str(year)
-		with open(f"static/splits/mlb_feed/{year}.json") as fh:
-			yearData = json.load(fh)
-		dts = sorted(yearData)
+		dts = sorted(hrs[year])
 		for dt in dts:
-			if yearData[dt]["totGames"] == 0:
-				continue
-			y,m,d = map(str, dt.split("-"))
-			try:
-				hr = int(yearData[dt]["hr"])
-			except:
-				hr = 0
-			hr_g = round(hr / yearData[dt]["totGames"], 2)
+			hr = 0
+			for game in hrs[year][dt]:
+				hr += hrs[year][dt][game]
+			totGames = len(hrs[year][dt])
+			m,d = map(str, dt.split("-"))
 			monthData[year].setdefault(m, {"hr": [], "g": [], "hr/g": [], "dt": []})
 			monthData[year][m]["hr"].append(hr)
-			monthData[year][m]["g"].append(yearData[dt]["totGames"])
-			monthData[year][m]["hr/g"].append(round(hr / yearData[dt]["totGames"], 2))
+			monthData[year][m]["g"].append(totGames)
+			monthData[year][m]["hr/g"].append(round(hr / totGames, 2))
 			monthData[year][m]["dt"].append(dt)
 
 			data.setdefault(year, {"hr": [], "g": [], "hr/g": [], "dt": []})
 			data[year]["hr"].append(hr)
-			data[year]["g"].append(yearData[dt]["totGames"])
-			data[year]["hr/g"].append(round(hr / yearData[dt]["totGames"], 2))
+			data[year]["g"].append(totGames)
+			data[year]["hr/g"].append(round(hr / totGames, 2))
 			data[year]["dt"].append(dt)
 
 	with open("static/splits/mlb_feed/feed_xy.json", "w") as fh:
