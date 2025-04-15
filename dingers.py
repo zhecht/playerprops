@@ -1326,9 +1326,7 @@ def writeStatsPage(date):
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 
-	
 	headers = {"Accept": "application/vnd.github.v3.raw"}
-	
 	url = "https://api.github.com/repos/zhecht/lines/contents/static/mlb/lineups.json"
 	response = requests.get(url, headers=headers)
 	lineups = response.json()
@@ -1489,6 +1487,8 @@ def writeStatsPage(date):
 				"order": order,
 				"prop": prop, "line": dailyLines["line"], "book": "", "bookOdds": {},
 				"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
+				"xwoba": savantData.get("est_woba", "-"),
+				"savant": savantData,
 				"feed": {
 					"evo": [float(x or 0.0) for x in evos],
 					"dist": [int(x or 0) for x in dists],
