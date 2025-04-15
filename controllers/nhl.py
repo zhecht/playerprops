@@ -510,18 +510,19 @@ def writeCircaProps(page, data, teamGame):
 	bottom, top = 2250, 495
 	left,right = 295, 1575
 
-	player_img = img.crop((90,415,470,bottom)) # l,t,r,b
+	#player_img = img.crop((90,415,470,bottom)) # l,t,r,b
+	player_img = img.crop((150,390,450,bottom)) # l,t,r,b
 	#player_img.save("outnhl-players.png", "PNG")
 	player_text = pytesseract.image_to_string(player_img).split("\n")
 	player_text = [x for x in player_text if x.strip()]
 
-	over_img = img.crop((600,415,660,bottom))
+	over_img = img.crop((610,390,680,bottom))
 	over_text = pytesseract.image_to_string(over_img).split("\n")
-	over_text = [x for x in over_text if x.strip()]
+	over_text = [x.replace("\u201c", "-") for x in over_text if x.strip()]
 
-	under_img = img.crop((775,415,835,bottom))
+	under_img = img.crop((780,390,840,bottom))
 	under_text = pytesseract.image_to_string(under_img).split("\n")
-	under_text = [x for x in under_text if x.strip()]
+	under_text = [x.replace("\u201c", "-") for x in under_text if x.strip()]
 
 	for playerIdx, player in enumerate(player_text):
 		team = convertNHLTeam(player.split(")")[0].split("(")[-1])

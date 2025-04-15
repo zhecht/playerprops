@@ -389,6 +389,10 @@ def convertNHLTeam(team):
 		return "cbj"
 	elif t == "flo":
 		return "fla"
+	elif t == "pht":
+		return "phi"
+	elif t == "cht":
+		return "chi"
 	elif t == "los":
 		return "la"
 	elif t == "nas":
