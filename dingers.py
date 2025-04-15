@@ -877,8 +877,8 @@ def writeFeed(date, yearArg):
 	if yearArg:
 		seasonStarts = {
 			"2025": [datetime(2025,3,28), datetime.now()],
-			#"2024": [datetime(2024,3,20), datetime(2024,9,30)],
-			"2024": [datetime(2024,4,1), datetime(2024,9,30)],
+			"2024": [datetime(2024,3,20), datetime(2024,9,30)],
+			#"2024": [datetime(2024,4,1), datetime(2024,9,30)],
 			"2023": [datetime(2023,3,30), datetime(2023,10,1)],
 			"2022": [datetime(2022,4,7), datetime(2022,10,5)],
 			"2021": [datetime(2021,4,1), datetime(2021,10,3)],
@@ -916,16 +916,20 @@ def writeFeed(date, yearArg):
 		except:
 			continue
 
-		els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
-		hr = 0 if len(els) < 3 else (els[-3].text or 0)
-		totHR = totHomers[year].get(date[5:]) or 0
-		while int(hr) < totHR:
-			time.sleep(1)
-			try:
-				els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
-				hr = 0 if len(els) < 3 else (els[-3].text or 0)
-			except:
-				continue
+		totHR = 0
+		if year == str(datetime.now().year):
+			time.sleep(10)
+		else:
+			els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
+			hr = 0 if len(els) < 3 else (els[-3].text or 0)
+			totHR = totHomers[year].get(date[5:]) or 0
+			while int(hr) < totHR:
+				time.sleep(1)
+				try:
+					els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
+					hr = 0 if len(els) < 3 else (els[-3].text or 0)
+				except:
+					continue
 			#print(date, hr, totHR)
 
 		try:
@@ -980,7 +984,7 @@ def writeFeed(date, yearArg):
 
 		#print(dt, len(hdrs))
 		data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
-		#print(date, data["all"].get("hr"), totHomers[year].get(date[5:]))
+		print(date, data["all"].get("hr"), totHR)
 		data["all"]["liveGames"] = liveGames
 		totGames = len([x for x in soup.find_all("div", class_="game-container") if "POSTPONED" not in x.text])
 		data["all"]["totGames"] = totGames
@@ -1162,11 +1166,24 @@ def fixFeed():
 
 
 def writeMonths():
+	with open("static/splits/mlb_feed/2025.json") as fh:
+		feed = json.load(fh)
+
 	with open("static/baseballreference/gamelogs.json") as fh:
 		hrs = json.load(fh)
 
 	monthData = nested_dict()
-	data = nested_dict()
+	for dt in sorted(feed):
+		year = "2025"
+		y,m,d = map(str, dt.split("-"))
+		totGames = feed[dt]["totGames"]
+		hr = int(feed[dt]["hr"])
+		monthData[year].setdefault(m, {"hr": [], "g": [], "hr/g": [], "dt": []})
+		monthData[year][m]["hr"].append(hr)
+		monthData[year][m]["g"].append(totGames)
+		monthData[year][m]["hr/g"].append(round(hr / totGames, 2))
+		monthData[year][m]["dt"].append(dt[5:])
+	
 	for year in range(2015,2025):
 		year = str(year)
 		dts = sorted(hrs[year])
@@ -1182,14 +1199,6 @@ def writeMonths():
 			monthData[year][m]["hr/g"].append(round(hr / totGames, 2))
 			monthData[year][m]["dt"].append(dt)
 
-			data.setdefault(year, {"hr": [], "g": [], "hr/g": [], "dt": []})
-			data[year]["hr"].append(hr)
-			data[year]["g"].append(totGames)
-			data[year]["hr/g"].append(round(hr / totGames, 2))
-			data[year]["dt"].append(dt)
-
-	with open("static/splits/mlb_feed/feed_xy.json", "w") as fh:
-		json.dump(data, fh)
 	with open("static/splits/mlb_feed/month_xy.json", "w") as fh:
 		json.dump(monthData, fh)
 
