@@ -1098,7 +1098,7 @@ def writeFeedSplits(date, data, sameYear):
 		with open(f"{base}/{team}.json", "w") as fh:
 			json.dump(j, fh)
 
-def writeHot():
+def writeHot(date):
 	CUTOFF = 12
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
@@ -2022,7 +2022,7 @@ if __name__ == '__main__':
 	elif args.months:
 		writeMonths()
 	elif args.hot:
-		writeHot()
+		writeHot(date)
 	elif args.fd:
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
