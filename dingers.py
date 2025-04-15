@@ -834,6 +834,18 @@ def writeKambi(date):
 
 	updateData(book, data)
 
+def wait_for_stable(driver, selector, timeout=20, poll_frequency=0.5):
+	lastVal = None
+	def check_stable(d):
+		nonlocal lastVal
+		element = d.find_element(By.CSS_SELECTOR, selector)
+		currVal = element.text.strip()
+		if currVal == lastVal:
+			return element
+		lastVal = currVal
+		return False
+	return WebDriverWait(driver, timeout, poll_frequency).until(check_stable)
+
 def writeFeed(date, yearArg):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -842,6 +854,18 @@ def writeFeed(date, yearArg):
 
 	base = f"https://baseballsavant.mlb.com/gamefeed?date="
 	dates = [date]
+
+	allStarGames = {
+		"2024": datetime(2024, 7, 16),
+		"2023": datetime(2023, 7, 11),
+		"2022": datetime(2022, 7, 19),
+		"2021": datetime(2021, 7, 13),
+		"2019": datetime(2019, 7, 9),
+		"2018": datetime(2018, 7, 17),
+		"2017": datetime(2017, 7, 11),
+		"2016": datetime(2016, 7, 12),
+		"2015": datetime(2015, 7, 14)
+	}
 	
 	if yearArg:
 		seasonStarts = {
@@ -870,16 +894,19 @@ def writeFeed(date, yearArg):
 
 	for dt in dates:
 		date = dt
+		year = date.split("-")[0]
+		if str(allStarGames.get(year, datetime.now()))[:10] == date:
+			continue
 		sameYear = int(date.split("-")[0]) == datetime.now().year
 		driver.get(f"{base}{dt}")
-		#time.sleep(0.5)
+
 		try:
-			element = WebDriverWait(driver, 10).until(
-				EC.presence_of_element_located((By.CSS_SELECTOR, "#allMetrics th"))
+			#wait_for_stable(driver, "#allMetrics-tr_0 td:last-child")
+			WebDriverWait(driver, 20).until(
+				lambda d: d.find_element(By.CSS_SELECTOR, "#allMetrics-tr_0 td:last-child").is_displayed()
 			)
 		except:
-			continue
-		time.sleep(1.5)
+			pass
 
 		soup = BS(driver.page_source, "html.parser")
 		allTable = soup.find("div", id="allMetrics")
@@ -900,8 +927,10 @@ def writeFeed(date, yearArg):
 
 		#print(dt, len(hdrs))
 		data["all"] = {k: v.text.strip() for k,v in zip(hdrs,allTable.find_all("td")) if k}
+		#print(data["all"])
 		data["all"]["liveGames"] = liveGames
-		#data["all"]["totGames"] = len(soup.find_all("div", class_="game-container"))
+		totGames = len([x for x in soup.find_all("div", class_="game-container") if "POSTPONED" not in x.text])
+		data["all"]["totGames"] = totGames
 
 		for div in soup.find_all("div", class_="game-container"):
 			away = div.find("div", class_="team-left")
@@ -912,7 +941,6 @@ def writeFeed(date, yearArg):
 
 			if "POSTPONED" in div.text:
 				continue
-			data["all"]["totGames"] = data["all"].get("totGames", 0) + 1
 			if (date == "2025-03-18" or date == "2025-03-19") and "lad" not in game:
 				continue
 			if (date == "2024-03-20" or date == "2024-03-21") and "lad" not in game:
