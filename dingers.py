@@ -1403,10 +1403,12 @@ def writeStatsPage(date):
 		except:
 			pass
 
+		pitcherData = {}
 		pitcherSummary = ""
 		babip = ""
 		if pitcher in advanced:
 			p = pitcher
+			pitcherData = advanced[p]
 			#pitcherSummary = f"{advanced[p]['p_era']} ERA, {advanced[p]['batting_avg']} AVG, {advanced[p]['xba']} xAVG, {babip} BABIP, {advanced[p]['slg_percent']} SLG, {advanced[p]['xslg']} xSLG, {advanced[p]['woba']} WOBA, {advanced[p]['xwoba']} xWOBA, {advanced[p]['barrel_batted_rate']}% Barrel Batted"
 			pitcherSummary = f"{advanced[p]['p_era']} ERA, {advanced[p]['xba']} xBA, {advanced[p]['xwoba']} xWOBA, {advanced[p]['barrel_batted_rate']}% Barrel"
 
@@ -1482,6 +1484,7 @@ def writeStatsPage(date):
 				"player": player, "team": team, "opp": opp,
 				"game": game, "start": start,
 				"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
+				"pitcherData": pitcherData,
 				"bvpHR": bvpHR, "bvpAvg": bvpAvg,
 				"order": order,
 				"prop": prop, "line": dailyLines["line"], "book": "", "bookOdds": {},
