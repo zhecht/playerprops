@@ -1364,7 +1364,7 @@ def writeStatsPage(date):
 	line = 1.5
 	lastAB = 0
 
-	props = [("h+r+rbi", 1.5), ("hr", 0.5)]
+	props = [("h+r+rbi", 1.5), ("hr", 0.5), ("h", 0.5)]
 
 	for prop, line in props:
 		data = []
