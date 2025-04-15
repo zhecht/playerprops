@@ -1661,6 +1661,9 @@ def writeDK(date, propArg, keep, debug):
 								lines[game][prop] = outcomes[0]["oddsAmerican"]+"/"+outcomes[1]["oddsAmerican"]
 								continue
 
+							if prop == "f5_total" and len(outcomes) % 2 != 0:
+								continue
+
 							skip = 1
 							if not alt:
 								skip = 2
