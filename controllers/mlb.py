@@ -2824,7 +2824,7 @@ if __name__ == '__main__':
 		#writeMGM(args.date)
 		if not args.skipdk:
 			print("dk")
-			writeDK(date, args.prop, args.keep)
+			writeDK(date, args.prop, args.keep, args.debug)
 		#writeBPP(args.date)
 		#writeActionNetwork(args.date)
 		print("cz")
