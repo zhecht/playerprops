@@ -1467,24 +1467,25 @@ def arb(bookArg="fd"):
 	for row in sorted(res, reverse=True)[:20]:
 		print(row)
 
-def writeDK(date, propArg, keep):
+def writeDK(date, propArg, keep, debug):
 	url = "https://sportsbook.draftkings.com/leagues/football/nfl"
 
 	if not date:
 		date = str(datetime.now())[:10]
 
 	mainCats = {
+		"1st x innings": 1626,
 		"game lines": 493,
 		"batter": 743,
 		"pitcher": 1031,
 		#"game props": 724,
 		#"innings": 729,
 		"1st inning": 1024,
-		"1st x innings": 1626,
 		"team totals": 1674
 	}
 	
 	subCats = {
+		1626: [15628, 15629],
 		493: [4519, 13168, 13169],
 		743: [
 			# HR, H, TB, RBI
@@ -1497,7 +1498,6 @@ def writeDK(date, propArg, keep):
 		729: [6821],
 		1024: [11024],
 		1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
-		1626: [15628, 15629],
 		1674: [16208, 16209]
 	}
 
@@ -1516,7 +1516,7 @@ def writeDK(date, propArg, keep):
 		17412: "er-o/u", 17413: "outs-o/u",
 	}
 
-	if False:
+	if debug:
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
@@ -1524,8 +1524,8 @@ def writeDK(date, propArg, keep):
 			#"game props": 724,
 			#"innings": 729,
 			#"1st inning": 1024,
-			#"1st x innings": 1626,
-			"team totals": 1674
+			"1st x innings": 1626,
+			#"team totals": 1674
 		}
 
 		subCats = {
@@ -1628,6 +1628,8 @@ def writeDK(date, propArg, keep):
 									prefix = "f3_"
 								elif "1st 7" in prop:
 									prefix = "f7_"
+
+								#print(prop)
 
 								if "moneyline" in prop or prop in ["1st 5 innings", "1st 3 innings", "1st 7 innings"]:
 									prop = "ml"
@@ -2794,7 +2796,7 @@ if __name__ == '__main__':
 		writePointsbet(date)
 
 	if args.dk:
-		writeDK(date, args.prop, args.keep)
+		writeDK(date, args.prop, args.keep, args.debug)
 
 	if args.kambi:
 		writeKambi(date)
