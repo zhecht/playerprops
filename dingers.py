@@ -1100,12 +1100,26 @@ def writeFeedSplits(date, data, sameYear):
 
 def writeHot():
 	CUTOFF = 12
+	with open(f"static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
 	with open("static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
+	url = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/odds.json"
+	response = requests.get(url, headers={"Accept": "application/vnd.github.v3.raw"})
+	odds = response.json()
+
+	teamGame = {}
+	for game in schedule[date]:
+		a,h = map(str, game["game"].split(" @ "))
+		teamGame[a] = game
+		teamGame[h] = game
+
+
 	trends = []
 	for team in roster:
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
+		game = teamGame.get(team, "")
 		for player in feed:
 			bip = []
 			evos = []
@@ -1119,15 +1133,31 @@ def writeHot():
 			if len(bip) < CUTOFF:
 				continue
 
+			try:
+				m = 0
+				b = ""
+				for book in odds[game][player]:
+					o = int(odds[game][player][book].split("/")[0])
+					if o > m:
+						m = o
+						b = book
+				ou = str(m)
+				evBook = b
+			except:
+				ou = ""
+				evBook = ""
+
 			regression = linearRegression(range(min(CUTOFF, len(bip))), bip[-CUTOFF:])
 			evo_regression = linearRegression(range(min(CUTOFF, len(evos))), evos[-CUTOFF:])
 			trends.append({
+				"game": game,
 				"team": team, "player": player,
 				"slope": regression["slope"],
 				"predictedY": regression["predicted_y"],
 				"y": bip[-CUTOFF:],
 				"evoPredictedY": evo_regression["predicted_y"],
 				"evoY": evos[-CUTOFF:],
+				"ou": ou, "evBook": evBook
 			})
 
 	trends.sort(key=lambda k: k["slope"], reverse=True)
