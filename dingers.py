@@ -1386,10 +1386,13 @@ def writeStatsPage(date):
 
 			start = ""
 			gameWeather = {}
+			isAway = False
 			try: # game info
 				game = teamGame[team]["game"]
 				start = teamGame[team]["start"]
 				away,home = map(str, game.split(" @ "))
+				if away == team:
+					isAway = True
 				opp = opps[team]
 				oppRankings = rankings[opp].get(f"opp_{prop}")
 				pitcher = lineups[opp]["pitcher"]
@@ -1406,8 +1409,8 @@ def writeStatsPage(date):
 				pass
 
 			try:
-				ah = "away" if game.startswith(team) else "home"
-				ahIdx = 0 if ah == "away" else 1
+				ah = "away" if isAway else "home"
+				ahIdx = 0 if isAway else 1
 				spread = next(iter(pinny[game]["spread"]))
 				total = next(iter(pinny[game]["total"]))
 				gameLines = {
