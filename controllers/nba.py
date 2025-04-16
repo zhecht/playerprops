@@ -3448,9 +3448,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"{prefix}static/nba/minutes.json") as fh:
 		minutes = json.load(fh)
 
-	espnLines = {}
-	parseESPN(espnLines)
-
 	lines = {
 		"pn": pnLines,
 		"mgm": mgmLines,
