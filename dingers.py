@@ -1413,11 +1413,15 @@ def writeStatsPage(date):
 				ahIdx = 0 if isAway else 1
 				spread = next(iter(pinny[game]["spread"]))
 				total = next(iter(pinny[game]["total"]))
+				tt = pinny[game].get(f"{ah}_total", "")
+				if tt:
+					tt = next(iter(tt))
 				gameLines = {
 					"ml": pinny[game]["ml"].split("/")[ahIdx],
-					"tt": pinny[game].get(f"{ah}_total", {}),
+					"tt": tt,
 					"spread": f"""{spread} {pinny[game]["spread"][spread]}""",
-					"total": f"""{total} {pinny[game]["total"][total]}""",
+					"total": total
+					#"total": f"""{total} {pinny[game]["total"][total]}""",
 				}
 			except:
 				gameLines = {}
