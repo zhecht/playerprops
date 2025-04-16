@@ -3552,9 +3552,15 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 				winLossSplitsPerMin = [0,0]
 				awayHomeSplitsPerMin = [0,0]
 				team = opp = gameLine = ""
-				if player:
+				away, home = map(str, game.split(" @ "))
+				if "away_total" in prop:
+					team = away
+					opp = home
+				elif "home_total" in prop:
+					team = home
+					opp = away
+				elif player:
 					convertedProp = prop
-					away, home = map(str, game.split(" @ "))
 					t = away
 					if home in playerIds and player in playerIds[home]:
 						t = home

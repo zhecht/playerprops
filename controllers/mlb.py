@@ -2369,10 +2369,10 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 					playerYears = []
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					feed = []
-					if prop == "away_total":
+					if "away_total" in prop:
 						team = away
 						opp = home
-					elif prop == "home_total":
+					elif "home_total" in prop:
 						team = home
 						opp = away
 					elif player:
