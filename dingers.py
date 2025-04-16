@@ -1335,6 +1335,12 @@ def writeStatsPage(date):
 	response = requests.get(url, headers=headers)
 	weather = response.json()
 
+	with open("updated.json") as fh:
+		updated = json.load(fh)
+	updated["stats"] = str(datetime.now())
+	with open("updated.json", "w") as fh:
+		json.dump(updated, fh, indent=4)
+
 	# bbref
 	with open(f"static/baseballreference/advanced.json") as fh:
 		advanced = json.load(fh)
