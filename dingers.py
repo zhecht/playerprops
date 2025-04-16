@@ -834,17 +834,17 @@ def writeKambi(date):
 
 	updateData(book, data)
 
-def wait_for_stable(driver, selector, timeout=20, poll_frequency=0.5):
-	lastVal = None
-	def check_stable(d):
-		nonlocal lastVal
-		element = d.find_element(By.CSS_SELECTOR, selector)
-		currVal = element.text.strip()
-		if currVal == lastVal:
-			return element
-		lastVal = currVal
-		return False
-	return WebDriverWait(driver, timeout, poll_frequency).until(check_stable)
+def recap():
+	today = datetime.now()
+	yest = str(today - timedelta(days=1))[:10]
+	with open(f"static/splits/mlb_feed/{yest}.json") as fh:
+		feed = json.load(fh)
+
+	bip = feed["all"]["bipballs in play"]
+	for game in feed:
+		if game == "all":
+			continue
+		
 
 def checkHR(driver, totHomers):
 	els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
@@ -2010,6 +2010,7 @@ if __name__ == '__main__':
 	parser.add_argument("--merge-circa", action="store_true")
 	parser.add_argument("--fix-feed", action="store_true")
 	parser.add_argument("--hot", action="store_true")
+	parser.add_argument("--recap", action="store_true")
 
 	args = parser.parse_args()
 
@@ -2037,6 +2038,8 @@ if __name__ == '__main__':
 		writeFeed(date, args.year)
 	elif args.fix_feed:
 		fixFeed()
+	elif args.recap:
+		recap()
 	elif args.months:
 		writeMonths()
 	elif args.hot:
