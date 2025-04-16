@@ -1351,6 +1351,9 @@ def writeStatsPage(date):
 	with open(f"static/mlb/daily.json") as fh:
 		daily = json.load(fh)
 
+	with open("static/mlb/pinnacle.json") as fh:
+		pinny = json.load(fh)
+
 	teamGame = {}
 	opps = {}
 	for game in schedule[date]:
@@ -1360,8 +1363,6 @@ def writeStatsPage(date):
 		opps[a] = h
 		opps[h] = a
 
-	prop = "h+r+rbi"
-	line = 1.5
 	lastAB = 0
 
 	props = [("h+r+rbi", 1.5), ("hr", 0.5), ("h", 0.5)]
@@ -1403,6 +1404,20 @@ def writeStatsPage(date):
 					oppRankClass = oppRankings["rankClass"]
 			except:
 				pass
+
+			try:
+				ah = "away" if game.startswith(team) else "home"
+				spread = next(iter(pinny[game]["spread"]))
+				total = next(iter(pinny[game]["total"]))
+				gameLines = {
+					"ml": pinny[game]["ml"],
+					"tt": pinny[game].get(f"{ah}_total", {}),
+					"spread": f"""{spread} {pinny[game]["spread"][spread]}""",
+					"total": f"""{total} {pinny[game]["total"][total]}""",
+				}
+			except:
+				gameLines = {}
+
 
 			pitcherData = {}
 			pitcherSummary = ""
@@ -1504,7 +1519,7 @@ def writeStatsPage(date):
 					"weather": gameWeather, "stadiumRank": stadiumRank,
 					"100-evo": over100, "300-ft": over300ft,
 					"playerYears": playerYears,
-					"daily": dailyLines
+					"daily": dailyLines, "gameLines": gameLines
 				})
 
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
