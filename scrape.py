@@ -487,6 +487,13 @@ async def get365Links(sport, keep, gameArg):
 		ids = ["E181378", "E181444", "E181445", "E181446", "E181379", "E181447", "E181380", "E181448", "E181381", "E181382", "E181383", "E181384", "E181449", "E181387", "E181388", "E181389", "E181390", "E181391"]
 		for prop, id in zip(props, ids):
 			res[prop] = f"https://www.oh.bet365.com/?_h=k5LhKHD5XJf0TyAaSmzA0A%3D%3D&btsffd=1#/AC/B18/C20604387/D43/{id}/F43/N43/"
+
+		res["game-lines"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D48/E1453/F10"
+		res["spread"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D47/E181285/F47/N1/"
+		res["total"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D47/E181286/F47/N1/"
+		res["team-totals"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D516/E181335/F516/N2/"
+		res["alternative-team-totals"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D516/E181005/F516/N2/"
+		res["1st-half"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D48/E928/F40/N0/"
 	elif sport == "mlb":
 		props = ["er-o/u", "h_allowed-o/u", "outs-o/u", "k-o/u", "k", "bb_allowed-o/u", "h-o/u", "h", "hr-o/u", "hr", "r-o/u", "rbi-o/u", "rbi", "r", "sb-o/u", "tb-o/u", "tb", "h+r+rbi-o/u", "h+r+rbi"]
 		ids = ["E160296", "E160295", "E160297", "E160293", "E163122", "E163108", "E163109", "E163117", "E160301", "E163118", "E160303", "E163110", "E163120", "E163121", "E160304", "E160302", "E163119", "E163218", "E163225"]
@@ -530,6 +537,8 @@ async def write365FromHTML(data, html, sport, prop):
 			gameDivs = soup.select(".sbb-ParticipantTwoWayWithPitchersBaseball:not(.Hidden)")
 		elif sport == "nhl":
 			gameDivs = soup.select(".sci-ParticipantFixtureDetailsHigherIceHockey:not(.Hidden)")
+		elif sport == "nba":
+			gameDivs = soup.select(".sci-ParticipantFixtureDetailsHigherIceBasketball:not(.Hidden)")
 		for game in gameDivs:
 			if "live" in game.text.lower():
 				start += 1
@@ -554,6 +563,8 @@ async def write365FromHTML(data, html, sport, prop):
 				away, home = convertMLBTeam(game.split(" @ ")[0]), convertMLBTeam(game.split(" @ ")[-1])
 			elif sport == "nhl":
 				away, home = convertNHLTeam(game.split(" @ ")[0]), convertNHLTeam(game.split(" @ ")[-1])
+			elif sport == "nba":
+				away, home = convertNBATeam(game.split(" @ ")[0]), convertNBATeam(game.split(" @ ")[-1])
 			else:
 				away, home = convertCollege(game.split(" @ ")[0]), convertCollege(game.split(" @ ")[-1])
 
@@ -3960,7 +3971,7 @@ if __name__ == '__main__':
 	games = {}
 	if args.bet365 or args.b365:
 		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		#games["1p-alternative-spread"] = "https://www.oh.bet365.com/?_h=e7RdY135g2O4m4S3xKSa1Q%3D%3D&btsffd=1#/AC/B17/C20836572/D517/E170393/F517/N3/"
+		#games["1st-half"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D48/E928/F40/N0/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
