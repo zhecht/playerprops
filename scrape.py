@@ -494,6 +494,7 @@ async def get365Links(sport, keep, gameArg):
 		res["team-totals"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D516/E181335/F516/N2/"
 		res["alternative-team-totals"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D516/E181005/F516/N2/"
 		res["1st-half"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D48/E928/F40/N0/"
+		res["1st-quarter"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D48/E941/F30/N0/"
 	elif sport == "mlb":
 		props = ["er-o/u", "h_allowed-o/u", "outs-o/u", "k-o/u", "k", "bb_allowed-o/u", "h-o/u", "h", "hr-o/u", "hr", "r-o/u", "rbi-o/u", "rbi", "r", "sb-o/u", "tb-o/u", "tb", "h+r+rbi-o/u", "h+r+rbi"]
 		ids = ["E160296", "E160295", "E160297", "E160293", "E163122", "E163108", "E163109", "E163117", "E160301", "E163118", "E160303", "E163110", "E163120", "E163121", "E160304", "E160302", "E163119", "E163218", "E163225"]
@@ -527,10 +528,12 @@ async def write365FromHTML(data, html, sport, prop):
 	pre = ""
 	if "1st-half" in prop:
 		pre = "1h_"
+	elif "1st-quarter" in prop:
+		pre = "1q_"
 	elif prop.startswith("1p"):
 		pre = "1p_"
 
-	if prop == "game-lines" or prop == "1st-half" or prop == "1p":
+	if prop == "game-lines" or prop == "1st-half" or prop == "1st-quarter" or prop == "1p":
 		start = 0
 		gameDivs = []
 		if sport == "mlb":
@@ -3971,7 +3974,7 @@ if __name__ == '__main__':
 	games = {}
 	if args.bet365 or args.b365:
 		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
-		#games["1st-half"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D48/E928/F40/N0/"
+		#games["1st-quarter"] = "https://www.oh.bet365.com/?_h=4ow-an75FXe3HeTOuTAl0g%3D%3D&btsffd=1#/AC/B18/C20604387/D48/E941/F30/N0/"
 		runThreads("bet365", sport, games, min(args.threads, len(games)), args.keep)
 	if args.br:
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
