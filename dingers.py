@@ -1407,10 +1407,11 @@ def writeStatsPage(date):
 
 			try:
 				ah = "away" if game.startswith(team) else "home"
+				ahIdx = 0 if ah == "away" else 1
 				spread = next(iter(pinny[game]["spread"]))
 				total = next(iter(pinny[game]["total"]))
 				gameLines = {
-					"ml": pinny[game]["ml"],
+					"ml": pinny[game]["ml"].split("/")[ahIdx],
 					"tt": pinny[game].get(f"{ah}_total", {}),
 					"spread": f"""{spread} {pinny[game]["spread"][spread]}""",
 					"total": f"""{total} {pinny[game]["total"][total]}""",
