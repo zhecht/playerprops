@@ -1119,8 +1119,7 @@ async def getESPNLinks(sport, tomorrow, gameArg, keep):
 		else:
 			games[game+"-game-props"] = f"{url}/event/{eventId}/section/game_props"
 
-		if sport == "mlb":
-			games[game+"-lines"] = f"{url}/event/{eventId}/section/lines"
+		games[game+"-lines"] = f"{url}/event/{eventId}/section/lines"
 		#games[game+"-lines"] = f"{url}/event/{eventId}"
 
 	browser.stop()
@@ -1143,7 +1142,7 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 
 	for detail in soup.find_all("details"):
 		prop = detail.find("h2").text.lower()
-
+		fullProp = prop
 		pre = ""
 		if "1st 5" in prop:
 			pre = "f5_"
@@ -1151,13 +1150,13 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			pre = "1h_"
 		elif "1st period" in prop:
 			pre = "1p_"
+		elif "1st quarter" in prop:
+			pre = "1q_"
 
 		if "3-way" in prop:
 			continue
 
 		if "moneyline" in prop:
-			if prop == "quarter moneyline":
-				continue
 			prop = "ml"
 		elif prop.startswith("draw no bet"):
 			prop = "dnb"
@@ -1171,7 +1170,9 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 		elif prop == "inning total runs":
 			prop = "rfi"
 		elif "total runs" in prop or "total" in prop:
-			if "exact" in prop or "/" in prop or "range" in prop or "&" in prop:
+			if "exact" in prop or "/" in prop or "range" in prop or "&" in prop or "any" in prop or "consecutive" in prop or "match total" in prop:
+				continue
+			if prop.startswith("team total") and prop.split(" ")[-1] in ["assists", "made", "steals", "blocks"]:
 				continue
 			if awayFull in prop:
 				prop = "away_total"
@@ -1185,6 +1186,8 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			prop = "giff"
 		else:
 			continue
+
+		#print(fullProp, prop)
 
 		btns = detail.find_all("button")
 
@@ -1200,16 +1203,26 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 		#print(prop)
 
 		for idx in range(0, len(btns), 2):
+			if btns[idx].text == "See All Lines":
+				continue
 			ou = btns[idx].find_all("span")[-1].text
-			#print(game, prop, ou)
 			ou += "/"+btns[idx+1].find_all("span")[-1].text
 			ou = ou.replace("Even", "+100")
 
-			if "ml" in prop or prop in ["rfi"]:
+			if fullProp == "quarter moneyline":
+				q = btns[idx].find_previous("header").text[0]
+				data[game][f"{q}q_{prop}"] = ou
+			elif "ml" in prop or prop in ["rfi"]:
 				data[game][prop] = ou
 			else:
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
-				data[game][prop][line] = ou
+
+				
+				if fullProp in ["quarter total", "quarter spread"]:
+					q = btns[idx].find_previous("header").text[0]
+					data[game][f"{q}q_{prop}"][line] = ou
+				else:
+					data[game][prop][line] = ou
 
 
 async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
@@ -1223,6 +1236,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 
 	for detail in details:
 		prop = detail.find("h2").text.lower()
+		fullProp = prop
 		skip = 1
 		prop = prop.replace("-", " ")
 		if "o/u" in prop:
@@ -1264,6 +1278,8 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 			skip = 3
 		elif sport == "nhl" and prop in ["pts", "sog"]:
 			skip = 2
+
+		#print(fullProp, skip)
 
 		if prop in ["fgs"]:
 			for btn in detail.find_all("button"):
@@ -1392,8 +1408,9 @@ async def writeESPN(sport, rosters):
 			game = game.split("-")[0]
 			details = await page.query_selector_all("details")
 			for detail in details:
-				if detail.text_all.split(" ")[0] in ["Run", "Total"]:
-					prop = "total" if detail.text_all.startswith("Total") else "spread"
+				h2 = await detail.query_selector("h2")
+				if h2.text.split(" ")[0] in ["Run", "Total"] or h2.text.lower() in ["game spread"]:
+					prop = "total" if h2.text.startswith("Total") else "spread"
 					btns = await detail.query_selector_all("button")
 					if btns[-1].text == "See All Lines":
 						await btns[-1].click()
@@ -1402,7 +1419,12 @@ async def writeESPN(sport, rosters):
 						modal = await page.query_selector(".modal")
 						btns = await modal.query_selector_all("button")
 						for i in range(1, len(btns), 2):
-							team = convertMLBTeam(btns[i].text_all)
+							if sport == "mlb":
+								team = convertMLBTeam(btns[i].text_all)
+							elif sport == "nhl":
+								team = convertNHLTeam(btns[i].text_all)
+							elif sport == "nba":
+								team = convertNBATeam(btns[i].text_all)
 							line = str(float(btns[i].text_all.split(" ")[-2]))
 							ou = f"{btns[i].text_all.split(' ')[-1]}/{btns[i+1].text_all.split(' ')[-1]}"
 							data[game][prop][line] = ou.replace("Even", "+100")
@@ -1938,8 +1960,12 @@ def runThreads(book, sport, games, totThreads, keep=False):
 		with open(file, "w") as fh:
 			json.dump({}, fh, indent=4)
 	rosters = {}
-	if sport in ["mlb", "nhl"] and book == "espn":
-		x = "baseballreference" if sport == "mlb" else "hockeyreference"
+	if sport in ["mlb", "nhl", "nba"] and book == "espn":
+		x = "baseballreference"
+		if sport == "nhl":
+			x = "hockeyreference"
+		elif sport == "nba":
+			x = "basketballreference"
 		with open(f"static/{x}/roster.json") as fh:
 			rosters = json.load(fh)
 
@@ -3947,7 +3973,7 @@ if __name__ == '__main__':
 
 	if args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
-		#games["sea @ utah-game-props"] = "https://espnbet.com/sport/hockey/organization/united-states/competition/nhl/event/6d6ed235-ebb7-4937-a354-e943c38e96c4/section/game_props"
+		#games["mia @ chi"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/nba/event/e1e8a9f8-8ebc-47be-8c20-65f05f093b73/section/player_props"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
