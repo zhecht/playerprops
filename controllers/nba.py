@@ -2038,7 +2038,8 @@ def writeDK(date, debug):
 		subCats = {
 			487: [4511, 13202, 13201],
 			523: [4609, 14182],
-			520: [4598, 4599, 6230, 14648, 12952],
+			#520: [4598, 4599, 6230, 14648, 12952],
+			520: [12952],
 			522: [4600, 4601, 4602, 4603]
 		}
 
@@ -2108,7 +2109,7 @@ def writeDK(date, debug):
 							if "label" not in row:
 								continue
 
-							prefix = ""
+							prefix = fullProp = ""
 							alt = True
 							if subCat in propIds:
 								prop = propIds[subCat]
@@ -2119,6 +2120,7 @@ def writeDK(date, debug):
 							else:
 								alt = False
 								prop = row["label"].lower().split(" [")[0]
+								fullProp = prop
 								
 								if "1st half" in prop:
 									prefix = "1h_"
@@ -2138,7 +2140,7 @@ def writeDK(date, debug):
 								elif "spread" in prop:
 									prop = "spread"
 								elif "team total points" in prop or (prop.endswith("alternate total points") and mainCat == "team") or (prop.startswith("alternate") and "total points" in prop and mainCat == "halves"):
-									team = prop.replace("alternate" , "").split(":")[0]
+									team = prop.replace("alternate " , "").split(":")[0]
 									t = team.split(" ")[0]
 									if game.startswith(t):
 										prop = "away_total"
@@ -2210,7 +2212,6 @@ def writeDK(date, debug):
 									else:
 										line = str(float(line))
 										lines[game][prop][player] [line] = ou+"/"+outcomes[i+1]["oddsAmerican"]
-
 
 	with open("static/nba/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
