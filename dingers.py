@@ -903,7 +903,7 @@ def writeFeed(date, yearArg):
 	for dt in dates:
 		date = dt
 		year = date.split("-")[0]
-		if str(allStarGames.get(year, datetime.now()))[:10] == date:
+		if str(allStarGames.get(year, ""))[:10] == date:
 			continue
 		sameYear = int(date.split("-")[0]) == datetime.now().year
 		driver.get(f"{base}{dt}")
