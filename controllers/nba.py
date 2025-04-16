@@ -3388,15 +3388,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 	with open(f"updated.json", "w") as fh:
 		json.dump(updated, fh, indent=4)
 
-	#with open(f"{prefix}static/nba/bet365.json") as fh:
-	#	bet365Lines = json.load(fh)
-
-	#with open(f"{prefix}static/nba/actionnetwork.json") as fh:
-	#	actionnetwork = json.load(fh)
-
-	with open(f"{prefix}static/nba/kambi.json") as fh:
-		kambiLines = json.load(fh)
-
 	with open(f"{prefix}static/nba/bovada.json") as fh:
 		bvLines = json.load(fh)
 
@@ -3462,7 +3453,6 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 
 	lines = {
 		"pn": pnLines,
-		"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
 		"dk": dkLines,
