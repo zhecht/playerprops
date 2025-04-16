@@ -2687,6 +2687,15 @@ async def writeFD(sport):
 					if "alternate" in label:
 						skip = 1
 						alt = True
+				elif label == "away team total points":
+					prop = "away_total"
+				elif label == "home team total points":
+					prop = "home_total"
+				elif label == "alternate total points":
+					prop = "total"
+				elif label in ["1st half spread", "alternate spread"]:
+					prop = "spread"
+					skip = 1
 				elif label.endswith("total runs"):
 					if label == f"{awayFull} total runs":
 						prop = "away_total"
@@ -2885,7 +2894,7 @@ async def writeFD(sport):
 				path = arrow.children[-1].children[0].children[0]
 				if prop != "lines" and path.attributes[1].split(" ")[0] != "M.147":
 					await arrow.click()
-					if prop in ["single", "double", "triple"]:
+					if prop in ["single", "double", "triple", "spread"]:
 						time.sleep(1)
 					#await div.wait_for(selector="div[role=button]")
 					#await div.wait_for(selector="div[aria-label='Show more']")
@@ -2934,7 +2943,7 @@ async def writeFD(sport):
 						#print(label.split(","), btns[3].attributes[1].split(", "))
 						data[game]["spread"][float(line.replace("+", ""))] = label.split(", ")[3].split(" ")[0]+"/"+btns[3].attributes[1].split(", ")[3].split(" ")[0]
 					try:
-						line = btns[2].attributes[1].split(", ")[3].split(" ")[1]
+						line = str(float(btns[2].attributes[1].split(", ")[3].split(" ")[1]))
 					except:
 						continue
 					data[game]["total"][line] = btns[2].attributes[1].split(", ")[4].split(" ")[0]+"/"+btns[5].attributes[1].split(", ")[4].split(" ")[0]
@@ -2974,6 +2983,8 @@ async def writeFD(sport):
 							team = convertNHLTeam(fields[-2].replace(f" {line}", ""))
 						elif sport == "mlb":
 							team = convertMLBTeam(fields[-2].replace(f" {line}", ""))
+						elif sport == "nba":
+							team = convertNBATeam(fields[-2].replace(f" {line}", ""))
 						line = line.replace("+", "")
 						isAway = True
 						if team == game.split(" @ ")[-1]:
