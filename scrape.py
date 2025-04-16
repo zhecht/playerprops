@@ -2620,8 +2620,8 @@ async def writeFD(sport):
 				if tab.text.lower() not in ["popular", "goals", "shots", "points/assists", "1st period"]:
 					continue
 			elif sport in ["nba", "ncaab"]:
-				if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense"]:
-				#if tab.text.lower() not in ["player combos"]:
+				if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense", "half"]:
+				#if tab.text.lower() not in ["half"]:
 					continue
 			elif sport == "mlb":
 				if tab.text.lower() not in ["popular", "batter props", "first 5 innings"]:
@@ -2676,26 +2676,23 @@ async def writeFD(sport):
 				elif "moneyline (3 way)" in label:
 					prop = "3ml"
 					skip = 3
-				elif "money line" in label:
+				elif "money line" in label or label.endswith("winner"):
 					prop = "ml"
 				elif label == "1st period goal in first ten minutes":
 					prop = "gift"
 				elif label == "1st period goal in first five minutes":
 					prop = "giff"
-				elif label.endswith("run line") or label.endswith("run lines"):
+				elif label.endswith("run line") or label.endswith("run lines") or label in ["1st half spread", "alternate spread"]:
 					prop = "spread"
 					if "alternate" in label:
 						skip = 1
 						alt = True
-				elif label == "away team total points":
+				elif "away team total" in label:
 					prop = "away_total"
-				elif label == "home team total points":
+				elif "home team total" in label:
 					prop = "home_total"
-				elif label == "alternate total points":
+				elif label == "alternate total points" or label.endswith("half total points"):
 					prop = "total"
-				elif label in ["1st half spread", "alternate spread"]:
-					prop = "spread"
-					skip = 1
 				elif label.endswith("total runs"):
 					if label == f"{awayFull} total runs":
 						prop = "away_total"
@@ -2976,6 +2973,9 @@ async def writeFD(sport):
 						data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1]+"/"+btns[i+2].attributes[labelIdx].split(", ")[-1]
 					elif "ml" in prop:
 						data[game][prop] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
+					elif prop == "1h_spread":
+						line = fields[-2].split(" ")[-1]
+						data[game][prop][line] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
 					elif "spread" in prop:
 						line = fields[-2].split(" ")[-1]
 						team = ""
@@ -3006,7 +3006,7 @@ async def writeFD(sport):
 						if u:
 							data[game][prop][line] += "/"+u
 					elif "total" in prop:
-						if prop in ["away_total", "home_total", "f5_total", "1p_total", "2p_total", "3p_total"]:
+						if prop in ["f5_total", "1p_total", "2p_total", "3p_total", "1h_total"] or "away_total" in prop or "home_total" in prop:
 							line = fields[-2].split(" ")[-1].replace("(", "").replace(")", "")
 						else:
 							line = fields[-2].split(" ")[0]
@@ -3991,7 +3991,7 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
 		runThreads("betrivers", sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
-		#games["chw @ cle"] = "/baseball/mlb/chicago-white-sox-@-cleveland-guardians-34198386"
+		#games["mia @ chi"] = "/basketball/nba/miami-heat-@-chicago-bulls-34212654?tab=half"
 		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game))
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", sport, games, totThreads, keep=True)
