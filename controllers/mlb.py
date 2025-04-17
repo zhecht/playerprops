@@ -2472,6 +2472,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							pass
 
 					evBook = ""
+					maxOU = ""
 					l = odds
 					if bookArg:
 						if bookArg not in books:
@@ -2605,8 +2606,10 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 								"book": evBook,
 								"ou": ou,
 								"line": l,
+								"fullLine": maxOU,
 								"odds": line,
 								"ev": evData[key]["ev"],
+								"implied": implied,
 								"bookOdds": j.copy()
 							}
 
