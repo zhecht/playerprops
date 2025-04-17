@@ -2554,7 +2554,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 					if ou.endswith("/-") or ou.endswith("/0"):
 						ou = ou.split("/")[0]
 
-					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"
+					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'} {playerHandicap}"
 					if key in evData:
 						continue
 					if True:
@@ -2585,7 +2585,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 								devig(evData, key, ou, l, prop=prop, book="espn")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
-							print(key)
+							#print(key)
 							continue
 						if float(evData[key]["ev"]) > 0:
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)

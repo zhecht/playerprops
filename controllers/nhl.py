@@ -3292,7 +3292,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 					if ou.endswith("/-") or ou.endswith("/0"):
 						ou = ou.split("/")[0]
 						
-					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'}"
+					key = f"{game} {handicap} {prop} {'over' if i == 0 else 'under'} {playerHandicap}"
 					if key in evData:
 						continue
 					if True:
