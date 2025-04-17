@@ -3264,11 +3264,11 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 					avgOver = []
 					avgUnder = []
-					for book in l:
-						if book.split("/")[0] != "-":
-							avgOver.append(convertImpOdds(int(book.split("/")[0])))
-						if "/" in book and book.split("/")[1] != "-":
-							avgUnder.append(convertImpOdds(int(book.split("/")[1])))
+					for book, bookOdds in zip(books, l):
+						if bookOdds.split("/")[0] != "-":
+							avgOver.append(convertImpOdds(int(bookOdds.split("/")[0])))
+						if "/" in bookOdds and bookOdds.split("/")[1] != "-" and book not in ["espn"]:
+							avgUnder.append(convertImpOdds(int(bookOdds.split("/")[1])))
 
 					if avgOver:
 						avgOver = float(sum(avgOver) / len(avgOver))
