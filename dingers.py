@@ -1518,7 +1518,7 @@ def writeStatsPage(date):
 				try:
 					nearestMid = {"line": "", "diff": 100}
 					for l, d in daily[date][game][prop][player].items():
-						if abs(d["implied"] - 50) < nearestMid["val"]:
+						if abs(d["implied"] - 50) < nearestMid["diff"]:
 							nearestMid["line"] = l
 							nearestMid["diff"] = abs(d["implied"] - 50)
 					dailyLines = daily[date][game][prop][player][nearestMid["line"]]
