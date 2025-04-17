@@ -1659,6 +1659,9 @@ def writeSavantParkFactors():
 
 
 def writeSavantExpected():
+	with open(f"{prefix}static/baseballreference/expected_historical.json") as fh:
+		json.dump(expectedHist, fh, indent=4)
+
 	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics?min=1"
 	expected = nested_dict()
 	for t in ["", "&type=pitcher"]:
@@ -1685,11 +1688,24 @@ def writeSavantExpected():
 			last, first = map(str, player.split(", "))
 			player = f"{first} {last}"
 
+			dt = str(datetime.now())[:10]
+			row["dt"] = dt
 			expected[team][player] = row.copy()
+
+			expectedHist.setdefault(team, {})
+			expectedHist[team].setdefault(player, {})
+			if "dt" in expectedHist[team][player] and dt in expectedHist[team][player]["dt"]:
+				continue
+
+			for k in row:
+				expectedHist[team][player].setdefault(k, [])
+				expectedHist[team][player][k].append(row[k])
 
 
 	with open(f"{prefix}static/baseballreference/expected.json", "w") as fh:
 		json.dump(expected, fh, indent=4)
+	with open(f"{prefix}static/baseballreference/expected_hist.json", "w") as fh:
+		json.dump(expectedHist, fh, indent=4)
 
 def writeSavantPitcherAdvanced():
 

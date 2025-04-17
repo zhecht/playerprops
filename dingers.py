@@ -11,6 +11,7 @@ import requests
 import subprocess
 import threading
 import multiprocessing
+import numpy as np
 from pdf2image import convert_from_path
 import pytesseract
 from PIL import Image
@@ -834,16 +835,80 @@ def writeKambi(date):
 
 	updateData(book, data)
 
+def getLinearRegression(year):
+	with open(f"static/splits/mlb_feed/{year}.json") as fh:
+		yearData = json.load(fh)
+
+	arr = []
+	for dt, play in yearData.items():
+		hrG = int(play["hr"]) / play["totGames"]
+		arr.append((dt, hrG))
+	arr = sorted(arr)
+
+	x = [i for i, _ in enumerate(arr)]
+	y = [hrG for _, hrG in arr]
+	coefficients = np.polyfit(x, y, 1) # 1 is lin reg
+	slope, intercept = coefficients
+	y_pred = np.polyval(coefficients, x)
+
+	return y_pred[-1]
+
 def recap():
 	today = datetime.now()
-	yest = str(today - timedelta(days=1))[:10]
+	yest = today - timedelta(days=1)
+	day = yest.day
+	year = yest.year
+	yestFormatted = yest.strftime(f"%b {day}{getSuffix(day)}")
+	yest = str(yest)[:10]
 	with open(f"static/splits/mlb_feed/{yest}.json") as fh:
 		feed = json.load(fh)
 
+	reg = getLinearRegression(year)
+
 	bip = feed["all"]["bipballs in play"]
-	for game in feed:
+	totHit = int(feed["all"]["hr"])
+	totGames = feed["all"]["totGames"]
+	hrG = round(totHit / totGames, 2)
+	longest = hardest = closest = 0
+	closestPlayer = longestPlayer = hardestPlayer = ""
+	for game, plays in feed.items():
 		if game == "all":
 			continue
+		for play in plays:
+			f = play["player"][0].upper()
+			if int(play["dist"] or 0) > longest:
+				longest = int(play["dist"])
+				longestPlayer = play["player"].title()
+			if float(play["evo"] or 0) > hardest:
+				hardest = float(play["evo"])
+				hardestPlayer = play["player"].title()
+			if play["hr/park"] and play["result"] != "Home Run":
+				h = int(play["hr/park"].split("/")[0])
+				if h > closest:
+					closest = h
+					closestPlayer = f"""{play["player"].title()} {play["result"]} ({play["hr/park"].split("/")[0]} Parks) 💀"""
+
+
+	trend = "📈" if hrG > reg else "📉"
+	print(f"""{yestFormatted} HR Recap
+
+{totHit} Hit | {hrG} per Game {trend} | {round(reg, 2)} '25 Trend
+
+Longest 🚀 {longestPlayer} {longest} ft 🚀
+Hardest 💥 {hardestPlayer} {hardest} mph 💥 
+Closest 💀 {closestPlayer} 
+""")
+
+
+	"""
+	Apr 16th HR Recap
+
+	29 Hit || 1.93 per game 📉 || 2.06 '25 Trend
+
+	Longest: Schwarber 440 ft || Hardest: Gorman 121 mph
+
+
+	"""
 		
 
 def checkHR(driver, totHomers):
