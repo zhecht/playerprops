@@ -1576,6 +1576,8 @@ def writeStatsPage(date):
 				playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
 				if lastYear in playerStatsHist:
 					playerStatsHist = playerStatsHist[lastYear]
+					longLogs = playerStatsHist.get(prop, [])[::-1]
+					longLogs.extend(logs)
 				else:
 					playerStatsHist = {}
 				dtSplitsLYR, logsLYR = [], []
