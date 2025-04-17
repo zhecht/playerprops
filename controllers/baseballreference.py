@@ -1660,7 +1660,7 @@ def writeSavantParkFactors():
 
 def writeSavantExpected():
 	with open(f"{prefix}static/baseballreference/expected_historical.json") as fh:
-		json.dump(expectedHist, fh, indent=4)
+		expectedHist = json.load(fh)
 
 	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics?min=1"
 	expected = nested_dict()
@@ -1701,11 +1701,10 @@ def writeSavantExpected():
 				expectedHist[team][player].setdefault(k, [])
 				expectedHist[team][player][k].append(row[k])
 
-
 	with open(f"{prefix}static/baseballreference/expected.json", "w") as fh:
 		json.dump(expected, fh, indent=4)
-	with open(f"{prefix}static/baseballreference/expected_hist.json", "w") as fh:
-		json.dump(expectedHist, fh, indent=4)
+	with open(f"{prefix}static/baseballreference/expected_historical.json", "w") as fh:
+		json.dump(expectedHist, fh)
 
 def writeSavantPitcherAdvanced():
 
