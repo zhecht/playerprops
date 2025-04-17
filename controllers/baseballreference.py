@@ -251,12 +251,6 @@ def write_stats(date):
 	with open(f"{prefix}static/baseballreference/playerIds.json", "w") as fh:
 		json.dump(playerIds, fh, indent=4)
 
-def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
-	if player == "mike siani":
-		player = "michael siani"
-	return player
-
 def writeSplits():
 	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
 		schedule = json.load(fh)
@@ -1665,9 +1659,9 @@ def writeSavantParkFactors():
 
 
 def writeSavantExpected():
-	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics"
-	expected = {}
-	for t in ["", "?type=pitcher"]:
+	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics?min=1"
+	expected = nested_dict()
+	for t in ["", "&type=pitcher"]:
 		time.sleep(0.2)
 		outfile = "outmlb3"
 		call(["curl", "-s", url+t, "-o", outfile])
@@ -1686,10 +1680,8 @@ def writeSavantExpected():
 		
 		for row in data:
 			team = convertRotoTeam(row["entity_team_name_alt"].lower())
-			if team not in expected:
-				expected[team] = {}
-
-			player = strip_accents(row["entity_name"]).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" ii", "")
+			player = parsePlayer(row["entity_name"])
+			#print(player)
 			last, first = map(str, player.split(", "))
 			player = f"{first} {last}"
 
