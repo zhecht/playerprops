@@ -1464,17 +1464,10 @@ def writeStatsPage(date):
 				away,home = map(str, game.split(" @ "))
 				if away == team:
 					isAway = True
-
-				if prop == "k":
-					if player != lineups[team]["pitcher"]:
-						continue
-					pitcher = player
-				else:
-					opp = opps[team]
-					oppRankings = rankings[opp].get(f"opp_{prop}")
-					pitcher = lineups[opp]["pitcher"]
-					pitcherLR = leftOrRight[opp].get(pitcher, "")
-
+				opp = opps[team]
+				oppRankings = rankings[opp].get(f"opp_{prop}")
+				pitcher = lineups[opp]["pitcher"]
+				pitcherLR = leftOrRight[opp].get(pitcher, "")
 				gameWeather = weather.get(game, {})
 
 				if home in parkFactors:
@@ -1531,6 +1524,12 @@ def writeStatsPage(date):
 					dailyLines = daily[date][game][prop][player][nearestMid["line"]]
 				except:
 					pass
+
+				if prop == "k":
+					if player != lineups[team]["pitcher"]:
+						continue
+					pitcher = player
+					
 				bvpStats = bvpData[team].get(player+' v '+pitcher, {})
 				bvp = ""
 				bvpHR = bvpAvg = 0
