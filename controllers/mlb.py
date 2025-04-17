@@ -2607,7 +2607,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 								"line": l,
 								"odds": line,
 								"ev": evData[key]["ev"],
-								"bookOdds": j
+								"bookOdds": j.copy()
 							}
 
 						evData[key]["weather"] = gameWeather
