@@ -608,8 +608,9 @@ def writeCirca(date):
 
 
 	#pages = [pages[1]]
-	#writeCircaMain(pages[0], data)
-	writeCircaProps(pages[1], data, teamGame)
+	writeCircaMain(pages[0], data)
+	if len(pages) > 1:
+		writeCircaProps(pages[1], data, teamGame)
 
 	with open("static/nhl/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
