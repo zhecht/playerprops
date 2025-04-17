@@ -1515,7 +1515,12 @@ def writeStatsPage(date):
 
 				dailyLines = {"line": line}
 				try:
-					dailyLines = daily[date][game][prop][player][str(line)]
+					nearestMid = {"line": "", "diff": 100}
+					for l, d in daily[date][game][prop][player].items():
+						if abs(d["implied"] - 50) < nearestMid["val"]:
+							nearestMid["line"] = l
+							nearestMid["diff"] = abs(d["implied"] - 50)
+					dailyLines = daily[date][game][prop][player][nearestMid["line"]]
 				except:
 					pass
 				bvpStats = bvpData[team].get(player+' v '+pitcher, {})
