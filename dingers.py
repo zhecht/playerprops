@@ -1515,7 +1515,7 @@ def writeStatsPage(date):
 
 				dailyLines = {"line": line}
 				try:
-					dailyLines = daily[date][game][prop][player]
+					dailyLines = daily[date][game][prop][player][line]
 				except:
 					pass
 				bvpStats = bvpData[team].get(player+' v '+pitcher, {})
