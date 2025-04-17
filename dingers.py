@@ -1529,7 +1529,7 @@ def writeStatsPage(date):
 					if player != lineups[team]["pitcher"]:
 						continue
 					pitcher = player
-					
+
 				bvpStats = bvpData[team].get(player+' v '+pitcher, {})
 				bvp = ""
 				bvpHR = bvpAvg = 0
@@ -1594,7 +1594,7 @@ def writeStatsPage(date):
 					"pitcherData": pitcherData,
 					"bvpHR": bvpHR, "bvpAvg": bvpAvg,
 					"order": order,
-					"prop": prop, "line": dailyLines["line"], "book": "", "bookOdds": {},
+					"prop": prop, "line": dailyLines["line"], "book": dailyLines.get("book", ""), "bookOdds": {},
 					"ba": savantData.get("ba", "-"), "xba": savantData.get("est_ba", "-"),
 					"xwoba": savantData.get("est_woba", "-"),
 					"savant": savantData,
