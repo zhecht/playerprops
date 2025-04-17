@@ -2596,7 +2596,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							daily[date][game].setdefault(prop, {})
 							daily[date][game][prop].setdefault(player, {})
 							l = float(playerHandicap.strip() or 0.5)
-							daily[date][game][prop][player][l] = {
+							daily[date][game][prop][player][str(l)] = {
 								"book": evBook,
 								"ou": ou,
 								"line": l,
