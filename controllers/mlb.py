@@ -2594,6 +2594,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 						if player and i == 0:
 							daily[date].setdefault(game, {})
 							daily[date][game].setdefault(prop, {})
+							daily[date][game][prop].setdefault(player, {})
 							l = float(playerHandicap.strip() or 0.5)
 							daily[date][game][prop][player][l] = {
 								"book": evBook,
