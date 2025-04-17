@@ -1464,10 +1464,17 @@ def writeStatsPage(date):
 				away,home = map(str, game.split(" @ "))
 				if away == team:
 					isAway = True
-				opp = opps[team]
-				oppRankings = rankings[opp].get(f"opp_{prop}")
-				pitcher = lineups[opp]["pitcher"]
-				pitcherLR = leftOrRight[opp].get(pitcher, "")
+
+				if prop == "k":
+					if player != lineups[team]["pitcher"]:
+						continue
+					pitcher = player
+				else:
+					opp = opps[team]
+					oppRankings = rankings[opp].get(f"opp_{prop}")
+					pitcher = lineups[opp]["pitcher"]
+					pitcherLR = leftOrRight[opp].get(pitcher, "")
+
 				gameWeather = weather.get(game, {})
 
 				if home in parkFactors:
@@ -1477,7 +1484,8 @@ def writeStatsPage(date):
 					oppRank = oppRankings["rankSuffix"]
 					oppRankClass = oppRankings["rankClass"]
 			except:
-				pass
+				if prop in ["k"]:
+					continue
 
 			try:
 				ah = "away" if isAway else "home"
