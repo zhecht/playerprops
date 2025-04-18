@@ -1532,7 +1532,7 @@ def writeStatsPage(date):
 							nearestMid["diff"] = abs(d["implied"] - 50)
 
 					if prop in ["h"]:
-						dailyLines = daily[date][game][prop][player][line]
+						dailyLines = daily[date][game][prop][player][str(line)]
 					else:
 						dailyLines = daily[date][game][prop][player][nearestMid["line"]]
 				except:
