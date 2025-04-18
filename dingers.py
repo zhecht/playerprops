@@ -1590,9 +1590,6 @@ def writeStatsPage(date):
 					totGames = len(dtSplits)
 					logs = playerStats.get(prop, [])
 
-					if player == "jt ginn" and prop == "k":
-						print(playerStats)
-
 					if totGames:
 						hitRate = round(len([x for x in logs if x > dailyLines["line"]]) * 100 / totGames)
 						hitRateL10 = round(len([x for x in logs[-10:] if x > dailyLines["line"]]) * 100 / min(totGames, 10))
