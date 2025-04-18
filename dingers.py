@@ -1481,6 +1481,7 @@ def writeStatsPage(date):
 				if oppRankings:
 					oppRank = oppRankings["rankSuffix"]
 					oppRankSeason = oppRankings["season"]
+					oppRankPer6 = float(oppRankSeason) * 6.0 / 9.0
 					oppRankClass = oppRankings["rankClass"]
 					if oppRankClass and isPitcher:
 						oppRankClass = "positive" if oppRankClass == "negative" else "negative"
@@ -1625,7 +1626,8 @@ def writeStatsPage(date):
 					},
 					"logs": logs, "longLogs": longLogs, "dtSplits": dtSplits, "awayHomeSplits": awayHomeSplits,
 					"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
-					"oppRank": oppRank, "oppRankClass": oppRankClass, "oppRankSeason": oppRankSeason,
+					"oppRank": oppRank, "oppRankClass": oppRankClass,
+					"oppRankSeason": oppRankSeason, "oppRankPer6": oppRankPer6,
 					"weather": gameWeather, "stadiumRank": stadiumRank,
 					"100-evo": over100, "300-ft": over300ft,
 					"playerYears": playerYears,
