@@ -1301,7 +1301,7 @@ def writeRankings():
 		url = baseUrl+page
 		outfile = "outmlb3"
 		time.sleep(0.2)
-		call(["curl", "-k", url, "-o", outfile])
+		call(["curl", "-s", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 		ranking = ids[idx]
 		lastYearRanks = []
@@ -2154,7 +2154,7 @@ if __name__ == "__main__":
 	elif args.trades:
 		writeTrades()
 	elif args.cron:
-		#writeRankings()
+		writeRankings()
 		write_player_rankings()
 		write_batting_pitches()
 		write_pitching_pitches()
