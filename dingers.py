@@ -1561,6 +1561,7 @@ def writeStatsPage(date):
 
 				playerStats = teamStats.get(player, {})
 				dtSplits, logs, awayHomeSplits, playerYears = [], [], [], []
+				longLogs = []
 				hitRate = hitRateL10 = hitRateLYR = totGames = 0
 				if playerStats:
 					dtSplits = playerStats["dt"]
@@ -1606,7 +1607,7 @@ def writeStatsPage(date):
 						"hr/park": hrParks,
 						"result": results, "keys": feedKeys
 					},
-					"logs": logs, "dtSplits": dtSplits, "awayHomeSplits": awayHomeSplits,
+					"logs": logs, "longLogs": longLogs, "dtSplits": dtSplits, "awayHomeSplits": awayHomeSplits,
 					"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
 					"oppRank": oppRank, "oppRankClass": oppRankClass,
 					"weather": gameWeather, "stadiumRank": stadiumRank,
