@@ -1588,6 +1588,7 @@ def writeStatsPage(date):
 					longLogs.extend(logs)
 				else:
 					playerStatsHist = {}
+					longLogs = logs
 				dtSplitsLYR, logsLYR = [], []
 				if playerStatsHist:
 					dtSplitsLYR = playerStatsHist["date"]
