@@ -1439,6 +1439,7 @@ def writeStatsPage(date):
 	props = [("h+r+rbi", 1.5), ("hr", 0.5), ("h", 0.5), ("k", 4.5)]
 
 	for prop, line in props:
+		isPitcher = prop in ["k"]
 		data = []
 		sortData = {}
 		for team in roster:
@@ -1525,7 +1526,7 @@ def writeStatsPage(date):
 				except:
 					pass
 
-				if prop == "k":
+				if isPitcher:
 					if player != lineups[team]["pitcher"]:
 						continue
 					pitcher = player
@@ -1541,6 +1542,9 @@ def writeStatsPage(date):
 						bvpAvg = bvpStats["h"] / bvpStats["ab"]
 
 				savantData = expected[team].get(player, {})
+				if isPitcher:
+					savantData = advanced.get(player, {})
+
 				feedKeys = sorted(feed.get(player, {}).keys())
 				evos = [feed[player][k]["evo"] for k in [k for k in feedKeys]]
 				dists = [feed[player][k]["dist"] for k in [k for k in feedKeys]]
