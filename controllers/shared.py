@@ -262,6 +262,13 @@ def parsePlayer(player):
 
 	return player
 
+def convertRankingsProp(prop):
+	if prop in ["r"]:
+		return "er"
+	elif prop == "k":
+		return "so"
+	return prop
+
 def convertMLBTeam(team):
 	team = team.lower().replace(".", "")
 	t = team.replace(" ", "")[:3]

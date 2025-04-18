@@ -1470,7 +1470,7 @@ def writeStatsPage(date):
 					isAway = True
 				opp = opps[team]
 				p = "opp_" if not isPitcher else ""
-				oppRankings = rankings[opp].get(f"{p}{prop}")
+				oppRankings = rankings[opp].get(f"{p}{convertRankingsProp(prop)}")
 				pitcher = lineups[opp]["pitcher"]
 				pitcherLR = leftOrRight[opp].get(pitcher, "")
 				gameWeather = weather.get(game, {})
