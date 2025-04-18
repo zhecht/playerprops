@@ -1481,7 +1481,7 @@ def writeStatsPage(date):
 				if oppRankings:
 					oppRank = oppRankings["rankSuffix"]
 					oppRankSeason = oppRankings["season"]
-					oppRankPer6 = float(oppRankSeason) * 6.0 / 9.0
+					oppRankPer6 = round(float(oppRankSeason) * 6.0 / 9.0, 2)
 					oppRankClass = oppRankings["rankClass"]
 					if oppRankClass and isPitcher:
 						oppRankClass = "positive" if oppRankClass == "negative" else "negative"
