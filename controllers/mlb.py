@@ -2235,7 +2235,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 
 	for gameData in schedule[date]:
 		game = gameData["game"]
-		print(game)
 		if "gm2" in game:
 			continue
 		if teamArg:

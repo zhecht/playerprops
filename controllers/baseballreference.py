@@ -584,6 +584,8 @@ def write_schedule(date):
 		json.dump(schedule, fh, indent=4)
 
 async def writeHistory(playerArg, force=False):
+	if playerArg:
+		playerArg = playerArg.replace("-", " ")
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
 		ids = json.load(fh)
 
@@ -621,13 +623,15 @@ async def writeHistory(playerArg, force=False):
 				if found:
 					continue
 
-			if player not in players:
+			if not force and not playerArg and player not in players:
 				continue
 			pId = ids[team][player]
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
 			urls.append((team, player, url))
 
 	#urls = [("det", "dillon dingler", "https://www.espn.com/mlb/player/gamelog/_/id/4345620")]
+	#if playerArg:
+	#	print(urls)
 	totThreads = min(len(urls), 7)
 	threads = []
 	for _ in range(totThreads):
