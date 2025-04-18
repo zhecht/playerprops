@@ -1454,7 +1454,7 @@ def writeStatsPage(date):
 				teamStatsHist = json.load(fh)
 
 			game = opp = stadiumRank = opp = pitcher = pitcherLR = ""
-			oppRank = oppRankClass = ""
+			oppRank = oppRankClass = oppRankSeason = ""
 			if team not in teamGame:
 				#continue
 				pass
@@ -1480,6 +1480,7 @@ def writeStatsPage(date):
 
 				if oppRankings:
 					oppRank = oppRankings["rankSuffix"]
+					oppRankSeason = oppRankings["season"]
 					oppRankClass = oppRankings["rankClass"]
 					if oppRankClass and isPitcher:
 						oppRankClass = "positive" if oppRankClass == "negative" else "negative"
@@ -1624,7 +1625,7 @@ def writeStatsPage(date):
 					},
 					"logs": logs, "longLogs": longLogs, "dtSplits": dtSplits, "awayHomeSplits": awayHomeSplits,
 					"hitRate": hitRate, "hitRateL10": hitRateL10, "hitRateLYR": hitRateLYR,
-					"oppRank": oppRank, "oppRankClass": oppRankClass,
+					"oppRank": oppRank, "oppRankClass": oppRankClass, "oppRankSeason": oppRankSeason,
 					"weather": gameWeather, "stadiumRank": stadiumRank,
 					"100-evo": over100, "300-ft": over300ft,
 					"playerYears": playerYears,
