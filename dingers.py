@@ -841,6 +841,9 @@ def getLinearRegression(year):
 
 	arr = []
 	for dt, play in yearData.items():
+		y,m,d = map(int, dt.split("-"))
+		if m not in [4,5]:
+			continue
 		hrG = int(play["hr"]) / play["totGames"]
 		arr.append((dt, hrG))
 	arr = sorted(arr)
