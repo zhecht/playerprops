@@ -1469,7 +1469,8 @@ def writeStatsPage(date):
 				if away == team:
 					isAway = True
 				opp = opps[team]
-				oppRankings = rankings[opp].get(f"opp_{prop}")
+				p = "opp_" if not isPitcher else ""
+				oppRankings = rankings[opp].get(f"{p}{prop}")
 				pitcher = lineups[opp]["pitcher"]
 				pitcherLR = leftOrRight[opp].get(pitcher, "")
 				gameWeather = weather.get(game, {})
@@ -1481,7 +1482,7 @@ def writeStatsPage(date):
 					oppRank = oppRankings["rankSuffix"]
 					oppRankClass = oppRankings["rankClass"]
 			except:
-				if prop in ["k"]:
+				if isPitcher:
 					continue
 
 			try:
