@@ -1439,7 +1439,7 @@ def writeStatsPage(date):
 
 	lastAB = 0
 
-	props = [("h+r+rbi", 1.5), ("hr", 0.5), ("h", 0.5), ("k", 5.5)]
+	props = [("h+r+rbi", 1.5), ("tb", 1.5), ("hr", 0.5), ("h", 0.5), ("k", 5.5)]
 
 	for prop, line in props:
 		isPitcher = prop in ["k"]
