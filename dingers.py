@@ -1547,6 +1547,10 @@ def writeStatsPage(date):
 				savantData = expected[team].get(player, {})
 				if isPitcher:
 					savantData = advanced.get(player, {})
+					pitcherData = savantData
+
+				#if player == "mackenzie gore":
+				#	print(savantData)
 
 				feedKeys = sorted(feed.get(player, {}).keys())
 				evos = [feed[player][k]["evo"] for k in [k for k in feedKeys]]
