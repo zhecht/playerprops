@@ -853,9 +853,9 @@ def getLinearRegression(year):
 
 	return y_pred[-1]
 
-def recap():
-	today = datetime.now()
-	yest = today - timedelta(days=1)
+def recap(date):
+	y,m,d = map(int, date.split("-"))
+	yest = datetime(y,m,d)
 	day = yest.day
 	year = yest.year
 	yestFormatted = yest.strftime(f"%b {day}{getSuffix(day)}")
@@ -2129,7 +2129,7 @@ if __name__ == '__main__':
 	elif args.fix_feed:
 		fixFeed()
 	elif args.recap:
-		recap()
+		recap(date)
 	elif args.months:
 		writeMonths()
 	elif args.hot:
