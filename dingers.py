@@ -879,12 +879,13 @@ def recap(date):
 			continue
 		for play in plays:
 			f = play["player"][0].upper()
-			if int(play["dist"] or 0) > longest:
-				longest = int(play["dist"])
-				longestPlayer = play["player"].title()
-			if float(play["evo"] or 0) > hardest:
-				hardest = float(play["evo"])
-				hardestPlayer = play["player"].title()
+			if "Home Run" in play["result"]:
+				if int(play["dist"] or 0) > longest:
+					longest = int(play["dist"])
+					longestPlayer = play["player"].title()
+				if float(play["evo"] or 0) > hardest:
+					hardest = float(play["evo"])
+					hardestPlayer = play["player"].title()
 			if play["hr/park"] and play["result"] != "Home Run":
 				h = int(play["hr/park"].split("/")[0])
 				if h > closest:
@@ -1182,7 +1183,7 @@ def writeHot(date):
 		teamGame[a] = game
 		teamGame[h] = game
 
-	trends = []
+	trends = {"graphs": []}
 	for team in roster:
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
@@ -1218,7 +1219,7 @@ def writeHot(date):
 
 			regression = linearRegression(range(min(CUTOFF, len(bip))), bip[-CUTOFF:])
 			evo_regression = linearRegression(range(min(CUTOFF, len(evos))), evos[-CUTOFF:])
-			trends.append({
+			trends["graphs"].append({
 				"game": game,
 				"team": team, "player": player,
 				"slope": regression["slope"],
@@ -1229,7 +1230,7 @@ def writeHot(date):
 				"ou": ou, "evBook": evBook
 			})
 
-	trends.sort(key=lambda k: k["slope"], reverse=True)
+	trends["graph"].sort(key=lambda k: k["slope"], reverse=True)
 	with open("static/mlb/trends.json", "w") as fh:
 		json.dump(trends, fh)
 
