@@ -1230,7 +1230,7 @@ def writeHot(date):
 				"ou": ou, "evBook": evBook
 			})
 
-	trends["graph"].sort(key=lambda k: k["slope"], reverse=True)
+	trends["graphs"].sort(key=lambda k: k["slope"], reverse=True)
 	with open("static/mlb/trends.json", "w") as fh:
 		json.dump(trends, fh)
 
