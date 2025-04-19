@@ -1547,11 +1547,12 @@ def writeStatsPage(date):
 
 				bvpStats = bvpData[team].get(player+' v '+pitcher, {})
 				bvp = ""
-				bvpHR = bvpAvg = 0
+				bvpHR = bvpAvg = bvpH = 0
 				if bvpStats and bvpStats["ab"]:
 					#bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR, {bvpStats['rbi']} RBI, {bvpStats['so']} SO"
 					bvp = f"{bvpStats['h']}-{bvpStats['ab']}, {bvpStats['hr']} HR"
 					bvpHR = bvpStats["hr"]
+					bvpH = bvpStats["h"]
 					if bvpStats["ab"]:
 						bvpAvg = bvpStats["h"] / bvpStats["ab"]
 
@@ -1618,7 +1619,7 @@ def writeStatsPage(date):
 					"game": game, "start": start,
 					"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
 					"pitcherData": pitcherData,
-					"bvpHR": bvpHR, "bvpAvg": bvpAvg,
+					"bvpHR": bvpHR, "bvpAvg": bvpAvg, "bvpH": bvpH,
 					"order": order,
 					"prop": prop, "line": dailyLines["line"], "playerHandicap": dailyLines["line"],
 					"book": dailyLines.get("book", ""), "bookOdds": {},
@@ -2147,15 +2148,17 @@ if __name__ == '__main__':
 
 	if args.feed:
 		writeFeed(date, args.year)
-	elif args.fix_feed:
+	if args.fix_feed:
 		fixFeed()
-	elif args.recap:
+	if args.recap:
 		recap(date)
-	elif args.months:
+	if args.months:
 		writeMonths()
-	elif args.hot:
+	if args.hot:
 		writeHot(date)
-	elif args.fd:
+	
+
+	if args.fd:
 		#games = uc.loop().run_until_complete(getFDLinks(date))
 		#games["mil @ nyy"] = "https://mi.sportsbook.fanduel.com/baseball/mlb/milwaukee-brewers-@-new-york-yankees-34146634?tab=batter-props"
 		#runThreads("fd", games, min(args.threads, len(games)))
