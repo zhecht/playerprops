@@ -3080,7 +3080,10 @@ async def writeFD(sport):
 								if player in data[game][prop] and line in data[game][prop][player] and int(data[game][prop][player][line].split("/")[0]) > int(odds.split("/")[0]):
 									data[game][prop][player][line] += "/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
 								else:
-									data[game][prop][player][line] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
+									try:
+										data[game][prop][player][line] = odds+"/"+btns[i+1].attributes[labelIdx].split(", ")[-1].split(" ")[0]
+									except:
+										pass
 					elif prop in ["double_double", "triple_double"]:
 						player = parsePlayer(fields[1].split(" (")[0])
 						data[game][prop][player] = odds
