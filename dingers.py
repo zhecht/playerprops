@@ -1469,6 +1469,7 @@ def writeStatsPage(date):
 			start = ""
 			gameWeather = {}
 			isAway = False
+			oppRank = oppRankSeason = oppRankPer6 = oppRankClass = ""
 			try: # game info
 				game = teamGame[team]["game"]
 				start = teamGame[team]["start"]
