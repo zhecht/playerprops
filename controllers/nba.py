@@ -3826,7 +3826,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							#print(evData[key]["ev"], game, handicap, prop, int(line), ou, books)
 							pass
 
-						pos = rank = posRank = ""
+						pos = oppRank = oppRankPos = rank = posRank = ""
 						isAway = "A"
 						if player:
 							if player in roster[team]:
@@ -3838,7 +3838,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 								isAway = "H"
 							try:
 								rank = matchups[opp]["szn"]["all"][prop+"Rank"]
+								oppRank = rank
 								posRank = matchups[opp]["szn"][pos][prop+"Rank"]
+								oppRankPos = posRank
 							except:
 								pass
 
@@ -3876,6 +3878,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 						evData[key]["awayHomeSplits"] = awayHome
 						evData[key]["winLossSplitsPerMin"] = winLossPerMin
 						evData[key]["awayHomeSplitsPerMin"] = awayHomePerMin
+						evData[key]["oppRank"] = oppRank
+						evData[key]["oppRankPos"] = oppRankPos
 						evData[key]["posRank"] = posRank
 						evData[key]["totalOver"] = totalOver
 						evData[key]["totalOverPerMin"] = totalOverPerMin
