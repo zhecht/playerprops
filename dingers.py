@@ -1168,7 +1168,7 @@ def writeFeedSplits(date, data, sameYear):
 			json.dump(j, fh)
 
 def writeHot(date):
-	CUTOFF = 12
+	CUTOFF = 0
 	with open(f"static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 	with open("static/baseballreference/roster.json") as fh:
@@ -1217,20 +1217,25 @@ def writeHot(date):
 				ou = ""
 				evBook = ""
 
-			regression = linearRegression(range(min(CUTOFF, len(bip))), bip[-CUTOFF:])
-			evo_regression = linearRegression(range(min(CUTOFF, len(evos))), evos[-CUTOFF:])
+			r = range(len(bip)) if not CUTOFF else range(min(CUTOFF, len(bip)))
+			regression = linearRegression(r, bip[-CUTOFF:])
+			r = range(len(evos)) if not CUTOFF else range(min(CUTOFF, len(evos)))
+			evo_regression = linearRegression(r, evos[-CUTOFF:])
 			trends["graphs"].append({
 				"game": game,
 				"team": team, "player": player,
 				"slope": regression["slope"],
 				"predictedY": regression["predicted_y"],
+				"lastPredictedY": regression["predicted_y"][-1],
 				"y": bip[-CUTOFF:],
 				"evoPredictedY": evo_regression["predicted_y"],
 				"evoY": evos[-CUTOFF:],
 				"ou": ou, "evBook": evBook
 			})
 
-	trends["graphs"].sort(key=lambda k: k["slope"], reverse=True)
+	#trends["graphs"].sort(key=lambda k: k["slope"], reverse=True)
+	trends["graphs"].sort(key=lambda k: k["lastPredictedY"], reverse=True)
+	print(trends["graphs"][0])
 	with open("static/mlb/trends.json", "w") as fh:
 		json.dump(trends, fh)
 
