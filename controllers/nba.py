@@ -4073,7 +4073,13 @@ def writeMatchups():
 			for pos in data[team][period]:
 				for prop in data[team][period][pos].copy():
 					rank = rankingsKey[f"{team}_{period}_{pos}_{prop}"]
+					rankClass = ""
+					if int(rank) <= 10:
+						rankClass = "negative"
+					elif int(rank) >= 20:
+						rankClass = "positive"
 					data[team][period][pos][f"{prop}Rank"] = f"{rank}{get_suffix(rank)}"
+					data[team][period][pos][f"{prop}RankClass"] = rankClass
 
 	with open("static/nba/matchups.json", "w") as fh:
 		json.dump(data, fh, indent=4)
