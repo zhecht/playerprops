@@ -2191,15 +2191,6 @@ def writeRanks(date):
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}/circa.json", headers=hdrs)
 	circaLines = response.json()
-	newCircaLines = nested_dict()
-	for game, gameData in circaLines.items():
-		for prop, propData in gameData.items():
-			if prop == "hr":
-				for player, ou in propData.items():
-					newCircaLines[game][prop][player]["0.5"] = ou
-				continue
-
-			newCircaLines[game][prop] = propData
 
 	# lineups
 	response = requests.get(f"{b}/lineups.json", headers=hdrs)

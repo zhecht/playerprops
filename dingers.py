@@ -1441,6 +1441,18 @@ def writeStatsPage(date):
 	with open("static/mlb/pinnacle.json") as fh:
 		pinny = json.load(fh)
 
+	"""
+	newCircaLines = nested_dict()
+	for game, gameData in circaLines.items():
+		for prop, propData in gameData.items():
+			if prop == "hr":
+				for player, ou in propData.items():
+					newCircaLines[game][prop][player]["0.5"] = ou
+				continue
+
+			newCircaLines[game][prop] = propData
+	"""
+
 	teamGame = {}
 	opps = {}
 	for game in schedule[date]:
@@ -1549,7 +1561,7 @@ def writeStatsPage(date):
 					if prop in ["h"]:
 						dailyLines = daily[date][game][prop][player][str(line)]
 					else:
-						dailyLines = daily[date][game][prop][player][nearestMid["line"]]
+						dailyLines = daily[date][game][prop][player][nearestMid["line"]].copy()
 				except:
 					pass
 
