@@ -2465,9 +2465,11 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 						pass
 
 					oppRank = oppRankLastYear = 0
+					oppRankClass = ""
 					rankingsProp = convertRankingsProp(prop)
 					if opp and rankingsProp in rankings[opp]:
 						oppRank = rankings[opp][rankingsProp]['rank']
+						oppRankClass = rankings[opp][rankingsProp]['rankClass']
 						oppRank = f"{oppRank}{getSuffix(oppRank)}"
 						oppRankLastYear = rankings[opp][rankingsProp].get('lastYearRank', 0)
 						if oppRankLastYear and "opp" in rankingsProp:
@@ -2661,6 +2663,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 						evData[key]["total10Over"] = total10Over
 						evData[key]["totalOverLastYear"] = totalOverLastYear
 						evData[key]["oppRank"] = oppRank
+						evData[key]["oppRankClass"] = oppRankClass
 						evData[key]["oppRankLastYear"] = oppRankLastYear
 
 	with open(f"{prefix}static/mlb/daily.json", "w") as fh:

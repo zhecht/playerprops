@@ -3144,6 +3144,7 @@ async def writeFD(sport):
 							x = 1
 
 						if prop == "hr":
+							line = "0.5"
 							player = parsePlayer(fields[1].split(" to Record")[0].split(" (")[0])
 						elif mainLine:
 							player = parsePlayer(fields[1])
