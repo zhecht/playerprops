@@ -2280,8 +2280,8 @@ def writeRanks(date):
 				mostLikely = (0, "")
 				for line in lines:
 					p = calcFantasyPoints(prop, line * j[prop][line])
-					if p > mostLikely[0]:
-						mostLikely = (p, line)
+					if j[prop][line] > mostLikely[0]:
+						mostLikely = (j[prop][line], line)
 					propPts[prop] += p
 				pts += propPts[prop]
 				propPts[prop] = round(propPts[prop], 2)
