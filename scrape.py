@@ -3167,7 +3167,7 @@ async def writeFD(sport):
 						if line in data[game][prop][player]:
 							continue
 
-						if prop in ["hr", "single", "double", "triple"]:
+						if prop in ["single", "double", "triple"]:
 							data[game][prop][player] = odds
 						else:
 							data[game][prop][player][line] = odds
