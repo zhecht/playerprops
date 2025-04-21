@@ -1425,7 +1425,7 @@ def writeStatsPage(date):
 	with open(f"static/baseballreference/rankings.json") as fh:
 		rankings = json.load(fh)
 
-	with open(f"static/baseballreference/parkFactors.json") as fh:
+	with open(f"static/baseballreference/parkfactors.json") as fh:
 		parkFactors = json.load(fh)
 
 	with open(f"static/mlb/daily.json") as fh:
