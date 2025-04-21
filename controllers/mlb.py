@@ -2285,6 +2285,7 @@ def writeRanks(date):
 
 			pts = round(pts, 2)
 			
+			game = teamGame.get(team, "")
 			dailyLines = {"line": 0}
 			try:
 				nearestMid = {"line": "", "diff": 100}
@@ -2301,7 +2302,7 @@ def writeRanks(date):
 				pass
 			ranks.append({
 				"player": player, "prop": prop,
-				"team": team, "game": teamGame.get(team, ""),
+				"team": team, "game": game,
 				"pts": pts, "propPts": propPts, "propLines": j,
 				"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
 				"daily": dailyLines
