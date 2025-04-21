@@ -1183,7 +1183,7 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			prop = "spread"
 		elif prop == "inning total runs":
 			prop = "rfi"
-		elif prop.endswith("team total runs"):
+		elif prop.endswith("team total runs") or prop == "team total goals (excl ot)":
 			prop = "team_total"
 		elif "total runs" in prop or "total" in prop:
 			if "exact" in prop or "/" in prop or "range" in prop or "&" in prop or "any" in prop or "consecutive" in prop or "match total" in prop:
@@ -1231,7 +1231,12 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			elif "ml" in prop or prop in ["rfi"]:
 				data[game][prop] = ou
 			elif "team_total" in prop:
-				t = convertMLBTeam(btns[idx].find_previous("header").text)
+				if sport == "mlb":
+					t = convertMLBTeam(btns[idx].find_previous("header").text)
+				elif sport == "nba":
+					t = convertNBATeam(btns[idx].find_previous("header").text)
+				elif sport == "nhl":
+					t = convertNHLTeam(btns[idx].find_previous("header").text)
 				p = "away" if game.startswith(t) else "home"
 				pre = "f5_" if "1st 5" in fullProp else ""
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
@@ -2625,8 +2630,8 @@ async def writeFD(sport):
 			await page.wait_for(selector="div[data-testid=ArrowAction]")
 
 			if sport == "nhl":
-				#if tab.text.lower() not in ["popular", "goals", "shots", "points/assists", "1st period"]:
-				if tab.text.lower() not in ["popular"]:
+				if tab.text.lower() not in ["popular", "goals", "shots", "points/assists", "1st period"]:
+				#if tab.text.lower() not in ["popular"]:
 					continue
 			elif sport in ["nba", "ncaab"]:
 				if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense", "half"]:
