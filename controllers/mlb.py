@@ -2306,7 +2306,7 @@ def writeRanks(date):
 					"team": team, "game": game,
 					"pts": pts, "propPts": propPts, "propLines": j,
 					"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
-					"daily": dailyLines, "mostLikely": mostLikely
+					"daily": dailyLines, "mostLikely": mostLikely[-1]
 				})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
