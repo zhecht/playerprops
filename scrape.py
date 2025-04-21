@@ -1203,8 +1203,6 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 		else:
 			continue
 
-		#print(fullProp, prop)
-
 		btns = detail.find_all("button")
 
 		if prop.startswith("gif") or prop in ["dnb", "btts"]:
@@ -1213,6 +1211,8 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			continue
 
 		prop = f"{pre}{prop}"
+
+		#print(prop, fullProp)
 
 		if sport == "nhl" and prop in ["away_total", "home_total"]:
 			prop += "_no_OT"
@@ -1234,7 +1234,7 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				t = convertMLBTeam(btns[idx].find_previous("header").text)
 				p = "away" if game.startswith(t) else "home"
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
-				data[game][f"{p}_total"][line] = ou
+				data[game][f"{pre}{p}_total"][line] = ou
 			else:
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
 

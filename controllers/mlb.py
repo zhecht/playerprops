@@ -2771,6 +2771,7 @@ if __name__ == '__main__':
 	parser.add_argument("--token", help="Token")
 	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--skipdk", action="store_true")
+	parser.add_argument("--skip-dk", action="store_true")
 	parser.add_argument("--bpp", action="store_true")
 	parser.add_argument("--gamelogs", action="store_true")
 	parser.add_argument("--arb", action="store_true")
@@ -2852,7 +2853,7 @@ if __name__ == '__main__':
 		writeKambi(date)
 		#print("mgm")
 		#writeMGM(args.date)
-		if not args.skipdk:
+		if not args.skipdk and not args.skip_dk:
 			print("dk")
 			writeDK(date, args.prop, args.keep, args.debug)
 		#writeBPP(args.date)
