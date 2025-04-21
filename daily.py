@@ -33,33 +33,38 @@ def writeSchedule(sport, date):
 
 		date = str(datetime.strptime(date.split(" - ")[0].strip(), "%A, %B %d, %Y"))[:10]
 		schedule[date] = []
+		seen = {}
+		for tbody in div.find_all("tbody")[::-1]:
+			for row in tbody.find_all("tr"):
+				tds = row.find_all("td")
+				awayTeam = tds[0].find("a").get("href").split("/")[-2]
+				homeTeam = tds[1].find("a").get("href").split("/")[-2]
+				result = tds[2]
+				href = result.find("a").get("href")
+				score = start = ""
 
-		for row in div.find("tbody").find_all("tr"):
-			tds = row.find_all("td")
-			awayTeam = tds[0].find("a").get("href").split("/")[-2]
-			homeTeam = tds[1].find("a").get("href").split("/")[-2]
-			result = tds[2]
-			href = result.find("a").get("href")
-			score = start = ""
+				if ", " in result.text:
+					winSide, lossSide = map(str, result.text.lower().split(", "))
+					winTeam, winScore = map(str, winSide.split(" "))
+					lossTeam, lossScore = map(str, lossSide.split(" (")[0].split(" "))
 
-			if ", " in result.text:
-				winSide, lossSide = map(str, result.text.lower().split(", "))
-				winTeam, winScore = map(str, winSide.split(" "))
-				lossTeam, lossScore = map(str, lossSide.split(" (")[0].split(" "))
+					score = f"{winScore}-{lossScore}"
+					if winTeam != awayTeam:
+						score = f"{lossScore}-{winScore}"
+				else:
+					start = result.text.strip()
 
-				score = f"{winScore}-{lossScore}"
-				if winTeam != awayTeam:
-					score = f"{lossScore}-{winScore}"
-			else:
-				start = result.text.strip()
-
-			j = {
-				"game": f"{awayTeam} @ {homeTeam}",
-				"link": "https://www.espn.com"+href,
-				"score": score,
-				"start": start
-			}
-			schedule[date].append(j)
+				game = f"{awayTeam} @ {homeTeam}"
+				if game in seen:
+					game += "-gm2"
+				seen[game] = True
+				j = {
+					"game": game,
+					"link": "https://www.espn.com"+href,
+					"score": score,
+					"start": start
+				}
+				schedule[date].append(j)
 
 	with open(f"static/{sport}/schedule.json", "w") as fh:
 		json.dump(schedule, fh, indent=4)
