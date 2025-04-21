@@ -2146,7 +2146,7 @@ def clear():
 	with open(f"{prefix}static/mlb/espn.json", "w") as fh:
 		json.dump({}, fh)
 
-def writeRanks():
+def writeRanks(date):
 	with open("static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -2183,6 +2183,9 @@ def writeRanks():
 
 	with open(f"{prefix}static/mlb/espn.json") as fh:
 		espnLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/daily.json") as fh:
+		daily = json.load(fh)
 
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/mlb"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
@@ -2281,12 +2284,27 @@ def writeRanks():
 				propPts[prop] = round(propPts[prop], 2)
 
 			pts = round(pts, 2)
-			#print(player, pts, j)
+			
+			dailyLines = {"line": 0}
+			try:
+				nearestMid = {"line": "", "diff": 100}
+				for l, d in daily[date][game][prop][player].items():
+					if abs(d["implied"] - 50) < nearestMid["diff"]:
+						nearestMid["line"] = l
+						nearestMid["diff"] = abs(d["implied"] - 50)
+
+				if prop in ["h"]:
+					dailyLines = daily[date][game][prop][player]["0.5"]
+				else:
+					dailyLines = daily[date][game][prop][player][nearestMid["line"]]
+			except:
+				pass
 			ranks.append({
 				"player": player, "prop": prop,
 				"team": team, "game": teamGame.get(team, ""),
 				"pts": pts, "propPts": propPts, "propLines": j,
-				"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher
+				"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
+				"daily": dailyLines
 			})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
@@ -3027,7 +3045,7 @@ if __name__ == '__main__':
 		sortEV(args.prop)
 
 	if args.ranks:
-		writeRanks()
+		writeRanks(date)
 
 	if args.commit:
 		commitChanges()
