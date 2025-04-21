@@ -507,27 +507,28 @@ def mergeCirca():
 def writeCircaProps(page, data, teamGame):
 	page.save("outnhlprops.png", "PNG")
 	img = Image.open("outnhlprops.png")
-	bottom, top = 2250, 495
-	left,right = 295, 1575
+	bottom, top = 2400, 430
+	left,right = 110, 460
 
 	#player_img = img.crop((90,415,470,bottom)) # l,t,r,b
 	#player_img = img.crop((150,390,450,bottom)) # l,t,r,b
-	player_img = img.crop((250,390,520,bottom)) # l,t,r,b
+	player_img = img.crop((left,top,right,bottom)) # l,t,r,b
 	#player_img.save("outnhl-players.png", "PNG")
 	player_text = pytesseract.image_to_string(player_img).split("\n")
 	player_text = [x for x in player_text if x.strip()]
+	print(player_text)
 
-	#over_img = img.crop((610,390,680,bottom))
-	over_img = img.crop((640,390,700,bottom))
+	over_img = img.crop((595,top,665,bottom))
 	over_text = pytesseract.image_to_string(over_img).split("\n")
 	over_text = [x.replace("\u201c", "-").replace("~", "-") for x in over_text if x.strip()]
 
-	under_img = img.crop((780,390,840,bottom))
+	under_img = img.crop((760,top,840,bottom))
 	under_text = pytesseract.image_to_string(under_img).split("\n")
 	under_text = [x.replace("\u201c", "-").replace("~", "-") for x in under_text if x.strip()]
 
 	for playerIdx, player in enumerate(player_text):
-		team = convertNHLTeam(player.split(")")[0].split("(")[-1])
+		team = player.split(")")[0].split("(")[-1]
+		team = convertNHLTeam(team)
 		game = teamGame.get(team, "")
 		player = parsePlayer(player.lower().split(" (")[0])
 		data[game]["atgs"][player] = over_text[playerIdx]+"/"+under_text[playerIdx]
@@ -603,7 +604,7 @@ def writeCirca(date):
 	today = datetime.strptime(date, "%Y-%m-%d")
 	dt = today.strftime("%Y-%-m-%-d")
 
-	file = f"/mnt/c/Users/zhech/Downloads/NHL Props - {dt}.pdf"
+	file = f"/mnt/c/Users/zhech/Downloads/NHL - {dt}.pdf"
 	pages = convert_from_path(file)
 	data = nested_dict()
 	props = nested_dict()
@@ -612,10 +613,10 @@ def writeCirca(date):
 	#pages = [pages[1]]
 
 	#writeCircaMain(pages[0], data)
-	#if len(pages) > 1:
-	#	writeCircaProps(pages[1], data, teamGame)
+	if len(pages) > 1:
+		writeCircaProps(pages[1], data, teamGame)
 
-	writeCircaProps(pages[0], data, teamGame)
+	#writeCircaProps(pages[0], data, teamGame)
 
 	with open("static/nhl/circa.json", "w") as fh:
 		json.dump(data, fh, indent=4)
@@ -3077,6 +3078,9 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
+
+				if parsePlayer(playerHandicap) == player and prop == "sog":
+					continue
 
 				# last year stats
 				lastTotalOver = lastTotalGames = 0

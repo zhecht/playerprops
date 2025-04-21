@@ -2625,7 +2625,8 @@ async def writeFD(sport):
 			await page.wait_for(selector="div[data-testid=ArrowAction]")
 
 			if sport == "nhl":
-				if tab.text.lower() not in ["popular", "goals", "shots", "points/assists", "1st period"]:
+				#if tab.text.lower() not in ["popular", "goals", "shots", "points/assists", "1st period"]:
+				if tab.text.lower() not in ["popular"]:
 					continue
 			elif sport in ["nba", "ncaab"]:
 				if tab.text.lower() not in ["popular", "player points", "player threes", "player rebounds", "player assists", "player combos", "player defense", "half"]:
@@ -2882,6 +2883,10 @@ async def writeFD(sport):
 
 				prop = f"{prefix}{prop}"
 				#print(label, prop)
+
+				if prop == "sog":
+					print("skipping sog")
+					continue
 
 				if prop.endswith("gift"):
 					prop = "gift"
@@ -4003,7 +4008,7 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
 		runThreads("betrivers", sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
-		#games["mia @ chi"] = "/basketball/nba/miami-heat-@-chicago-bulls-34212654?tab=half"
+		#games["mtl @ wsh"] = "/ice-hockey/nhl/montreal-canadiens-@-washington-capitals-34230789"
 		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game))
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", sport, games, totThreads, keep=True)
