@@ -2185,8 +2185,12 @@ def writeRanks():
 		espnLines = json.load(fh)
 
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/mlb"
-	response = requests.get(f"{b}/circa.json", headers={"Accept": "application/vnd.github.v3.raw"})
+	hdrs = {"Accept": "application/vnd.github.v3.raw"}
+	response = requests.get(f"{b}/circa.json", headers=hdrs)
 	circaLines = response.json()
+	# lineups
+	response = requests.get(f"{b}/lineups.json", headers=hdrs)
+	lineups = response.json()
 
 	lines = {
 		"pn": pnLines,
@@ -2239,6 +2243,8 @@ def writeRanks():
 
 	ranks = []
 	for team, players in data.items():
+		opp = opps[team]
+		pitcher = lineups[opp]["pitcher"]
 		for player, props in players.items():
 			j = {}
 			isPitcher = "k" in props
@@ -2280,7 +2286,7 @@ def writeRanks():
 				"player": player, "prop": prop,
 				"team": team, "game": teamGame.get(team, ""),
 				"pts": pts, "propPts": propPts, "propLines": j,
-				"isPitcher": isPitcher, "opp": opps[team]
+				"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher
 			})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
