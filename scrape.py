@@ -1239,8 +1239,9 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 					t = convertNHLTeam(btns[idx].find_previous("header").text)
 				p = "away" if game.startswith(t) else "home"
 				pre = "f5_" if "1st 5" in fullProp else ""
+				suf = "_no_OT" if sport == "nhl" else ""
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
-				data[game][f"{pre}{p}_total"][line] = ou
+				data[game][f"{pre}{p}_total{suf}"][line] = ou
 			else:
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
 
