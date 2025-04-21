@@ -2277,36 +2277,37 @@ def writeRanks(date):
 			propPts = {}
 			for prop, lines in j.items():
 				propPts[prop] = 0
+				mostLikely = (0, "")
 				for line in lines:
 					p = calcFantasyPoints(prop, line * j[prop][line])
+					if p > mostLikely[0]:
+						mostLikely = (p, line)
 					propPts[prop] += p
 				pts += propPts[prop]
 				propPts[prop] = round(propPts[prop], 2)
 
-			pts = round(pts, 2)
-			
-			game = teamGame.get(team, "")
-			dailyLines = {"line": 0}
-			try:
-				nearestMid = {"line": "", "diff": 100}
-				for l, d in daily[date][game][prop][player].items():
-					if abs(d["implied"] - 50) < nearestMid["diff"]:
-						nearestMid["line"] = l
-						nearestMid["diff"] = abs(d["implied"] - 50)
+				game = teamGame.get(team, "")
+				dailyLines = {"line": 0}
+				try:
+					nearestMid = {"line": "", "diff": 100}
+					for l, d in daily[date][game][prop][player].items():
+						if abs(d["implied"] - 50) < nearestMid["diff"]:
+							nearestMid["line"] = l
+							nearestMid["diff"] = abs(d["implied"] - 50)
 
-				if prop in ["h"]:
-					dailyLines = daily[date][game][prop][player]["0.5"]
-				else:
-					dailyLines = daily[date][game][prop][player][nearestMid["line"]]
-			except:
-				pass
-			ranks.append({
-				"player": player, "prop": prop,
-				"team": team, "game": game,
-				"pts": pts, "propPts": propPts, "propLines": j,
-				"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
-				"daily": dailyLines
-			})
+					if prop in ["h"]:
+						dailyLines = daily[date][game][prop][player]["0.5"]
+					else:
+						dailyLines = daily[date][game][prop][player][nearestMid["line"]]
+				except:
+					pass
+				ranks.append({
+					"player": player, "prop": prop,
+					"team": team, "game": game,
+					"pts": pts, "propPts": propPts, "propLines": j,
+					"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
+					"daily": dailyLines, "mostLikely": mostLikely
+				})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
 		json.dump(ranks, fh)
@@ -2837,7 +2838,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 						evData[key]["oppRankLastYear"] = oppRankLastYear
 
 	with open(f"{prefix}static/mlb/daily.json", "w") as fh:
-		json.dump(daily, fh, indent=4)
+		json.dump(daily, fh)
 
 	with open(f"{prefix}static/mlb/ev.json", "w") as fh:
 		json.dump(evData, fh, indent=4)
