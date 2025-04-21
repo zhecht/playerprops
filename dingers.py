@@ -1217,22 +1217,25 @@ def writeHot(date):
 				ou = ""
 				evBook = ""
 
-			r = range(len(bip)) if not CUTOFF else range(min(CUTOFF, len(bip)))
-			regression = linearRegression(r, bip[-CUTOFF:])
-			r = range(len(evos)) if not CUTOFF else range(min(CUTOFF, len(evos)))
-			evo_regression = linearRegression(r, evos[-CUTOFF:])
-			if not regression["predicted_y"]:
-				lastY = 0
-			else:
+			try:
+				r = range(len(bip)) if not CUTOFF else range(min(CUTOFF, len(bip)))
+				regression = linearRegression(r, bip[-CUTOFF:])
+				r = range(len(evos)) if not CUTOFF else range(min(CUTOFF, len(evos)))
+				evo_regression = linearRegression(r, evos[-CUTOFF:])
 				lastY = regression["predicted_y"][-1]
+			except:
+				regression = {}
+				evo_regression = {}
+				lastY = 0
+
 			trends["graphs"].append({
 				"game": game,
 				"team": team, "player": player,
-				"slope": regression["slope"],
-				"predictedY": regression["predicted_y"],
+				"slope": regression.get("slope", {}),
+				"predictedY": regression.get("predicted_y", {}),
 				"lastPredictedY": lastY,
 				"y": bip[-CUTOFF:],
-				"evoPredictedY": evo_regression["predicted_y"],
+				"evoPredictedY": evo_regression.get("predicted_y", {}),
 				"evoY": evos[-CUTOFF:],
 				"ou": ou, "evBook": evBook
 			})
