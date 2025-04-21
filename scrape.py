@@ -1183,7 +1183,7 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			prop = "spread"
 		elif prop == "inning total runs":
 			prop = "rfi"
-		elif prop == "team total runs":
+		elif prop.endswith("team total runs"):
 			prop = "team_total"
 		elif "total runs" in prop or "total" in prop:
 			if "exact" in prop or "/" in prop or "range" in prop or "&" in prop or "any" in prop or "consecutive" in prop or "match total" in prop:
@@ -1230,9 +1230,10 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				data[game][f"{q}q_{prop}"] = ou
 			elif "ml" in prop or prop in ["rfi"]:
 				data[game][prop] = ou
-			elif prop == "team_total":
+			elif "team_total" in prop:
 				t = convertMLBTeam(btns[idx].find_previous("header").text)
 				p = "away" if game.startswith(t) else "home"
+				pre = "f5_" if "1st 5" in fullProp else ""
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
 				data[game][f"{pre}{p}_total"][line] = ou
 			else:
