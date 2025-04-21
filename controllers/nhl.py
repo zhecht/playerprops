@@ -3079,7 +3079,8 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
 
-				if parsePlayer(playerHandicap) == player and prop == "sog":
+				if prop == "sog":
+					print("skip sog")
 					continue
 
 				# last year stats
