@@ -28,6 +28,10 @@ def getSuffix(num):
 		return "rd"
 	return "th"
 
+def calcFantasyPoints(prop, val):
+	
+	return val
+
 def getFairValue(ou, method=None):
 	over = int(ou.split("/")[0])
 	if over > 0:
@@ -202,6 +206,31 @@ def convertAmericanFromImplied(odds):
 	else:
 		odds = ((1 - odds) / odds) * 100
 	return round(odds)
+
+def averageOdds(odds):
+	avgOver = []
+	avgUnder = []
+	for o in odds:
+		if o and o != "-" and o.split("/")[0] != "-":
+			avgOver.append(convertImpOdds(int(o.split("/")[0])))
+			if "/" in o:
+				avgUnder.append(convertImpOdds(int(o.split("/")[1])))
+
+	if avgOver:
+		avgOver = float(sum(avgOver) / len(avgOver))
+		avgOver = convertAmericanFromImplied(avgOver)
+	else:
+		avgOver = "-"
+	if avgUnder:
+		avgUnder = float(sum(avgUnder) / len(avgUnder))
+		avgUnder = convertAmericanFromImplied(avgUnder)
+	else:
+		avgUnder = "-"
+
+	ou = f"{avgOver}/{avgUnder}"
+	if ou.endswith("/-"):
+		ou = ou.split("/")[0]
+	return ou
 
 def strip_accents(text):
 	try:

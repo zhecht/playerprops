@@ -1,133 +1,439 @@
 {
-    "edm @ la": {
-        "ml": "+104/-125",
+    "col @ dal": {
+        "ml": "-150/+125",
         "spread": {
-            "1.5": "-265/+200",
-            "2.5": "-590/+390",
-            "3.5": "-3000/+1000",
-            "-1.5": "+255/-350",
-            "-2.5": "+480/-800",
-            "-3.5": "+1200/-4500",
-            "-4.5": "+3000",
-            "4.5": "/+1800",
-            "5.5": "/+5500"
+            "-1.5": "+162/-210",
+            "1.5": "-390/+280",
+            "2.5": "-850/+500",
+            "-2.5": "+300/-430",
+            "-3.5": "+800/-1800",
+            "-4.5": "+1500",
+            "-5.5": "+3500",
+            "3.5": "/+1300",
+            "4.5": "/+3500"
         },
         "total": {
-            "5.5": "-108/-118",
-            "2.5": "-6000/+1400",
+            "6.5": "+110/-140",
+            "2.5": "-10000/+1700",
+            "3.5": "-950/+540",
+            "4.5": "-460/+320",
+            "5.5": "-154/+120",
+            "7.5": "+255/-350",
+            "8.5": "+400/-620",
+            "9.5": "+900/-2500"
+        },
+        "atgs": {
+            "nathan mackinnon": "+130/-175",
+            "valeri nichushkin": "+210/-290",
+            "wyatt johnston": "+220/-310",
+            "mikko rantanen": "+220/-310",
+            "martin necas": "+250/-360",
+            "roope hintz": "+250/-380",
+            "brock nelson": "+280/-420",
+            "artturi lehkonen": "+290/-440",
+            "matt duchene": "+290/-440",
+            "cale makar": "+290/-450",
+            "tyler seguin": "+300/-470",
+            "mikael granlund": "+350/-550",
+            "gabriel landeskog": "+350",
+            "charlie coyle": "+370",
+            "jonathan drouin": "+390/-650",
+            "jamie benn": "+400/-650",
+            "mason marchment": "+400",
+            "ross colton": "+440",
+            "evgenii dadonov": "+480",
+            "devon toews": "+575",
+            "thomas harley": "+700",
+            "joel kiviranta": "+700",
+            "jack drury": "+725",
+            "oskar back": "+1000",
+            "colin blackwell": "+1000",
+            "sam steel": "+1100",
+            "samuel girard": "+1300",
+            "erik johnson": "+1300",
+            "cody ceci": "+1300",
+            "esa lindell": "+1300",
+            "josh manson": "+1500",
+            "ilya lyubushkin": "+1600",
+            "alexander petrovic": "+1600",
+            "lian bichsel": "+1600"
+        },
+        "fgs": {
+            "nathan mackinnon": "+950",
+            "valeri nichushkin": "+1400",
+            "wyatt johnston": "+1400",
+            "mikko rantanen": "+1400",
+            "roope hintz": "+1600",
+            "martin necas": "+1600",
+            "matt duchene": "+1700",
+            "brock nelson": "+1700",
+            "cale makar": "+1900",
+            "tyler seguin": "+1900",
+            "artturi lehkonen": "+1900",
+            "gabriel landeskog": "+2000",
+            "mikael granlund": "+2300",
+            "jamie benn": "+2400",
+            "charlie coyle": "+2400",
+            "mason marchment": "+2500",
+            "jonathan drouin": "+2500",
+            "ross colton": "+2600",
+            "evgenii dadonov": "+2900",
+            "devon toews": "+3100",
+            "thomas harley": "+4000",
+            "joel kiviranta": "+4100",
+            "jack drury": "+4200",
+            "oskar back": "+5000",
+            "colin blackwell": "+5000",
+            "samuel girard": "+6000",
+            "erik johnson": "+6500",
+            "sam steel": "+6500",
+            "cody ceci": "+6500",
+            "esa lindell": "+7000",
+            "alexander petrovic": "+7000",
+            "josh manson": "+7500",
+            "lian bichsel": "+8000",
+            "ilya lyubushkin": "+10000"
+        },
+        "pts": {
+            "nathan mackinnon": {
+                "0.5": "-330",
+                "1.5": "+142",
+                "2.5": "+480"
+            },
+            "cale makar": {
+                "0.5": "-200",
+                "1.5": "+250",
+                "2.5": "+900"
+            },
+            "mikko rantanen": {
+                "0.5": "-154",
+                "1.5": "+340",
+                "2.5": "+1200"
+            },
+            "martin necas": {
+                "0.5": "-148",
+                "1.5": "+340",
+                "2.5": "+1200"
+            },
+            "valeri nichushkin": {
+                "0.5": "-136",
+                "1.5": "+400",
+                "2.5": "+1400"
+            },
+            "roope hintz": {
+                "0.5": "-125",
+                "1.5": "+430",
+                "2.5": "+1400"
+            },
+            "matt duchene": {
+                "0.5": "-122",
+                "1.5": "+440",
+                "2.5": "+1500"
+            },
+            "wyatt johnston": {
+                "0.5": "-115",
+                "1.5": "+430",
+                "2.5": "+1500"
+            },
+            "jonathan drouin": {
+                "0.5": "+106",
+                "1.5": "+560",
+                "2.5": "+1800"
+            },
+            "tyler seguin": {
+                "0.5": "+110",
+                "1.5": "+630",
+                "2.5": "+2200"
+            },
+            "thomas harley": {
+                "0.5": "+112",
+                "1.5": "+600",
+                "2.5": "+1800"
+            },
+            "mikael granlund": {
+                "0.5": "+112",
+                "1.5": "+630",
+                "2.5": "+2000"
+            },
+            "artturi lehkonen": {
+                "0.5": "+122",
+                "1.5": "+630",
+                "2.5": "+2500"
+            },
+            "devon toews": {
+                "0.5": "+126",
+                "1.5": "+680",
+                "2.5": "+2500"
+            },
+            "brock nelson": {
+                "0.5": "+124",
+                "1.5": "+700",
+                "2.5": "+3000"
+            },
+            "mason marchment": {
+                "0.5": "+158",
+                "1.5": "+1000"
+            },
+            "esa lindell": {
+                "0.5": "+240",
+                "1.5": "+1400"
+            }
+        },
+        "ast": {
+            "nathan mackinnon": {
+                "0.5": "-138",
+                "1.5": "+350",
+                "2.5": "+1300"
+            },
+            "cale makar": {
+                "0.5": "-122",
+                "1.5": "+420",
+                "2.5": "+1500"
+            },
+            "martin necas": {
+                "0.5": "+128",
+                "1.5": "+680"
+            },
+            "thomas harley": {
+                "0.5": "+146",
+                "1.5": "+830"
+            },
+            "mikko rantanen": {
+                "0.5": "+142",
+                "1.5": "+800"
+            },
+            "matt duchene": {
+                "0.5": "+158",
+                "1.5": "+900"
+            },
+            "roope hintz": {
+                "0.5": "+162",
+                "1.5": "+900"
+            },
+            "valeri nichushkin": {
+                "0.5": "+172",
+                "1.5": "+1060"
+            },
+            "jonathan drouin": {
+                "0.5": "+180",
+                "1.5": "+1060"
+            },
+            "devon toews": {
+                "0.5": "+186",
+                "1.5": "+1060"
+            },
+            "mikael granlund": {
+                "0.5": "+200",
+                "1.5": "+1200"
+            },
+            "wyatt johnston": {
+                "0.5": "+210",
+                "1.5": "+1100"
+            },
+            "tyler seguin": {
+                "0.5": "+220",
+                "1.5": "+1400"
+            },
+            "artturi lehkonen": {
+                "0.5": "+255"
+            },
+            "brock nelson": {
+                "0.5": "+285"
+            },
+            "esa lindell": {
+                "0.5": "+300"
+            },
+            "mason marchment": {
+                "0.5": "+310"
+            }
+        },
+        "3ml": "+105/+340/+185",
+        "away_total": {
+            "3.5": "+110/-140"
+        },
+        "home_total": {
+            "2.5": "-146/+114"
+        },
+        "1p_total": {
+            "1.5": "-134/+106"
+        },
+        "giff": "+166/-215",
+        "gift": "-164/+128",
+        "2p_total": {
+            "1.5": "-180/+140"
+        },
+        "3p_total": {
+            "2.5": "+154/-200"
+        },
+        "team_fgs": {
+            "wyatt johnston": "+650",
+            "mikko rantanen": "+650",
+            "roope hintz": "+800",
+            "matt duchene": "+900",
+            "tyler seguin": "+1000",
+            "jamie benn": "+1200",
+            "mason marchment": "+1200",
+            "mikael granlund": "+1200",
+            "no goalscorer home team": "+1300",
+            "evgenii dadonov": "+1500",
+            "thomas harley": "+2000",
+            "oskar back": "+2800",
+            "colin blackwell": "+2900",
+            "sam steel": "+3100",
+            "esa lindell": "+3400",
+            "cody ceci": "+3600",
+            "alexander petrovic": "+4200",
+            "lian bichsel": "+4300",
+            "ilya lyubushkin": "+5000",
+            "nathan mackinnon": "+500",
+            "valeri nichushkin": "+750",
+            "martin necas": "+900",
+            "brock nelson": "+950",
+            "cale makar": "+1000",
+            "artturi lehkonen": "+1000",
+            "gabriel landeskog": "+1100",
+            "charlie coyle": "+1300",
+            "jonathan drouin": "+1400",
+            "ross colton": "+1500",
+            "devon toews": "+1900",
+            "no goalscorer away team": "+2000",
+            "jack drury": "+2200",
+            "joel kiviranta": "+2400",
+            "samuel girard": "+3800",
+            "erik johnson": "+4100",
+            "josh manson": "+4400"
+        },
+        "1p_ml": "-140/+110"
+    },
+    "edm @ la": {
+        "ml": "+108/-130",
+        "spread": {
+            "1.5": "-265/+200",
+            "2.5": "-530/+360",
+            "3.5": "-2500/+900",
+            "-1.5": "+250/-340",
+            "-2.5": "+470/-770",
+            "-3.5": "+1300",
+            "-4.5": "+3000",
+            "4.5": "/+1800",
+            "5.5": "/+4000"
+        },
+        "total": {
+            "5.5": "-104/-122",
+            "2.5": "-5000/+1300",
             "3.5": "-590/+390",
-            "4.5": "-320/+235",
-            "6.5": "+150/-194",
-            "7.5": "+360/-530",
-            "8.5": "+560/-1000",
-            "9.5": "+1200/-4500"
+            "4.5": "-310/+230",
+            "6.5": "+158/-205",
+            "7.5": "+370/-560",
+            "8.5": "+600/-1100",
+            "9.5": "+1300/-5000"
         },
         "atgs": {
             "leon draisaitl": "+155/-210",
-            "connor mcdavid": "+180/-250",
             "adrian kempe": "+195/-270",
-            "kevin fiala": "+200/-280",
-            "zach hyman": "+240/-350",
-            "quinton byfield": "+310/-470",
-            "andrei kuzmenko": "+310/-470",
+            "connor mcdavid": "+195/-270",
+            "kevin fiala": "+210/-300",
+            "zach hyman": "+260/-390",
+            "quinton byfield": "+290/-440",
+            "andrei kuzmenko": "+330/-490",
             "alex laferriere": "+350/-550",
-            "trevor moore": "+370",
-            "warren foegele": "+370/-600",
+            "trevor moore": "+360",
+            "anze kopitar": "+360/-600",
             "jeff skinner": "+380/-600",
-            "anze kopitar": "+380/-600",
+            "warren foegele": "+380/-600",
             "viktor arvidsson": "+390/-650",
-            "ryan nugent hopkins": "+400",
-            "phillip danault": "+430",
+            "phillip danault": "+400",
+            "ryan nugent hopkins": "+410",
             "connor brown": "+525",
-            "vasily podkolzin": "+600",
-            "evan bouchard": "+600",
-            "adam henrique": "+600",
-            "drew doughty": "+625",
-            "corey perry": "+700",
-            "alex turcotte": "+900",
-            "kasperi kapanen": "+950",
-            "samuel helenius": "+1000",
+            "adam henrique": "+575",
+            "vasily podkolzin": "+625",
+            "corey perry": "+650",
+            "drew doughty": "+650",
+            "evan bouchard": "+700",
+            "samuel helenius": "+950",
+            "alex turcotte": "+950",
+            "kasperi kapanen": "+1000",
             "jake walman": "+1000",
             "brandt clarke": "+1100",
             "jeff malott": "+1100",
-            "darnell nurse": "+1100",
-            "mattias janmark": "+1200",
+            "mattias janmark": "+1100",
+            "darnell nurse": "+1200",
             "mikey anderson": "+1300",
-            "jordan spence": "+1300",
             "vladislav gavrikov": "+1300",
-            "joel edmundson": "+1500"
+            "jordan spence": "+1400",
+            "joel edmundson": "+1600"
         },
         "fgs": {
             "leon draisaitl": "+1000",
             "connor mcdavid": "+1100",
             "adrian kempe": "+1100",
-            "kevin fiala": "+1200",
+            "kevin fiala": "+1300",
             "zach hyman": "+1500",
-            "quinton byfield": "+1800",
-            "andrei kuzmenko": "+1900",
+            "quinton byfield": "+1700",
+            "andrei kuzmenko": "+1800",
+            "anze kopitar": "+1900",
             "warren foegele": "+2000",
+            "jeff skinner": "+2000",
             "trevor moore": "+2000",
-            "viktor arvidsson": "+2100",
-            "ryan nugent hopkins": "+2100",
-            "alex laferriere": "+2100",
-            "jeff skinner": "+2200",
-            "anze kopitar": "+2300",
-            "phillip danault": "+2300",
-            "connor brown": "+2900",
-            "drew doughty": "+3100",
-            "adam henrique": "+3100",
-            "evan bouchard": "+3200",
-            "vasily podkolzin": "+3300",
-            "corey perry": "+3500",
-            "alex turcotte": "+4200",
-            "samuel helenius": "+4500",
-            "kasperi kapanen": "+4600",
-            "jeff malott": "+5000",
-            "darnell nurse": "+5000",
-            "mattias janmark": "+5500",
-            "jake walman": "+5500",
+            "alex laferriere": "+2000",
+            "viktor arvidsson": "+2300",
+            "phillip danault": "+2400",
+            "ryan nugent hopkins": "+2500",
+            "connor brown": "+3000",
+            "vasily podkolzin": "+3100",
+            "drew doughty": "+3200",
+            "corey perry": "+3200",
+            "adam henrique": "+3200",
+            "evan bouchard": "+3700",
+            "samuel helenius": "+4300",
+            "kasperi kapanen": "+4700",
+            "alex turcotte": "+4700",
+            "jeff malott": "+4800",
+            "jake walman": "+5000",
+            "mikey anderson": "+5500",
             "brandt clarke": "+5500",
-            "mikey anderson": "+6000",
-            "joel edmundson": "+6000",
-            "vladislav gavrikov": "+6500",
-            "jordan spence": "+6500",
-            "brett kulak": "+10000"
+            "darnell nurse": "+5500",
+            "vladislav gavrikov": "+6000",
+            "mattias janmark": "+6000",
+            "joel edmundson": "+7500",
+            "jordan spence": "+7500",
+            "brett kulak": "+8500"
         },
         "pts": {
             "connor mcdavid": {
-                "0.5": "-350",
-                "1.5": "+140",
-                "2.5": "+450"
+                "0.5": "-330",
+                "1.5": "+148",
+                "2.5": "+480"
             },
             "leon draisaitl": {
-                "0.5": "-295",
-                "1.5": "+168",
-                "2.5": "+560"
+                "0.5": "-290",
+                "1.5": "+176",
+                "2.5": "+600"
             },
             "adrian kempe": {
-                "0.5": "-162",
-                "1.5": "+310",
+                "0.5": "-172",
+                "1.5": "+320",
                 "2.5": "+1100"
             },
             "kevin fiala": {
-                "0.5": "-122",
-                "1.5": "+450",
+                "0.5": "-118",
+                "1.5": "+430",
                 "2.5": "+1500"
             },
             "evan bouchard": {
-                "0.5": "-120",
-                "1.5": "+420",
-                "2.5": "+1400"
+                "0.5": "-118",
+                "1.5": "+430",
+                "2.5": "+1500"
             },
             "zach hyman": {
-                "0.5": "-113",
-                "1.5": "+450",
+                "0.5": "-111",
+                "1.5": "+480",
                 "2.5": "+1500"
             },
             "andrei kuzmenko": {
-                "0.5": "-113",
-                "1.5": "+460",
-                "2.5": "+1500"
+                "0.5": "-111",
+                "1.5": "+470",
+                "2.5": "+1700"
             },
             "anze kopitar": {
                 "0.5": "-102",
@@ -135,12 +441,12 @@
                 "2.5": "+1700"
             },
             "quinton byfield": {
-                "0.5": "+104",
+                "0.5": "+100",
                 "1.5": "+560",
                 "2.5": "+1800"
             },
             "ryan nugent hopkins": {
-                "0.5": "+110",
+                "0.5": "+116",
                 "1.5": "+630",
                 "2.5": "+2000"
             },
@@ -149,12 +455,12 @@
                 "1.5": "+750",
                 "2.5": "+3000"
             },
-            "trevor moore": {
-                "0.5": "+154",
-                "1.5": "+900"
-            },
             "phillip danault": {
-                "0.5": "+162",
+                "0.5": "+158",
+                "1.5": "+870"
+            },
+            "trevor moore": {
+                "0.5": "+152",
                 "1.5": "+900"
             },
             "viktor arvidsson": {
@@ -162,44 +468,44 @@
                 "1.5": "+900"
             },
             "warren foegele": {
-                "0.5": "+164",
+                "0.5": "+176",
                 "1.5": "+1000"
             },
             "alex laferriere": {
                 "0.5": "+172",
-                "1.5": "+1060"
+                "1.5": "+1000"
             },
             "jeff skinner": {
-                "0.5": "+186",
-                "1.5": "+1100"
-            },
-            "darnell nurse": {
-                "0.5": "+215",
-                "1.5": "+1300"
+                "0.5": "+190",
+                "1.5": "+1060"
             },
             "jake walman": {
+                "0.5": "+220",
+                "1.5": "+1300"
+            },
+            "darnell nurse": {
                 "0.5": "+220",
                 "1.5": "+1300"
             }
         },
         "ast": {
             "connor mcdavid": {
-                "0.5": "-186",
-                "1.5": "+280",
+                "0.5": "-180",
+                "1.5": "+285",
                 "2.5": "+1000"
             },
             "leon draisaitl": {
-                "0.5": "-132",
-                "1.5": "+400",
+                "0.5": "-130",
+                "1.5": "+420",
                 "2.5": "+1400"
             },
             "evan bouchard": {
                 "0.5": "+112",
-                "1.5": "+560",
+                "1.5": "+600",
                 "2.5": "+2000"
             },
             "adrian kempe": {
-                "0.5": "+142",
+                "0.5": "+134",
                 "1.5": "+800"
             },
             "andrei kuzmenko": {
@@ -207,28 +513,28 @@
                 "1.5": "+900"
             },
             "anze kopitar": {
-                "0.5": "+164",
-                "1.5": "+1000"
+                "0.5": "+168",
+                "1.5": "+900"
             },
             "zach hyman": {
-                "0.5": "+190",
-                "1.5": "+1060"
-            },
-            "ryan nugent hopkins": {
-                "0.5": "+190",
+                "0.5": "+196",
                 "1.5": "+1100"
             },
             "drew doughty": {
-                "0.5": "+200",
+                "0.5": "+196",
                 "1.5": "+1100"
+            },
+            "ryan nugent hopkins": {
+                "0.5": "+200",
+                "1.5": "+1060"
             },
             "quinton byfield": {
                 "0.5": "+200",
                 "1.5": "+1200"
             },
             "kevin fiala": {
-                "0.5": "+210",
-                "1.5": "+1300"
+                "0.5": "+200",
+                "1.5": "+1200"
             },
             "darnell nurse": {
                 "0.5": "+280"
@@ -237,539 +543,86 @@
                 "0.5": "+290"
             },
             "phillip danault": {
-                "0.5": "+300"
+                "0.5": "+290"
             },
             "trevor moore": {
-                "0.5": "+320"
+                "0.5": "+310"
             },
             "viktor arvidsson": {
-                "0.5": "+330"
+                "0.5": "+340"
             },
             "warren foegele": {
                 "0.5": "+350"
             },
-            "jeff skinner": {
-                "0.5": "+400"
-            },
             "alex laferriere": {
+                "0.5": "+370"
+            },
+            "jeff skinner": {
                 "0.5": "+400"
             }
         },
-        "sog": {
-            "leon draisaitl": {
-                "Leon Draisaitl": "+415/+460",
-                "2.5": "-144/+110"
-            },
-            "kevin fiala": {
-                "Kevin Fiala": "+460/+470",
-                "2.5": "-132/+102"
-            },
-            "zach hyman": {
-                "Zach Hyman": "+630/+710",
-                "2.5": "+106/-138"
-            },
-            "viktor arvidsson": {
-                "Viktor Arvidsson": "+430/+490",
-                "1.5": "-205/+154"
-            },
-            "ryan nugent hopkins": {
-                "Ryan Nugent-Hopkins": "-154/-154",
-                "1.5": "-154/+118"
-            },
-            "darnell nurse": {
-                "Darnell Nurse": "+225/+235",
-                "1.5": "-146/+112"
-            },
-            "alex laferriere": {
-                "Alex Laferriere": "+235/+250",
-                "1.5": "-138/+106"
-            },
-            "drew doughty": {
-                "Drew Doughty": "+108/+128",
-                "1.5": "+108/-140"
-            },
-            "jeff skinner": {
-                "Jeff Skinner": "+128/Show",
-                "1.5": "+128/-168"
-            },
-            "trevor moore": {
-                "Trevor Moore": "+560/+580",
-                "1.5": "-154/+120"
-            },
-            "adrian kempe": {
-                "Adrian Kempe": "+195/+205",
-                "2.5": "-132/+102"
-            },
-            "edmonton oilers": {
-                "Edmonton Oilers": "-104/-122"
-            },
-            "connor mcdavid": {
-                "Connor McDavid": "-3500/-4500",
-                "2.5": "-130/+100"
-            },
-            "jake walman": {
-                "Jake Walman": "-700/-660",
-                "1.5": "-138/+106"
-            },
-            "andrei kuzmenko": {
-                "1.5": "+128/-168"
-            },
-            "quinton byfield": {
-                "1.5": "-130/+100"
-            },
-            "evan bouchard": {
-                "2.5": "+116/-152"
-            },
-            "warren foegele": {
-                "1.5": "-182/+138"
-            }
-        },
-        "3ml": "+160/+320/+125",
+        "3ml": "+165/+320/+120",
         "away_total": {
-            "2.5": "-132/+104"
+            "2.5": "-128/+100"
         },
         "home_total": {
-            "2.5": "-156/+122"
+            "2.5": "-158/+124"
         },
         "1p_total": {
-            "1.5": "-116/-110"
+            "1.5": "-110/-116"
         },
-        "giff": "+180/-235",
-        "gift": "-142/+112",
+        "giff": "+182/-240",
+        "gift": "-136/+108",
         "2p_total": {
             "1.5": "-152/+120"
         },
         "3p_total": {
-            "1.5": "-168/+132"
+            "1.5": "-164/+128"
         },
         "team_fgs": {
             "adrian kempe": "+600",
-            "kevin fiala": "+650",
-            "quinton byfield": "+1000",
+            "kevin fiala": "+750",
+            "quinton byfield": "+950",
             "andrei kuzmenko": "+1000",
+            "anze kopitar": "+1000",
             "trevor moore": "+1100",
             "alex laferriere": "+1100",
-            "warren foegele": "+1100",
-            "anze kopitar": "+1200",
+            "warren foegele": "+1200",
             "phillip danault": "+1300",
-            "no goalscorer home team": "+1500",
-            "drew doughty": "+1800",
-            "alex turcotte": "+2600",
-            "samuel helenius": "+2900",
-            "brandt clarke": "+3100",
-            "jeff malott": "+3100",
-            "vladislav gavrikov": "+3500",
-            "mikey anderson": "+3700",
-            "joel edmundson": "+3700",
-            "jordan spence": "+3800",
-            "leon draisaitl": "+480",
-            "connor mcdavid": "+550",
+            "no goalscorer home team": "+1400",
+            "drew doughty": "+1900",
+            "alex turcotte": "+2800",
+            "samuel helenius": "+2800",
+            "jeff malott": "+2900",
+            "brandt clarke": "+3200",
+            "mikey anderson": "+3300",
+            "vladislav gavrikov": "+3400",
+            "joel edmundson": "+4300",
+            "jordan spence": "+4300",
+            "leon draisaitl": "+490",
+            "connor mcdavid": "+600",
             "zach hyman": "+750",
-            "jeff skinner": "+1100",
-            "ryan nugent hopkins": "+1100",
-            "no goalscorer away team": "+1200",
-            "viktor arvidsson": "+1200",
+            "jeff skinner": "+1000",
+            "no goalscorer away team": "+1100",
+            "viktor arvidsson": "+1100",
+            "ryan nugent hopkins": "+1200",
+            "adam henrique": "+1600",
             "connor brown": "+1600",
-            "adam henrique": "+1700",
-            "evan bouchard": "+1700",
-            "vasily podkolzin": "+1800",
-            "corey perry": "+1900",
-            "kasperi kapanen": "+2500",
-            "jake walman": "+2900",
+            "corey perry": "+1700",
+            "vasily podkolzin": "+1700",
+            "evan bouchard": "+1800",
+            "jake walman": "+2700",
+            "kasperi kapanen": "+2700",
             "mattias janmark": "+3100",
-            "darnell nurse": "+3100",
-            "brett kulak": "+5000"
+            "darnell nurse": "+3300",
+            "brett kulak": "+4900"
         },
         "1p_ml": "-102/-126"
-    },
-    "mtl @ wsh": {
-        "ml": "+150/-182",
-        "spread": {
-            "1.5": "-180/+140",
-            "2.5": "-360/+260",
-            "3.5": "-1400/+680",
-            "-1.5": "+340/-500",
-            "-2.5": "+630/-1200",
-            "-3.5": "+1500",
-            "-4.5": "+3500",
-            "4.5": "/+1400",
-            "5.5": "/+3000",
-            "6.5": "/+6500"
-        },
-        "total": {
-            "5.5": "-136/+106",
-            "2.5": "-7000/+1500",
-            "3.5": "-800/+480",
-            "4.5": "-400/+285",
-            "6.5": "+124/-158",
-            "7.5": "+285/-400",
-            "8.5": "+450/-720",
-            "9.5": "+1000/-3000"
-        },
-        "atgs": {
-            "alex ovechkin": "+120/-160",
-            "cole caufield": "+200/-270",
-            "dylan strome": "+210/-290",
-            "nick suzuki": "+230/-320",
-            "tom wilson": "+240/-350",
-            "connor mcmichael": "+275/-420",
-            "pierre luc dubois": "+270/-400",
-            "patrik laine": "+290/-440",
-            "ivan demidov": "+310/-470",
-            "juraj slafkovsky": "+340/-550",
-            "anthony beauvillier": "+340",
-            "brendan gallagher": "+360/-600",
-            "ryan leonard": "+410",
-            "jakob chychrun": "+500",
-            "andrew mangiapane": "+500",
-            "josh anderson": "+550",
-            "christian dvorak": "+550",
-            "john carlson": "+550",
-            "alex newhook": "+600",
-            "lars eller": "+650",
-            "taylor raddysh": "+725",
-            "nic dowd": "+800",
-            "rasmus sandin": "+850",
-            "lane hutson": "+850",
-            "joel armia": "+850",
-            "mike matheson": "+850",
-            "brandon duhaime": "+950",
-            "matt roy": "+1100",
-            "emil heineman": "+1100",
-            "jake evans": "+1100",
-            "trevor van riemsdyk": "+1200",
-            "kaiden guhle": "+1200",
-            "alexander alexeyev": "+1300",
-            "alexandre carrier": "+1600"
-        },
-        "fgs": {
-            "alex ovechkin": "+850",
-            "cole caufield": "+1300",
-            "dylan strome": "+1400",
-            "tom wilson": "+1500",
-            "nick suzuki": "+1500",
-            "connor mcmichael": "+1700",
-            "pierre luc dubois": "+1700",
-            "patrik laine": "+1800",
-            "ivan demidov": "+1900",
-            "anthony beauvillier": "+1900",
-            "juraj slafkovsky": "+2100",
-            "brendan gallagher": "+2100",
-            "ryan leonard": "+2500",
-            "jakob chychrun": "+2700",
-            "andrew mangiapane": "+2800",
-            "alex newhook": "+2900",
-            "josh anderson": "+3000",
-            "john carlson": "+3100",
-            "christian dvorak": "+3100",
-            "lars eller": "+3400",
-            "taylor raddysh": "+3800",
-            "lane hutson": "+4100",
-            "mike matheson": "+4200",
-            "nic dowd": "+4200",
-            "rasmus sandin": "+4300",
-            "joel armia": "+4800",
-            "jake evans": "+5000",
-            "emil heineman": "+5000",
-            "brandon duhaime": "+5000",
-            "trevor van riemsdyk": "+6000",
-            "kaiden guhle": "+6000",
-            "matt roy": "+6500",
-            "alexandre carrier": "+7500",
-            "alexander alexeyev": "+8000",
-            "david savard": "+11000",
-            "jayden struble": "+12000"
-        },
-        "pts": {
-            "alex ovechkin": {
-                "0.5": "-225",
-                "1.5": "+230",
-                "2.5": "+830"
-            },
-            "dylan strome": {
-                "0.5": "-210",
-                "1.5": "+250",
-                "2.5": "+900"
-            },
-            "nick suzuki": {
-                "0.5": "-200",
-                "1.5": "+250",
-                "2.5": "+870"
-            },
-            "tom wilson": {
-                "0.5": "-132",
-                "1.5": "+400",
-                "2.5": "+1400"
-            },
-            "lane hutson": {
-                "0.5": "-128",
-                "1.5": "+420",
-                "2.5": "+1500"
-            },
-            "pierre luc dubois": {
-                "0.5": "-125",
-                "1.5": "+430",
-                "2.5": "+1700"
-            },
-            "cole caufield": {
-                "0.5": "-122",
-                "1.5": "+440",
-                "2.5": "+1500"
-            },
-            "john carlson": {
-                "0.5": "-102",
-                "1.5": "+560",
-                "2.5": "+1700"
-            },
-            "juraj slafkovsky": {
-                "0.5": "+120",
-                "1.5": "+680",
-                "2.5": "+2000"
-            },
-            "connor mcmichael": {
-                "0.5": "+122",
-                "1.5": "+680",
-                "2.5": "+2200"
-            },
-            "ivan demidov": {
-                "0.5": "+126",
-                "1.5": "+750",
-                "2.5": "+3000"
-            },
-            "patrik laine": {
-                "0.5": "+134",
-                "1.5": "+750",
-                "2.5": "+2500"
-            },
-            "jakob chychrun": {
-                "0.5": "+144",
-                "1.5": "+900"
-            },
-            "brendan gallagher": {
-                "0.5": "+164",
-                "1.5": "+900"
-            },
-            "mike matheson": {
-                "0.5": "+168",
-                "1.5": "+1000"
-            },
-            "ryan leonard": {
-                "0.5": "+172",
-                "1.5": "+1000"
-            },
-            "rasmus sandin": {
-                "0.5": "+215",
-                "1.5": "+1300"
-            },
-            "christian dvorak": {
-                "0.5": "+220",
-                "1.5": "+1200"
-            },
-            "alex newhook": {
-                "0.5": "+250",
-                "1.5": "+1500"
-            }
-        },
-        "ast": {
-            "nick suzuki": {
-                "0.5": "-106",
-                "1.5": "+500",
-                "2.5": "+1700"
-            },
-            "lane hutson": {
-                "0.5": "-104",
-                "1.5": "+540",
-                "2.5": "+2000"
-            },
-            "dylan strome": {
-                "0.5": "-104",
-                "1.5": "+540",
-                "2.5": "+1700"
-            },
-            "john carlson": {
-                "0.5": "+142",
-                "1.5": "+870"
-            },
-            "alex ovechkin": {
-                "0.5": "+140",
-                "1.5": "+830"
-            },
-            "tom wilson": {
-                "0.5": "+154",
-                "1.5": "+870"
-            },
-            "pierre luc dubois": {
-                "0.5": "+162",
-                "1.5": "+900"
-            },
-            "cole caufield": {
-                "0.5": "+215",
-                "1.5": "+1200"
-            },
-            "juraj slafkovsky": {
-                "0.5": "+230",
-                "1.5": "+1300"
-            },
-            "jakob chychrun": {
-                "0.5": "+235",
-                "1.5": "+1400"
-            },
-            "mike matheson": {
-                "0.5": "+230",
-                "1.5": "+1400"
-            },
-            "ivan demidov": {
-                "0.5": "+255"
-            },
-            "connor mcmichael": {
-                "0.5": "+265"
-            },
-            "patrik laine": {
-                "0.5": "+300"
-            },
-            "rasmus sandin": {
-                "0.5": "+310"
-            },
-            "brendan gallagher": {
-                "0.5": "+340"
-            },
-            "ryan leonard": {
-                "0.5": "+340"
-            },
-            "christian dvorak": {
-                "0.5": "+370"
-            },
-            "alex newhook": {
-                "0.5": "+450"
-            }
-        },
-        "sog": {
-            "alex ovechkin": {
-                "Alex Ovechkin": "+175/+530",
-                "3.5": "-132/+102"
-            },
-            "jakob chychrun": {
-                "Jakob Chychrun": "+320/+390",
-                "2.5": "+122/-160"
-            },
-            "john carlson": {
-                "John Carlson": "-196/-196",
-                "1.5": "-196/+148"
-            },
-            "tom wilson": {
-                "Tom Wilson": "+550/+560",
-                "1.5": "-154/+118"
-            },
-            "pierre luc dubois": {
-                "Pierre-Luc Dubois": "-140/-138",
-                "1.5": "-140/+108"
-            },
-            "connor mcmichael": {
-                "Connor McMichael": "+235/+280",
-                "1.5": "-135/+104"
-            },
-            "mike matheson": {
-                "Mike Matheson": "-102/+102",
-                "1.5": "-102/-128"
-            },
-            "ryan leonard": {
-                "Ryan Leonard": "+106/+118",
-                "1.5": "+106/-138"
-            },
-            "ivan demidov": {
-                "Ivan Demidov": "+430/+430",
-                "1.5": "-196/+148"
-            },
-            "patrik laine": {
-                "Patrik Laine": "+230/+235",
-                "1.5": "-138/+106"
-            },
-            "montreal canadiens": {
-                "Montreal Canadiens": "+118/-150"
-            },
-            "dylan strome": {
-                "1.5": "-156/+120"
-            },
-            "cole caufield": {
-                "2.5": "-115/-113"
-            },
-            "juraj slafkovsky": {
-                "1.5": "-118/-110"
-            },
-            "nick suzuki": {
-                "2.5": "+158/-210"
-            },
-            "anthony beauvillier": {
-                "1.5": "+118/-154"
-            },
-            "brendan gallagher": {
-                "1.5": "+102/-132"
-            }
-        },
-        "3ml": "+220/+340/-110",
-        "away_total": {
-            "2.5": "-116/-108"
-        },
-        "home_total": {
-            "3.5": "+106/-136"
-        },
-        "1p_total": {
-            "1.5": "-130/+104"
-        },
-        "giff": "+168/-220",
-        "gift": "-154/+122",
-        "2p_total": {
-            "1.5": "-174/+138"
-        },
-        "3p_total": {
-            "1.5": "-190/+148"
-        },
-        "team_fgs": {
-            "alex ovechkin": "+490",
-            "dylan strome": "+750",
-            "tom wilson": "+900",
-            "pierre luc dubois": "+950",
-            "connor mcmichael": "+1000",
-            "anthony beauvillier": "+1100",
-            "ryan leonard": "+1400",
-            "andrew mangiapane": "+1700",
-            "jakob chychrun": "+1700",
-            "john carlson": "+1800",
-            "no goalscorer home team": "+2100",
-            "lars eller": "+2300",
-            "taylor raddysh": "+2400",
-            "nic dowd": "+2600",
-            "rasmus sandin": "+2600",
-            "brandon duhaime": "+3200",
-            "matt roy": "+3400",
-            "trevor van riemsdyk": "+3700",
-            "alexander alexeyev": "+4200",
-            "cole caufield": "+600",
-            "nick suzuki": "+650",
-            "patrik laine": "+900",
-            "ivan demidov": "+950",
-            "juraj slafkovsky": "+1000",
-            "brendan gallagher": "+1000",
-            "no goalscorer away team": "+1100",
-            "alex newhook": "+1500",
-            "christian dvorak": "+1500",
-            "josh anderson": "+1600",
-            "lane hutson": "+2200",
-            "mike matheson": "+2300",
-            "joel armia": "+2300",
-            "emil heineman": "+2700",
-            "jake evans": "+2900",
-            "kaiden guhle": "+3000",
-            "alexandre carrier": "+4000",
-            "jayden struble": "+5000",
-            "david savard": "+5000"
-        },
-        "1p_ml": "+124/-158"
     },
     "stl @ wpg": {
         "ml": "+160/-194",
         "spread": {
-            "1.5": "-180/+138",
+            "1.5": "-178/+138",
             "2.5": "-390/+280",
             "3.5": "-1800/+800",
             "-1.5": "+370/-560",
@@ -780,7 +633,7 @@
             "5.5": "/+3500"
         },
         "total": {
-            "5.5": "+122/-156",
+            "5.5": "+124/-158",
             "2.5": "-4000/+1100",
             "3.5": "-460/+320",
             "4.5": "-250/+190",
@@ -800,7 +653,7 @@
             "nino niederreiter": "+340/-550",
             "zachary bolduc": "+370/-600",
             "jake neighbours": "+430/-700",
-            "jimmy snuggerud": "+440/-700",
+            "jimmy snuggerud": "+450/-750",
             "vladislav namestnikov": "+460",
             "brayden schenn": "+470/-750",
             "josh morrissey": "+500",
@@ -811,8 +664,8 @@
             "dylan samberg": "+750",
             "oskar sundqvist": "+800",
             "david gustafsson": "+800",
-            "cam fowler": "+850",
             "dylan demelo": "+850",
+            "cam fowler": "+900",
             "jaret anderson dolan": "+900",
             "colton parayko": "+1000",
             "nathan walker": "+1000",
@@ -822,8 +675,7 @@
             "alexey toropchenko": "+1100",
             "radek faksa": "+1200",
             "philip broberg": "+1600",
-            "luke schenn": "+1800",
-            "logan stanley": "+1900"
+            "luke schenn": "+1800"
         },
         "fgs": {
             "kyle connor": "+800",
@@ -836,7 +688,7 @@
             "alex iafallo": "+1800",
             "zachary bolduc": "+2100",
             "jake neighbours": "+2200",
-            "vladislav namestnikov": "+2400",
+            "vladislav namestnikov": "+2300",
             "jimmy snuggerud": "+2500",
             "brayden schenn": "+2600",
             "josh morrissey": "+2700",
@@ -844,7 +696,7 @@
             "morgan barron": "+3100",
             "adam lowry": "+3200",
             "david gustafsson": "+3300",
-            "dylan demelo": "+3600",
+            "dylan demelo": "+3700",
             "brandon tanev": "+3800",
             "jaret anderson dolan": "+3900",
             "oskar sundqvist": "+3900",
@@ -852,13 +704,13 @@
             "cam fowler": "+4100",
             "nathan walker": "+4300",
             "justin faulk": "+4300",
-            "colton parayko": "+4600",
             "mathieu joseph": "+4700",
+            "colton parayko": "+4700",
             "neal pionk": "+4900",
             "alexey toropchenko": "+5500",
             "radek faksa": "+6000",
-            "philip broberg": "+8000",
             "logan stanley": "+8500",
+            "philip broberg": "+8500",
             "ryan suter": "+9000",
             "luke schenn": "+9000",
             "nick leddy": "+11000"
@@ -872,12 +724,12 @@
             "mark scheifele": {
                 "0.5": "-265",
                 "1.5": "+196",
-                "2.5": "+680"
+                "2.5": "+700"
             },
             "robert thomas": {
-                "0.5": "-178",
-                "1.5": "+285",
-                "2.5": "+1060"
+                "0.5": "-186",
+                "1.5": "+280",
+                "2.5": "+900"
             },
             "josh morrissey": {
                 "0.5": "-113",
@@ -885,24 +737,24 @@
                 "2.5": "+1500"
             },
             "pavel buchnevich": {
-                "0.5": "-108",
-                "1.5": "+480",
+                "0.5": "-111",
+                "1.5": "+470",
                 "2.5": "+1500"
-            },
-            "jordan kyrou": {
-                "0.5": "-102",
-                "1.5": "+540",
-                "2.5": "+1700"
             },
             "alex iafallo": {
                 "0.5": "+100",
                 "1.5": "+520",
-                "2.5": "+1800"
+                "2.5": "+1700"
             },
             "cole perfetti": {
                 "0.5": "+104",
                 "1.5": "+560",
                 "2.5": "+2000"
+            },
+            "jordan kyrou": {
+                "0.5": "+102",
+                "1.5": "+560",
+                "2.5": "+1800"
             },
             "nino niederreiter": {
                 "0.5": "+140",
@@ -912,45 +764,45 @@
                 "0.5": "+158",
                 "1.5": "+900"
             },
-            "jake neighbours": {
-                "0.5": "+162",
+            "brayden schenn": {
+                "0.5": "+150",
                 "1.5": "+900"
             },
-            "zachary bolduc": {
+            "jake neighbours": {
                 "0.5": "+164",
                 "1.5": "+900"
             },
-            "cam fowler": {
-                "0.5": "+162",
+            "jimmy snuggerud": {
+                "0.5": "+164",
                 "1.5": "+900"
             },
-            "brayden schenn": {
-                "0.5": "+176",
+            "zachary bolduc": {
+                "0.5": "+172",
                 "1.5": "+1060"
+            },
+            "cam fowler": {
+                "0.5": "+172",
+                "1.5": "+1000"
             },
             "neal pionk": {
                 "0.5": "+182",
-                "1.5": "+1060"
-            },
-            "jimmy snuggerud": {
-                "0.5": "+190",
-                "1.5": "+1060"
+                "1.5": "+1100"
             },
             "dylan demelo": {
                 "0.5": "+215",
                 "1.5": "+1200"
             },
             "justin faulk": {
-                "0.5": "+220",
-                "1.5": "+1300"
-            },
-            "colton parayko": {
-                "0.5": "+255",
+                "0.5": "+235",
                 "1.5": "+1400"
             },
-            "philip broberg": {
-                "0.5": "+290",
+            "colton parayko": {
+                "0.5": "+265",
                 "1.5": "+1500"
+            },
+            "philip broberg": {
+                "0.5": "+300",
+                "1.5": "+1700"
             }
         },
         "ast": {
@@ -965,8 +817,8 @@
                 "2.5": "+1500"
             },
             "robert thomas": {
-                "0.5": "-111",
-                "1.5": "+470",
+                "0.5": "-118",
+                "1.5": "+450",
                 "2.5": "+1500"
             },
             "josh morrissey": {
@@ -975,7 +827,7 @@
                 "2.5": "+2500"
             },
             "pavel buchnevich": {
-                "0.5": "+180",
+                "0.5": "+176",
                 "1.5": "+1060"
             },
             "alex iafallo": {
@@ -987,15 +839,19 @@
                 "1.5": "+1200"
             },
             "cam fowler": {
-                "0.5": "+215",
-                "1.5": "+1200"
-            },
-            "jordan kyrou": {
-                "0.5": "+235",
+                "0.5": "+230",
                 "1.5": "+1300"
             },
             "neal pionk": {
                 "0.5": "+230",
+                "1.5": "+1400"
+            },
+            "brayden schenn": {
+                "0.5": "+255",
+                "1.5": "+1400"
+            },
+            "jordan kyrou": {
+                "0.5": "+250",
                 "1.5": "+1400"
             },
             "nino niederreiter": {
@@ -1004,131 +860,42 @@
             "vladislav namestnikov": {
                 "0.5": "+280"
             },
-            "jake neighbours": {
-                "0.5": "+290"
-            },
-            "justin faulk": {
+            "jimmy snuggerud": {
                 "0.5": "+290"
             },
             "dylan demelo": {
                 "0.5": "+300"
             },
-            "brayden schenn": {
-                "0.5": "+330"
-            },
-            "zachary bolduc": {
-                "0.5": "+340"
-            },
-            "jimmy snuggerud": {
-                "0.5": "+350"
-            },
-            "philip broberg": {
-                "0.5": "+350"
-            },
-            "colton parayko": {
-                "0.5": "+360"
-            }
-        },
-        "sog": {
-            "kyle connor": {
-                "Kyle Connor": "+410/+560",
-                "2.5": "-148/+114"
-            },
-            "mark scheifele": {
-                "Mark Scheifele": "+460/+470",
-                "1.5": "-196/+148"
-            },
-            "pavel buchnevich": {
-                "Pavel Buchnevich": "+490/+490",
-                "1.5": "-174/+132"
-            },
-            "cole perfetti": {
-                "Cole Perfetti": "-140/-130",
-                "1.5": "-140/+108"
-            },
-            "colton parayko": {
-                "Colton Parayko": "+275/+285",
-                "1.5": "-118/-110"
-            },
-            "jimmy snuggerud": {
-                "Jimmy Snuggerud": "-114/-114",
-                "1.5": "-114/-114"
-            },
-            "brayden schenn": {
-                "Brayden Schenn": "+100/+108",
-                "1.5": "+100/-130"
-            },
-            "neal pionk": {
-                "Neal Pionk": "+116/+120",
-                "1.5": "+116/-152"
-            },
-            "cam fowler": {
-                "Cam Fowler": "+122/+130",
-                "1.5": "+122/-160"
-            },
-            "vladislav namestnikov": {
-                "Vladislav Namestnikov": "+136/+158",
-                "1.5": "+136/-178"
-            },
-            "philip broberg": {
-                "Philip Broberg": "+165/+188",
-                "1.5": "+165/-220"
-            },
-            "robert thomas": {
-                "Robert Thomas": "+192/+192",
-                "1.5": "-174/+132"
-            },
-            "zachary bolduc": {
-                "Zachary Bolduc": "+245/+240",
-                "1.5": "-130/+100"
-            },
-            "alex iafallo": {
-                "Alex Iafallo": "+280/Show",
-                "1.5": "-114/-114"
-            },
-            "st louis blues": {
-                "St. Louis Blues": "+116/-148"
-            },
-            "josh morrissey": {
-                "Josh Morrissey": "-950/-900",
-                "1.5": "-178/+136"
-            },
             "jake neighbours": {
-                "1.5": "+130/-170"
-            },
-            "adam lowry": {
-                "1.5": "+158/-210"
-            },
-            "nino niederreiter": {
-                "1.5": "-114/-114"
-            },
-            "dylan demelo": {
-                "1.5": "+188/-255"
+                "0.5": "+310"
             },
             "justin faulk": {
-                "1.5": "+108/-140"
+                "0.5": "+310"
             },
-            "jordan kyrou": {
-                "2.5": "-106/-122"
+            "zachary bolduc": {
+                "0.5": "+360"
             },
-            "mason appleton": {
-                "1.5": "+120/-156"
+            "philip broberg": {
+                "0.5": "+370"
+            },
+            "colton parayko": {
+                "0.5": "+390"
             }
         },
-        "3ml": "+240/+330/-120",
+        "3ml": "+240/+330/-125",
         "away_total": {
-            "2.5": "+122/-154"
+            "2.5": "+122/-156"
         },
         "home_total": {
             "3.5": "+142/-182"
         },
         "1p_total": {
-            "1.5": "-102/-124"
+            "1.5": "-102/-126"
         },
         "giff": "+200/-270",
-        "gift": "-134/+106",
+        "gift": "-134/+104",
         "2p_total": {
-            "1.5": "-128/+102"
+            "1.5": "-128/+100"
         },
         "3p_total": {
             "1.5": "-150/+118"
@@ -1140,8 +907,8 @@
             "cole perfetti": "+1000",
             "nino niederreiter": "+1100",
             "vladislav namestnikov": "+1400",
+            "no goalscorer home team": "+1600",
             "josh morrissey": "+1600",
-            "no goalscorer home team": "+1700",
             "mason appleton": "+1800",
             "morgan barron": "+2000",
             "adam lowry": "+2000",
@@ -1168,406 +935,332 @@
             "justin faulk": "+2500",
             "mathieu joseph": "+2500",
             "alexey toropchenko": "+2700",
-            "radek faksa": "+3100",
-            "philip broberg": "+3800",
+            "radek faksa": "+3000",
+            "philip broberg": "+3900",
             "ryan suter": "+5000",
             "nick leddy": "+5000"
         },
         "1p_ml": "+136/-174"
     },
-    "col @ dal": {
-        "ml": "-146/+122",
+    "mtl @ wsh": {
+        "ml": "+160/-194",
         "spread": {
-            "-1.5": "+168/-210",
-            "1.5": "-370/+265",
-            "2.5": "-850/+480",
-            "3.5": "-4500/+1200",
-            "-1.5": "+164/-215",
-            "-2.5": "+300/-440",
-            "-3.5": "+830/-2000",
-            "-4.5": "+1500",
-            "-5.5": "+3500",
-            "4.5": "/+2500"
+            "1.5": "-162/+130",
+            "1.5": "-166/+128",
+            "2.5": "-340/+250",
+            "3.5": "-1100/+600",
+            "-1.5": "+360/-530",
+            "-2.5": "+680/-1400",
+            "-3.5": "+1500",
+            "-4.5": "+4000",
+            "4.5": "/+1300",
+            "5.5": "/+2500",
+            "6.5": "/+5500"
         },
         "total": {
-            "6.5": "+104/-132",
-            "3.5": "-1000/+560",
-            "4.5": "-460/+320",
-            "5.5": "-160/+124",
-            "7.5": "+250/-340",
-            "8.5": "+400/-590",
-            "9.5": "+870/-2200"
+            "5.5": "-132/+104",
+            "2.5": "-7000/+1500",
+            "3.5": "-770/+470",
+            "4.5": "-400/+285",
+            "6.5": "+128/-164",
+            "7.5": "+300/-430",
+            "8.5": "+470/-770",
+            "9.5": "+1060/-3500"
         },
         "atgs": {
-            "nathan mackinnon": "+130/-180",
-            "valeri nichushkin": "+210/-300",
-            "wyatt johnston": "+220/-310",
-            "mikko rantanen": "+220/-310",
-            "roope hintz": "+240/-350",
-            "martin necas": "+250/-380",
-            "brock nelson": "+280/-420",
-            "artturi lehkonen": "+290/-440",
-            "matt duchene": "+290/-440",
-            "tyler seguin": "+290/-440",
-            "cale makar": "+290/-450",
-            "mikael granlund": "+350/-550",
-            "charlie coyle": "+370",
-            "jamie benn": "+380/-600",
-            "jonathan drouin": "+380/-600",
-            "mason marchment": "+380",
-            "ross colton": "+460",
-            "evgenii dadonov": "+480",
-            "thomas harley": "+650",
-            "devon toews": "+650",
-            "joel kiviranta": "+700",
-            "jack drury": "+700",
-            "logan oconnor": "+800",
-            "parker kelly": "+850",
-            "oskar back": "+950",
-            "sam steel": "+1100",
-            "colin blackwell": "+1100",
-            "erik johnson": "+1200",
-            "samuel girard": "+1300",
-            "esa lindell": "+1300",
-            "ryan lindgren": "+1500",
-            "josh manson": "+1500",
-            "cody ceci": "+1500",
-            "ilya lyubushkin": "+1600",
-            "alexander petrovic": "+1600",
-            "lian bichsel": "+1600"
+            "alex ovechkin": "+110/-145",
+            "dylan strome": "+210/-300",
+            "cole caufield": "+220/-310",
+            "nick suzuki": "+230/-320",
+            "tom wilson": "+240/-350",
+            "connor mcmichael": "+280/-420",
+            "pierre luc dubois": "+280/-420",
+            "patrik laine": "+300/-470",
+            "ivan demidov": "+330/-500",
+            "juraj slafkovsky": "+340/-550",
+            "anthony beauvillier": "+340",
+            "brendan gallagher": "+370/-600",
+            "ryan leonard": "+410",
+            "jakob chychrun": "+490",
+            "andrew mangiapane": "+500",
+            "josh anderson": "+575",
+            "john carlson": "+575",
+            "christian dvorak": "+600",
+            "alex newhook": "+600",
+            "lars eller": "+600",
+            "taylor raddysh": "+750",
+            "nic dowd": "+800",
+            "joel armia": "+850",
+            "brandon duhaime": "+900",
+            "rasmus sandin": "+900",
+            "lane hutson": "+900",
+            "mike matheson": "+950",
+            "matt roy": "+1100",
+            "emil heineman": "+1100",
+            "jake evans": "+1100",
+            "trevor van riemsdyk": "+1200",
+            "kaiden guhle": "+1200",
+            "alexander alexeyev": "+1300",
+            "alexandre carrier": "+1600"
         },
         "fgs": {
-            "nathan mackinnon": "+950",
-            "mikko rantanen": "+1300",
-            "valeri nichushkin": "+1400",
-            "wyatt johnston": "+1400",
-            "roope hintz": "+1700",
-            "martin necas": "+1700",
-            "cale makar": "+1800",
-            "artturi lehkonen": "+1800",
-            "brock nelson": "+1800",
-            "matt duchene": "+1900",
-            "tyler seguin": "+1900",
-            "mikael granlund": "+2200",
-            "jamie benn": "+2300",
-            "jonathan drouin": "+2300",
-            "mason marchment": "+2400",
-            "charlie coyle": "+2600",
-            "ross colton": "+2700",
-            "evgenii dadonov": "+3000",
-            "thomas harley": "+3200",
-            "devon toews": "+3700",
-            "jack drury": "+3800",
-            "logan oconnor": "+4000",
-            "joel kiviranta": "+4100",
-            "oskar back": "+4700",
-            "parker kelly": "+4800",
-            "colin blackwell": "+5000",
-            "sam steel": "+5500",
-            "erik johnson": "+6000",
-            "samuel girard": "+6000",
-            "ryan lindgren": "+6500",
-            "cody ceci": "+6500",
-            "ilya lyubushkin": "+7000",
-            "josh manson": "+7500",
-            "alexander petrovic": "+7500",
-            "esa lindell": "+8500",
-            "lian bichsel": "+9000"
+            "alex ovechkin": "+750",
+            "dylan strome": "+1400",
+            "cole caufield": "+1400",
+            "tom wilson": "+1500",
+            "nick suzuki": "+1500",
+            "pierre luc dubois": "+1700",
+            "connor mcmichael": "+1800",
+            "juraj slafkovsky": "+2000",
+            "ivan demidov": "+2000",
+            "anthony beauvillier": "+2000",
+            "brendan gallagher": "+2100",
+            "patrik laine": "+2100",
+            "ryan leonard": "+2300",
+            "jakob chychrun": "+2500",
+            "andrew mangiapane": "+2700",
+            "john carlson": "+3100",
+            "lars eller": "+3200",
+            "josh anderson": "+3200",
+            "alex newhook": "+3300",
+            "christian dvorak": "+3300",
+            "nic dowd": "+3600",
+            "taylor raddysh": "+3800",
+            "joel armia": "+4100",
+            "rasmus sandin": "+4300",
+            "mike matheson": "+4300",
+            "lane hutson": "+4700",
+            "trevor van riemsdyk": "+5000",
+            "brandon duhaime": "+5000",
+            "emil heineman": "+5500",
+            "kaiden guhle": "+5500",
+            "jake evans": "+6000",
+            "matt roy": "+6000",
+            "alexander alexeyev": "+6500",
+            "alexandre carrier": "+9000",
+            "jayden struble": "+12000",
+            "david savard": "+15000"
         },
         "pts": {
-            "nathan mackinnon": {
-                "0.5": "-310",
-                "1.5": "+168",
-                "2.5": "+560"
+            "alex ovechkin": {
+                "0.5": "-240",
+                "1.5": "+215",
+                "2.5": "+750"
             },
-            "cale makar": {
-                "0.5": "-188",
-                "1.5": "+260",
+            "dylan strome": {
+                "0.5": "-205",
+                "1.5": "+240",
+                "2.5": "+870"
+            },
+            "nick suzuki": {
+                "0.5": "-184",
+                "1.5": "+280",
                 "2.5": "+1000"
             },
-            "mikko rantanen": {
-                "0.5": "-154",
-                "1.5": "+330",
-                "2.5": "+1200"
-            },
-            "martin necas": {
-                "0.5": "-142",
-                "1.5": "+360",
-                "2.5": "+1300"
-            },
-            "valeri nichushkin": {
-                "0.5": "-132",
+            "tom wilson": {
+                "0.5": "-136",
                 "1.5": "+400",
                 "2.5": "+1400"
             },
-            "roope hintz": {
-                "0.5": "-128",
-                "1.5": "+400",
-                "2.5": "+1400"
-            },
-            "matt duchene": {
-                "0.5": "-122",
-                "1.5": "+420",
-                "2.5": "+1400"
-            },
-            "wyatt johnston": {
+            "pierre luc dubois": {
                 "0.5": "-120",
+                "1.5": "+430",
+                "2.5": "+1400"
+            },
+            "cole caufield": {
+                "0.5": "-115",
                 "1.5": "+450",
                 "2.5": "+1500"
             },
-            "tyler seguin": {
-                "0.5": "+104",
-                "1.5": "+560",
-                "2.5": "+1800"
+            "lane hutson": {
+                "0.5": "-115",
+                "1.5": "+450",
+                "2.5": "+1500"
             },
-            "thomas harley": {
-                "0.5": "+106",
-                "1.5": "+600",
+            "john carlson": {
+                "0.5": "+100",
+                "1.5": "+560",
                 "2.5": "+1700"
             },
-            "mikael granlund": {
-                "0.5": "+108",
-                "1.5": "+600",
-                "2.5": "+2200"
-            },
-            "jonathan drouin": {
-                "0.5": "+102",
-                "1.5": "+560",
-                "2.5": "+2000"
-            },
-            "artturi lehkonen": {
+            "juraj slafkovsky": {
                 "0.5": "+122",
                 "1.5": "+680",
                 "2.5": "+2500"
             },
-            "devon toews": {
-                "0.5": "+130",
+            "connor mcmichael": {
+                "0.5": "+122",
                 "1.5": "+750",
                 "2.5": "+2500"
             },
-            "brock nelson": {
-                "0.5": "+130",
-                "1.5": "+750",
-                "2.5": "+2500"
-            },
-            "mason marchment": {
-                "0.5": "+152",
-                "1.5": "+900"
-            },
-            "esa lindell": {
-                "0.5": "+240",
-                "1.5": "+1400"
-            }
-        },
-        "ast": {
-            "nathan mackinnon": {
-                "0.5": "-122",
-                "1.5": "+450",
-                "2.5": "+1500"
-            },
-            "cale makar": {
-                "0.5": "-113",
-                "1.5": "+450",
-                "2.5": "+1500"
-            },
-            "martin necas": {
+            "patrik laine": {
                 "0.5": "+138",
-                "1.5": "+750"
-            },
-            "matt duchene": {
-                "0.5": "+148",
                 "1.5": "+800"
             },
-            "thomas harley": {
-                "0.5": "+144",
-                "1.5": "+830"
+            "ivan demidov": {
+                "0.5": "+134",
+                "1.5": "+750",
+                "2.5": "+3000"
             },
-            "mikko rantanen": {
+            "jakob chychrun": {
                 "0.5": "+140",
                 "1.5": "+800"
             },
-            "roope hintz": {
-                "0.5": "+158",
+            "brendan gallagher": {
+                "0.5": "+168",
+                "1.5": "+1000"
+            },
+            "ryan leonard": {
+                "0.5": "+168",
+                "1.5": "+1000"
+            },
+            "mike matheson": {
+                "0.5": "+176",
+                "1.5": "+1060"
+            },
+            "rasmus sandin": {
+                "0.5": "+230",
+                "1.5": "+1300"
+            },
+            "christian dvorak": {
+                "0.5": "+230",
+                "1.5": "+1300"
+            },
+            "alex newhook": {
+                "0.5": "+255",
+                "1.5": "+1500"
+            }
+        },
+        "ast": {
+            "dylan strome": {
+                "0.5": "-104",
+                "1.5": "+500",
+                "2.5": "+1700"
+            },
+            "lane hutson": {
+                "0.5": "+104",
+                "1.5": "+560",
+                "2.5": "+1800"
+            },
+            "nick suzuki": {
+                "0.5": "+104",
+                "1.5": "+560",
+                "2.5": "+2000"
+            },
+            "john carlson": {
+                "0.5": "+140",
+                "1.5": "+830"
+            },
+            "alex ovechkin": {
+                "0.5": "+140",
+                "1.5": "+800"
+            },
+            "tom wilson": {
+                "0.5": "+154",
                 "1.5": "+900"
             },
-            "jonathan drouin": {
-                "0.5": "+176",
-                "1.5": "+1060"
+            "pierre luc dubois": {
+                "0.5": "+162",
+                "1.5": "+870"
             },
-            "valeri nichushkin": {
-                "0.5": "+176",
-                "1.5": "+1060"
-            },
-            "devon toews": {
-                "0.5": "+180",
-                "1.5": "+1060"
-            },
-            "wyatt johnston": {
-                "0.5": "+200",
+            "cole caufield": {
+                "0.5": "+215",
                 "1.5": "+1200"
             },
-            "mikael granlund": {
-                "0.5": "+200",
-                "1.5": "+1200"
+            "juraj slafkovsky": {
+                "0.5": "+230",
+                "1.5": "+1300"
             },
-            "tyler seguin": {
-                "0.5": "+220",
-                "1.5": "+1200"
+            "jakob chychrun": {
+                "0.5": "+230",
+                "1.5": "+1300"
             },
-            "artturi lehkonen": {
-                "0.5": "+260"
+            "mike matheson": {
+                "0.5": "+235",
+                "1.5": "+1400"
             },
-            "brock nelson": {
-                "0.5": "+290"
+            "connor mcmichael": {
+                "0.5": "+280"
             },
-            "esa lindell": {
+            "ivan demidov": {
+                "0.5": "+280"
+            },
+            "patrik laine": {
                 "0.5": "+300"
             },
-            "mason marchment": {
-                "0.5": "+300"
+            "rasmus sandin": {
+                "0.5": "+320"
+            },
+            "ryan leonard": {
+                "0.5": "+330"
+            },
+            "brendan gallagher": {
+                "0.5": "+360"
+            },
+            "christian dvorak": {
+                "0.5": "+400"
+            },
+            "alex newhook": {
+                "0.5": "+470"
             }
         },
-        "sog": {
-            "nathan mackinnon": {
-                "Nathan MacKinnon": "+380/+800",
-                "3.5": "-130/+100"
-            },
-            "valeri nichushkin": {
-                "Valeri Nichushkin": "+250/+365",
-                "2.5": "-104/-122"
-            },
-            "tyler seguin": {
-                "Tyler Seguin": "+390/+430",
-                "2.5": "+158/-210"
-            },
-            "wyatt johnston": {
-                "Wyatt Johnston": "+470/+510",
-                "1.5": "-182/+138"
-            },
-            "roope hintz": {
-                "Roope Hintz": "+205/+210",
-                "1.5": "-160/+122"
-            },
-            "brock nelson": {
-                "Brock Nelson": "+235/+280",
-                "1.5": "-138/+106"
-            },
-            "ross colton": {
-                "Ross Colton": "-114/-114",
-                "1.5": "-114/-114"
-            },
-            "jamie benn": {
-                "Jamie Benn": "-114/-114",
-                "1.5": "-114/-114"
-            },
-            "mikael granlund": {
-                "Mikael Granlund": "-113/+114",
-                "1.5": "-113/-115"
-            },
-            "charlie coyle": {
-                "Charlie Coyle": "+118/+134",
-                "1.5": "+118/-154"
-            },
-            "samuel girard": {
-                "Samuel Girard": "+154/Show",
-                "1.5": "+154/-205"
-            },
-            "devon toews": {
-                "Devon Toews": "+280/+290",
-                "1.5": "-118/-110"
-            },
-            "matt duchene": {
-                "Matt Duchene": "+290/Show",
-                "1.5": "-114/-114"
-            },
-            "artturi lehkonen": {
-                "Artturi Lehkonen": "+550/+560",
-                "1.5": "-156/+120"
-            },
-            "colorado avalanche": {
-                "Colorado Avalanche": "-122/-104"
-            },
-            "mason marchment": {
-                "Mason Marchment": "-580/-480",
-                "1.5": "-114/-114"
-            },
-            "martin necas": {
-                "1.5": "-196/+148"
-            },
-            "evgenii dadonov": {
-                "1.5": "+114/-148"
-            },
-            "jonathan drouin": {
-                "1.5": "+134/-176"
-            },
-            "mikko rantanen": {
-                "2.5": "+142/-188"
-            },
-            "cale makar": {
-                "2.5": "-168/+128"
-            },
-            "thomas harley": {
-                "1.5": "-165/+126"
-            }
-        },
-        "3ml": "+105/+340/+180",
+        "3ml": "+230/+350/-120",
         "away_total": {
-            "3.5": "+112/-142"
+            "2.5": "-108/-118"
         },
         "home_total": {
-            "2.5": "-148/+116"
+            "3.5": "+102/-128"
         },
         "1p_total": {
-            "1.5": "-142/+112"
+            "1.5": "-128/+100"
         },
-        "giff": "+162/-215",
-        "gift": "-166/+130",
+        "giff": "+168/-215",
+        "gift": "-152/+120",
         "2p_total": {
-            "1.5": "-186/+144"
+            "1.5": "-168/+132"
         },
         "3p_total": {
-            "2.5": "+158/-205"
+            "1.5": "-196/+150"
         },
         "team_fgs": {
-            "mikko rantanen": "+650",
-            "wyatt johnston": "+700",
-            "roope hintz": "+800",
-            "matt duchene": "+900",
-            "tyler seguin": "+950",
-            "mason marchment": "+1100",
-            "mikael granlund": "+1100",
-            "jamie benn": "+1200",
-            "no goalscorer home team": "+1400",
-            "evgenii dadonov": "+1500",
-            "thomas harley": "+1800",
-            "oskar back": "+2800",
-            "colin blackwell": "+3000",
-            "sam steel": "+3100",
-            "cody ceci": "+3700",
-            "esa lindell": "+4200",
-            "ilya lyubushkin": "+4200",
-            "alexander petrovic": "+4200",
-            "lian bichsel": "+4300",
-            "nathan mackinnon": "+500",
-            "valeri nichushkin": "+700",
-            "martin necas": "+900",
-            "cale makar": "+1000",
-            "artturi lehkonen": "+1000",
-            "brock nelson": "+1000",
-            "jonathan drouin": "+1300",
-            "charlie coyle": "+1400",
-            "ross colton": "+1500",
-            "no goalscorer away team": "+2000",
-            "devon toews": "+2200",
-            "jack drury": "+2300",
-            "joel kiviranta": "+2400",
-            "logan oconnor": "+2600",
-            "parker kelly": "+2900",
-            "samuel girard": "+3700",
-            "erik johnson": "+4000",
-            "ryan lindgren": "+4300",
-            "josh manson": "+4800"
+            "alex ovechkin": "+440",
+            "dylan strome": "+750",
+            "tom wilson": "+900",
+            "connor mcmichael": "+1000",
+            "pierre luc dubois": "+1000",
+            "anthony beauvillier": "+1200",
+            "ryan leonard": "+1400",
+            "jakob chychrun": "+1500",
+            "andrew mangiapane": "+1700",
+            "john carlson": "+2000",
+            "no goalscorer home team": "+2100",
+            "lars eller": "+2100",
+            "taylor raddysh": "+2400",
+            "nic dowd": "+2500",
+            "rasmus sandin": "+2800",
+            "brandon duhaime": "+3200",
+            "trevor van riemsdyk": "+3300",
+            "matt roy": "+3600",
+            "alexander alexeyev": "+4000",
+            "cole caufield": "+600",
+            "nick suzuki": "+650",
+            "patrik laine": "+900",
+            "ivan demidov": "+950",
+            "juraj slafkovsky": "+950",
+            "no goalscorer away team": "+1000",
+            "brendan gallagher": "+1000",
+            "alex newhook": "+1600",
+            "josh anderson": "+1600",
+            "christian dvorak": "+1700",
+            "joel armia": "+2100",
+            "mike matheson": "+2400",
+            "lane hutson": "+2500",
+            "jake evans": "+3000",
+            "kaiden guhle": "+3000",
+            "emil heineman": "+3000",
+            "alexandre carrier": "+4300",
+            "jayden struble": "+5000",
+            "david savard": "+5000"
         },
-        "1p_ml": "-138/+108"
+        "1p_ml": "+138/-174"
     }
 }

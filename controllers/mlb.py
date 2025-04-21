@@ -2146,6 +2146,142 @@ def clear():
 	with open(f"{prefix}static/mlb/espn.json", "w") as fh:
 		json.dump({}, fh)
 
+def writeRanks():
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
+	translations = nested_dict()
+	for team, players in roster.items():
+		for player in players:
+			first = player.split(" ")[0][0]
+			last = " ".join(player.split(" ")[1:])
+			translations[team][f"{first} {last}"] = player
+
+	with open(f"updated.json") as fh:
+		updated = json.load(fh)
+	updated["ranks"] = str(datetime.now())
+	with open(f"updated.json", "w") as fh:
+		json.dump(updated, fh, indent=4)
+
+	with open(f"{prefix}static/mlb/bet365.json") as fh:
+		bet365Lines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/pinnacle.json") as fh:
+		pnLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/mgm.json") as fh:
+		mgmLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/fanduel.json") as fh:
+		fdLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/draftkings.json") as fh:
+		dkLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/caesars.json") as fh:
+		czLines = json.load(fh)
+
+	with open(f"{prefix}static/mlb/espn.json") as fh:
+		espnLines = json.load(fh)
+
+	b = "https://api.github.com/repos/zhecht/lines/contents/static/mlb"
+	response = requests.get(f"{b}/circa.json", headers={"Accept": "application/vnd.github.v3.raw"})
+	circaLines = response.json()
+
+	lines = {
+		"pn": pnLines,
+		"mgm": mgmLines,
+		"fd": fdLines,
+		"dk": dkLines,
+		"cz": czLines,
+		"espn": espnLines,
+		"365": bet365Lines,
+		"circa": circaLines
+	}
+
+	data = nested_dict()
+	teamGame = {}
+	for book, bookData in lines.items():
+		for game, gameData in bookData.items():
+			away,home = map(str, game.split(" @ "))
+			teamGame[away] = game
+			teamGame[home] = game
+			for prop, propData in gameData.items():
+				if prop not in ["k"]:
+					continue
+
+				for player in propData:
+					lineData = propData[player]
+					team = away
+					if len(player.split(" ")[0]) == 1:
+						if player in translations[away]:
+							player = translations[away][player]
+						elif player in translations[home]:
+							player = translations[home][player]
+							team = home
+						else:
+							continue
+					elif player in roster[home]:
+						team = home
+
+					for line in lineData:
+						odds = lineData[line]
+						implied = getFairValue(odds)
+						if not implied:
+							continue
+
+						data[team][player][prop].setdefault(line, [])
+						data[team][player][prop][line].append(odds)
+
+	ranks = []
+	for team, players in data.items():
+		for player, props in players.items():
+			j = {}
+			isPitcher = "k" in props
+			for prop, lineData in props.items():
+				arr = []
+				for line, ous in lineData.items():
+					implieds = sorted([getFairValue(x) for x in ous])
+					avgOdds = averageOdds(ous)
+					arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power"), avgOdds))
+
+				if not arr:
+					continue
+
+				arr = sorted(arr, reverse=True)
+
+				j[prop] = {}
+				tot = last = 0
+				for line, implied, avg in arr:
+					if not implied:
+						implied = 0.002
+					tot += (implied - last)
+					j[prop][line] = implied - last
+					last = implied
+				j[prop][0] = 1 - tot
+
+			pts = 0
+			propPts = {}
+			for prop, lines in j.items():
+				propPts[prop] = 0
+				for line in lines:
+					p = calcFantasyPoints(prop, line * j[prop][line])
+					propPts[prop] += p
+				pts += propPts[prop]
+				propPts[prop] = round(propPts[prop], 2)
+
+			pts = round(pts, 2)
+			#print(player, pts, j)
+			ranks.append({
+				"player": player, "prop": prop,
+				"team": team, "game": teamGame.get(team, ""),
+				"pts": pts, "propPts": propPts, "propLines": j,
+				"isPitcher": isPitcher
+			})
+
+	with open("static/mlb/fantasyRanks.json", "w") as fh:
+		json.dump(ranks, fh)
+
 def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 	if not boost:
 		boost = 1
@@ -2793,6 +2929,8 @@ if __name__ == '__main__':
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--player", help="Book")
 
+	parser.add_argument("--ranks", action="store_true")
+
 	args = parser.parse_args()
 
 	if args.lineups:
@@ -2877,6 +3015,9 @@ if __name__ == '__main__':
 
 	if args.print:
 		sortEV(args.prop)
+
+	if args.ranks:
+		writeRanks()
 
 	if args.commit:
 		commitChanges()
