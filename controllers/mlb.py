@@ -1520,12 +1520,12 @@ def writeDK(date, propArg, keep, debug):
 		mainCats = {
 			#"batter": 743,
 			#"pitchers": 1031,
-			#"game lines": 493,
+			"game lines": 493,
 			#"game props": 724,
 			#"innings": 729,
 			#"1st inning": 1024,
 			"1st x innings": 1626,
-			#"team totals": 1674
+			"team totals": 1674
 		}
 
 		subCats = {
@@ -1565,7 +1565,7 @@ def writeDK(date, propArg, keep, debug):
 			#	json.dump(data, fh, indent=4)
 
 			prop = propIds.get(subCat, "")
-			print(prop)
+			#print(prop)
 
 			events = {}
 			if "eventGroup" not in data:
@@ -1620,6 +1620,7 @@ def writeDK(date, propArg, keep, debug):
 							else:
 								alt = False
 								prop = row["label"].lower().split(" [")[0]
+								fullProp = prop
 							
 								prefix = ""
 								if "1st 5" in prop:
@@ -1646,9 +1647,10 @@ def writeDK(date, propArg, keep, debug):
 								else:
 									continue
 
-
 								prop = prop.replace(" alternate", "")
 								prop = f"{prefix}{prop}"
+
+								print(prop, " -- ", fullProp)
 
 							outcomes = row["outcomes"]
 							if "ml" in prop:
