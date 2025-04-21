@@ -1183,6 +1183,8 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			prop = "spread"
 		elif prop == "inning total runs":
 			prop = "rfi"
+		elif prop == "team total runs":
+			prop = "team_total"
 		elif "total runs" in prop or "total" in prop:
 			if "exact" in prop or "/" in prop or "range" in prop or "&" in prop or "any" in prop or "consecutive" in prop or "match total" in prop:
 				continue
@@ -1228,6 +1230,11 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				data[game][f"{q}q_{prop}"] = ou
 			elif "ml" in prop or prop in ["rfi"]:
 				data[game][prop] = ou
+			elif prop == "team_total":
+				t = convertMLBTeam(btns[idx].find_previous("header").text)
+				p = "away" if game.startswith(t) else "home"
+				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
+				data[game][f"{p}_total"][line] = ou
 			else:
 				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
 
@@ -4001,7 +4008,8 @@ if __name__ == '__main__':
 
 	if args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
-		#games["mia @ chi"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/nba/event/e1e8a9f8-8ebc-47be-8c20-65f05f093b73/section/player_props"
+		#games["stl @ atl-game-props"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/aec65510-ef00-412c-922f-8cd99365de36/section/game_props"
+		#games["stl @ atl-lines"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/aec65510-ef00-412c-922f-8cd99365de36/section/lines"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
