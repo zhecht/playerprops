@@ -2201,6 +2201,7 @@ def writeRanks():
 
 	data = nested_dict()
 	teamGame = {}
+	opps = {}
 	for book, bookData in lines.items():
 		for game, gameData in bookData.items():
 			away,home = map(str, game.split(" @ "))
@@ -2223,7 +2224,10 @@ def writeRanks():
 							continue
 					elif player in roster[home]:
 						team = home
+					else:
+						continue
 
+					opps[team] = away if team == home else home
 					for line in lineData:
 						odds = lineData[line]
 						implied = getFairValue(odds)
@@ -2276,7 +2280,7 @@ def writeRanks():
 				"player": player, "prop": prop,
 				"team": team, "game": teamGame.get(team, ""),
 				"pts": pts, "propPts": propPts, "propLines": j,
-				"isPitcher": isPitcher
+				"isPitcher": isPitcher, "opp": opps[team]
 			})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
