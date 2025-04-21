@@ -543,9 +543,9 @@ def writeCZ(date=None):
 			pass
 		games.append(event["id"])
 
-	#games = ["a81f213e-e391-4c9a-bd6f-60cc198174aa"]
+	#games = ["17097344-8749-4fac-838d-1b3a52c17fed"]
 
-	res = {}
+	res = nested_dict()
 	for gameId in games:
 		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
 		time.sleep(0.2)
@@ -553,6 +553,9 @@ def writeCZ(date=None):
 
 		with open(outfile) as fh:
 			data = json.load(fh)
+
+		with open("out", "w") as fh:
+			json.dump(data, fh, indent=4)
 
 		#print(data["name"], data["startTime"])
 
@@ -562,8 +565,8 @@ def writeCZ(date=None):
 
 		game = convertFDTeam(data["name"].lower().replace("|", "").replace(" at ", " @ "))
 		if game in res:
-			continue
-		res[game] = {}
+			game += "-gm2"
+			#continue
 
 		for market in data["markets"]:
 			if "name" not in market:
@@ -637,8 +640,8 @@ def writeCZ(date=None):
 
 			prop = f"{prefix}{prop}"
 
-			if "ml" not in prop and prop not in res[game]:
-				res[game][prop] = {}
+			#if prop == "outs" and game == "sd @ det":
+			#	print(market["selections"])
 
 			selections = market["selections"]
 			skip = 1 if prop in ["away_total", "home_total", "hr"] else 2
@@ -659,7 +662,7 @@ def writeCZ(date=None):
 					res[game][prop] = ou
 				elif prop == "hr":
 					player = parsePlayer(selections[i]["name"].replace("|", ""))
-					res[game][prop][player] = ou
+					res[game][prop][player]["0.5"] = ou
 				elif "spread" in prop:
 					line = str(float(market["line"]) * -1)
 					mainLine = line
@@ -707,6 +710,8 @@ def writeCZ(date=None):
 								continue
 							res[game][prop][player] = ou
 						else:
+							if prop == "outs" and game == "sd @ det":
+								print(player, line, ou)
 							res[game][prop][player][line] = ou
 					except:
 						res[game][prop][player] = ou
