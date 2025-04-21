@@ -572,6 +572,7 @@ def writeCZ(date=None):
 			if market["active"] == False:
 				continue
 			prop = market["name"].lower().replace("|", "").split(" (")[0]
+			fullProp = prop
 
 			prefix = player = ""
 			if "1st 3 innings" in prop:
@@ -617,6 +618,8 @@ def writeCZ(date=None):
 					prop = "er"
 				else:
 					continue
+			elif market["templateName"].endswith("Team Total Runs|"):
+				prop = f"""{market["metadata"]["team"].lower()}_total"""
 			elif "total runs" in prop:
 				if "odd/even" in prop:
 					continue
@@ -666,12 +669,24 @@ def writeCZ(date=None):
 						line = str(float(market["line"]))
 						if prop == "total":
 							mainLine = line
+
+						#if game == "tor @ hou" and prop == "f5_total":
+						#	print(fullProp, line, ou)
+
 						if line not in res[game][prop]:
 							res[game][prop][line] = ou
-						elif "over" in selections[i]["name"].lower():
-							res[game][prop][line] = f"{ou}/{res[game][prop][line]}"
 						else:
-							res[game][prop][line] += "/"+ou
+							o = res[game][prop][line]
+							u = ""
+							if "/" in o:
+								o,u = map(str, o.split("/"))
+
+							if int(ou.split("/")[0]) > int(o):
+								o = ou.split("/")[0]
+							if "/" in ou and int(ou.split("/")[1]) > int(u):
+								u = ou.split("/")[1]
+
+							res[game][prop][line] = f"{o}/{u}"
 					else:
 						line = str(float(selections[i]["name"].split(" ")[-1]))
 						if prop == "total":
