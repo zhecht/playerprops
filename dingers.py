@@ -1185,10 +1185,10 @@ def writeHot(date):
 
 	trends = {"graphs": []}
 	for team in roster:
+		gameData = teamGame.get(team, {})
+		game = gameData.get("game", "")
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
-		gameData = teamGame.get(team, "")
-		game = gameData["game"]
 		for player in feed:
 			bip = []
 			evos = []
@@ -1221,12 +1221,16 @@ def writeHot(date):
 			regression = linearRegression(r, bip[-CUTOFF:])
 			r = range(len(evos)) if not CUTOFF else range(min(CUTOFF, len(evos)))
 			evo_regression = linearRegression(r, evos[-CUTOFF:])
+			if not regression["predicted_y"]:
+				lastY = 0
+			else:
+				lastY = regression["predicted_y"][-1]
 			trends["graphs"].append({
 				"game": game,
 				"team": team, "player": player,
 				"slope": regression["slope"],
 				"predictedY": regression["predicted_y"],
-				"lastPredictedY": regression["predicted_y"][-1],
+				"lastPredictedY": lastY,
 				"y": bip[-CUTOFF:],
 				"evoPredictedY": evo_regression["predicted_y"],
 				"evoY": evos[-CUTOFF:],
