@@ -2228,7 +2228,7 @@ def writeRanks():
 							continue
 					elif player in roster[home]:
 						team = home
-					else:
+					elif player not in roster[away]:
 						continue
 
 					opps[team] = away if team == home else home
