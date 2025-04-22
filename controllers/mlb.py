@@ -2545,7 +2545,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 							if "unavailable" in o or "infinity" in o:
 								continue
 
-							if o != "-":
+							if o != "-" and o != "--":
 								highestOdds.append(int(o.replace("+", "")))
 							odds.append(ou)
 							books.append(book)

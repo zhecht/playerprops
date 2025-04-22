@@ -206,6 +206,8 @@ if __name__ == '__main__':
 	parser.add_argument("--run", action="store_true")
 	parser.add_argument("--schedule", action="store_true")
 	parser.add_argument("--stats", action="store_true")
+	parser.add_argument("--tmrw", action="store_true")
+	parser.add_argument("--yest", action="store_true")
 
 	args = parser.parse_args()
 
@@ -219,10 +221,22 @@ if __name__ == '__main__':
 		print("NEED SPORT")
 		exit()
 
+	date = args.date
+	if args.tmrw:
+		date = str(datetime.now() + timedelta(days=1))[:10]
+	elif args.yest:
+		date = str(datetime.now() - timedelta(days=1))[:10]
+	elif not date:
+		date = str(datetime.now())[:10]
+
 	if args.update:
-		writeSchedule(sport, args.date)
-		writeStats(sport, args.date)
+		writeSchedule(sport, date)
+		writeStats(sport, date)
+		print("feed")
+		subprocess.Popen(["python", "dingers.py", "--feed", "-d", date])
+		print("cron")
+		subprocess.Popen(["python", "controllers/baseballreference.py", "-c"])
 	elif args.stats:
-		writeStats(sport, args.date)
+		writeStats(sport, date)
 	elif args.schedule:
-		writeSchedule(sport, args.date)
+		writeSchedule(sport, date)
