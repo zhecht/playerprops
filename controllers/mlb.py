@@ -2315,7 +2315,7 @@ def writeRanks(date):
 				})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
-		json.dump(ranks, fh)
+		json.dump(ranks, fh, indent=4)
 
 def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 	if not boost:
