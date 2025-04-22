@@ -2285,7 +2285,7 @@ def writeRanks(date):
 				for line in lines:
 					val = line * j[prop][line]
 					# don't mult by implied
-					if prop in ["outs"]:
+					if False and prop in ["outs"]:
 						val = line
 					p = calcFantasyPoints(prop, val)
 					if j[prop][line] > mostLikely[0]:
@@ -2312,7 +2312,7 @@ def writeRanks(date):
 				ranks.append({
 					"player": player, "prop": prop,
 					"team": team, "game": game,
-					"pts": round(pts, 2), "propPts": propPts, "propLines": j,
+					"pts": f"{round(pts, 2)}", "propPts": propPts, "propLines": j,
 					"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
 					"daily": dailyLines, "mostLikely": mostLikely[-1],
 					"lineOdds": lineOdds
