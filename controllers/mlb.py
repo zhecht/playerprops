@@ -2218,7 +2218,7 @@ def writeRanks(date):
 			teamGame[away] = game
 			teamGame[home] = game
 			for prop, propData in gameData.items():
-				if prop not in ["k"]:
+				if prop not in ["k", "outs"]:
 					continue
 
 				for player in propData:
@@ -2283,7 +2283,11 @@ def writeRanks(date):
 				propPts[prop] = 0
 				mostLikely = (0, "")
 				for line in lines:
-					p = calcFantasyPoints(prop, line * j[prop][line])
+					val = line * j[prop][line]
+					# don't mult by implied
+					if prop in ["outs"]:
+						val = line
+					p = calcFantasyPoints(prop, val)
 					if j[prop][line] > mostLikely[0]:
 						mostLikely = (j[prop][line], line)
 					propPts[prop] += p
@@ -2315,7 +2319,7 @@ def writeRanks(date):
 				})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
-		json.dump(ranks, fh)
+		json.dump(ranks, fh, indent=4)
 
 def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
 	if not boost:

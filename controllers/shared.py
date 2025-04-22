@@ -29,7 +29,8 @@ def getSuffix(num):
 	return "th"
 
 def calcFantasyPoints(prop, val):
-	
+	if prop == "outs":
+		return val / 3
 	return val
 
 def getFairValue(ou, method=None):
