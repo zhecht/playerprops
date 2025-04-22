@@ -1670,7 +1670,7 @@ def writeDK(date, propArg, keep, debug):
 								prop = prop.replace(" alternate", "")
 								prop = f"{prefix}{prop}"
 
-								print(prop, " -- ", fullProp)
+								#print(prop, " -- ", fullProp)
 
 							outcomes = row["outcomes"]
 							if "ml" in prop:
@@ -1680,6 +1680,8 @@ def writeDK(date, propArg, keep, debug):
 									continue
 							elif prop == "rfi":
 								outcomes = [x for x in outcomes if x["line"] == 0.5]
+								if len(outcomes) != 2:
+									continue
 								lines[game][prop] = outcomes[0]["oddsAmerican"]+"/"+outcomes[1]["oddsAmerican"]
 								continue
 
