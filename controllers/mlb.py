@@ -2245,7 +2245,7 @@ def writeRanks(date):
 							continue
 
 						data[team][player][prop].setdefault(line, [])
-						data[team][player][prop][line].append(odds)
+						data[team][player][prop][line].append((odds,book))
 
 	ranks = []
 	for team, players in data.items():
@@ -2258,8 +2258,8 @@ def writeRanks(date):
 			for prop, lineData in props.items():
 				arr = []
 				for line, ous in lineData.items():
-					implieds = sorted([getFairValue(x) for x in ous])
-					avgOdds = averageOdds(ous)
+					implieds = sorted([getFairValue(x) for x,_ in ous])
+					avgOdds = averageOdds([x for x,_ in ous])
 					arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power"), avgOdds, ous))
 					lineOdds[prop][math.ceil(float(line))] = ous
 				if not arr:
