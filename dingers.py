@@ -1563,7 +1563,7 @@ def writeStatsPage(date):
 							o = int(ou.split("/")[0])
 							if o > maxOdds[0]:
 								maxOdds = (o, book)
-						dailyLines = {"line": maxOdds[0], "book": maxOdds[1]}
+						dailyLines = {"line": "0.5", "odds": maxOdds[0], "book": maxOdds[1]}
 					elif prop in ["h"]:
 						dailyLines = daily[date][game][prop][player][str(line)]
 					else:
@@ -1629,8 +1629,8 @@ def writeStatsPage(date):
 					logs = playerStats.get(prop, [])
 
 					if totGames:
-						hitRate = round(len([x for x in logs if x > dailyLines["line"]]) * 100 / totGames)
-						hitRateL10 = round(len([x for x in logs[-10:] if x > dailyLines["line"]]) * 100 / min(totGames, 10))
+						hitRate = round(len([x for x in logs if x > float(dailyLines["line"])]) * 100 / totGames)
+						hitRateL10 = round(len([x for x in logs[-10:] if x > float(dailyLines["line"])]) * 100 / min(totGames, 10))
 
 				playerStatsHist = teamStatsHist.get(player, {})
 				playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
@@ -1648,7 +1648,7 @@ def writeStatsPage(date):
 					logsLYR = playerStatsHist.get(prop, [])
 
 					if totGamesLYR:
-						hitRateLYR = round(len([x for x in logsLYR if x > dailyLines["line"]]) * 100 / totGamesLYR)
+						hitRateLYR = round(len([x for x in logsLYR if x > float(dailyLines["line"])]) * 100 / totGamesLYR)
 
 				data.append({
 					"player": player, "team": team, "opp": opp,
