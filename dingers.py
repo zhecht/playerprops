@@ -1416,6 +1416,10 @@ def writeStatsPage(date):
 	response = requests.get(url, headers=headers)
 	weather = response.json()
 
+	url = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/odds.json"
+	response = requests.get(url, headers=headers)
+	dingerOdds = response.json()
+
 	with open("updated.json") as fh:
 		updated = json.load(fh)
 	updated["stats"] = str(datetime.now())
@@ -1551,16 +1555,23 @@ def writeStatsPage(date):
 					order = "-"
 
 				dailyLines = {"line": line}
-				try:
-					nearestMid = {"line": "", "diff": 100}
-					for l, d in daily[date][game][prop][player].items():
-						if abs(d["implied"] - 50) < nearestMid["diff"]:
-							nearestMid["line"] = l
-							nearestMid["diff"] = abs(d["implied"] - 50)
 
-					if prop in ["h"]:
+				try:
+					if prop in ["hr"]:
+						maxOdds = (0, "")
+						for book, ou in dingerOdds[game][player]:
+							o = int(ou.split("/")[0])
+							if o > maxOdds[0]:
+								maxOdds = (o, book)
+						dailyLines = {"line": maxOdds[0], "book": maxOdds[1]}
+					elif prop in ["h"]:
 						dailyLines = daily[date][game][prop][player][str(line)]
 					else:
+						nearestMid = {"line": "", "diff": 100}
+						for l, d in daily[date][game][prop][player].items():
+							if abs(d["implied"] - 50) < nearestMid["diff"]:
+								nearestMid["line"] = l
+								nearestMid["diff"] = abs(d["implied"] - 50)
 						dailyLines = daily[date][game][prop][player][nearestMid["line"]].copy()
 				except:
 					pass
