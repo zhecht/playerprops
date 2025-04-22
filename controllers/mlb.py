@@ -2307,7 +2307,7 @@ def writeRanks(date):
 				ranks.append({
 					"player": player, "prop": prop,
 					"team": team, "game": game,
-					"pts": pts, "propPts": propPts, "propLines": j,
+					"pts": round(pts, 2), "propPts": propPts, "propLines": j,
 					"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
 					"daily": dailyLines, "mostLikely": mostLikely[-1]
 				})
