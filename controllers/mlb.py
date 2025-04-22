@@ -2253,14 +2253,15 @@ def writeRanks(date):
 		pitcher = lineups[opp]["pitcher"]
 		for player, props in players.items():
 			j = {}
+			lineOdds = nested_dict()
 			isPitcher = "k" in props
 			for prop, lineData in props.items():
 				arr = []
 				for line, ous in lineData.items():
 					implieds = sorted([getFairValue(x) for x in ous])
 					avgOdds = averageOdds(ous)
-					arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power"), avgOdds))
-
+					arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power"), avgOdds, ous))
+					lineOdds[prop][math.ceil(float(line))] = ous
 				if not arr:
 					continue
 
@@ -2268,7 +2269,7 @@ def writeRanks(date):
 
 				j[prop] = {}
 				tot = last = 0
-				for line, implied, avg in arr:
+				for line, implied, avg, ous in arr:
 					if not implied:
 						implied = 0.002
 					tot += (implied - last)
@@ -2309,7 +2310,8 @@ def writeRanks(date):
 					"team": team, "game": game,
 					"pts": round(pts, 2), "propPts": propPts, "propLines": j,
 					"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
-					"daily": dailyLines, "mostLikely": mostLikely[-1]
+					"daily": dailyLines, "mostLikely": mostLikely[-1],
+					"lineOdds": lineOdds
 				})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
