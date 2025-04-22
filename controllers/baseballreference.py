@@ -583,7 +583,7 @@ def write_schedule(date):
 	with open(f"{prefix}static/baseballreference/schedule.json", "w") as fh:
 		json.dump(schedule, fh, indent=4)
 
-async def writeHistory(playerArg, force=False):
+async def writeHistory(playerArg, teamArg, force=False):
 	if playerArg:
 		playerArg = playerArg.replace("-", " ")
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
@@ -601,6 +601,8 @@ async def writeHistory(playerArg, force=False):
 	historical = nested_dict()
 	urls = []
 	for team in roster:
+		if teamArg and teamArg != team:
+			continue
 		path = f"static/splits/mlb_historical/{team}.json"
 		if os.path.exists(path):
 			with open(path) as fh:
@@ -2089,6 +2091,7 @@ if __name__ == "__main__":
 	parser.add_argument("-c", "--cron", action="store_true", help="Start Cron Job")
 	parser.add_argument("--bvp", action="store_true", help="Batter Vs Pitcher")
 	parser.add_argument("--player")
+	parser.add_argument("--team", "-t")
 	parser.add_argument("-d", "--date", help="Date")
 	parser.add_argument("-s", "--start", help="Start Week", type=int)
 	parser.add_argument("--averages", help="Last Yr Averages", action="store_true")
@@ -2124,7 +2127,7 @@ if __name__ == "__main__":
 		writeYearByYear()
 
 	if args.history:
-		uc.loop().run_until_complete(writeHistory(args.player, args.force))
+		uc.loop().run_until_complete(writeHistory(args.player, args.team, args.force))
 
 	if args.averages:
 		writeYears()
