@@ -147,7 +147,10 @@ def writeStats(sport, date):
 						else:
 							if k in ["h", "bb", "hr"] and pos == "p":
 								k += "_allowed"
-							stats[team][player][k] = int(v)
+							try:
+								stats[team][player][k] = int(v)
+							except:
+								stats[team][player][k] = v
 
 				if sport == "mlb" and pos == "h":
 					for team in stats:
