@@ -2285,7 +2285,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	evData[player][f"{prefix}implied"] = implied
 	evData[player][f"{prefix}ev"] = ev
 
-def writeDK(date=None, keep=False):
+def writeDK(date=None, keep=False, debug=False):
 	url = "https://sportsbook.draftkings.com/leagues/hockey/nfl"
 
 	if not date:
@@ -2306,12 +2306,12 @@ def writeDK(date=None, keep=False):
 	}
 	
 	subCats = {
-		496: [4525, 4999, 13192, 13189],
+		496: [4525, 13192, 13189],
 		1064: [16550],
 		1190: [13808],
-		1189: [16544, 12040],
+		1189: [12040, 16544],
 		548: [4761],
-		550: [14305],
+		550: [16257, 16548],
 		1193: [12055],
 		1259: [13750],
 		1675: [16545, 16213],
@@ -2319,16 +2319,18 @@ def writeDK(date=None, keep=False):
 	}
 
 	propIds = {
-		4999: "3-way", 13808: "atgs", 14496: "fgs", 16544: "sog-alt", 12040: "sog", 13189: "spread", 13192: "total", 10284: "goals_against", 12436: "shutout", 14305: "bs", 13750: "gift", 16545: "pts-alt", 16213: "pts", 16546: "ast-alt", 16215: "ast", 16550: "saves"
+		4999: "3-way", 14496: "fgs-alt", 16544: "sog-alt", 12040: "sog", 13189: "spread", 13192: "total", 10284: "goals_against", 12436: "shutout", 16257: "bs", 16548: "bs-alt", 13750: "gift", 16545: "pts-alt", 16213: "pts", 16546: "ast-alt", 16215: "ast", 16550: "saves"
 	}
 
-	if False:
+	if debug:
 		mainCats = {
-			"goalscorer": 1190,
+			#"goalscorer": 1190,
+			"sog": 1189,
 		}
 
 		subCats = {
 			1190: [13808],
+			1189: [12040, 16544],
 		}
 
 	cookie = """-H 'Cookie: hgg=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2aWQiOiI0ODg5Mjc3MDkxOCIsImRraC0xMjYiOiI4MzNUZF9ZSiIsImRrZS0xMjYiOiIwIiwiZGtlLTIwNCI6IjcxMCIsImRrZS0yODgiOiIxMTI4IiwiZGtlLTMxOCI6IjEyNjAiLCJka2UtMzQ1IjoiMTM1MyIsImRrZS0zNDYiOiIxMzU2IiwiZGtlLTQyOSI6IjE3MDUiLCJka2UtNzAwIjoiMjk5MiIsImRrZS03MzkiOiIzMTQwIiwiZGtlLTc1NyI6IjMyMTIiLCJka2UtODA2IjoiMzQyNiIsImRrZS04MDciOiIzNDM3IiwiZGtlLTgyNCI6IjM1MTEiLCJka2UtODI1IjoiMzUxNCIsImRrZS04MzYiOiIzNTcwIiwiZGtoLTg5NSI6IjhlU3ZaRG8wIiwiZGtlLTg5NSI6IjAiLCJka2UtOTAzIjoiMzg0OCIsImRrZS05MTciOiIzOTEzIiwiZGtlLTk0NyI6IjQwNDIiLCJka2UtOTc2IjoiNDE3MSIsImRraC0xNjQxIjoiUjBrX2xta0ciLCJka2UtMTY0MSI6IjAiLCJka2UtMTY1MyI6IjcxMzEiLCJka2UtMTY4NiI6IjcyNzEiLCJka2UtMTY4OSI6IjcyODciLCJka2UtMTc1NCI6Ijc2MDUiLCJka2UtMTc2MCI6Ijc2NDkiLCJka2UtMTc3NCI6Ijc3MTAiLCJka2UtMTc4MCI6Ijc3MzAiLCJka2UtMTc5NCI6Ijc4MDEiLCJka2gtMTgwNSI6Ik9Ha2Jsa0h4IiwiZGtlLTE4MDUiOiIwIiwiZGtlLTE4MjgiOiI3OTU2IiwiZGtlLTE4NjEiOiI4MTU3IiwiZGtlLTE4NjgiOiI4MTg4IiwiZGtlLTE4ODMiOiI4MjQyIiwiZGtlLTE4OTgiOiI4MzE0IiwiZGtoLTE5NTIiOiJhVWdlRFhiUSIsImRrZS0xOTUyIjoiMCIsImRrZS0yMDYyIjoiOTA0OCIsImRrZS0yMDk3IjoiOTIwNSIsImRrZS0yMTAwIjoiOTIyMyIsImRrZS0yMTAzIjoiOTI0MiIsImRrZS0yMTM1IjoiOTM5MyIsImRrZS0yMTM4IjoiOTQyMCIsImRrZS0yMTQxIjoiOTQzNSIsImRraC0yMTUwIjoiTmtiYVNGOGYiLCJka2UtMjE1MCI6IjAiLCJka2UtMjE2MSI6Ijk1MTUiLCJka2UtMjE2NSI6Ijk1MzUiLCJka2UtMjE4NyI6Ijk2MjQiLCJka2UtMjE5MiI6Ijk2NTIiLCJka2UtMjE5NSI6Ijk2NjUiLCJka2UtMjIwNyI6Ijk3MDkiLCJka2UtMjIxMSI6Ijk3MjciLCJka2UtMjIxNiI6Ijk3NDUiLCJka2UtMjIxNyI6Ijk3NTEiLCJka2UtMjIyMCI6Ijk3NjkiLCJka2UtMjIyMiI6Ijk3NzQiLCJka2UtMjIyNCI6Ijk3ODQiLCJka2gtMjIyNiI6IktlZE1ybUZPIiwiZGtlLTIyMjYiOiIwIiwiZGtlLTIyMzciOiI5ODM1IiwiZGtlLTIyMzgiOiI5ODM3IiwiZGtlLTIyNDAiOiI5ODU3IiwiZGtlLTIyNDEiOiI5ODY1IiwiZGtlLTIyNDMiOiI5ODcyIiwiZGtlLTIyNDQiOiI5ODc3IiwiZGtlLTIyNDYiOiI5ODg3IiwiZGtoLTIyNTgiOiJRd1BaT0tVNiIsImRrZS0yMjU4IjoiMCIsImRraC0yMjU5IjoibzFoSnN1Z1MiLCJka2UtMjI1OSI6IjAiLCJka2UtMjI2NCI6Ijk5NzAiLCJka2UtMjI2OSI6Ijk5ODkiLCJka2UtMjI3MCI6Ijk5OTIiLCJka2UtMjI3NyI6IjEwMDE5IiwiZGtlLTIyNzkiOiIxMDAzMyIsImRrZS0yMjgwIjoiMTAwMzUiLCJka2UtMjI4MSI6IjEwMDQyIiwiZGtlLTIyODgiOiIxMDA5MiIsImRrZS0yMjg5IjoiMTAwOTciLCJka2UtMjI5MSI6IjEwMTAzIiwiZGtoLTIyOTIiOiJNbHdDUVFVTSIsImRrZS0yMjkyIjoiMCIsImRrZS0yMjkzIjoiMTAxMjQiLCJka2UtMjI5NCI6IjEwMTI2IiwiZGtlLTIzMDAiOiIxMDE3NSIsImRrZS0yMzAzIjoiMTAyMDAiLCJka2UtMjMwNCI6IjEwMjAyIiwiZGtlLTIzMDkiOiIxMDI0NCIsImRraC0yMzEwIjoieFlJMXlMSmgiLCJka2UtMjMxMCI6IjAiLCJka2gtMjMxMSI6InhDem1LVThKIiwiZGtlLTIzMTEiOiIwIiwiZGtlLTIzMTIiOiIxMDI1NyIsImRrZS0yMzE0IjoiMTAyNjQiLCJka2gtMjMxNiI6ImZEa1ZMY1FfIiwiZGtlLTIzMTYiOiIwIiwiZGtlLTIzMTgiOiIxMDI3OSIsImRrZS0yMzIyIjoiMTAzMDciLCJka2UtMjMyMyI6IjEwMzE3IiwiZGtlLTIzMjQiOiIxMDMyMyIsImRraC0yMzI3IjoiQVN2UU5Ydy0iLCJka2UtMjMyNyI6IjAiLCJka2UtMjMyOCI6IjEwMzM4IiwiZGtlLTIzMzAiOiIxMDM0NSIsImRrZS0yMzMxIjoiMTAzNTIiLCJka2UtMjMzMyI6IjEwMzcxIiwiZGtoLTIzMzciOiJTa0JFeTdBUCIsImRrZS0yMzM3IjoiMCIsImRrZS0yMzM4IjoiMTAzOTIiLCJka2UtMjMzOSI6IjEwMzk2IiwibmJmIjoxNzQ0MzIyNzY4LCJleHAiOjE3NDQzMjMwNjgsImlhdCI6MTc0NDMyMjc2OCwiaXNzIjoiZGsifQ.idHI-mBiV9NBlx_1ESkYOKXFf1NFlg1IABywdvDjjaI; STE="2025-04-10T22:36:16.0424308Z"; STIDN=eyJDIjoxMjIzNTQ4NTIzLCJTIjo4OTY3OTI3NzI3MSwiU1MiOjkzNjM1MTIyNTY4LCJWIjo0ODg5Mjc3MDkxOCwiTCI6MSwiRSI6IjIwMjUtMDQtMTBUMjI6MzY6MDguMzY3ODk1N1oiLCJTRSI6IkNBLURLIiwiVUEiOiJJbjBMbWpMaFNUL3Y5UzRPay9iZXhuZnNUbDlIbEowUFZIRUl2RFZcdTAwMkI1UlU9IiwiREsiOiJjOWY1MzNlNC05YjMzLTQwN2YtYWJlOC0yZTA4MzNlNWY0YTkiLCJESSI6ImE4MGU3NDc1LWU0MmMtNDJjZC1hZjJmLTU4ZjI3ZTlmYjkwMyIsIkREIjo1ODc0Njk4NjIzNH0=; STH=c37a2427851040dc9c95d0202aef49b391cea8570a10bffeec35399ac1b64493; _abck=0A03A8670683A50F659B4083ABEBD8BC~0~YAAQ7xghFw2e9ByWAQAAnC+9IQ24npuFkdR7RYi01n0o3sV7bfpqhq+qCvrdy28KdGnH+dH5GiAJhWX14627AfN/ijaXra3F66dkmbsJ/hBh49yGzJ80PMU3V+mhoFm/Y73NKnmI9N+TI1CD4EBY2ajdo0gIKh50c6NAo6y9BYzqTfryEyCI7wc8u7B2iqB0Wez3wS35+EZkBBig4MUMz+1n0LxqP0BapxjQouRVEls179w8cINP/tJ1MHnjLl1SF/BsIAnrkaM4b201Hm+JjQ/e9J8cme1QDeSgY+P2ytqjz2tWTB9eFI/ZhyTh8y+U3rEOztp+NcFitoaDuwcSCGUwaCO2QDIwBDxyfj3OzXPJbbqIsNlSNnpA/zg1HtlC4OQp1E1mKBBTCMkcpazL7Xrwe8Raf/YauLAfCFWVFqdB2rFz6VJ5yKVwcqnv/krk1851Phlv1TLy//X+7FNvNBmfIyf7GjXQ2xAUJMmFSDhqDKj+bYmwqY1mewgtFsjkoE0UpjBW8YHXjKO67LxUpIKS2Eu6Q96o+TdzxAINwjGMHw==~-1~-1~-1; _csrf=0ef83b11-147a-46b1-a9e8-35d32690c104; _csrf=4e5ed430-17ae-45fc-8d4a-e1822a90d696; ak_bmsc=B9B2B3FE6EA54A3ECBD5CB0827FA9A23~000000000000000000000000000000~YAAQ7xghF52d9ByWAQAAGC+9IRuuhmFruMrUHxAWLmWENZlgr2XqFY1RgZUqQYYLFwIMcozj7JNw3nFKGcuc3E6OmM8uDvdH/rD8qyefUh2UmleZZS4DYmq4hncv+Qzw1H134jsTAB9DAYjdvVrSEuT/WuguAbWUexTthH8ECgFj+8BXfHI/J0H4rRo+jmK002powolFgEZ93tU5eIQQU11odf/ZGudb5SR8DuIpYPEgixvbfuVKC5xvpbas/Dls2YpPX+YpT2P0dek2RPDJhUQiFD0NmO78R1BuaJ6ZmN3nwzlT8qtomf9I1ZniPDYIefLwXPcbi/gu5jP6m8dz1N0XqYDr7HmWmhlc7Dmwrh5fHh791wm/0YYNZc6GTNyed6mJ4AXtDwJQ/aI4eA==; bm_sz=6461CBC0853B600B4F00F2AB25CDFB8B~YAAQ7xghF56d9ByWAQAAGC+9IRtIZxvi05iK+3c6bYF3we07w1XV4MEqECzCGUfHqwzN3zByR5iCTuazh8o7IoSowTUxzGcGNdLx+YxvIEJR2grHO60x+7tNaip3LzNIRvuuItQ8U7ne0FwElyAkhTPxkl/Li015KLRBq22w3NhwL1mdcgZ1q/AUDlaA8eIH9zXZJceQXJAEyebT3284oNvov1LB99vPZwiDEdJXVhyV5StKQBTR9vyLxYcgEokYLmRQtug1HMw3+pICl5wIzg9/sTXRdkMF5sIkoT1rboOtRy+3IlwdQnmxa+eL9XJBqRzzr0AeX5AOnkn0YBK9x6H1EvI0GXyzsPev+Nw9YNvCrYAkvWmDCeO3VHO2QkHNL9fKnPPnuJGVoiL8ZsTHlw==~3551553~4339001; bm_sv=56C64208EF0F3068896879855BED5B65~YAAQ5BghF5wRFh2WAQAA/ku9IRuVprl7JqohG9T0KvwpMPMZBJTtJepFzuB6lZjBX6nhLWD3VS+PW2MOpWJwmyPJZ90Uqa6C8A0BVOx5+qe5nT+bIw918B+s1Hq9MaVMJ2FzHvlHkd1mEAUjUMseFyU1zzmjl3wXjfemkOyC4c80e9oIiQQcBMuaoo12rmLDPFy9u1+1ACVRVC9FazLklMZ358yf1WI6fJwPLh/hSYztIqSDXiRYh20D43VDw9awNKR7XA==~1'"""
@@ -2341,7 +2343,7 @@ def writeDK(date=None, keep=False):
 	for mainCat in mainCats:
 		for subCat in subCats.get(mainCats[mainCat], [0]):
 			time.sleep(0.3)
-			url = f"https://sportsbook-nash-usmi.draftkings.com/sites/US-MI-SB/api/v5/eventgroups/42133/categories/{mainCats[mainCat]}"
+			url = f"https://sportsbook-nash.draftkings.com/api/sportscontent/dkusmi/v1/leagues/42133/categories/{mainCats[mainCat]}"
 			if subCat:
 				url += f"/subcategories/{subCat}"
 			url += "?format=json"
@@ -2351,203 +2353,130 @@ def writeDK(date=None, keep=False):
 			with open(outfile) as fh:
 				data = json.load(fh)
 
+			if debug:
+				with open("out", "w") as fh:
+					json.dump(data, fh, indent=4)
+
 			prop = propIds.get(subCat, "")
 
-			print(prop)
-
 			events = {}
-			if "eventGroup" not in data:
+			if "events" not in data:
+				print("events not found")
 				continue
 
-			for event in data["eventGroup"]["events"]:
-				start = f"{event['startDate'].split('T')[0]}T{':'.join(event['startDate'].split('T')[1].split(':')[:2])}Z"
+			started_events = {}
+			for event in data["events"]:
+				start = f"{event['startEventDate'].split('T')[0]}T{':'.join(event['startEventDate'].split('T')[1].split(':')[:2])}Z"
 				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
 				if startDt.day != int(date[-2:]):
+					started_events[event["id"]] = game
 					continue
 					pass
 				game = event["name"].lower()
 				games = []
 				for team in game.split(" @ "):
-					t = team.split(" ")[0]
-					if t == "was":
-						t = "wsh"
-					elif "rangers" in team:
-						t = "nyr"
-					elif "islanders" in team:
-						t = "nyi"
-					elif "uta" in team:
-						t = "utah"
+					t = convertFDTeam(team)
 					games.append(t)
 				game = " @ ".join(games)
-				if "eventStatus" in event and "state" in event["eventStatus"] and event["eventStatus"]["state"] == "STARTED":
+				if event.get("status", "") == "STARTED":
+					started_events[event["id"]] = game
 					continue
 
-				events[event["eventId"]] = game
+				events[event["id"]] = game
 
-			for catRow in data["eventGroup"]["offerCategories"]:
-				if catRow["offerCategoryId"] != mainCats[mainCat]:
+			markets = {}
+			for row in data["markets"]:
+				markets[row["id"]] = row
+
+			selections = {}
+			for row in data["selections"]:
+				selections.setdefault(row["marketId"], [])
+				selections[row["marketId"]].append(row)
+
+			for marketId, selections in selections.items():
+				market = markets[marketId]
+				if started_events.get(market["eventId"]):
 					continue
-				if "offerSubcategoryDescriptors" not in catRow:
+				game = events[market["eventId"]]
+				away,home = map(str, game.split(" @ "))
+				catId = market["subcategoryId"]
+				prop = propIds.get(catId, "")
+
+				alt = False
+				skip = 2
+				fullProp = prop
+				if prop:
+					if "-alt" in prop:
+						skip = 1
+						prop = prop.replace("-alt", "")
+				else:
+					prop = market["name"].lower().split(" [")[0]
+					fullProp = prop
+					
+					if prop == "first goalscorer":
+						prop = "fgs"
+						skip = 1
+					elif prop == "anytime goalscorer":
+						prop = "atgs"
+						skip = 1
+					elif prop == "puck line":
+						prop = "spread"
+					elif prop.endswith("team total goals"):
+						if convertFDTeam(prop.split(": ")[0]) == away:
+							prop = "away_total"
+						elif convertFDTeam(prop.split(": ")[0]) == home:
+							prop = "home_total"
+						else:
+							continue
+				if not prop:
 					continue
-				for cRow in catRow["offerSubcategoryDescriptors"]:
-					if "offerSubcategory" not in cRow:
-						continue
-					prop = cRow["name"].lower()
-					for offerRow in cRow["offerSubcategory"]["offers"]:
-						for row in offerRow:
-							try:
-								game = events[row["eventId"]]
-							except:
+
+				#print(prop, fullProp)
+
+				for idx in range(0, len(selections), skip):
+					selection = selections[idx]
+
+					over = selection["displayOdds"]["american"].replace("\u2212", "-")
+					ou = over
+					if skip != 1:
+						under = selections[idx+1]["displayOdds"]["american"].replace("\u2212", "-")
+
+						isOver = selection["outcomeType"] in ["Over", "Away"]
+						if not isOver:
+							over,under = under,over
+							pass
+						ou = f"{over}/{under}"
+
+					line = selection.get("points", "")
+					if skip == 1 and "+" in selection["label"]:
+						line = str(float(selection["label"].split("+")[0]) - 0.5)
+					participants = [x for x in selection.get("participants", []) if x["type"] == "Player"]
+
+					#print("==>",game, prop, ou, line, participants)
+					if not line and not participants:
+						lines[game][prop] = ou
+					elif not line and participants:
+						player = parsePlayer(participants[0]["name"])
+						lines[game][prop][player] = ou
+					else:
+						line = str(float(line))
+
+						if participants:
+							player = parsePlayer(participants[0]["name"])
+							if skip == 1 and line in lines[game][prop][player]:
+								over = lines[game][prop][player][line].split("/")[0]
+								rest = lines[game][prop][player][line].replace(over, "")
+								if int(ou) > int(over):
+									over = ou
+								ou = f"{over}{rest}"
+
+							lines[game][prop][player][line] = ou
+						elif prop == "gift":
+							if line != "0.5":
 								continue
-
-							#if game != "texas a&m @ miami fl":
-							#	continue
-
-							if "label" not in row:
-								continue
-
-							alt = False
-							if subCat in propIds:
-								prop = propIds[subCat]
-								if "-alt" in prop:
-									alt = True
-									prop = prop.replace("-alt", "")
-							else:
-								prop = row["label"].lower().split(" [")[0]
-							
-								prefix = ""
-								if "1st period" in prop:
-									prefix = "1p_"
-								elif "2nd period" in prop:
-									prefix = "2p_"
-								elif "3rd period" in prop:
-									prefix = "3p_"
-
-								if "moneyline" in prop or prop.startswith("tie no bet"):
-									prop = "ml"
-								elif "puck line" in prop:
-									prop = "spread"
-								elif prop.endswith("team total goals"):
-									team = prop.split(" ")[0]
-									if team == "was":
-										team = "wsh"
-									elif "rangers" in prop:
-										team = "nyr"
-									elif "islanders" in prop:
-										team = "nyi"
-									elif "utah" in prop:
-										team = "utah"
-									if game.startswith(team.split(" ")[0]):
-										prop = "away_total"
-									else:
-										prop = "home_total"
-								elif "total" in prop:
-									prop = "total"
-								elif prop.endswith("blocks"):
-									prop = "bs"
-								else:
-									print(prop)
-									continue
-
-
-								prop = prop.replace(" alternate", "")
-								prop = f"{prefix}{prop}"
-
-							outcomes = row["outcomes"]
-							if alt:
-								for outcome in outcomes:
-									player = parsePlayer(outcome["participant"].strip())
-									ou = outcome["oddsAmerican"]
-									line = outcome.get("label", "")
-									line = str(float(line.replace("+", "")) - 0.5)
-									lines[game][prop][player][line] = ou
-								continue
-
-							ou = ""
-							try:
-								ou = f"{outcomes[0]['oddsAmerican']}/{outcomes[1]['oddsAmerican']}"
-							except:
-								continue
-
-							if "ml" in prop:
-								lines[game][prop] = ou
-							elif prop == "3-way":
-								lines[game][prop] = f"{outcomes[0]['oddsAmerican']}/{outcomes[-1]['oddsAmerican']}"
-							elif prop == "gift":
-								lines[game][prop] = ""
-								for outcome in outcomes:
-									if outcome["line"] != 0.5:
-										continue
-									if lines[game][prop]:
-										lines[game][prop] += "/"+outcome["oddsAmerican"]
-									else:
-										lines[game][prop] = outcome["oddsAmerican"]
-							elif "total" in prop or "spread" in prop:
-								for i in range(0, len(outcomes), 1):
-									line = str(float(outcomes[i]["line"]))
-									odds = str(outcomes[i]['oddsAmerican'])
-									team = outcomes[i]["label"].lower().split(" ")[0]
-									if team == "was":
-										team = "wsh"
-									elif "rangers" in outcomes[i]["label"].lower():
-										team = "nyr"
-									elif "islanders" in outcomes[i]["label"].lower():
-										team = "nyi"
-									elif "utah" in outcomes[i]["label"].lower():
-										team = "utah"
-
-									if game.endswith(team):
-										line = str(float(line) * -1)
-									if line not in lines[game][prop]:
-										lines[game][prop][line] = odds
-									else:
-										if team == "under" or game.endswith(team):
-
-											if len(lines[game][prop][line].split("/")) == 2:
-												if int(odds) > int(lines[game][prop][line].split("/")[-1]):
-													lines[game][prop][line] = f"{lines[game][prop][line].split('/')[0]}/{odds}"
-											else:
-												lines[game][prop][line] += "/"+odds
-										else:
-											if len(lines[game][prop][line].split("/")) == 2:
-												if int(odds) > int(lines[game][prop][line].split("/")[0]):
-													lines[game][prop][line] = f"{odds}/{lines[game][prop][line].split('/')[-1]}"
-											else:
-												lines[game][prop][line] = odds+"/"+lines[game][prop][line]
-							elif prop in ["atgs", "fgs"]:
-								for outcome in outcomes:
-									if outcome.get("hidden", False):
-										continue
-									player = parsePlayer(outcome["label"])
-									try:
-										if outcome['criterionName'] == "Anytime Scorer":
-											p = "atgs"
-										else:
-											p = "fgs"
-										if p not in lines[game]:
-											lines[game][p] = {}
-										lines[game][p][player] = outcome['oddsAmerican']
-									except:
-										continue
-							else:
-								player = parsePlayer(outcomes[0]["participant"].split(" (")[0])
-
-								handicap = ""
-								if prop == "shutout":
-									pass
-								else:
-									handicap = f"{outcomes[0]['line']}"
-
-								if not handicap:
-									lines[game][prop][player] = f"{outcomes[0]['oddsAmerican']}"
-									if len(row["outcomes"]) > 1:
-										lines[game][prop][player] += f"/{outcomes[1]['oddsAmerican']}"
-								else:
-									lines[game][prop][player][handicap] = f"{outcomes[0]['oddsAmerican']}"
-									if len(row["outcomes"]) > 1:
-										lines[game][prop][player][handicap] += f"/{outcomes[1]['oddsAmerican']}"
-										if "under" in outcomes[0]["label"].lower():
-											lines[game][prop][player][handicap] = f"{outcomes[1]['oddsAmerican']}/{outcomes[0]['oddsAmerican']}"
+							lines[game][prop] = ou
+						else:
+							lines[game][prop][line] = ou
 
 	with open("static/nhl/draftkings.json", "w") as fh:
 		json.dump(lines, fh, indent=4)
@@ -3573,7 +3502,7 @@ if __name__ == '__main__':
 		writePointsbet(args.date)
 
 	if args.dk:
-		writeDK(args.date, args.keep)
+		writeDK(args.date, args.keep, args.debug)
 
 	if args.kambi:
 		writeKambi(args.date)
@@ -3595,7 +3524,7 @@ if __name__ == '__main__':
 		print("kambi")
 		writeKambi(args.date)
 		print("dk")
-		writeDK(args.date, args.keep)
+		writeDK(args.date, args.keep, args.debug)
 		print("cz")
 		uc.loop().run_until_complete(writeCZToken())
 		writeCZ(args.date)
