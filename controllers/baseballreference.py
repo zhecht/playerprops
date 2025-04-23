@@ -1665,7 +1665,6 @@ def writeSavantParkFactors():
 	with open(f"{prefix}static/baseballreference/parkfactors.json", "w") as fh:
 		json.dump(parkFactors, fh, indent=4)
 
-
 def writeSavantExpected():
 	with open(f"{prefix}static/baseballreference/expected_historical.json") as fh:
 		expectedHist = json.load(fh)
@@ -1713,6 +1712,11 @@ def writeSavantExpected():
 		json.dump(expected, fh, indent=4)
 	with open(f"{prefix}static/baseballreference/expected_historical.json", "w") as fh:
 		json.dump(expectedHist, fh)
+	hist = nested_dict()
+	for team, players in expectedHist.items():
+		for player, d in players.items():
+			for key, arr in d.items():
+				pass
 
 def writeSavantPitcherAdvanced():
 
@@ -2172,6 +2176,7 @@ if __name__ == "__main__":
 	#readBirthdays()
 
 	#writeSavantExpected()
+	writeSavantBarrels()
 	
 	#writeDailyHomers()
 
