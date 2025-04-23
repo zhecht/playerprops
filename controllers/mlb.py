@@ -2403,7 +2403,7 @@ def writeRanks(date):
 				for line in lines:
 					val = line * j[prop][line]
 					# don't mult by implied
-					if False and prop in ["outs"]:
+					if prop in ["outs"]:
 						val = line
 					p = calcFantasyPoints(prop, val)
 					if j[prop][line] > mostLikely[0]:
