@@ -1665,7 +1665,7 @@ def writeSavantParkFactors():
 	with open(f"{prefix}static/baseballreference/parkfactors.json", "w") as fh:
 		json.dump(parkFactors, fh, indent=4)
 
-def writeSavantExpected():
+def writeSavantExpected(date):
 	with open(f"{prefix}static/baseballreference/expected_historical.json") as fh:
 		expectedHist = json.load(fh)
 
@@ -1695,24 +1695,29 @@ def writeSavantExpected():
 			last, first = map(str, player.split(", "))
 			player = f"{first} {last}"
 
-			dt = str(datetime.now())[:10]
-			row["dt"] = dt
+			row["dt"] = date
 			expected[team][player] = row.copy()
 
 
 			expectedHist.setdefault(team, {})
 			expectedHist[team].setdefault(player, {})
-			expectedHist[team][player][dt] = row.copy()
+			expectedHist[team][player][date] = row.copy()
 
 	with open(f"{prefix}static/baseballreference/expected.json", "w") as fh:
 		json.dump(expected, fh, indent=4)
 	with open(f"{prefix}static/baseballreference/expected_historical.json", "w") as fh:
 		json.dump(expectedHist, fh)
-	hist = nested_dict()
+
+	hist_sorted = nested_dict()
 	for team, players in expectedHist.items():
-		for player, d in players.items():
-			for key, arr in d.items():
-				pass
+		for player, dts in players.items():
+			for dt, data in sorted(dts.items()):
+				for key, val in data.items():
+					hist_sorted[team][player].setdefault(key, [])
+					hist_sorted[team][player][key].append(val)
+
+	with open(f"{prefix}static/baseballreference/expected_sorted.json", "w") as fh:
+		json.dump(hist_sorted, fh)
 
 def writeSavantPitcherAdvanced():
 
@@ -2163,7 +2168,7 @@ if __name__ == "__main__":
 		write_pitching_pitches()
 		#write_schedule(date)
 		#write_stats(date)
-		writeSavantExpected()
+		writeSavantExpected(date)
 		writeSavantParkFactors()
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
@@ -2171,8 +2176,7 @@ if __name__ == "__main__":
 	printStuff()
 	#readBirthdays()
 
-	writeSavantExpected()
-	
+	writeSavantExpected(date)
 	#writeDailyHomers()
 
 	#writeYears()
