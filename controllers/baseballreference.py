@@ -1699,14 +1699,10 @@ def writeSavantExpected():
 			row["dt"] = dt
 			expected[team][player] = row.copy()
 
+
 			expectedHist.setdefault(team, {})
 			expectedHist[team].setdefault(player, {})
-			if "dt" in expectedHist[team][player] and dt in expectedHist[team][player]["dt"]:
-				continue
-
-			for k in row:
-				expectedHist[team][player].setdefault(k, [])
-				expectedHist[team][player][k].append(row[k])
+			expectedHist[team][player][dt] = row.copy()
 
 	with open(f"{prefix}static/baseballreference/expected.json", "w") as fh:
 		json.dump(expected, fh, indent=4)
@@ -2175,8 +2171,7 @@ if __name__ == "__main__":
 	printStuff()
 	#readBirthdays()
 
-	#writeSavantExpected()
-	writeSavantBarrels()
+	writeSavantExpected()
 	
 	#writeDailyHomers()
 
