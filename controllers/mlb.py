@@ -2218,8 +2218,8 @@ def writeRanks(date):
 			teamGame[away] = game
 			teamGame[home] = game
 			for prop, propData in gameData.items():
-				#if prop not in ["k", "outs"]:
-				if prop not in ["h", "rbi", "r"]:
+				if prop not in ["k", "outs"]:
+				#if prop not in ["h", "rbi", "r"]:
 					continue
 
 				for player in propData:
