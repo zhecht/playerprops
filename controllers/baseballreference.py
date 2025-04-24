@@ -1744,19 +1744,23 @@ def writeBarrels():
 
 			barrels.append(j)
 
-	percentiles = nested_dict()
+	#percentiles = nested_dict()
+	trendsArrs = nested_dict()
 	for row in barrels:
 		for key in ["barrel_ct", "hard_hit_ct"]:
 			for period, val in row["game_trends"][key].items():
-				percentiles[key].setdefault(period, [])
-				percentiles[key][period].append(val)
+				trendsArrs[key].setdefault(period, [])
+				trendsArrs[key][period].append(val)
 
-	for key, periods in percentiles.items():
+	for key, periods in trendsArrs.items():
 		for period, arr in periods.items():
 			arr = np.array(arr)
 			perc20 = np.percentile(arr, 20)
 			perc80 = np.percentile(arr, 80)
-			percentiles[key][period] = [perc20, perc80]
+			k = f"game_trends.{key}.{period}Percentile"
+			percentiles.setdefault(k, {})
+			percentiles[k]["20"] = perc20
+			percentiles[k]["80"] = perc80
 
 	data = {}
 	data["percentiles"] = percentiles
