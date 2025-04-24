@@ -1636,14 +1636,32 @@ def writeStatsPage(date):
 						hitRate = round(len([x for x in logs if x > float(dailyLines["line"])]) * 100 / totGames)
 						hitRateL10 = round(len([x for x in logs[-10:] if x > float(dailyLines["line"])]) * 100 / min(totGames, 10))
 
+				playerStatsHist = teamStatsHist.get(player, {})
+				playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
+				if lastYear in playerStatsHist:
+					playerStatsHist = playerStatsHist[lastYear]
+					longLogs = playerStatsHist.get(prop, [])[::-1]
+					longLogs.extend(logs)
+				else:
+					playerStatsHist = {}
+					longLogs = logs
+				dtSplitsLYR, logsLYR = [], []
+				if playerStatsHist:
+					dtSplitsLYR = playerStatsHist["date"][::-1]
+					totGamesLYR = len(dtSplitsLYR)
+					logsLYR = playerStatsHist.get(prop, [])[::-1]
+
+					if totGamesLYR:
+						hitRateLYR = round(len([x for x in logsLYR if x > float(dailyLines["line"])]) * 100 / totGamesLYR)
+
 				# Find games between HR
 				gamesBtwn = []
 				lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
 				lastHRDt = ""
-				if prop == "hr" and logs:
+				if prop == "hr" and longLogs:
 					hits = []
 					btwn = 0
-					for dt,val in zip(dtSplits,logs):
+					for dt,val in zip(dtSplits,longLogs):
 						if val > 0:
 							hits.append((dt,btwn))
 							btwn = 0
@@ -1659,24 +1677,6 @@ def writeStatsPage(date):
 						gamesBtwnMed = median(gamesBtwn)
 
 						gamesBtwnDiff = lastHR - gamesBtwnAvg
-
-				playerStatsHist = teamStatsHist.get(player, {})
-				playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
-				if lastYear in playerStatsHist:
-					playerStatsHist = playerStatsHist[lastYear]
-					longLogs = playerStatsHist.get(prop, [])[::-1]
-					longLogs.extend(logs)
-				else:
-					playerStatsHist = {}
-					longLogs = logs
-				dtSplitsLYR, logsLYR = [], []
-				if playerStatsHist:
-					dtSplitsLYR = playerStatsHist["date"]
-					totGamesLYR = len(dtSplitsLYR)
-					logsLYR = playerStatsHist.get(prop, [])
-
-					if totGamesLYR:
-						hitRateLYR = round(len([x for x in logsLYR if x > float(dailyLines["line"])]) * 100 / totGamesLYR)
 
 
 				playerFactor = playerFactorColor = ""
