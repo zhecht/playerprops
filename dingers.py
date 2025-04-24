@@ -1654,7 +1654,7 @@ def writeStatsPage(date):
 						lastHR = len(dtSplits) - dtSplits.index(lastHRDt)
 
 					gamesBtwn = [x for _,x in hits]
-					if gamesBtwn:
+					if len(gamesBtwn) > 1:
 						gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
 						gamesBtwnMed = median(gamesBtwn)
 
