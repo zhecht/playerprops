@@ -1642,7 +1642,7 @@ def writeBarrels():
 				"player": player
 			}
 
-			for key in ["barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
+			for key in ["bip", "pa", "barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
 				j[key] = data[key][-1]
 				pKey = key.replace("barrels_per_bip", "barrel_batted_rate")
 				j[key+"Percentile"] = percentiles.get(pKey, [])
