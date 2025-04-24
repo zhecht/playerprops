@@ -1420,6 +1420,10 @@ def writeStatsPage(date):
 	response = requests.get(url, headers=headers)
 	dingerOdds = response.json()
 
+	url = "https://api.github.com/repos/zhecht/lines/contents/static/bpp/factors.json"
+	response = requests.get(url, headers=headers)
+	bppFactors = response.json()
+
 	with open("updated.json") as fh:
 		updated = json.load(fh)
 	updated["stats"] = str(datetime.now())
@@ -1650,6 +1654,12 @@ def writeStatsPage(date):
 					if totGamesLYR:
 						hitRateLYR = round(len([x for x in logsLYR if x > float(dailyLines["line"])]) * 100 / totGamesLYR)
 
+
+				playerFactor = playerFactorColor = ""
+				if game in bppFactors and player in bppFactors[game]["players"]:
+					playerFactor = bppFactors[game]["players"][player]["hr"]
+					playerFactorColor = bppFactors[game]["players"][player]["color"]
+
 				data.append({
 					"player": player, "team": team, "opp": opp,
 					"game": game, "start": start,
@@ -1675,7 +1685,9 @@ def writeStatsPage(date):
 					"weather": gameWeather, "stadiumRank": stadiumRank,
 					"100-evo": over100, "300-ft": over300ft,
 					"playerYears": playerYears,
-					"daily": dailyLines, "gameLines": gameLines
+					"daily": dailyLines, "gameLines": gameLines,
+					# bpp
+					"playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
 				})
 
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
