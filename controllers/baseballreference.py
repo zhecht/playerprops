@@ -1696,9 +1696,9 @@ def writeBarrels():
 					except:
 						continue
 				if len(vals) >= 5:
-					game_trends[key]["3g"] = vals[-1] - vals[-4]
+					game_trends[key]["3G"] = vals[-1] - vals[-4]
 				if len(vals) >= 7:
-					game_trends[key]["5g"] = vals[-1] - vals[-6]
+					game_trends[key]["5G"] = vals[-1] - vals[-6]
 
 			# Last Homer
 			gamesBtwn = []
@@ -1744,8 +1744,25 @@ def writeBarrels():
 
 			barrels.append(j)
 
+	percentiles = nested_dict()
+	for row in barrels:
+		for key in ["barrel_ct", "hard_hit_ct"]:
+			for period, val in row["game_trends"][key].items():
+				percentiles[key].setdefault(period, [])
+				percentiles[key][period].append(val)
+
+	for key, periods in percentiles.items():
+		for period, arr in periods.items():
+			arr = np.array(arr)
+			perc20 = np.percentile(arr, 30)
+			perc80 = np.percentile(arr, 70)
+			percentiles[key][period] = [perc20, perc80]
+
+	data = {}
+	data["res"] = barrels
+	data["percentiles"] = percentiles
 	with open("static/baseballreference/barrels.json", "w") as fh:
-		json.dump(barrels, fh, indent=4)
+		json.dump(data, fh, indent=4)
 
 
 def writeSavantPercentiles():
