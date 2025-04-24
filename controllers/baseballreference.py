@@ -1625,6 +1625,7 @@ def convertSavantTeam(team):
 	return team
 
 def writeBarrels():
+	last_year = str(datetime.now().year - 1)
 	with open("static/baseballreference/percentiles.json") as fh:
 		percentiles = json.load(fh)
 
@@ -1636,10 +1637,60 @@ def writeBarrels():
 
 	barrels = []
 	for team, players in expectedHist.items():
+		with open(f"static/splits/mlb/{team}.json") as fh:
+			splits = json.load(fh)
+		with open(f"static/splits/mlb_historical/{team}.json") as fh:
+			splitsHist = json.load(fh)
+
 		for player, data in players.items():
+			hrLogs = []
+			dtLogs = []
+			try:
+				hrLogs.extend(splitsHist[player][last_year]["hr"])
+				dtLogs.extend(splitsHist[player][last_year]["date"])
+			except:
+				pass
+
+			try:
+				hrLogs.extend(splits[player]["hr"])
+				dtLogs.extend(splits[player]["dt"])
+			except:
+				pass
+
+			gamesBtwn = []
+			lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
+			lastHRDt = std_dev = z_score = ""
+			if hrLogs:
+				hits = []
+				btwn = 0
+				for dt,val in zip(dtLogs,hrLogs):
+					if val > 0:
+						hits.append((dt,btwn))
+						btwn = 0
+					btwn += 1
+
+				if hits:
+					lastHRDt = hits[-1][0]
+					lastHR = len(dtLogs) - dtLogs.index(lastHRDt)
+
+				gamesBtwn = [x for _,x in hits]
+				if len(gamesBtwn) > 1:
+					gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
+					std_dev = np.std(gamesBtwn, ddof=1)
+					if np.isnan(std_dev):
+						std_dev = 0
+					else:
+						std_dev = round(std_dev, 2)
+
+					if std_dev:
+						z_score = round((lastHR - gamesBtwnAvg) / std_dev, 2)
+					gamesBtwnMed = median(gamesBtwn)
+					gamesBtwnDiff = lastHR - gamesBtwnAvg
+
 			j = {
 				"team": team,
-				"player": player
+				"player": player,
+				"lastHRDt": lastHRDt, "lastHR": lastHR, "gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": std_dev, "gamesBtwnZ": z_score
 			}
 
 			for key in ["bip", "pa", "barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
