@@ -1659,9 +1659,11 @@ def writeStatsPage(date):
 				lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
 				lastHRDt = ""
 				if prop == "hr" and longLogs:
+					longDts = dtSplitsLYR
+					longDts.extend(dtSplits)
 					hits = []
 					btwn = 0
-					for dt,val in zip(dtSplits,longLogs):
+					for dt,val in zip(longDts,longLogs):
 						if val > 0:
 							hits.append((dt,btwn))
 							btwn = 0
@@ -1669,7 +1671,7 @@ def writeStatsPage(date):
 
 					if hits:
 						lastHRDt = hits[-1][0]
-						lastHR = len(dtSplits) - dtSplits.index(lastHRDt)
+						lastHR = len(longDts) - longDts.index(lastHRDt)
 
 					gamesBtwn = [x for _,x in hits]
 					if len(gamesBtwn) > 0:
