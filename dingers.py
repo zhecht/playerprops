@@ -1655,7 +1655,7 @@ def writeStatsPage(date):
 
 					gamesBtwn = [x for _,x in hits]
 					if len(gamesBtwn) > 0:
-						gamesBtwnAvg = round(sum(gamesBtwn) + lastHR / len(gamesBtwn) + 1, 1)
+						gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
 						gamesBtwnMed = median(gamesBtwn)
 
 						gamesBtwnDiff = lastHR - gamesBtwnAvg
