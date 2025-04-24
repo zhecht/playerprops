@@ -1696,9 +1696,15 @@ def writeBarrels():
 					except:
 						continue
 				if len(vals) >= 5:
-					game_trends[key]["3G"] = vals[-1] - vals[-4]
+					diff = vals[-1] - vals[-4]
+					if isinstance(diff, float) and not diff.is_integer():
+						diff = round(diff, 2)
+					game_trends[key]["3G"] = diff
 				if len(vals) >= 7:
-					game_trends[key]["5G"] = vals[-1] - vals[-6]
+					diff = vals[-1] - vals[-6]
+					if isinstance(diff, float) and not diff.is_integer():
+						diff = round(diff, 2)
+					game_trends[key]["5G"] = diff
 
 			# Last Homer
 			gamesBtwn = []
