@@ -1167,6 +1167,11 @@ def writeFeedSplits(date, data, sameYear):
 		with open(f"{base}/{team}.json", "w") as fh:
 			json.dump(j, fh)
 
+	analyzeFeed()
+
+def analyzeFeed():
+	pass
+
 def writeHot(date):
 	CUTOFF = 0
 	with open(f"static/mlb/schedule.json") as fh:
