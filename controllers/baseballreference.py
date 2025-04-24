@@ -1652,7 +1652,33 @@ def writeBarrels():
 	with open("static/baseballreference/barrels.json", "w") as fh:
 		json.dump(barrels, fh, indent=4)
 
+
 def writeSavantPercentiles():
+	with open("static/baseballreference/expected.json") as fh:
+		expected = json.load(fh)
+
+	rows = []
+	for team, players in expected.items():
+		for player, data in players.items():
+			data["team"] = team
+			data["player"] = player
+			rows.append(data)
+
+	percentiles = nested_dict()
+	keys = ["barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]
+	#keys = ["sweet_spot_percent"]
+	for key in keys:
+		arr = np.array([x[key] for x in rows if x[key]])
+		arr = arr.astype(float)
+
+		for perc in [10,20,25,30,50,70,75,80,90]:
+			p = np.percentile(arr, perc)
+			percentiles[key][perc] = p
+
+	with open("static/baseballreference/percentiles.json", "w") as fh:
+		json.dump(percentiles, fh, indent=4)
+
+def writePitcherSavantPercentiles():
 	with open("static/baseballreference/advanced.json") as fh:
 		advanced = json.load(fh)
 
@@ -2234,7 +2260,8 @@ if __name__ == "__main__":
 
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	writeBarrels()
+	#writeBarrels()
+	writeSavantPercentiles()
 	#writeDailyHomers()
 
 	#writeYears()
