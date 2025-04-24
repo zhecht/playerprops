@@ -1754,8 +1754,8 @@ def writeBarrels():
 	for key, periods in percentiles.items():
 		for period, arr in periods.items():
 			arr = np.array(arr)
-			perc20 = np.percentile(arr, 30)
-			perc80 = np.percentile(arr, 70)
+			perc20 = np.percentile(arr, 20)
+			perc80 = np.percentile(arr, 80)
 			percentiles[key][period] = [perc20, perc80]
 
 	data = {}
