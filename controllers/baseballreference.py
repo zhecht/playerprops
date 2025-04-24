@@ -1624,6 +1624,59 @@ def convertSavantTeam(team):
 		return "nyy"
 	return team
 
+def writeBarrels():
+	with open("static/baseballreference/percentiles.json") as fh:
+		percentiles = json.load(fh)
+
+	with open("static/baseballreference/expected.json") as fh:
+		expected = json.load(fh)
+
+	with open("static/baseballreference/expected_sorted.json") as fh:
+		expectedHist = json.load(fh)
+
+	barrels = []
+	for team, players in expectedHist.items():
+		for player, data in players.items():
+			j = {
+				"team": team,
+				"player": player
+			}
+
+			for key in ["barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
+				j[key] = data[key][-1]
+				pKey = key.replace("barrels_per_bip", "barrel_batted_rate")
+				j[key+"Percentile"] = percentiles.get(pKey, [])
+
+			barrels.append(j)
+
+	with open("static/baseballreference/barrels.json", "w") as fh:
+		json.dump(barrels, fh, indent=4)
+
+def writeSavantPercentiles():
+	with open("static/baseballreference/advanced.json") as fh:
+		advanced = json.load(fh)
+
+	rows = []
+	for player, data in advanced.items():
+		data["player"] = player
+		rows.append(data)
+
+	keys = [x for x in rows[0] if x.endswith("Percentile")]
+	#keys = ["barrel_batted_ratePercentile"]
+
+	percentiles = nested_dict()
+	for key in keys:
+		stat = key.replace("Percentile", "")
+		arr = [(x[key],x[stat]) for x in rows]
+		closest30 = min(arr, key=lambda x: abs(x[0] - 30))
+		closest70 = min(arr, key=lambda x: abs(x[0] - 70))
+
+		#print(key, closest30, closest70)
+		percentiles[stat] = [closest70[-1], closest30[-1]]
+
+	with open("static/baseballreference/percentiles.json", "w") as fh:
+		json.dump(percentiles, fh)
+
 def writeSavantParkFactors():
 	year = datetime.now().year
 	url = f"https://baseballsavant.mlb.com/leaderboard/statcast-park-factors?type=year&year={year}&batSide=&stat=index_wOBA&condition=All&rolling="
@@ -2117,6 +2170,7 @@ if __name__ == "__main__":
 	parser.add_argument("--year", help="Year by Year Avg", action="store_true")
 	parser.add_argument("--history", action="store_true")
 	parser.add_argument("--force", action="store_true")
+	parser.add_argument("--commit", action="store_true")
 
 	args = parser.parse_args()
 
@@ -2170,13 +2224,17 @@ if __name__ == "__main__":
 		#write_stats(date)
 		writeSavantExpected(date)
 		writeSavantParkFactors()
+		writeSavantPercentiles()
+		writeBarrels()
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
 	printStuff()
 	#readBirthdays()
 
-	writeSavantExpected(date)
+	#writeSavantExpected(date)
+	#writeSavantPercentiles()
+	writeBarrels()
 	#writeDailyHomers()
 
 	#writeYears()
@@ -2190,3 +2248,6 @@ if __name__ == "__main__":
 	#writeSavantParkFactors()
 	#writeSavantExpectedHR()
 	#writeSavantPitcherAdvanced()
+
+	if args.commit:
+		commitChanges()
