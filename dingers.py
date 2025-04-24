@@ -1638,7 +1638,7 @@ def writeStatsPage(date):
 
 				# Find games between HR
 				gamesBtwn = []
-				lastHR = gamesBtwnMed = gamesBtwnAvg = 0
+				lastHR = gamesBtwnMed = gamesBtwnAvg = ""
 				lastHRDt = ""
 				if prop == "hr" and logs:
 					hits = []
