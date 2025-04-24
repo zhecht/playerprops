@@ -1657,7 +1657,7 @@ def writeStatsPage(date):
 				# Find games between HR
 				gamesBtwn = []
 				lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
-				lastHRDt = ""
+				lastHRDt = gamesBtwnZ = gamesBtwnSD = ""
 				if prop == "hr" and longLogs:
 					longDts = dtSplitsLYR
 					longDts.extend(dtSplits)
@@ -1674,11 +1674,19 @@ def writeStatsPage(date):
 						lastHR = len(longDts) - longDts.index(lastHRDt)
 
 					gamesBtwn = [x for _,x in hits]
-					if len(gamesBtwn) > 0:
+					if len(gamesBtwn) > 1:
 						gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
 						gamesBtwnMed = median(gamesBtwn)
-
 						gamesBtwnDiff = lastHR - gamesBtwnAvg
+
+						gamesBtwnSD = np.std(gamesBtwn, ddof=1)
+						if np.isnan(gamesBtwnSD):
+							gamesBtwnSD = 0
+						else:
+							gamesBtwnSD = round(gamesBtwnSD, 2)
+
+						if gamesBtwnSD:
+							gamesBtwnZ = round((lastHR - gamesBtwnAvg) / gamesBtwnSD, 2)
 
 
 				playerFactor = playerFactorColor = ""
@@ -1717,7 +1725,7 @@ def writeStatsPage(date):
 					# bpp
 					"bpp": bppFactors.get(game, {}).get("hr", ""), "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
 					"lastHRDt": lastHRDt, "lastHR": lastHR,
-					"gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed
+					"gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": gamesBtwnSD, "gamesBtwnZ": gamesBtwnZ
 				})
 
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
