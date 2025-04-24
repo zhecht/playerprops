@@ -1638,7 +1638,7 @@ def writeStatsPage(date):
 
 				# Find games between HR
 				gamesBtwn = []
-				lastHR = gamesBtwnMed = gamesBtwnAvg = ""
+				lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
 				lastHRDt = ""
 				if prop == "hr" and logs:
 					hits = []
@@ -1657,6 +1657,8 @@ def writeStatsPage(date):
 					if gamesBtwn:
 						gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
 						gamesBtwnMed = median(gamesBtwn)
+
+						gamesBtwnDiff = lastHR - gamesBtwnAvg
 
 				playerStatsHist = teamStatsHist.get(player, {})
 				playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
@@ -1713,7 +1715,7 @@ def writeStatsPage(date):
 					# bpp
 					"bpp": bppFactors.get(game, {}).get("hr", ""), "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
 					"lastHRDt": lastHRDt, "lastHR": lastHR,
-					"gamesBtwn": gamesBtwn, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed
+					"gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed
 				})
 
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
