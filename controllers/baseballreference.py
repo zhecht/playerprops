@@ -1740,6 +1740,8 @@ def writeBarrels():
 
 			for key in ["bip", "pa", "barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
 				j[key] = data[key][-1]
+				if "." in str(j[key]):
+					j[key] = round(float(j[key]), 2)
 				#j[key+"Percentile"] = percentiles.get(key, {})
 
 			barrels.append(j)
@@ -1758,7 +1760,7 @@ def writeBarrels():
 
 			arr = np.array(arr)
 			all_percentiles =  [(np.sum(arr < val) / len(arr)) * 100 for val in arr]
-			percentiles[k] = {str(round(k2, 2)): round(v2) for k2,v2 in zip(arr,all_percentiles)}
+			percentiles[k] = {str(round(k2, 2)): round(v2, 1) for k2,v2 in zip(arr,all_percentiles)}
 			#print(key, period, {str(k2): v2 for k2,v2 in zip(arr,all_percentiles)})
 			#exit()
 			continue
