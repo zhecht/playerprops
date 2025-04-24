@@ -2260,8 +2260,8 @@ if __name__ == "__main__":
 
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	#writeBarrels()
-	writeSavantPercentiles()
+	writeBarrels()
+	#writeSavantPercentiles()
 	#writeDailyHomers()
 
 	#writeYears()
