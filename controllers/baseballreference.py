@@ -1757,7 +1757,7 @@ def writeBarrels():
 			arr = np.array(arr)
 			perc20 = np.percentile(arr, 20)
 			perc80 = np.percentile(arr, 80)
-			k = f"game_trends.{key}.{period}Percentile"
+			k = f"game_trends.{key}.{period}"
 			percentiles.setdefault(k, {})
 			percentiles[k]["20"] = perc20
 			percentiles[k]["80"] = perc80
