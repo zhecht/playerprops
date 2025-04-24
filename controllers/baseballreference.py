@@ -1680,13 +1680,25 @@ def writeBarrels():
 			dts = data["dt"]
 			for key, vals in data.items():
 				realExpected[key] = []
-				print(player, dts, key, vals)
 				for i in range(len(vals)):
 					if dts[i] in teamGames[team]:
 						realExpected[key].append(vals[i])
 
-			if player == "ian happ":
-				print(realExpected)
+			game_trends = nested_dict()
+			for key, vals in realExpected.items():
+				if key in ["entity_name", "href"]:
+					continue
+				if "." in str(vals[-1]):
+					vals = [float(x or 0) for x in vals]
+				else:
+					try:
+						vals = [int(x or 0) for x in vals]
+					except:
+						continue
+				if len(vals) >= 5:
+					game_trends[key]["3g"] = vals[-1] - vals[-4]
+				if len(vals) >= 7:
+					game_trends[key]["5g"] = vals[-1] - vals[-6]
 
 			# Last Homer
 			gamesBtwn = []
@@ -1722,7 +1734,8 @@ def writeBarrels():
 			j = {
 				"team": team,
 				"player": player,
-				"lastHRDt": lastHRDt, "lastHR": lastHR, "gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": std_dev, "gamesBtwnZ": z_score
+				"lastHRDt": lastHRDt, "lastHR": lastHR, "gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": std_dev, "gamesBtwnZ": z_score,
+				"game_trends": game_trends,
 			}
 
 			for key in ["bip", "pa", "barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
@@ -1873,9 +1886,9 @@ def writeSavantExpected(date):
 	for team, players in expectedHist.items():
 		for player, dts in players.items():
 			for dt, data in sorted(dts.items()):
+				if "dt" not in data:
+					data["dt"] = dt
 				for key, val in data.items():
-					if player == "ian happ" and dt == "2025-04-17":
-						print(key, val)
 					hist_sorted[team][player].setdefault(key, [])
 					hist_sorted[team][player][key].append(val)
 
