@@ -1740,7 +1740,7 @@ def writeBarrels():
 
 			for key in ["bip", "pa", "barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
 				j[key] = data[key][-1]
-				j[key+"Percentile"] = percentiles.get(key, {})
+				#j[key+"Percentile"] = percentiles.get(key, {})
 
 			barrels.append(j)
 
