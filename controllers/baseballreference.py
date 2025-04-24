@@ -1759,8 +1759,8 @@ def writeBarrels():
 			percentiles[key][period] = [perc20, perc80]
 
 	data = {}
-	data["res"] = barrels
 	data["percentiles"] = percentiles
+	data["res"] = barrels
 	with open("static/baseballreference/barrels.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
