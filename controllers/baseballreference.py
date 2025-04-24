@@ -1754,10 +1754,16 @@ def writeBarrels():
 
 	for key, periods in trendsArrs.items():
 		for period, arr in periods.items():
+			k = f"game_trends.{key}.{period}"
+
 			arr = np.array(arr)
+			all_percentiles =  [(np.sum(arr < val) / len(arr)) * 100 for val in arr]
+			percentiles[k] = all_percentiles
+			continue
+
 			perc20 = np.percentile(arr, 20)
 			perc80 = np.percentile(arr, 80)
-			k = f"game_trends.{key}.{period}"
+			
 			percentiles.setdefault(k, {})
 			percentiles[k]["20"] = perc20
 			percentiles[k]["80"] = perc80
