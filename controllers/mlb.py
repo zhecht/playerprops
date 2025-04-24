@@ -2855,7 +2855,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 					for book in l:
 						if book.split("/")[0] != "-":
 							avgOver.append(convertImpOdds(int(book.split("/")[0])))
-						if "/" in book and book.split("/")[1] != "-":
+						if "/" in book and book.split("/")[1].replace("-", ""):
 							avgUnder.append(convertImpOdds(int(book.split("/")[1])))
 
 					if avgOver:

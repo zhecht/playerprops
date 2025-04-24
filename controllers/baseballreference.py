@@ -1626,6 +1626,9 @@ def convertSavantTeam(team):
 
 def writeBarrels():
 	last_year = str(datetime.now().year - 1)
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
+
 	with open("static/baseballreference/percentiles.json") as fh:
 		percentiles = json.load(fh)
 
@@ -1645,6 +1648,9 @@ def writeBarrels():
 		for player, data in players.items():
 			hrLogs = []
 			dtLogs = []
+
+			if "P" in roster[team].get(player, ""):
+				continue
 			try:
 				hrLogs.extend(splitsHist[player][last_year]["hr"])
 				dtLogs.extend(splitsHist[player][last_year]["date"])
