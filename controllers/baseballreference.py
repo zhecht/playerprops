@@ -1758,7 +1758,9 @@ def writeBarrels():
 
 			arr = np.array(arr)
 			all_percentiles =  [(np.sum(arr < val) / len(arr)) * 100 for val in arr]
-			percentiles[k] = all_percentiles
+			percentiles[k] = {str(k2): v2 for k2,v2 in zip(arr,all_percentiles)}
+			#print(key, period, {str(k2): v2 for k2,v2 in zip(arr,all_percentiles)})
+			#exit()
 			continue
 
 			perc20 = np.percentile(arr, 20)
