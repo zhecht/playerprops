@@ -1656,9 +1656,11 @@ def writeStatsPage(date):
 
 
 				playerFactor = playerFactorColor = ""
+				roof = False
 				if game in bppFactors and player in bppFactors[game]["players"]:
 					playerFactor = bppFactors[game]["players"][player]["hr"]
 					playerFactorColor = bppFactors[game]["players"][player]["color"]
+					roof = bppFactors[game]["roof"]
 
 				data.append({
 					"player": player, "team": team, "opp": opp,
