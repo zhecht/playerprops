@@ -1687,7 +1687,7 @@ def writeStatsPage(date):
 					"playerYears": playerYears,
 					"daily": dailyLines, "gameLines": gameLines,
 					# bpp
-					"bpp": bppFactors.get(game, ""), "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
+					"bpp": bppFactors.get(game, {}).get("hr", ""), "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
 				})
 
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
