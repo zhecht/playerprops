@@ -1626,6 +1626,18 @@ def convertSavantTeam(team):
 
 def writeBarrels():
 	last_year = str(datetime.now().year - 1)
+
+	with open("static/mlb/schedule.json") as fh:
+		schedule = json.load(fh)
+	teamGames = {}
+	for dt, gameRows in schedule.items():
+		for row in gameRows:
+			away,home = map(str, row["game"].split(" @ "))
+			teamGames.setdefault(away, [])
+			teamGames.setdefault(home, [])
+			teamGames[away].append(dt)
+			teamGames[home].append(dt)
+
 	with open("static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
@@ -1663,6 +1675,20 @@ def writeBarrels():
 			except:
 				pass
 
+			# Trends
+			realExpected = nested_dict()
+			dts = data["dt"]
+			for key, vals in data.items():
+				realExpected[key] = []
+				print(player, dts, key, vals)
+				for i in range(len(vals)):
+					if dts[i] in teamGames[team]:
+						realExpected[key].append(vals[i])
+
+			if player == "ian happ":
+				print(realExpected)
+
+			# Last Homer
 			gamesBtwn = []
 			lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
 			lastHRDt = std_dev = z_score = ""
@@ -1848,6 +1874,8 @@ def writeSavantExpected(date):
 		for player, dts in players.items():
 			for dt, data in sorted(dts.items()):
 				for key, val in data.items():
+					if player == "ian happ" and dt == "2025-04-17":
+						print(key, val)
 					hist_sorted[team][player].setdefault(key, [])
 					hist_sorted[team][player][key].append(val)
 
