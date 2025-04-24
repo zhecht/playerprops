@@ -1747,7 +1747,7 @@ def writeBarrels():
 	#percentiles = nested_dict()
 	trendsArrs = nested_dict()
 	for row in barrels:
-		for key in ["barrel_ct", "hard_hit_ct"]:
+		for key in ["barrel_ct", "hard_hit_ct", "barrels_per_bip"]:
 			for period, val in row["game_trends"][key].items():
 				trendsArrs[key].setdefault(period, [])
 				trendsArrs[key][period].append(val)
