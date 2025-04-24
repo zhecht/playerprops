@@ -1636,6 +1636,28 @@ def writeStatsPage(date):
 						hitRate = round(len([x for x in logs if x > float(dailyLines["line"])]) * 100 / totGames)
 						hitRateL10 = round(len([x for x in logs[-10:] if x > float(dailyLines["line"])]) * 100 / min(totGames, 10))
 
+				# Find games between HR
+				gamesBtwn = []
+				lastHR = gamesBtwnMed = gamesBtwnAvg = 0
+				lastHRDt = ""
+				if prop == "hr" and logs:
+					hits = []
+					btwn = 0
+					for dt,val in zip(dtSplits,logs):
+						if val > 0:
+							hits.append((dt,btwn))
+							btwn = 0
+						btwn += 1
+
+					if hits:
+						lastHRDt = hits[-1][0]
+						lastHR = len(dtSplits) - dtSplits.index(lastHRDt)
+
+					gamesBtwn = [x for _,x in hits]
+					if gamesBtwn:
+						gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
+						gamesBtwnMed = median(gamesBtwn)
+
 				playerStatsHist = teamStatsHist.get(player, {})
 				playerYears = sorted(list(playerStatsHist.keys()), reverse=True)
 				if lastYear in playerStatsHist:
@@ -1690,6 +1712,8 @@ def writeStatsPage(date):
 					"daily": dailyLines, "gameLines": gameLines,
 					# bpp
 					"bpp": bppFactors.get(game, {}).get("hr", ""), "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
+					"lastHRDt": lastHRDt, "lastHR": lastHR,
+					"gamesBtwn": gamesBtwn, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed
 				})
 
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
