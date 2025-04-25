@@ -4022,7 +4022,7 @@ if __name__ == '__main__':
 	if args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
 		#games["stl @ atl-game-props"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/aec65510-ef00-412c-922f-8cd99365de36/section/game_props"
-		#games["stl @ atl-lines"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/aec65510-ef00-412c-922f-8cd99365de36/section/lines"
+		#games["bos @ orl"] = "https://espnbet.com/sport/basketball/organization/united-states/competition/nba/event/86a03469-5151-4e1a-8b4e-b61a1990713c/section/player_props"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
