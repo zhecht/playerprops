@@ -1773,10 +1773,9 @@ def writeBarrels():
 
 	for row in barrels:
 		for key in ["barrel_ct", "hard_hit_ct", "barrels_per_bip"]:
-			for period, val in row["game_trends"][key].items():
+			for period, val in list(row["game_trends"][key].items()):
 				k = f"game_trends.{key}.{period}"
-				print(k, percentiles[k])
-				row["game_trends"][key+"Percentile"] = percentiles[k][str(float(val))]
+				row["game_trends"][key][period+"Percentile"] = percentiles[k][str(float(val))]
 
 	for row in barrels:
 		keys = []
