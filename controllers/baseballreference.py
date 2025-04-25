@@ -1661,8 +1661,9 @@ def writeBarrels():
 			hrLogs = []
 			dtLogs = []
 
-			if "P" in roster[team].get(player, ""):
+			if "P" in roster[team].get(player, "") or data["grouping_code"][0] == "Pitcher":
 				continue
+
 			try:
 				hrLogs.extend(splitsHist[player][last_year]["hr"])
 				dtLogs.extend(splitsHist[player][last_year]["date"])
