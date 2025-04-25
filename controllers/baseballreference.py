@@ -1658,6 +1658,11 @@ def writeBarrels():
 	with open("static/baseballreference/expected_sorted.json") as fh:
 		expectedHist = json.load(fh)
 
+	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
+	hdrs = {"Accept": "application/vnd.github.v3.raw"}
+	response = requests.get(f"{b}", headers=hdrs)
+	evData = response.json()
+
 	barrels = []
 	for team, players in expectedHist.items():
 		game = teamGame.get(team, "")
@@ -1684,6 +1689,11 @@ def writeBarrels():
 				dtLogs.extend(splits[player]["dt"])
 			except:
 				pass
+
+			evBook = evLine = ""
+			if player in evData:
+				evBook = evData[player]["book"]
+				evLine = evData[player]["line"]
 
 			# Trends
 			realExpected = nested_dict()
@@ -1751,6 +1761,7 @@ def writeBarrels():
 
 			j = {
 				"team": team, "game": game,
+				"book": evBook, "line": evLine,
 				"player": player,
 				"lastHRDt": lastHRDt, "lastHR": lastHR, "gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": std_dev, "gamesBtwnZ": z_score,
 				"game_trends": game_trends,
