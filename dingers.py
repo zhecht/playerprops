@@ -1700,9 +1700,11 @@ def writeStatsPage(date):
 							gamesBtwnZ = round((lastHR - gamesBtwnAvg) / gamesBtwnSD, 2)
 
 
-				playerFactor = playerFactorColor = ""
+				bppFactor = playerFactor = playerFactorColor = ""
 				roof = False
 				if game in bppFactors and player in bppFactors[game].get("players",[]):
+					p = "hr" if prop == "hr" else "r"
+					bppFactor = bppFactors[game].get(p, "")
 					playerFactor = bppFactors[game]["players"][player]["hr"]
 					playerFactorColor = bppFactors[game]["players"][player]["color"]
 					roof = bppFactors[game]["roof"]
@@ -1734,7 +1736,7 @@ def writeStatsPage(date):
 					"playerYears": playerYears,
 					"daily": dailyLines, "gameLines": gameLines,
 					# bpp
-					"bpp": bppFactors.get(game, {}).get("hr", ""), "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
+					"bpp": bppFactor, "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
 					"lastHRDt": lastHRDt, "lastHR": lastHR,
 					"gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": gamesBtwnSD, "gamesBtwnZ": gamesBtwnZ
 				})
