@@ -17,6 +17,15 @@ def commitChanges():
 	origin.push()
 	#print("Successful commit")
 
+def convertToSortable(val):
+	if val == "LIVE":
+		return float("inf")
+	elif val.strip() == "":
+		return float("-inf")
+	else:
+		dt = datetime.strptime(val, "%I:%M %p")
+		return dt.hour * 60 + dt.minute
+
 def getSuffix(num):
 	if num >= 11 and num <= 13:
 		return "th"

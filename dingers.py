@@ -1510,6 +1510,7 @@ def writeStatsPage(date):
 			try: # game info
 				game = teamGame[team]["game"]
 				start = teamGame[team]["start"]
+				startSortable = convertToSortable(start)
 				away,home = map(str, game.split(" @ "))
 				if away == team:
 					isAway = True
@@ -1708,7 +1709,7 @@ def writeStatsPage(date):
 
 				data.append({
 					"player": player, "team": team, "opp": opp,
-					"game": game, "start": start,
+					"game": game, "start": start, "startSortable": startSortable,
 					"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
 					"pitcherData": pitcherData,
 					"bvpHR": bvpHR, "bvpAvg": bvpAvg, "bvpH": bvpH,
