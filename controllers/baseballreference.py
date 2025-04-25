@@ -1769,7 +1769,14 @@ def writeBarrels():
 			arr = np.array(arr)
 			all_percentiles =  [(np.sum(arr < val) / len(arr)) * 100 for val in arr]
 			# val -> percentile map
-			percentiles[k] = {str(round(k2, 2)): round(v2) for k2,v2 in zip(arr,all_percentiles)}
+			percentiles[k] = {str(float(round(k2, 2))): round(v2) for k2,v2 in zip(arr,all_percentiles)}
+
+	for row in barrels:
+		for key in ["barrel_ct", "hard_hit_ct", "barrels_per_bip"]:
+			for period, val in row["game_trends"][key].items():
+				k = f"game_trends.{key}.{period}"
+				print(k, percentiles[k])
+				row["game_trends"][key+"Percentile"] = percentiles[k][str(float(val))]
 
 	for row in barrels:
 		keys = []
