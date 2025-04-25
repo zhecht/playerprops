@@ -1629,14 +1629,22 @@ def writeBarrels():
 
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
-	teamGames = {}
+	teamGameDts = {}
 	for dt, gameRows in schedule.items():
 		for row in gameRows:
 			away,home = map(str, row["game"].split(" @ "))
-			teamGames.setdefault(away, [])
-			teamGames.setdefault(home, [])
-			teamGames[away].append(dt)
-			teamGames[home].append(dt)
+			teamGameDts.setdefault(away, [])
+			teamGameDts.setdefault(home, [])
+			teamGameDts[away].append(dt)
+			teamGameDts[home].append(dt)
+
+	gamesToday = schedule[str(datetime.now())[:10]]
+	teamGame = {}
+	for row in schedule[str(datetime.now())[:10]]:
+		game = row["game"]
+		a,h = map(str, game.split(" @ "))
+		teamGame[a] = game
+		teamGame[h] = game
 
 	with open("static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
@@ -1652,6 +1660,7 @@ def writeBarrels():
 
 	barrels = []
 	for team, players in expectedHist.items():
+		game = teamGame.get(team, "")
 		with open(f"static/splits/mlb/{team}.json") as fh:
 			splits = json.load(fh)
 		with open(f"static/splits/mlb_historical/{team}.json") as fh:
@@ -1682,7 +1691,7 @@ def writeBarrels():
 			for key, vals in data.items():
 				realExpected[key] = []
 				for i in range(len(vals)):
-					if dts[i] in teamGames[team]:
+					if dts[i] in teamGameDts[team]:
 						realExpected[key].append(vals[i])
 
 			game_trends = nested_dict()
@@ -1741,7 +1750,7 @@ def writeBarrels():
 					gamesBtwnDiff = lastHR - gamesBtwnAvg
 
 			j = {
-				"team": team,
+				"team": team, "game": game,
 				"player": player,
 				"lastHRDt": lastHRDt, "lastHR": lastHR, "gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": std_dev, "gamesBtwnZ": z_score,
 				"game_trends": game_trends,
