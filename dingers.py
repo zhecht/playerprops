@@ -1150,7 +1150,7 @@ def writeFeedSplits(date, data, sameYear):
 				"evo": playData["evo"],
 				"la": playData["la"],
 				"dist": playData["dist"],
-				"hardHit": int(playData["evo"] or 0) >= 95,
+				"hardHit": float(playData["evo"] or 0) >= 95,
 				"barrel": isBarrel(playData)
 			}
 
