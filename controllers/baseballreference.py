@@ -1688,6 +1688,8 @@ def writeBarrels():
 			for key, vals in realExpected.items():
 				if key in ["entity_name", "href"]:
 					continue
+				if not vals:
+					continue
 				if "." in str(vals[-1]):
 					vals = [float(x or 0) for x in vals]
 				else:
@@ -1766,29 +1768,28 @@ def writeBarrels():
 
 			arr = np.array(arr)
 			all_percentiles =  [(np.sum(arr < val) / len(arr)) * 100 for val in arr]
+			# val -> percentile map
 			percentiles[k] = {str(round(k2, 2)): round(v2) for k2,v2 in zip(arr,all_percentiles)}
-			#print(key, period, {str(k2): v2 for k2,v2 in zip(arr,all_percentiles)})
-			#exit()
-			continue
 
-			perc20 = np.percentile(arr, 20)
-			perc80 = np.percentile(arr, 80)
-			
-			percentiles.setdefault(k, {})
-			percentiles[k]["20"] = perc20
-			percentiles[k]["80"] = perc80
+	for row in barrels:
+		keys = []
+		for key in row:
+			if percentiles.get(key):
+				keys.append(key)
+		for key in keys:
+			if row[key] is None:
+				continue
+			v = str(float(row[key]))
+			row[key+"Percentile"] = percentiles[key].get(v, 0)
 
-	data = {}
-	data["percentiles"] = percentiles
-	data["res"] = barrels
 	with open("static/baseballreference/barrels.json", "w") as fh:
-		json.dump(data, fh, indent=4)
-
+		json.dump(barrels, fh, indent=4)
 
 def writeSavantPercentiles():
-	with open("static/baseballreference/expected.json") as fh:
+	with open("static/baseballreference/qualified_expected.json") as fh:
 		expected = json.load(fh)
 
+	# Percentile Rankings Qualifiers: 2.1 PA per team game for batters, 1.25 PA per team game for pitchers. 
 	rows = []
 	for team, players in expected.items():
 		for player, data in players.items():
@@ -1803,12 +1804,12 @@ def writeSavantPercentiles():
 		arr = np.array([x[key] for x in rows if x[key]])
 		arr = arr.astype(float)
 
-		for perc in [10,20,25,30,50,70,75,80,90]:
-			p = np.percentile(arr, perc)
-			percentiles[key][perc] = p
+		all_percentiles =  [(np.sum(arr < val) / len(arr)) * 100 for val in arr]
+		# val -> percentile map
+		percentiles[key] = {str(round(k2, 2)): round(v2) for k2,v2 in zip(arr,all_percentiles)}
 
 	with open("static/baseballreference/percentiles.json", "w") as fh:
-		json.dump(percentiles, fh, indent=4)
+		json.dump(percentiles, fh)
 
 def writePitcherSavantPercentiles():
 	with open("static/baseballreference/advanced.json") as fh:
@@ -1876,15 +1877,48 @@ def writeSavantParkFactors():
 	with open(f"{prefix}static/baseballreference/parkfactors.json", "w") as fh:
 		json.dump(parkFactors, fh, indent=4)
 
+def writeQualified():
+	outfile = "outmlb3"
+	qualified_expected = nested_dict()
+	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics"
+	call(["curl", "-s", url, "-o", outfile])
+	soup = BS(open(outfile, 'rb').read(), "lxml")
+
+	data = "{}"
+	for script in soup.find_all("script"):
+		if "var data" in script.string:
+			m = re.search(r"var data = \[{(.*?)}\];", script.string)
+			if m:
+				data = m.group(1).replace("false", "False").replace("true", "True").replace("null", "None")
+				data = f"{{{data}}}"
+				break
+
+	data = eval(data)
+	
+	for row in data:
+		team = convertRotoTeam(row["entity_team_name_alt"].lower())
+		player = parsePlayer(row["entity_name"])
+		#print(player)
+		last, first = map(str, player.split(", "))
+		player = f"{first} {last}"
+
+		row["dt"] = date
+		qualified_expected[team][player] = row.copy()
+
+	with open(f"{prefix}static/baseballreference/qualified_expected.json", "w") as fh:
+		json.dump(qualified_expected, fh, indent=4)
+
 def writeSavantExpected(date):
 	with open(f"{prefix}static/baseballreference/expected_historical.json") as fh:
 		expectedHist = json.load(fh)
 
+	writeQualified()
+
+	outfile = "outmlb3"
 	url = "https://baseballsavant.mlb.com/leaderboard/expected_statistics?min=1"
 	expected = nested_dict()
 	for t in ["", "&type=pitcher"]:
 		time.sleep(0.2)
-		outfile = "outmlb3"
 		call(["curl", "-s", url+t, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
@@ -2395,7 +2429,6 @@ if __name__ == "__main__":
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
 	writeBarrels()
-	#writeSavantPercentiles()
 	#writeDailyHomers()
 
 	#writeYears()
