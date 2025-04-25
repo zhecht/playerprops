@@ -1765,6 +1765,7 @@ def writeBarrels():
 				"last": lastHR,
 				"lastHRDt": lastHRDt,
 				"sd": std_dev, "z": z_score,
+				"book": evBook, "line": evLine,
 				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
 				"gamesBtwn": gamesBtwn
 			}
