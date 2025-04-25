@@ -1170,6 +1170,8 @@ def writeFeedSplits(date, data, sameYear):
 	analyzeFeed()
 
 def analyzeFeed():
+	#for file in os.listdir("static/splits/mlb_feed/")
+
 	pass
 
 def writeHot(date):
