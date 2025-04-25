@@ -1150,6 +1150,8 @@ def writeFeedSplits(date, data, sameYear):
 				"evo": playData["evo"],
 				"la": playData["la"],
 				"dist": playData["dist"],
+				"hardHit": int(playData["evo"] or 0) >= 95,
+				"barrel": isBarrel(playData)
 			}
 
 	for team in splits:
@@ -1172,6 +1174,7 @@ def writeFeedSplits(date, data, sameYear):
 def analyzeFeed():
 	#for file in os.listdir("static/splits/mlb_feed/")
 
+	# barrel_per_bip, hard_hit
 	pass
 
 def writeHot(date):
@@ -1698,7 +1701,7 @@ def writeStatsPage(date):
 
 				playerFactor = playerFactorColor = ""
 				roof = False
-				if game in bppFactors and player in bppFactors[game]["players"]:
+				if game in bppFactors and player in bppFactors[game].get("players",[]):
 					playerFactor = bppFactors[game]["players"][player]["hr"]
 					playerFactorColor = bppFactors[game]["players"][player]["color"]
 					roof = bppFactors[game]["roof"]
