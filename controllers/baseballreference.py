@@ -1658,6 +1658,8 @@ def writeBarrels():
 	with open("static/baseballreference/expected_sorted.json") as fh:
 		expectedHist = json.load(fh)
 
+	lastHomerData = nested_dict()
+
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}", headers=hdrs)
@@ -1759,6 +1761,14 @@ def writeBarrels():
 					gamesBtwnMed = median(gamesBtwn)
 					gamesBtwnDiff = lastHR - gamesBtwnAvg
 
+			lastHomerData[team][player] = {
+				"last": lastHR,
+				"lastHRDt": lastHRDt,
+				"sd": std_dev, "z": z_score,
+				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
+				"gamesBtwn": gamesBtwn
+			}
+
 			j = {
 				"team": team, "game": game,
 				"book": evBook, "line": evLine,
@@ -1774,6 +1784,9 @@ def writeBarrels():
 				#j[key+"Percentile"] = percentiles.get(key, {})
 
 			barrels.append(j)
+
+	with open("static/baseballreference/last_homer.json", "w") as fh:
+		json.dump(lastHomerData, fh, indent=4)
 
 	#percentiles = nested_dict()
 	trendsArrs = nested_dict()
