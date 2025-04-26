@@ -1796,6 +1796,8 @@ def writeHomerLogs():
 			hist = json.load(fh)
 		with open(f"static/splits/mlb/{team}") as fh:
 			teamLogs = json.load(fh)
+		with open(f"static/splits/mlb_feed/{team}") as fh:
+			teamFeeds = json.load(fh)
 
 		team = team.replace(".json", "")
 		for player, data in teamLogs.items():
@@ -1844,13 +1846,33 @@ def writeHomerLogs():
 				evBook = evData[player]["book"]
 				evLine = evData[player]["line"]
 
+			# Closest
+			playerFeeds = teamFeeds.get(player, {})
+			closest = []
+			feedDts = []
+			for dt_pa, row in sorted(playerFeeds.items()):
+				y,m,d,pa = map(str, dt_pa.split("-"))
+				dt = f"{y}-{m}-{d}"
+				if dt not in feedDts:
+					feedDts.append(dt)
+				if row["result"] != "Home Run" and int(row["hr/park"].split("/")[0] or 0) > 0:
+					row["dt"] = dt
+					closest.append(row)
+
+			lastClosest = 0
+			lastClosestDt = ""
+			if closest:
+				lastClosestDt = closest[-1]["dt"]
+				lastClosest = len(feedDts) - feedDts.index(closest[-1]["dt"])
+
 			homerLogs[team][player] = {
 				"last": lastHR,
 				"lastHRDt": lastHRDt,
 				"sd": std_dev, "z": z_score,
 				"book": evBook, "line": evLine,
 				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
-				"gamesBtwn": gamesBtwn
+				"gamesBtwn": gamesBtwn,
+				"closest_ct": len(closest), "lastClosest": lastClosest, "lastClosestDt": lastClosestDt
 			}
 
 	with open("static/baseballreference/homer_logs.json", "w") as fh:
