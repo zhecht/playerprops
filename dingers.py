@@ -1453,6 +1453,9 @@ def writeStatsPage(date):
 	with open(f"static/baseballreference/parkfactors.json") as fh:
 		parkFactors = json.load(fh)
 
+	with open("static/baseballreference/homer_logs.json") as fh:
+		homerLogs = json.load(fh)
+
 	with open(f"static/mlb/daily.json") as fh:
 		daily = json.load(fh)
 
@@ -1474,6 +1477,8 @@ def writeStatsPage(date):
 	teamGame = {}
 	opps = {}
 	for game in schedule[date]:
+		if "-gm2" in game["game"]:
+			continue
 		a,h = map(str, game["game"].split(" @ "))
 		teamGame[a] = game
 		teamGame[h] = game
@@ -1668,41 +1673,6 @@ def writeStatsPage(date):
 					if totGamesLYR:
 						hitRateLYR = round(len([x for x in logsLYR if x > float(dailyLines["line"])]) * 100 / totGamesLYR)
 
-				# Find games between HR
-				gamesBtwn = []
-				lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
-				lastHRDt = gamesBtwnZ = gamesBtwnSD = ""
-				if prop == "hr" and longLogs:
-					longDts = dtSplitsLYR
-					longDts.extend(dtSplits)
-					hits = []
-					btwn = 0
-					for dt,val in zip(longDts,longLogs):
-						if val > 0:
-							hits.append((dt,btwn))
-							btwn = 0
-						btwn += 1
-
-					if hits:
-						lastHRDt = hits[-1][0]
-						lastHR = len(longDts) - longDts.index(lastHRDt)
-
-					gamesBtwn = [x for _,x in hits]
-					if len(gamesBtwn) > 1:
-						gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
-						gamesBtwnMed = median(gamesBtwn)
-						gamesBtwnDiff = lastHR - gamesBtwnAvg
-
-						gamesBtwnSD = np.std(gamesBtwn, ddof=1)
-						if np.isnan(gamesBtwnSD):
-							gamesBtwnSD = 0
-						else:
-							gamesBtwnSD = round(gamesBtwnSD, 2)
-
-						if gamesBtwnSD:
-							gamesBtwnZ = round((lastHR - gamesBtwnAvg) / gamesBtwnSD, 2)
-
-
 				bppFactor = playerFactor = playerFactorColor = ""
 				roof = False
 				if game in bppFactors and player in bppFactors[game].get("players",[]):
@@ -1716,6 +1686,7 @@ def writeStatsPage(date):
 					"player": player, "team": team, "opp": opp,
 					"game": game, "start": start, "startSortable": startSortable,
 					"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
+					"homerLogs": homerLogs[team].get(player, {}),
 					"pitcherData": pitcherData,
 					"bvpHR": bvpHR, "bvpAvg": bvpAvg, "bvpH": bvpH,
 					"order": order,
@@ -1739,9 +1710,7 @@ def writeStatsPage(date):
 					"playerYears": playerYears,
 					"daily": dailyLines, "gameLines": gameLines,
 					# bpp
-					"bpp": bppFactor, "playerFactor": playerFactor, "playerFactorColor": playerFactorColor,
-					"lastHRDt": lastHRDt, "lastHR": lastHR,
-					"gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": gamesBtwnSD, "gamesBtwnZ": gamesBtwnZ
+					"bpp": bppFactor, "playerFactor": playerFactor, "playerFactorColor": playerFactorColor
 				})
 
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
