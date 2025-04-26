@@ -1835,6 +1835,19 @@ def writeHomerLogs():
 			teamLogs = json.load(fh)
 
 		team = team.replace(".json", "")
+		for player, data in teamLogs:
+			hrs = [(dt,hr) for dt,hr in zip(data["dt"], data["hr"])]
+
+			for year, yearData in hist.get(player, {}).items():
+				hrs.extend([(dt,hr) for dt,hr in zip(data["dt"], data["hr"])])
+
+			hrs = sorted(hrs)
+
+			if player == "spencer torkelson":
+				print(hrs)
+
+	return
+
 
 	gamesBtwn = []
 	lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
@@ -2518,8 +2531,8 @@ if __name__ == "__main__":
 
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	writeBarrels()
-	#writeDailyHomers()
+	#writeBarrels()
+	writeHomerLogs()
 
 	#writeYears()
 	#writeStatsVsTeam()
