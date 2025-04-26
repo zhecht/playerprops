@@ -1563,11 +1563,14 @@ def writeStatsPage(date):
 				#pitcherSummary = f"{advanced[p]['p_era']} ERA, {advanced[p]['batting_avg']} AVG, {advanced[p]['xba']} xAVG, {babip} BABIP, {advanced[p]['slg_percent']} SLG, {advanced[p]['xslg']} xSLG, {advanced[p]['woba']} WOBA, {advanced[p]['xwoba']} xWOBA, {advanced[p]['barrel_batted_rate']}% Barrel Batted"
 				pitcherSummary = f"{advanced[p]['p_era']} ERA, {advanced[p]['xba']} xBA, {advanced[p]['xwoba']} xWOBA, {advanced[p]['barrel_batted_rate']}% Barrel"
 
-			for player in roster[team]:
+			for player, position in roster[team].items():
 				try:
 					order = lineups[team]["batters"].index(player)+1
 				except:
 					order = "-"
+
+				if not isPitcher and "P" in position:
+					continue
 
 				dailyLines = {"line": line}
 

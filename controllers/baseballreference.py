@@ -1826,6 +1826,55 @@ def writeBarrels():
 	with open("static/baseballreference/barrels.json", "w") as fh:
 		json.dump(barrels, fh, indent=4)
 
+def writeHomerLogs():
+	homer_logs = nested_dict()
+	for team in os.listdir(f"static/splits/mlb_historical/*"):
+		with open(f"static/splits/mlb_historical/{team}") as fh:
+			hist = json.load(fh)
+		with open(f"static/splits/mlb/{team}") as fh:
+			teamLogs = json.load(fh)
+
+		team = team.replace(".json", "")
+
+	gamesBtwn = []
+	lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
+	lastHRDt = std_dev = z_score = ""
+	if hrLogs:
+		hits = []
+		btwn = 0
+		for dt,val in zip(dtLogs,hrLogs):
+			if val > 0:
+				hits.append((dt,btwn))
+				btwn = 0
+			btwn += 1
+
+		if hits:
+			lastHRDt = hits[-1][0]
+			lastHR = len(dtLogs) - dtLogs.index(lastHRDt)
+
+		gamesBtwn = [x for _,x in hits]
+		if len(gamesBtwn) > 1:
+			gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
+			std_dev = np.std(gamesBtwn, ddof=1)
+			if np.isnan(std_dev):
+				std_dev = 0
+			else:
+				std_dev = round(std_dev, 2)
+
+			if std_dev:
+				z_score = round((lastHR - gamesBtwnAvg) / std_dev, 2)
+			gamesBtwnMed = median(gamesBtwn)
+			gamesBtwnDiff = lastHR - gamesBtwnAvg
+
+	lastHomerData[team][player] = {
+		"last": lastHR,
+		"lastHRDt": lastHRDt,
+		"sd": std_dev, "z": z_score,
+		"book": evBook, "line": evLine,
+		"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
+		"gamesBtwn": gamesBtwn
+	}
+
 def writeSavantPercentiles():
 	with open("static/baseballreference/qualified_expected.json") as fh:
 		expected = json.load(fh)
