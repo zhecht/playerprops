@@ -1658,7 +1658,8 @@ def writeBarrels():
 	with open("static/baseballreference/expected_sorted.json") as fh:
 		expectedHist = json.load(fh)
 
-	lastHomerData = nested_dict()
+	with open("static/baseballreference/homer_logs.json") as fh:
+		homerLogs = json.load(fh)
 
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
@@ -1730,51 +1731,11 @@ def writeBarrels():
 						diff = round(diff, 2)
 					game_trends[key]["5G"] = diff
 
-			# Last Homer
-			gamesBtwn = []
-			lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
-			lastHRDt = std_dev = z_score = ""
-			if hrLogs:
-				hits = []
-				btwn = 0
-				for dt,val in zip(dtLogs,hrLogs):
-					if val > 0:
-						hits.append((dt,btwn))
-						btwn = 0
-					btwn += 1
-
-				if hits:
-					lastHRDt = hits[-1][0]
-					lastHR = len(dtLogs) - dtLogs.index(lastHRDt)
-
-				gamesBtwn = [x for _,x in hits]
-				if len(gamesBtwn) > 1:
-					gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
-					std_dev = np.std(gamesBtwn, ddof=1)
-					if np.isnan(std_dev):
-						std_dev = 0
-					else:
-						std_dev = round(std_dev, 2)
-
-					if std_dev:
-						z_score = round((lastHR - gamesBtwnAvg) / std_dev, 2)
-					gamesBtwnMed = median(gamesBtwn)
-					gamesBtwnDiff = lastHR - gamesBtwnAvg
-
-			lastHomerData[team][player] = {
-				"last": lastHR,
-				"lastHRDt": lastHRDt,
-				"sd": std_dev, "z": z_score,
-				"book": evBook, "line": evLine,
-				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
-				"gamesBtwn": gamesBtwn
-			}
-
 			j = {
 				"team": team, "game": game,
 				"book": evBook, "line": evLine,
 				"player": player,
-				"lastHRDt": lastHRDt, "lastHR": lastHR, "gamesBtwn": gamesBtwn, "gamesBtwnDiff": gamesBtwnDiff, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnMed": gamesBtwnMed, "gamesBtwnSD": std_dev, "gamesBtwnZ": z_score,
+				"homerLogs": homerLogs[team].get(player, {}),
 				"game_trends": game_trends,
 			}
 
@@ -1785,9 +1746,6 @@ def writeBarrels():
 				#j[key+"Percentile"] = percentiles.get(key, {})
 
 			barrels.append(j)
-
-	with open("static/baseballreference/last_homer.json", "w") as fh:
-		json.dump(lastHomerData, fh, indent=4)
 
 	#percentiles = nested_dict()
 	trendsArrs = nested_dict()
@@ -1827,66 +1785,76 @@ def writeBarrels():
 		json.dump(barrels, fh, indent=4)
 
 def writeHomerLogs():
-	homer_logs = nested_dict()
-	for team in os.listdir(f"static/splits/mlb_historical/*"):
+	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
+	hdrs = {"Accept": "application/vnd.github.v3.raw"}
+	response = requests.get(f"{b}", headers=hdrs)
+	evData = response.json()
+
+	homerLogs = nested_dict()
+	for team in os.listdir(f"static/splits/mlb_historical/"):
 		with open(f"static/splits/mlb_historical/{team}") as fh:
 			hist = json.load(fh)
 		with open(f"static/splits/mlb/{team}") as fh:
 			teamLogs = json.load(fh)
 
 		team = team.replace(".json", "")
-		for player, data in teamLogs:
+		for player, data in teamLogs.items():
+			if "hr" not in data:
+				continue
 			hrs = [(dt,hr) for dt,hr in zip(data["dt"], data["hr"])]
 
 			for year, yearData in hist.get(player, {}).items():
-				hrs.extend([(dt,hr) for dt,hr in zip(data["dt"], data["hr"])])
+				if yearData:
+					hrs.extend([(dt,hr) for dt,hr in zip(yearData["date"], yearData["hr"])])
 
 			hrs = sorted(hrs)
+			if not hrs:
+				continue
 
-			if player == "spencer torkelson":
-				print(hrs)
+			hits = []
+			btwn = 0
+			for dt, val in hrs:
+				if val > 0:
+					hits.append((dt, btwn))
+					btwn = 0
+				btwn += 1
 
-	return
+			if hits:
+				lastHRDt = hits[-1][0]
+				lastHR = btwn-1
+				#lastHR = len(dtLogs) - dtLogs.index(lastHRDt)
 
 
-	gamesBtwn = []
-	lastHR = gamesBtwnMed = gamesBtwnAvg = gamesBtwnDiff = ""
-	lastHRDt = std_dev = z_score = ""
-	if hrLogs:
-		hits = []
-		btwn = 0
-		for dt,val in zip(dtLogs,hrLogs):
-			if val > 0:
-				hits.append((dt,btwn))
-				btwn = 0
-			btwn += 1
+			gamesBtwn = [x for _,x in hits]
+			if len(gamesBtwn) > 1:
+				gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
+				std_dev = np.std(gamesBtwn, ddof=1)
+				if np.isnan(std_dev):
+					std_dev = 0
+				else:
+					std_dev = round(std_dev, 2)
 
-		if hits:
-			lastHRDt = hits[-1][0]
-			lastHR = len(dtLogs) - dtLogs.index(lastHRDt)
+				if std_dev:
+					z_score = round((lastHR - gamesBtwnAvg) / std_dev, 2)
+				gamesBtwnMed = median(gamesBtwn)
+				gamesBtwnDiff = lastHR - gamesBtwnAvg
 
-		gamesBtwn = [x for _,x in hits]
-		if len(gamesBtwn) > 1:
-			gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
-			std_dev = np.std(gamesBtwn, ddof=1)
-			if np.isnan(std_dev):
-				std_dev = 0
-			else:
-				std_dev = round(std_dev, 2)
+			evBook = evLine = ""
+			if player in evData:
+				evBook = evData[player]["book"]
+				evLine = evData[player]["line"]
 
-			if std_dev:
-				z_score = round((lastHR - gamesBtwnAvg) / std_dev, 2)
-			gamesBtwnMed = median(gamesBtwn)
-			gamesBtwnDiff = lastHR - gamesBtwnAvg
+			homerLogs[team][player] = {
+				"last": lastHR,
+				"lastHRDt": lastHRDt,
+				"sd": std_dev, "z": z_score,
+				"book": evBook, "line": evLine,
+				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
+				"gamesBtwn": gamesBtwn
+			}
 
-	lastHomerData[team][player] = {
-		"last": lastHR,
-		"lastHRDt": lastHRDt,
-		"sd": std_dev, "z": z_score,
-		"book": evBook, "line": evLine,
-		"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
-		"gamesBtwn": gamesBtwn
-	}
+	with open("static/baseballreference/homer_logs.json", "w") as fh:
+		json.dump(homerLogs, fh, indent=4   )
 
 def writeSavantPercentiles():
 	with open("static/baseballreference/qualified_expected.json") as fh:
@@ -2523,6 +2491,7 @@ if __name__ == "__main__":
 		writeSavantParkFactors()
 		writeSavantPercentiles()
 		writeBarrels()
+		writeHomerLogs()
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
@@ -2531,7 +2500,7 @@ if __name__ == "__main__":
 
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	#writeBarrels()
+	writeBarrels()
 	writeHomerLogs()
 
 	#writeYears()
