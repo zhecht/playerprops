@@ -2511,6 +2511,9 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 	response = requests.get(f"{b}/circa.json", headers=headers)
 	circaLines = response.json()
 
+	if date in circaLines:
+		circaLines = circaLines[date]
+
 	response = requests.get(f"{b}/weather.json", headers=headers)
 	weather = response.json()
 
