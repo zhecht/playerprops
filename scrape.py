@@ -2893,9 +2893,6 @@ async def writeFD(sport):
 					continue
 
 				prop = f"{prefix}{prop}"
-
-				if prop not in ["bb_allowed"]:
-					continue
 				#print(label, prop)
 
 				if prop == "sog":
