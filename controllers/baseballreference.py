@@ -2541,8 +2541,8 @@ if __name__ == "__main__":
 	#readBirthdays()
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	writeHomerLogs()
-	writeBarrels()
+	#writeHomerLogs()
+	#writeBarrels()
 
 	#writeYears()
 	#writeStatsVsTeam()
