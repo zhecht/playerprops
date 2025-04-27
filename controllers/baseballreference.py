@@ -2479,6 +2479,7 @@ if __name__ == "__main__":
 	parser.add_argument("--history", action="store_true")
 	parser.add_argument("--force", action="store_true")
 	parser.add_argument("--commit", action="store_true")
+	parser.add_argument("--brl", action="store_true")
 
 	args = parser.parse_args()
 
@@ -2523,6 +2524,9 @@ if __name__ == "__main__":
 		writeSplits()
 	elif args.trades:
 		writeTrades()
+	elif args.brl:
+		writeHomerLogs()
+		writeBarrels()
 	elif args.cron:
 		writeRankings()
 		write_player_rankings()
