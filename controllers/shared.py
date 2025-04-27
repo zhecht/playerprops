@@ -40,6 +40,8 @@ def getSuffix(num):
 def calcFantasyPoints(prop, val):
 	if prop == "outs":
 		return val / 3
+	elif prop == "hr":
+		return val * 4
 	return val
 
 def median(a):
