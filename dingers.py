@@ -1676,7 +1676,7 @@ def writeStatsPage(date):
 				bppFactor = playerFactor = playerFactorColor = ""
 				roof = False
 				if game in bppFactors and player in bppFactors[game].get("players",[]):
-					p = "hr" if prop == "hr" else "r"
+					p = "hr" if prop == "hr" else "1b"
 					bppFactor = bppFactors[game].get(p, "")
 					playerFactor = bppFactors[game]["players"][player].get(p, "")
 					playerFactorColor = bppFactors[game]["players"][player].get(f"{p}-color", "")
