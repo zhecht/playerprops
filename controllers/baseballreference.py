@@ -1785,6 +1785,7 @@ def writeBarrels():
 		json.dump(barrels, fh, indent=4)
 
 def writeHomerLogs():
+	CURR_YEAR = str(datetime.now().year)
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}", headers=hdrs)
@@ -1801,33 +1802,36 @@ def writeHomerLogs():
 
 		team = team.replace(".json", "")
 		for player, data in teamLogs.items():
-			if "hr" not in data:
+			if "hr" not in data or "ab" not in data:
 				continue
-			hrs = [(dt,hr) for dt,hr in zip(data["dt"], data["hr"])]
+			hrs = [(dt,hr,ab) for dt,hr,ab in zip(data["dt"], data["hr"], data["ab"])]
 
 			for year, yearData in hist.get(player, {}).items():
-				if yearData:
-					hrs.extend([(dt,hr) for dt,hr in zip(yearData["date"], yearData["hr"])])
+				if year == CURR_YEAR:
+					continue
+				if yearData and "ab" in yearData:
+					hrs.extend([(dt,hr,ab) for dt,hr,ab in zip(yearData["date"], yearData["hr"], yearData["ab"])])
 
 			hrs = sorted(hrs)
 			if not hrs:
 				continue
 
 			hits = []
-			btwn = 0
-			for dt, val in hrs:
+			btwn = btwnAB = 0
+			for dt, val, ab in hrs:
 				if val > 0:
-					hits.append((dt, btwn))
-					btwn = 0
+					# -1 on AB to exclude HR
+					hits.append((dt, btwn, btwnAB-1))
+					btwn = btwnAB = 0
 				btwn += 1
+				btwnAB += ab
 
 			if hits:
 				lastHRDt = hits[-1][0]
 				lastHR = btwn-1
-				#lastHR = len(dtLogs) - dtLogs.index(lastHRDt)
+				lastHR_AB = btwnAB-1
 
-
-			gamesBtwn = [x for _,x in hits]
+			gamesBtwn = [x for _,x,ab in hits]
 			if len(gamesBtwn) > 1:
 				gamesBtwnAvg = round(sum(gamesBtwn) / len(gamesBtwn), 1)
 				std_dev = np.std(gamesBtwn, ddof=1)
@@ -1840,6 +1844,21 @@ def writeHomerLogs():
 					z_score = round((lastHR - gamesBtwnAvg) / std_dev, 2)
 				gamesBtwnMed = median(gamesBtwn)
 				gamesBtwnDiff = lastHR - gamesBtwnAvg
+
+			abBtwn = [ab for _,x,ab in hits]
+			std_devAB = abBtwnMed = abBtwnDiff = 0
+			if len(abBtwn) > 1:
+				abBtwnAvg = round(sum(abBtwn) / len(abBtwn), 1)
+				std_devAB = np.std(abBtwn, ddof=1)
+				if np.isnan(std_devAB):
+					std_devAB = 0
+				else:
+					std_devAB = round(std_devAB, 2)
+
+				if std_devAB:
+					z_scoreAB = round((lastHR_AB - abBtwnAvg) / std_devAB, 2)
+				abBtwnMed = median(abBtwn)
+				abBtwnDiff = lastHR_AB - abBtwnAvg
 
 			evBook = evLine = ""
 			if player in evData:
@@ -1866,12 +1885,14 @@ def writeHomerLogs():
 				lastClosest = len(feedDts) - feedDts.index(closest[-1]["dt"])
 
 			homerLogs[team][player] = {
-				"last": lastHR,
-				"lastHRDt": lastHRDt,
+				"last": lastHR, "lastHRDt": lastHRDt,
+				"lastHR_AB": lastHR_AB,
 				"sd": std_dev, "z": z_score,
 				"book": evBook, "line": evLine,
 				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
 				"gamesBtwn": gamesBtwn,
+				"abSD": std_devAB, "abZ": z_scoreAB,
+				"abBtwnMed": abBtwnMed, "abBtwnAvg": abBtwnAvg, "abBtwnDiff": abBtwnDiff,
 				"closest_ct": len(closest), "lastClosest": lastClosest, "lastClosestDt": lastClosestDt
 			}
 
@@ -2512,14 +2533,12 @@ if __name__ == "__main__":
 		writeSavantExpected(date)
 		writeSavantParkFactors()
 		writeSavantPercentiles()
-		writeBarrels()
 		writeHomerLogs()
+		writeBarrels()
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
-	printStuff()
 	#readBirthdays()
-
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
 	writeHomerLogs()
