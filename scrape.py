@@ -1933,9 +1933,14 @@ async def writeMGM(sport):
 
 	browser.stop()
 
-async def getFDLinks(sport, tomorrow, gameArg):
+async def getFDLinks(sport, tomorrow, gameArg, keep):
 	games = {}
 	data = {}
+
+	if keep:
+		with open("static/mlb/fanduel.json") as fh:
+			data = json.load(fh)
+
 	url = f"https://sportsbook.fanduel.com/navigation/{sport}"
 	browser = await uc.start(no_sandbox=True)
 	page = await browser.get(url)
@@ -2888,6 +2893,9 @@ async def writeFD(sport):
 					continue
 
 				prop = f"{prefix}{prop}"
+
+				if prop not in ["single", "double"]:
+					continue
 				#print(label, prop)
 
 				if prop == "sog":
@@ -3178,11 +3186,7 @@ async def writeFD(sport):
 						player = player.split(" (")[0]
 						if line in data[game][prop][player]:
 							continue
-
-						if prop in ["single", "double", "triple"]:
-							data[game][prop][player] = odds
-						else:
-							data[game][prop][player][line] = odds
+						data[game][prop][player][line] = odds
 					elif prop == "pass+rush":
 						player = parsePlayer(fields[0].split(" (")[0].split(" -")[0])
 						line  = fields[2]
@@ -4015,7 +4019,7 @@ if __name__ == '__main__':
 		runThreads("betrivers", sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
 		#games["mtl @ wsh"] = "/ice-hockey/nhl/montreal-canadiens-@-washington-capitals-34230789"
-		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game))
+		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", sport, games, totThreads, keep=True)
 
