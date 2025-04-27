@@ -2303,6 +2303,7 @@ def writeRanks(date):
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}/circa.json", headers=hdrs)
 	circaLines = response.json()
+	circaLines = circaLines.get(date, {})
 
 	# lineups
 	response = requests.get(f"{b}/lineups.json", headers=hdrs)
@@ -2329,6 +2330,7 @@ def writeRanks(date):
 			teamGame[home] = game
 			for prop, propData in gameData.items():
 				#if prop not in ["k", "outs"]:
+				isPitcher = False
 				if prop not in ["h", "rbi", "r", "hr"]:
 					continue
 
@@ -2348,9 +2350,18 @@ def writeRanks(date):
 					elif player not in roster[away]:
 						continue
 
+					pos = roster[team][player]
+					if isPitcher and "P" not in pos:
+						continue
+					elif not isPitcher and "P" in pos:
+						continue
+
 					opps[team] = away if team == home else home
-					for line in lineData:
-						odds = lineData[line]
+					playerLines = lineData
+					if type(playerLines) is str:
+						playerLines = {"0.5": playerLines}
+
+					for line, odds in playerLines.items():
 						implied = getFairValue(odds)
 						if not implied:
 							continue
@@ -2371,6 +2382,7 @@ def writeRanks(date):
 				for line, ous in lineData.items():
 					implieds = sorted([getFairValue(x) for x,_ in ous])
 					avgOdds = averageOdds([x for x,_ in ous])
+					#print(player, prop, line)
 					arr.append((math.ceil(float(line)), getFairValue(avgOdds, method="power"), avgOdds, ous))
 					lineOdds[prop][math.ceil(float(line))] = ous
 				if not arr:
@@ -2396,6 +2408,7 @@ def writeRanks(date):
 				for line in lines:
 					val = line * j[prop][line]
 					# don't mult by implied
+					val = line
 					if prop in ["outs"]:
 						val = line
 					p = calcFantasyPoints(prop, val)
