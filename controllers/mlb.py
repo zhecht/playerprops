@@ -2562,7 +2562,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		away, home = map(str, game.split(" @ "))
 		gameWeather = weather.get(game, {})
 		start = gameData["start"]
-		if gameStarted[game]:
+		if date == str(datetime.now())[:10] and gameStarted[game]:
 			continue
 
 		with open(f"static/splits/mlb/{away}.json") as fh:

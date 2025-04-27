@@ -1784,9 +1784,9 @@ def writeEV(date, dinger, silent=False):
 		if not game:
 			continue
 		away, home = map(str, game.split(" @ "))
-		if game not in gameTimes:
+		if date != str(datetime.now())[:10] and game not in gameTimes:
 			continue
-		gameStart = gameTimes[game]
+		gameStart = gameTimes.get(game, "")
 		gameWeather = weather.get(game, {})
 		awayStats = {}
 		homeStats = {}
