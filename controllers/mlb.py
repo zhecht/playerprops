@@ -2432,14 +2432,13 @@ def writeRanks(date):
 						dailyLines = daily[date][game][prop][player][nearestMid["line"]]
 				except:
 					pass
-				ranks.append({
-					"player": player, "prop": prop,
-					"team": team, "game": game,
-					"pts": round(pts, 2), "propPts": propPts, "propLines": j,
-					"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
-					"daily": dailyLines, "mostLikely": mostLikely[-1],
-					"lineOdds": lineOdds
-				})
+
+			ranks.append({
+				"player": player, "team": team, "game": game,
+				"pts": round(pts, 2), "propPts": propPts, "propLines": j,
+				"isPitcher": isPitcher, "opp": opp, "pitcher": pitcher,
+				"lineOdds": lineOdds
+			})
 
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
 		json.dump(ranks, fh, indent=4)
