@@ -1627,6 +1627,12 @@ def convertSavantTeam(team):
 def writeBarrels():
 	last_year = str(datetime.now().year - 1)
 
+	with open(f"updated.json") as fh:
+		updated = json.load(fh)
+	updated["barrels"] = str(datetime.now())
+	with open(f"updated.json", "w") as fh:
+		json.dump(updated, fh, indent=4)
+
 	with open("static/mlb/schedule.json") as fh:
 		schedule = json.load(fh)
 	teamGameDts = {}
