@@ -1667,7 +1667,7 @@ def writeBarrels():
 	with open("static/baseballreference/homer_logs.json") as fh:
 		homerLogs = json.load(fh)
 
-	b = "https://api.github.com/repos/zhecht/lines/contents/static/"
+	b = "https://api.github.com/repos/zhecht/lines/contents/static"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}/dingers/ev.json", headers=hdrs)
 	evData = response.json()
@@ -1742,7 +1742,7 @@ def writeBarrels():
 
 			bppFactor = playerFactor = ""
 			if game in bppFactors and player in bppFactors[game].get("players",[]):
-				bppFactor = bppFactors[game][player]["hr"]
+				bppFactor = bppFactors[game]["hr"]
 				playerFactor = bppFactors[game]["players"][player]["hr"]
 
 			j = {
