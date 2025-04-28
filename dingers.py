@@ -987,7 +987,7 @@ def writeFeed(date, yearArg):
 
 		totHR = 0
 		if year == str(datetime.now().year):
-			time.sleep(10)
+			time.sleep(6)
 		else:
 			els = driver.find_elements(By.CSS_SELECTOR, "#allMetrics-tr_0 td")
 			hr = 0 if len(els) < 3 else (els[-3].text or 0)
