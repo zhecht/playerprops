@@ -526,7 +526,7 @@ def convertNHLTeam(team):
 		return "tb"
 	elif t == "st.":
 		return "stl"
-	elif t in ["veg", "vgk", "vgi"]:
+	elif t in ["veg", "vgk", "vgi", "vgs"]:
 		return "vgk"
 	elif t == "win":
 		return "wpg"

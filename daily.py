@@ -236,7 +236,7 @@ if __name__ == '__main__':
 		writeSchedule(sport, date)
 		writeStats(sport, date)
 		print("feed")
-		subprocess.Popen(["python", "dingers.py", "--feed", "-d", date])
+		subprocess.Popen(["python", "dingers.py", "--month", "--feed", "-d", date])
 		print("cron")
 		subprocess.Popen(["python", "controllers/baseballreference.py", "-c"])
 	elif args.stats:
