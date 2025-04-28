@@ -2162,7 +2162,7 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--sport")
 	parser.add_argument("--token")
-	parser.add_argument("--commit", action="store_true")
+	parser.add_argument("--commit", "-c", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("--yest", action="store_true")
 	parser.add_argument("--date", "-d")
