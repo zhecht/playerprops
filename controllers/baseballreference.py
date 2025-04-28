@@ -1661,10 +1661,13 @@ def writeBarrels():
 	with open("static/baseballreference/homer_logs.json") as fh:
 		homerLogs = json.load(fh)
 
-	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
+	b = "https://api.github.com/repos/zhecht/lines/contents/static/"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
-	response = requests.get(f"{b}", headers=hdrs)
+	response = requests.get(f"{b}/dingers/ev.json", headers=hdrs)
 	evData = response.json()
+
+	response = requests.get(f"{b}/bpp/factors.json", headers=hdrs)
+	bppFactors = response.json()
 
 	barrels = []
 	for team, players in expectedHist.items():
@@ -1731,12 +1734,18 @@ def writeBarrels():
 						diff = round(diff, 2)
 					game_trends[key]["5G"] = diff
 
+			bppFactor = playerFactor = ""
+			if game in bppFactors and player in bppFactors[game].get("players",[]):
+				bppFactor = bppFactors[game][player]["hr"]
+				playerFactor = bppFactors[game]["players"][player]["hr"]
+
 			j = {
 				"team": team, "game": game,
 				"book": evBook, "line": evLine,
 				"player": player,
 				"homerLogs": homerLogs[team].get(player, {}),
 				"game_trends": game_trends,
+				"bppFactor": bppFactor, "playerFactor": playerFactor
 			}
 
 			for key in ["bip", "pa", "barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
@@ -2480,6 +2489,7 @@ if __name__ == "__main__":
 	parser.add_argument("--force", action="store_true")
 	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--brl", action="store_true")
+	parser.add_argument("--tmrw", action="store_true")
 
 	args = parser.parse_args()
 
@@ -2487,7 +2497,9 @@ if __name__ == "__main__":
 		curr_week = args.start
 
 	date = args.date
-	if not date:
+	if args.tmrw:
+		date = str(datetime.now() + timedelta(days=1))[:10]
+	elif not date:
 		date = datetime.now()
 		date = str(date)[:10]
 
