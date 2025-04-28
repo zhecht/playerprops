@@ -1398,7 +1398,7 @@ def write_batting_pitches():
 	url = "https://www.baseball-reference.com/leagues/majors/2025-pitches-batting.shtml"
 	time.sleep(0.2)
 	outfile = "outmlb3"
-	call(["curl", "-k", url, "-o", outfile])
+	call(["curl", "-s", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	headers = []
@@ -1458,7 +1458,7 @@ def write_pitching_pitches():
 	url = "https://www.baseball-reference.com/leagues/majors/2024-pitches-pitching.shtml"
 	time.sleep(0.2)
 	outfile = "outmlb3"
-	call(["curl", "-k", url, "-o", outfile])
+	call(["curl", "-s", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	headers = []
@@ -1955,7 +1955,7 @@ def writeSavantParkFactors():
 	url = f"https://baseballsavant.mlb.com/leaderboard/statcast-park-factors?type=year&year={year}&batSide=&stat=index_wOBA&condition=All&rolling="
 	time.sleep(0.2)
 	outfile = "outmlb3"
-	call(["curl", "-k", url, "-o", outfile])
+	call(["curl", "-s", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	data = "{}"
@@ -2089,7 +2089,7 @@ def writeSavantPitcherAdvanced():
 		url = f"https://baseballsavant.mlb.com/leaderboard/custom?year={yr}&type=pitcher&filter=&sort=1&sortDir=desc&min=10&selections=babip,p_walk,p_k_percent,p_bb_percent,p_ball,p_called_strike,p_hit_into_play,xba,exit_velocity_avg,launch_angle_avg,sweet_spot_percent,barrel_batted_rate,hard_hit_percent,out_zone_percent,out_zone,in_zone_percent,in_zone,pitch_hand,n,&chart=false&x=p_walk&y=p_walk&r=no&chartType=beeswarm"
 		time.sleep(0.2)
 		outfile = "outmlb3"
-		call(["curl", "-k", url, "-o", outfile])
+		call(["curl", "-s", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		data = "{}"
@@ -2157,7 +2157,7 @@ def writeSavantExpectedHR():
 	for t in ["", "?year=2024&team=&player_type=Pitcher&min=0"]:
 		time.sleep(0.2)
 		outfile = "outmlb3"
-		call(["curl", "-k", url+t, "-o", outfile])
+		call(["curl", "-s", url+t, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		data = "{}"
@@ -2188,7 +2188,7 @@ def writeTrades():
 
 	url = "https://www.espn.com/mlb/transactions"
 	outfile = "outmlb3"
-	call(["curl", "-k", url, "-o", outfile])
+	call(["curl", "-s", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	data = "{}"
@@ -2307,7 +2307,7 @@ def writeBaseballReferencePH(playerArg):
 			time.sleep(0.3)
 			url = f"https://www.baseball-reference.com{pid}"
 			outfile = "outmlb3"
-			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-s", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 
 			print(len(soup.select("#appearances")))
@@ -2328,7 +2328,7 @@ def writeBaseballReferencePH(playerArg):
 			# full game logs
 			url = f"https://www.baseball-reference.com/players/gl.fcgi?id={pid}&t=b&year=2024"
 			outfile = "outmlb3"
-			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-k", url, "-o", outfile])
+			call(["curl", "-H", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0", "-s", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 			betweenRest = 0
 			for tr in soup.find("table", id="players_standard_batting").find("tbody").find_all("tr"):
