@@ -543,7 +543,7 @@ def writeCZ(date=None):
 			pass
 		games.append(event["id"])
 
-	#games = ["a5cfcc8b-4e6d-4ff7-a8ef-98afc7db15c9"]
+	#games = ["2daa8822-9cbd-4d15-857f-200888fc4d3a"]
 
 	res = nested_dict()
 	for gameId in games:
@@ -560,7 +560,7 @@ def writeCZ(date=None):
 		#print(data["name"], data["startTime"])
 
 		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			#continue
+			continue
 			pass
 
 		game = convertFDTeam(data["name"].lower().replace("|", "").replace(" at ", " @ "))
