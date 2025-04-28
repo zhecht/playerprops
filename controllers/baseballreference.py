@@ -77,7 +77,7 @@ def write_stats(date):
 			url = f"https://site.web.api.espn.com/apis/site/v2/sports/baseball/mlb/summary?region=us&lang=en&contentorigin=espn&event={gameId}"
 			outfile = "outmlb3"
 			time.sleep(0.3)
-			call(["curl", "-k", url, "-o", outfile])
+			call(["curl", "-s", url, "-o", outfile])
 
 			with open(outfile) as fh:
 				data = json.load(fh)
@@ -479,7 +479,7 @@ def write_totals():
 def writeYearByYear():
 	outfile = "outYearByYear"
 	url = "https://www.baseball-reference.com/leagues/majors/bat.shtml"
-	call(["curl", url, "-o", outfile])
+	call(["curl", "-s", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	table = soup.find("table", id="teams_standard_batting_totals")
@@ -499,7 +499,7 @@ def writeYearByYear():
 def write_schedule(date):
 	url = f"https://www.espn.com/mlb/schedule/_/date/{date.replace('-', '')}"
 	outfile = "outmlb3"
-	call(["curl", "-k", url, "-o", outfile])
+	call(["curl", "-s", url, "-o", outfile])
 	soup = BS(open(outfile, 'rb').read(), "lxml")
 
 	with open(f"{prefix}static/baseballreference/schedule.json") as fh:
@@ -797,7 +797,7 @@ def writeYears():
 			time.sleep(0.2)
 			url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}"
 			outfile = "outmlb3"
-			call(["curl", "-k", url, "-o", outfile])
+			call(["curl", "-s", url, "-o", outfile])
 			soup = BS(open(outfile, 'rb').read(), "lxml")
 			#print(url)
 			if not soup.find("div", class_="gamelog"):
@@ -836,7 +836,7 @@ def writeYears():
 				time.sleep(0.2)
 				url = f"https://www.espn.com/mlb/player/gamelog/_/id/{pId}/type/mlb/year/{year}"
 				outfile = "outmlb3"
-				call(["curl", url, "-o", outfile])
+				call(["curl", "-s", url, "-o", outfile])
 				soup = BS(open(outfile, 'rb').read(), "lxml")
 
 				headers = []
@@ -1189,7 +1189,7 @@ def writeRoster():
 		time.sleep(0.2)
 		url = f"https://www.espn.com/mlb/team/roster/_/name/{team}/"
 		outfile = "outmlb3"
-		call(["curl", url, "-o", outfile])
+		call(["curl", "-s", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 
 		for table in soup.find_all("table"):
@@ -1259,7 +1259,7 @@ def write_player_rankings():
 		url = baseUrl+page
 		outfile = "outmlb3"
 		time.sleep(0.2)
-		call(["curl", "-k", url, "-o", outfile])
+		call(["curl", "-s", url, "-o", outfile])
 		soup = BS(open(outfile, 'rb').read(), "lxml")
 		ranking = ids[idx]
 
