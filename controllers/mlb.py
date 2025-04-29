@@ -2019,13 +2019,7 @@ def writeKambi(date):
 					if player not in data[game][label]:
 						data[game][label][player] = {}
 
-					if label in ["single", "double", "sb"]:
-						if line != "0.5":
-							continue
-						data[game][label][player] = ou
-					else:
-						data[game][label][player][line] = ou
-
+					data[game][label][player][line] = ou
 
 	with open(f"static/mlb/kambi.json", "w") as fh:
 		json.dump(data, fh, indent=4)
@@ -2470,6 +2464,10 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 
 	with open(f"{prefix}static/mlb/mgm.json") as fh:
 		mgmLines = json.load(fh)
+
+	for game, data in mgmLines.items():
+		if "sb" in data:
+			del data["sb"]
 
 	with open(f"{prefix}static/mlb/fanduel.json") as fh:
 		fdLines = json.load(fh)
