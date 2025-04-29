@@ -543,7 +543,7 @@ def writeCZ(date=None):
 			pass
 		games.append(event["id"])
 
-	#games = ["a7c95c19-34b3-4edf-bddb-0091f0206c2d"]
+	games = ["a7c95c19-34b3-4edf-bddb-0091f0206c2d"]
 
 	res = nested_dict()
 	for gameId in games:
@@ -705,6 +705,9 @@ def writeCZ(date=None):
 						line = str(float(market["line"]))
 						if player not in res[game][prop]:
 							res[game][prop][player] = {}
+
+						if prop == "r" and player == "trent grisham":
+							print(selections[i], line, ou)
 						res[game][prop][player][line] = ou
 					except:
 						res[game][prop][player] = ou
