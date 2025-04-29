@@ -509,6 +509,8 @@ def convertNHLTeam(team):
 		return "col"
 	elif (t == "col" and "columbus" in team) or t == "clb":
 		return "cbj"
+	elif t == "edn":
+		return "edm"
 	elif t == "flo":
 		return "fla"
 	elif t == "pht":
