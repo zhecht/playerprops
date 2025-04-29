@@ -543,7 +543,7 @@ def writeCZ(date=None):
 			pass
 		games.append(event["id"])
 
-	#games = ["2daa8822-9cbd-4d15-857f-200888fc4d3a"]
+	#games = ["a7c95c19-34b3-4edf-bddb-0091f0206c2d"]
 
 	res = nested_dict()
 	for gameId in games:
