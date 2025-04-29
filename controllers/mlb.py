@@ -522,7 +522,7 @@ def writeActionNetwork(dateArg = None):
 		json.dump(odds, fh, indent=4)
 
 
-def writeCZ(date=None):
+def writeCZ(date=None, debug=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
@@ -543,7 +543,8 @@ def writeCZ(date=None):
 			pass
 		games.append(event["id"])
 
-	games = ["a7c95c19-34b3-4edf-bddb-0091f0206c2d"]
+	if debug:
+		games = ["a7c95c19-34b3-4edf-bddb-0091f0206c2d"]
 
 	res = nested_dict()
 	for gameId in games:
@@ -593,6 +594,11 @@ def writeCZ(date=None):
 				prop = "hr"
 			elif market["templateName"].lower().split(" ")[0] in ["|batter|", "|pitcher|"]:
 				player = parsePlayer(market["name"].replace("|", "").split(" - ")[0])
+				if player == "trent grisham":
+					player = "ben rice"
+				elif player == "ben rice":
+					player = "trent grisham"
+
 				if "total runs scored" in prop:
 					prop = "r"
 				elif "total bases" in prop:
@@ -705,9 +711,6 @@ def writeCZ(date=None):
 						line = str(float(market["line"]))
 						if player not in res[game][prop]:
 							res[game][prop][player] = {}
-
-						if prop == "r" and player == "trent grisham":
-							print(selections[i], line, ou)
 						res[game][prop][player][line] = ou
 					except:
 						res[game][prop][player] = ou
@@ -3155,7 +3158,7 @@ if __name__ == '__main__':
 
 	if args.cz:
 		uc.loop().run_until_complete(writeCZToken())
-		writeCZ(date)
+		writeCZ(date, args.debug)
 
 	if args.clear:
 		clear()
@@ -3175,7 +3178,7 @@ if __name__ == '__main__':
 		#writeActionNetwork(args.date)
 		print("cz")
 		uc.loop().run_until_complete(writeCZToken())
-		writeCZ(date)
+		writeCZ(date, args.debug)
 		#print("bv")
 		#writeBV()
 
