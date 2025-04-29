@@ -1797,7 +1797,7 @@ def writeBarrels():
 			row[key+"Percentile"] = percentiles[key].get(v, 0)
 
 	with open("static/baseballreference/barrels.json", "w") as fh:
-		json.dump(barrels, fh, indent=4)
+		json.dump(barrels, fh)
 
 def writeHomerLogs():
 	CURR_YEAR = str(datetime.now().year)
@@ -1905,14 +1905,17 @@ def writeHomerLogs():
 				"sd": std_dev, "z": z_score,
 				"book": evBook, "line": evLine,
 				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
+				#"gamesBtwn": ",".join(map(str, gamesBtwn)),
+				#"abBtwn": ",".join(map(str, abBtwn)),
 				"gamesBtwn": gamesBtwn,
+				"abBtwn": abBtwn,
 				"abSD": std_devAB, "abZ": z_scoreAB,
 				"abBtwnMed": abBtwnMed, "abBtwnAvg": abBtwnAvg, "abBtwnDiff": abBtwnDiff,
 				"closest_ct": len(closest), "lastClosest": lastClosest, "lastClosestDt": lastClosestDt
 			}
 
 	with open("static/baseballreference/homer_logs.json", "w") as fh:
-		json.dump(homerLogs, fh, indent=4   )
+		json.dump(homerLogs, fh)
 
 def writeSavantPercentiles():
 	with open("static/baseballreference/qualified_expected.json") as fh:
