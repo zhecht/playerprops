@@ -1751,7 +1751,7 @@ def writeBarrels():
 				"player": player,
 				"homerLogs": homerLogs[team].get(player, {}),
 				"game_trends": game_trends,
-				"bppFactor": bppFactor, "playerFactor": playerFactor
+				"bpp": bppFactor, "playerFactor": playerFactor
 			}
 
 			for key in ["bip", "pa", "barrel_ct", "barrels_per_bip", "launch_angle_avg", "sweet_spot_percent", "hard_hit_ct", "hard_hit_percent", "exit_velocity_avg", "distance_hr_avg", "distance_avg"]:
