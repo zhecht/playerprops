@@ -1632,17 +1632,17 @@ def writeDK(date, propArg, keep, debug):
 			started_events = {}
 			for event in data["events"]:
 				start = f"{event['startEventDate'].split('T')[0]}T{':'.join(event['startEventDate'].split('T')[1].split(':')[:2])}Z"
-				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
-				if startDt.day != int(date[-2:]):
-					started_events[event["id"]] = game
-					continue
-					pass
 				game = event["name"].lower()
 				games = []
 				for team in game.split(" @ "):
 					t = convertTeam(team)
 					games.append(t)
 				game = " @ ".join(games)
+				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
+				if startDt.day != int(date[-2:]):
+					started_events[event["id"]] = game
+					continue
+					pass
 				if event.get("status", "") == "STARTED":
 					started_events[event["id"]] = game
 					continue
