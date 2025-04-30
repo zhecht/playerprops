@@ -1448,6 +1448,7 @@ def writeKambi(date=None):
 		for betOffer in j["betOffers"]:
 			playerProp = False
 			label = betOffer["criterion"]["label"].lower()
+			fullProp = label
 			prefix = ""
 			if "period 1" in label:
 				prefix = "1p_"
@@ -1457,8 +1458,10 @@ def writeKambi(date=None):
 				prefix = "3p_"
 
 			if "handicap" in label:
-				if "regular time" in label:
+				if "regular time" in label or "3-way" in label:
 					continue
+				label = "spread"
+			elif label == "puck line - including overtime":
 				label = "spread"
 			elif f"total goals by {awayFull}" in label:
 				label = "away_total"
@@ -1473,7 +1476,7 @@ def writeKambi(date=None):
 					label = "gift"
 				else:
 					label = "total"
-			elif label == "match":
+			elif label == "match" or label == "moneyline - including overtime":
 				label = "ml"
 			elif label == "match odds":
 				label = "3-way"
@@ -1535,6 +1538,8 @@ def writeKambi(date=None):
 						line = str(float(line) * -1)
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 
+					if label == "spread":
+						print(game, fullProp, line, ou)
 					data[game][label][line] = ou
 				elif label == "fgs":
 					for outcome in betOffer["outcomes"]:
