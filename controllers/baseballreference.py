@@ -1858,7 +1858,7 @@ def writeHomerLogs():
 				if std_dev:
 					z_score = round((lastHR - gamesBtwnAvg) / std_dev, 2)
 				gamesBtwnMed = median(gamesBtwn)
-				gamesBtwnDiff = lastHR - gamesBtwnAvg
+				gamesBtwnDiff = round(lastHR - gamesBtwnAvg, 2)
 
 			abBtwn = [ab for _,x,ab in hits]
 			std_devAB = abBtwnMed = abBtwnDiff = 0
@@ -1873,7 +1873,7 @@ def writeHomerLogs():
 				if std_devAB:
 					z_scoreAB = round((lastHR_AB - abBtwnAvg) / std_devAB, 2)
 				abBtwnMed = median(abBtwn)
-				abBtwnDiff = lastHR_AB - abBtwnAvg
+				abBtwnDiff = round(lastHR_AB - abBtwnAvg, 2)
 
 			evBook = evLine = ""
 			if player in evData:
