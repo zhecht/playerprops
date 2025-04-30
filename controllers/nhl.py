@@ -1476,8 +1476,11 @@ def writeKambi(date=None):
 					label = "gift"
 				else:
 					label = "total"
-			elif label == "match" or label == "moneyline - including overtime":
+			elif label == "match":
 				label = "ml"
+			elif label == "moneyline - including overtime":
+				label = "ml"
+				continue
 			elif label == "match odds":
 				label = "3-way"
 			elif label == "first team to score":
@@ -1538,8 +1541,6 @@ def writeKambi(date=None):
 						line = str(float(line) * -1)
 						ou = betOffer["outcomes"][1]["oddsAmerican"]+"/"+betOffer["outcomes"][0]["oddsAmerican"]
 
-					if label == "spread":
-						print(game, fullProp, line, ou)
 					data[game][label][line] = ou
 				elif label == "fgs":
 					for outcome in betOffer["outcomes"]:
