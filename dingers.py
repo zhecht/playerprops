@@ -931,6 +931,11 @@ def writeFeed(date, yearArg):
 	with open("static/baseballreference/gamelogs_debug.json") as fh:
 		totHomers = json.load(fh)
 
+	headers = {"Accept": "application/vnd.github.v3.raw"}
+	url = "https://api.github.com/repos/zhecht/feed/contents/feed_times_historical.json"
+	response = requests.get(url, headers=headers)
+	feedTimes = response.json()
+
 	allStarGames = {
 		"2024": datetime(2024, 7, 16),
 		"2023": datetime(2023, 7, 11),
@@ -1089,6 +1094,9 @@ def writeFeed(date, yearArg):
 				hrPark = tds[-1].text.strip()
 
 				pa = tds[2].text.strip()
+				dt = ""
+				if date in feedTimes:
+					dt = feedTimes[date][game].get(pa, "")
 				j = {
 					"player": player,
 					#"pitcher": pitcher,
@@ -1096,7 +1104,7 @@ def writeFeed(date, yearArg):
 					"gameIdx": gameIdxs.get(game, 0),
 					"hr/park": hrPark,
 					"pa": pa,
-					"dt": "",
+					"dt": dt,
 					"img": img,
 					"team": team,
 					"start": starts.get(game, "")
