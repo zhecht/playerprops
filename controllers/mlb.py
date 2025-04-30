@@ -2443,7 +2443,7 @@ def writeRanks(date):
 	with open("static/mlb/fantasyRanks.json", "w") as fh:
 		json.dump(ranks, fh, indent=4)
 
-def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None):
+def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None, underArg=None, no_kambi=None):
 	if not boost:
 		boost = 1
 
@@ -2532,7 +2532,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 
 	lines = {
 		"pn": pnLines,
-		"kambi": kambiLines,
+		#"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
 		"bv": bvLines,
@@ -2542,6 +2542,9 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 		"365": bet365Lines,
 		"circa": circaLines
 	}
+
+	if not no_kambi:
+		lines["kambi"] = kambiLines
 
 	gameStarted = {}
 	for gameData in schedule[date]:
@@ -3096,6 +3099,7 @@ if __name__ == '__main__':
 	parser.add_argument("--leftRight", action="store_true")
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
+	parser.add_argument("--no-kambi", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--year", type=int)
 	parser.add_argument("--book", help="Book")
@@ -3183,7 +3187,7 @@ if __name__ == '__main__':
 		#writeBV()
 
 	if args.ev:
-		writeEV(date, propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under)
+		writeEV(date, propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under, no_kambi=args.no_kambi)
 
 	if args.print:
 		sortEV(args.prop)
