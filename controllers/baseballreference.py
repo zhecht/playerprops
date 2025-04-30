@@ -1870,10 +1870,11 @@ def writeHomerLogs():
 				else:
 					std_devAB = round(std_devAB, 2)
 
-				if std_devAB:
-					z_scoreAB = round((lastHR_AB - abBtwnAvg) / std_devAB, 2)
 				abBtwnMed = median(abBtwn)
 				abBtwnDiff = round(lastHR_AB - abBtwnAvg, 2)
+				if std_devAB:
+					z_scoreAB = round((lastHR_AB - abBtwnAvg) / std_devAB, 2)
+					ab_med_z_score = round((lastHR_AB - abBtwnMed) / std_devAB, 2)
 
 			evBook = evLine = ""
 			if player in evData:
@@ -1907,9 +1908,10 @@ def writeHomerLogs():
 				"gamesBtwnMed": gamesBtwnMed, "gamesBtwnAvg": gamesBtwnAvg, "gamesBtwnDiff": gamesBtwnDiff,
 				#"gamesBtwn": ",".join(map(str, gamesBtwn)),
 				#"abBtwn": ",".join(map(str, abBtwn)),
+				#"homerDts": [x for x,_,_ in hits],
 				"gamesBtwn": gamesBtwn,
 				"abBtwn": abBtwn,
-				"abSD": std_devAB, "abZ": z_scoreAB,
+				"abSD": std_devAB, "abZ": z_scoreAB, "ab_med_z_score": ab_med_z_score,
 				"abBtwnMed": abBtwnMed, "abBtwnAvg": abBtwnAvg, "abBtwnDiff": abBtwnDiff,
 				"closest_ct": len(closest), "lastClosest": lastClosest, "lastClosestDt": lastClosestDt
 			}
