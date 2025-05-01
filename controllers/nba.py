@@ -11,6 +11,9 @@ import unicodedata
 import time
 from twilio.rest import Client
 from glob import glob
+from pdf2image import convert_from_path
+import pytesseract
+from PIL import Image
 
 prefix = ""
 if os.path.exists("/home/zhecht/playerprops"):
@@ -24,32 +27,6 @@ try:
 	from shared import *
 except:
 	from controllers.shared import *
-
-def convertNBATeam(team):
-	team = team.lower()
-	if team.endswith("warriors") or team == "gsw":
-		return "gs"
-	elif team.endswith("knicks") or team == "nyk":
-		return "ny"
-	elif "brooklyn" in team:
-		return "bkn"
-	elif team.endswith("lakers"):
-		return "lal"
-	elif team.endswith("clippers"):
-		return "lac"
-	elif team.endswith("pelicans") or team == "nop":
-		return "no"
-	elif team.endswith("thunder"):
-		return "okc"
-	elif team.endswith("spurs") or team == "sas":
-		return "sa"
-	elif team.endswith("suns"):
-		return "phx"
-	elif team.endswith("wizards") or team == "was":
-		return "wsh"
-	elif team.endswith("jazz") or team == "uta":
-		return "utah"
-	return team[:3]
 
 def strip_accents(text):
 	try:
@@ -212,7 +189,7 @@ def writeCZ(date, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/basketball/events/schedule?competitionIds=5806c896-4eec-4de1-874f-afed93114b8c"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/basketball/events/schedule?competitionIds=5806c896-4eec-4de1-874f-afed93114b8c"
 	outfile = "outCZ"
 	cookie = ""
 	with open("token") as fh:
@@ -231,7 +208,7 @@ def writeCZ(date, token=None):
 	#games = ["aba11601-f98d-4fb8-9e27-b72bea37784e"]
 	res = {}
 	for gameId in games:
-		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
+		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/events/{gameId}"
 		time.sleep(0.2)
 		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: b51ee484-42d9-40de-81ed-5c6df2f3122a' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.15.1' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'Priority: u=4' -H 'TE: trailers' -o {outfile}")
 
@@ -3171,6 +3148,64 @@ def writePlayer(player, propArg):
 
 					print(book, lines[book][game][prop][p])
 
+def writeCirca(date):
+	today = datetime.strptime(date, "%Y-%m-%d")
+	dt = today.strftime("%Y-%-m-%-d")
+
+	file = f"/mnt/c/Users/zhech/Downloads/NBA - {dt}.pdf"
+	pages = convert_from_path(file)
+
+	pages[1].save("outnbaprops.png", "PNG")
+	img = Image.open("outnbaprops.png")
+	left,top,right,bottom = 108,445,460,2185
+
+	boxH, boxW = 93, 340
+
+	t = top
+	for rowIdx in range(12):
+		box_img = img.crop((left,t,left+boxW,t+boxH))
+		box_text = pytesseract.image_to_string(box_img).split("\n")
+		player = parsePlayer(box_text[0].split(" (")[0])
+		team = convertNBATeam(box_text[0].split("(")[-1].replace(")", ""))
+
+		line_img = img.crop((left+200,t+35,left+boxW,t+boxH))
+		line_text = pytesseract.image_to_string(line_img).split("\n")
+
+		print(player, team, line_text)
+		if rowIdx == 0:
+			line_img.save("out.png", "PNG")
+		t += boxH+3
+
+	return
+	player_img = img.crop((left,top,right,bottom)) # l,t,r,b
+	#player_img.save("outnhl-players.png", "PNG")
+	player_text = pytesseract.image_to_string(player_img).split("\n")
+	player_text = [x for x in player_text if x.strip()]
+	print(player_text)
+
+	over_img = img.crop((595,top,665,bottom))
+	over_text = pytesseract.image_to_string(over_img).split("\n")
+	over_text = [x.replace("\u201c", "-").replace("~", "-") for x in over_text if x.strip()]
+
+	under_img = img.crop((760,top,840,bottom))
+	under_text = pytesseract.image_to_string(under_img).split("\n")
+	under_text = [x.replace("\u201c", "-").replace("~", "-") for x in under_text if x.strip()]
+
+	for playerIdx, player in enumerate(player_text):
+		team = player.split(")")[0].split("(")[-1]
+		team = convertNHLTeam(team)
+		game = teamGame.get(team, "")
+		player = parsePlayer(player.lower().split(" (")[0])
+		o = over_text[playerIdx]
+		u = under_text[playerIdx]
+		if o.startswith("+") and not u.startswith("-"):
+			if len(u) == 4:
+				u = "-"+u[1:]
+			else:
+				u = "-"+u
+		data[game]["atgs"][player] = o+"/"+u
+
+
 def writeLineups(tmrw=None):
 	url = "https://www.rotowire.com/basketball/nba-lineups.php"
 	if tmrw:
@@ -4343,6 +4378,7 @@ if __name__ == '__main__':
 	parser.add_argument("--ranks", action="store_true")
 	parser.add_argument("--commit", action="store_true")
 	parser.add_argument("--keep", action="store_true")
+	parser.add_argument("--circa", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--book", help="Book")
 	parser.add_argument("--token")
@@ -4356,6 +4392,10 @@ if __name__ == '__main__':
 	if args.minutes:
 		writeLineups(args.tmrw)
 		writeMinutes()
+
+	date = str(datetime.now())[:10]
+	if args.date:
+		data = args.date
 
 	dinger = False
 	if args.dinger:
@@ -4408,6 +4448,9 @@ if __name__ == '__main__':
 
 	if args.bvParlay:
 		bvParlay()
+
+	if args.circa:
+		writeCirca(date)
 
 	if args.cz:
 		uc.loop().run_until_complete(writeCZToken())

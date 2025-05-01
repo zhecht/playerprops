@@ -1393,7 +1393,7 @@ def writeCZ(date=None, token=None, keep=None):
 		with open("static/soccer/caesars.json") as fh:
 			res = json.load(fh)
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/football/events/schedule"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/football/events/schedule"
 	outfile = "socceroutCZ"
 	cookie = "ca95f0df-2820-461e-9433-779074af4a6c:EgoAZaaIrYnhAAAA:2QUHraQzVgfuSvKDcwuoRbHiZCxXs1hMN8Zlj0AGOZYELSga3iSBkAweRvEa//bM+xqmboAdxLHMjiJB/85pBZS4zO2T/XWvi3BZp5umnnghVonRLfvgPcSA/QwtAolO/PNHNoDEzmw0Zsm+mfG6kUCSLklcHClOZhR5aZbvIMBQ7iBXOfhHcNKAF/6FWk0Ji1LIB+C3AeoM9J+Htpu8IU8ri9fLasWcvjUbbTNbOeEUGl2yAEUa/G+p+kI5ycCdWLtriA+yxFzzEg=="
 

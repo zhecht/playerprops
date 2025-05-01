@@ -535,7 +535,7 @@ def writeCZ(date):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/sports/basketball/events/schedule?competitionIds=d246a1dd-72bf-45d1-bc86-efc519fa8e90"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/basketball/events/schedule?competitionIds=d246a1dd-72bf-45d1-bc86-efc519fa8e90"
 	outfile = "ncaaboutCZ"
 	cookie = ""
 	with open("token") as fh:
@@ -562,7 +562,7 @@ def writeCZ(date):
 	res = {}
 	
 	for gameId in games:
-		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v3/events/{gameId}"
+		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/events/{gameId}"
 		time.sleep(0.2)
 		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
