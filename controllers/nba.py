@@ -189,7 +189,7 @@ def writeCZ(date, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/basketball/events/schedule?competitionIds=5806c896-4eec-4de1-874f-afed93114b8c"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/baseball/competitions/5806c896-4eec-4de1-874f-afed93114b8c/tabs/schedule"
 	outfile = "outCZ"
 	cookie = ""
 	with open("token") as fh:
@@ -3148,9 +3148,18 @@ def writePlayer(player, propArg):
 
 					print(book, lines[book][game][prop][p])
 
-def writeCirca(date):
+def writeCirca(date, debug):
+
+	with open(f"{prefix}static/basketballreference/schedule.json") as fh:
+		schedule = json.load(fh)
+	teamGame = {}
+	for game in schedule[date]:
+		a,h = map(str, game.split(" @ "))
+		teamGame[a] = teamGame[h] = game
+
 	today = datetime.strptime(date, "%Y-%m-%d")
 	dt = today.strftime("%Y-%-m-%-d")
+	data = nested_dict()
 
 	file = f"/mnt/c/Users/zhech/Downloads/NBA - {dt}.pdf"
 	pages = convert_from_path(file)
@@ -3159,51 +3168,65 @@ def writeCirca(date):
 	img = Image.open("outnbaprops.png")
 	left,top,right,bottom = 108,445,460,2185
 
-	boxH, boxW = 93, 340
+	boxH, boxW = 93, 350
 
-	t = top
-	for rowIdx in range(12):
-		box_img = img.crop((left,t,left+boxW,t+boxH))
-		box_text = pytesseract.image_to_string(box_img).split("\n")
-		player = parsePlayer(box_text[0].split(" (")[0])
-		team = convertNBATeam(box_text[0].split("(")[-1].replace(")", ""))
+	props = [
+		("pts", 12, top, left, 2185),
+		("3ptm", 8, top, 866, 1190),
+		("reb", 3, 1309, 866, 1690),
+		("ast", 3, 1693, left, 1975)
+	]
+	for prop, rows, top, left, bottom in props:
+		l = left
+		for colIdx in range(2):
+			t = top
+			for rowIdx in range(rows):
+				box_img = img.crop((l,t,l+boxW,t+boxH))
+				box_text = pytesseract.image_to_string(box_img).split("\n")
+				player = parsePlayer(box_text[0].split(" (")[0])
+				team = convertNBATeam(box_text[0].split("(")[-1].replace(")", ""))
 
-		line_img = img.crop((left+200,t+35,left+boxW,t+boxH))
-		line_text = pytesseract.image_to_string(line_img).split("\n")
+				line_img = img.crop((left+220,t+35,left+270,t+boxH))
+				line_text = pytesseract.image_to_string(line_img).split("\n")
+				line = line_text[0]
+				if line == "%":
+					line = "9.5"
+				else:
+					line = line.replace("%", ".5").replace("h", ".5")
+				if "." not in line and line.endswith("4"):
+					line = line[:-1]+".5"
 
-		print(player, team, line_text)
-		if rowIdx == 0:
-			line_img.save("out.png", "PNG")
-		t += boxH+3
+				ou_img = img.crop((left+270,t+35,left+boxW,t+boxH))
+				ou_text = pytesseract.image_to_string(ou_img).split("\n")
+				ou = ou_text[0]+"/"+ou_text[1]
+				ou = ou.replace("EVEN", "+100").replace("\u201c", "-")
 
-	return
-	player_img = img.crop((left,top,right,bottom)) # l,t,r,b
-	#player_img.save("outnhl-players.png", "PNG")
-	player_text = pytesseract.image_to_string(player_img).split("\n")
-	player_text = [x for x in player_text if x.strip()]
-	print(player_text)
+				#print(team, player, line_text, line, ou)
 
-	over_img = img.crop((595,top,665,bottom))
-	over_text = pytesseract.image_to_string(over_img).split("\n")
-	over_text = [x.replace("\u201c", "-").replace("~", "-") for x in over_text if x.strip()]
+				if "+" not in ou and ou.startswith("4"):
+					ou = "+"+ou[1:]
+				if "-" not in ou and ou.startswith("7"):
+					ou = "-"+ou[1:]
 
-	under_img = img.crop((760,top,840,bottom))
-	under_text = pytesseract.image_to_string(under_img).split("\n")
-	under_text = [x.replace("\u201c", "-").replace("~", "-") for x in under_text if x.strip()]
+				if "+" not in ou and "/4" in ou:
+					ou = ou.replace("/4", "/+")
+				if "-" not in ou and "/7" in ou:
+					ou = ou.replace("/7", "/-")
 
-	for playerIdx, player in enumerate(player_text):
-		team = player.split(")")[0].split("(")[-1]
-		team = convertNHLTeam(team)
-		game = teamGame.get(team, "")
-		player = parsePlayer(player.lower().split(" (")[0])
-		o = over_text[playerIdx]
-		u = under_text[playerIdx]
-		if o.startswith("+") and not u.startswith("-"):
-			if len(u) == 4:
-				u = "-"+u[1:]
-			else:
-				u = "-"+u
-		data[game]["atgs"][player] = o+"/"+u
+				if not player or not team:
+					continue
+				data[teamGame.get(team, "")][player][prop][line] = ou
+
+				#if debug and rowIdx == 0:
+				if "harden" in player:
+					box_img.save("out-box.png", "PNG")
+					line_img.save("out.png", "PNG")
+				t += boxH+3
+
+			l += boxW
+
+	with open("static/nba/circa.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 
 
 def writeLineups(tmrw=None):
@@ -4450,7 +4473,7 @@ if __name__ == '__main__':
 		bvParlay()
 
 	if args.circa:
-		writeCirca(date)
+		writeCirca(date, args.debug)
 
 	if args.cz:
 		uc.loop().run_until_complete(writeCZToken())
