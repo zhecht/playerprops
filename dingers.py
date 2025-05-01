@@ -1078,7 +1078,7 @@ def writeFeed(date, yearArg):
 				continue
 
 			if game in data:
-				game += "-gm2"
+				game = f"{away}-gm2 @ {home}-gm2"
 
 			data[game] = []
 			table = div.find("div", class_="mini-ev-table")

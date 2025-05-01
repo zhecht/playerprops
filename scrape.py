@@ -632,7 +632,7 @@ async def write365FromHTML(data, html, sport, prop):
 			home = convertMLBTeam(home)
 		game = f"{away} {sep} {home}"
 		if game in seen:
-			game += "-gm2"
+			game = f"{away}-gm2 {sep} {home}-gm2"
 		seen[game] = True
 
 		if "spread" in prop:

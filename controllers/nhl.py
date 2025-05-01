@@ -507,7 +507,7 @@ def mergeCirca():
 def writeCircaProps(page, data, teamGame):
 	page.save("outnhlprops.png", "PNG")
 	img = Image.open("outnhlprops.png")
-	bottom, top = 1780, 375
+	bottom, top = 2185, 375
 	left,right = 110, 460
 
 	#player_img = img.crop((90,415,470,bottom)) # l,t,r,b

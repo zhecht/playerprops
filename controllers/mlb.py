@@ -564,9 +564,11 @@ def writeCZ(date=None, debug=None):
 			continue
 			pass
 
-		game = convertFDTeam(data["name"].lower().replace("|", "").replace(" at ", " @ "))
+		game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
+		away,home = map(str, game.split(" @ "))
+		game = f"{convertFDTeam(away)} @ {convertFDTeam(home)}"
 		if game in res:
-			game += "-gm2"
+			game = f"{convertFDTeam(away)}-gm2 @ {convertFDTeam(home)}-gm2"
 			#continue
 
 		for market in data["markets"]:
