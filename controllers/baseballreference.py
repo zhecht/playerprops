@@ -1843,7 +1843,7 @@ def writeHomerLogs():
 
 			if hits:
 				lastHRDt = hits[-1][0]
-				lastHR = btwn-1
+				lastHR = btwn
 				lastHR_AB = btwnAB-1
 
 			gamesBtwn = [x for _,x,ab in hits]

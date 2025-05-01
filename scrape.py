@@ -1058,7 +1058,7 @@ async def getESPNLinks(sport, tomorrow, gameArg, keep):
 		if not tomorrow and sport != "nfl" and "Today" not in div.text_all:
 			break
 			pass
-		if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%b %d") not in div.text_all:
+		if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%b %-d") not in div.text_all:
 			pass
 			continue
 
