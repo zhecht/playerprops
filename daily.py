@@ -56,7 +56,7 @@ def writeSchedule(sport, date):
 
 				game = f"{awayTeam} @ {homeTeam}"
 				if game in seen:
-					game += "-gm2"
+					game = f"{awayTeam}-gm2 @ {homeTeam}-gm2"
 				seen[game] = True
 				j = {
 					"game": game,
