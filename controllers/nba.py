@@ -3215,7 +3215,7 @@ def writeCirca(date, debug):
 
 				if not player or not team:
 					continue
-				data[teamGame.get(team, "")][player][prop][line] = ou
+				data[teamGame.get(team, "")][prop][player][line] = ou
 
 				#if debug and rowIdx == 0:
 				if "harden" in player:
