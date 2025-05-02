@@ -596,10 +596,6 @@ def writeCZ(date=None, debug=None):
 				prop = "hr"
 			elif market["templateName"].lower().split(" ")[0] in ["|batter|", "|pitcher|"]:
 				player = parsePlayer(market["name"].replace("|", "").split(" - ")[0])
-				if player == "trent grisham":
-					player = "ben rice"
-				elif player == "ben rice":
-					player = "trent grisham"
 
 				if "total runs scored" in prop:
 					prop = "r"
