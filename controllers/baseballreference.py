@@ -1624,7 +1624,7 @@ def convertSavantTeam(team):
 		return "nyy"
 	return team
 
-def writeBarrels():
+def writeBarrels(date):
 	last_year = str(datetime.now().year - 1)
 
 	with open(f"updated.json") as fh:
@@ -1644,9 +1644,9 @@ def writeBarrels():
 			teamGameDts[away].append(dt)
 			teamGameDts[home].append(dt)
 
-	gamesToday = schedule[str(datetime.now())[:10]]
+	gamesToday = schedule[date]
 	teamGame = {}
-	for row in schedule[str(datetime.now())[:10]]:
+	for row in schedule[date]:
 		game = row["game"]
 		a,h = map(str, game.split(" @ "))
 		teamGame[a] = game
@@ -2549,7 +2549,7 @@ if __name__ == "__main__":
 		writeTrades()
 	elif args.brl:
 		writeHomerLogs()
-		writeBarrels()
+		writeBarrels(date)
 	elif args.cron:
 		writeRankings()
 		write_player_rankings()
@@ -2561,7 +2561,7 @@ if __name__ == "__main__":
 		writeSavantParkFactors()
 		writeSavantPercentiles()
 		writeHomerLogs()
-		writeBarrels()
+		writeBarrels(date)
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
 
