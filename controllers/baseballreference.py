@@ -1917,7 +1917,7 @@ def writeHomerLogs():
 			}
 
 	with open("static/baseballreference/homer_logs.json", "w") as fh:
-		json.dump(homerLogs, fh)
+		json.dump(homerLogs, fh, indent=4)
 
 def writeSavantPercentiles():
 	with open("static/baseballreference/qualified_expected.json") as fh:

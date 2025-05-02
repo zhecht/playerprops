@@ -284,7 +284,7 @@ def writeCZ(date):
 		date = str(datetime.now())[:10]
 
 	league = "b7b715a9-c7e8-4c47-af0a-77385b525e09"
-	url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/icehockey/events/schedule?competitionIds={league}"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/baseball/competitions/b7b715a9-c7e8-4c47-af0a-77385b525e09/tabs/schedule"
 
 	outfile = "nhloutCZ"
 	cookie = ""
