@@ -2210,7 +2210,7 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	if sharp:
 		prefix = "pn_"
 
-	impliedOver = impliedUnder = 0
+	impliedOver = impliedUnder = impliedMiddle = 0
 	over = int(ou.split("/")[0])
 	if over > 0:
 		impliedOver = 100 / (over+100)
@@ -2250,19 +2250,34 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 		else:
 			under = int((100 - 100*u) / u)
 	else:
-		under = int(ou.split("/")[1])
+		under = int(ou.split("/")[-1])
+
+	if ou.count("/") == 2:
+		impliedMiddle = int(ou.split("/")[1])
+		if impliedMiddle > 0:
+			impliedMiddle = 100 / (impliedMiddle + 100)
+		else:
+			impliedMiddle = -impliedMiddle / (-impliedMiddle+100)
 
 	if under > 0:
 		impliedUnder = 100 / (under+100)
 	else:
-		impliedUnder = -1*under / (-1*under+100)
+		impliedUnder = -under / (-under+100)
 
 	x = impliedOver
 	y = impliedUnder
-	while round(x+y, 8) != 1.0:
-		k = math.log(2) / math.log(2 / (x+y))
+	n = 2
+	z = 0
+	if ou.count("/") == 2:
+		n = 3
+		z = impliedMiddle
+
+	while round(x+y+z, 8) != 1.0:
+		k = math.log(n) / math.log(n / (x+y+z))
 		x = x**k
 		y = y**k
+		if n == 3:
+			z = z**k
 
 	dec = 1 / x
 	if dec >= 2:
@@ -2274,8 +2289,8 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 	#ev = round(x * (finalOdds - fairVal), 1)
 
 	#multiplicative 
-	mult = impliedOver / (impliedOver + impliedUnder)
-	add = impliedOver - (impliedOver+impliedUnder-1) / 2
+	mult = impliedOver / (impliedOver + impliedUnder + impliedMiddle)
+	add = impliedOver - (impliedOver+impliedUnder+impliedMiddle-1) / n
 
 	evs = []
 	for method in [x, mult, add]:
@@ -3468,6 +3483,7 @@ if __name__ == '__main__':
 	parser.add_argument("--merge-circa", action="store_true")
 	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--keep", action="store_true")
+	parser.add_argument("--tmrw", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
 	parser.add_argument("--add", type=int)
 	parser.add_argument("--book", help="Book")
@@ -3491,52 +3507,58 @@ if __name__ == '__main__':
 	if args.dinger:
 		dinger = True
 
+	date = args.date
+	if args.tmrw:
+		date = str(datetime.now() + timedelta(days=1))[:10]
+	elif not date:
+		date = str(datetime.now())[:10]
+
 
 	if args.action:
-		writeActionNetwork(args.date)
+		writeActionNetwork(date)
 
 	if args.fd:
 		writeFanduel()
 
 	if args.mgm:
-		writeMGM(args.date)
+		writeMGM(date)
 
 	if args.circa:
-		writeCirca(args.date)
+		writeCirca(date)
 
 	if args.merge_circa:
 		mergeCirca()
 
 	if args.pb:
-		writePointsbet(args.date)
+		writePointsbet(date)
 
 	if args.dk:
-		writeDK(args.date, args.keep, args.debug)
+		writeDK(date, args.keep, args.debug)
 
 	if args.kambi:
-		writeKambi(args.date)
+		writeKambi(date)
 
 	if args.pn:
-		writePinnacle(args.date, args.debug)
+		writePinnacle(date, args.debug)
 
 	if args.bv:
 		writeBV()
 
 	if args.cz:
 		uc.loop().run_until_complete(writeCZToken())
-		writeCZ(args.date)
+		writeCZ(date)
 
 	if args.update:
 		#writeFanduel()
 		print("pn")
-		writePinnacle(args.date, args.debug)
+		writePinnacle(date, args.debug)
 		print("kambi")
-		writeKambi(args.date)
+		writeKambi(date)
 		print("dk")
-		writeDK(args.date, args.keep, args.debug)
+		writeDK(date, args.keep, args.debug)
 		print("cz")
 		uc.loop().run_until_complete(writeCZToken())
-		writeCZ(args.date)
+		writeCZ(date)
 		#print("bv")
 		#writeBV()
 
