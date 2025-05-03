@@ -2619,7 +2619,11 @@ async def writeFD(sport):
 			break
 
 		page = await browser.get("https://sportsbook.fanduel.com"+url)
-		await page.wait_for(selector="nav")
+		try:
+			await page.wait_for(selector="nav")
+		except:
+			q.task_done()
+			continue
 
 		navs = await page.query_selector_all("nav")
 		tabs = await navs[-1].query_selector_all("a")
