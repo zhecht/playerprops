@@ -744,7 +744,7 @@ async def write365(sport):
 
 		page = await browser.get(url)
 		try:
-			await page.wait_for(selector=".srb-MarketSelectionButton-selected")
+			await page.wait_for(selector=".gl-Participant_General")
 		except:
 			q.task_done()
 			continue
