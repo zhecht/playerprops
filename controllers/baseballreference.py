@@ -1799,6 +1799,16 @@ def writeBarrels(date):
 	with open("static/baseballreference/barrels.json", "w") as fh:
 		json.dump(barrels, fh)
 
+
+def writeHomerLogs2():
+	CURR_YEAR = str(datetime.now().year)
+	homerLogs = nested_dict()
+
+
+
+	with open("static/baseballreference/homer_logs.json", "w") as fh:
+		json.dump(homerLogs, fh, indent=4)
+
 def writeHomerLogs():
 	CURR_YEAR = str(datetime.now().year)
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
