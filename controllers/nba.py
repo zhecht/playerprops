@@ -3198,9 +3198,9 @@ def writeCirca(date, debug):
 				if "-" not in ou and ou.startswith("7"):
 					ou = "-"+ou[1:]
 
-				if "+" not in ou and "/4" in ou:
+				if "/4" in ou:
 					ou = ou.replace("/4", "/+")
-				if "-" not in ou and "/7" in ou:
+				if "/7" in ou:
 					ou = ou.replace("/7", "/-")
 
 				if not player or not team:
