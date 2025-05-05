@@ -4399,7 +4399,7 @@ if __name__ == '__main__':
 	parser.add_argument("--historical", action="store_true")
 	parser.add_argument("--writeSGP", action="store_true", help="Write SGP")
 	parser.add_argument("--ranks", action="store_true")
-	parser.add_argument("--commit", action="store_true")
+	parser.add_argument("--commit", "-c", action="store_true")
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--circa", action="store_true")
 	parser.add_argument("--boost", help="Boost", type=float)
