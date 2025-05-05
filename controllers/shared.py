@@ -297,6 +297,12 @@ def parsePlayer(player):
 		return "ivan ivan"
 	elif player.startswith("sebastian aho"):
 		return "sebastian aho"
+	elif player == "k caldwell pope":
+		player = "kentavious caldwell pope"
+	elif player == "cameron thomas":
+		player = "cam thomas"
+	elif player == "gregory jackson":
+		player = "gg jackson"
 	elif player == "alex sarr":
 		return "alexandre sarr"
 	elif player == "nicolas claxton":
@@ -305,6 +311,10 @@ def parsePlayer(player):
 		return "marc casado"
 	elif player == "jay dasilva":
 		return "jay da silva"
+	elif player in ["s gilgeoqus alexander", "s gilgeous alexander"]:
+		return "shai gilgeous alexander"
+	elif player == "tsatah hartenstein":
+		return "isaiah hartenstein"
 	# NHL
 	elif player == "matthew boldy":
 		return "matt boldy"

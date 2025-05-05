@@ -1086,23 +1086,6 @@ def writeKambi(date):
 	with open(f"static/nba/kambi.json", "w") as fh:
 		json.dump(data, fh, indent=4)
 
-def parsePlayer(player):
-	player = strip_accents(player).lower().replace(".", "").replace("'", "").replace("-", " ").replace(" jr", "").replace(" sr", "").replace(" iii", "").replace(" ii", "").replace(" iv", "")
-	player = player.strip()
-	if player == "k caldwell pope":
-		player = "kentavious caldwell pope"
-	elif player == "cameron thomas":
-		player = "cam thomas"
-	elif player == "jadeney":
-		player = "jaden ivey"
-	elif player == "nicolas claxton":
-		player = "nic claxton"
-	elif player == "gregory jackson":
-		player = "gg jackson"
-	elif player == "alex sarr":
-		return "alexandre sarr"
-	return player
-
 def writeESPN():
 	js = """
 	
@@ -3166,19 +3149,20 @@ def writeCirca(date, debug):
 
 	pages[1].save("outnbaprops.png", "PNG")
 	img = Image.open("outnbaprops.png")
-	left,top,right,bottom = 108,445,460,2185
+	left,top,right,bottom = 108,385,460,1534
 
-	boxH, boxW = 93, 350
+	boxH, boxW = 93, 360
 
 	props = [
-		("pts", 12, top, left, 2185),
+		("pts", 12, top, left, 1534),
 		("3ptm", 8, top, 866, 1190),
-		("reb", 3, 1309, 866, 1690),
-		("ast", 3, 1693, left, 1975)
+		("reb", 11, 1250, 866, 2303),
+		("ast", 11, 1250, 1229, 2303)
 	]
 	for prop, rows, top, left, bottom in props:
 		l = left
-		for colIdx in range(2):
+		totCols = 2 if prop in ["pts", "3ptm"] else 1
+		for colIdx in range(totCols):
 			t = top
 			for rowIdx in range(rows):
 				box_img = img.crop((l,t,l+boxW,t+boxH))
@@ -3186,22 +3170,28 @@ def writeCirca(date, debug):
 				player = parsePlayer(box_text[0].split(" (")[0])
 				team = convertNBATeam(box_text[0].split("(")[-1].replace(")", ""))
 
-				line_img = img.crop((left+220,t+35,left+270,t+boxH))
+				line_img = img.crop((l+220,t+35,l+270,t+boxH))
 				line_text = pytesseract.image_to_string(line_img).split("\n")
 				line = line_text[0]
 				if line == "%":
 					line = "9.5"
+				elif line == "4" or line == "AY":
+					line = "4.5"
 				else:
 					line = line.replace("%", ".5").replace("h", ".5")
 				if "." not in line and line.endswith("4"):
 					line = line[:-1]+".5"
 
-				ou_img = img.crop((left+270,t+35,left+boxW,t+boxH))
+				if not line.endswith(".5"):
+					line = line+".5"
+
+				ou_img = img.crop((l+270,t+35,l+boxW,t+boxH))
 				ou_text = pytesseract.image_to_string(ou_img).split("\n")
 				ou = ou_text[0]+"/"+ou_text[1]
 				ou = ou.replace("EVEN", "+100").replace("\u201c", "-")
 
-				#print(team, player, line_text, line, ou)
+				if prop == "reb":
+					print(team, player, line_text, line, ou)
 
 				if "+" not in ou and ou.startswith("4"):
 					ou = "+"+ou[1:]
@@ -3218,7 +3208,7 @@ def writeCirca(date, debug):
 				data[teamGame.get(team, "")][prop][player][line] = ou
 
 				#if debug and rowIdx == 0:
-				if "harden" in player:
+				if prop == "ast" and "hart" in player:
 					box_img.save("out-box.png", "PNG")
 					line_img.save("out.png", "PNG")
 				t += boxH+3
