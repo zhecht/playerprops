@@ -2530,7 +2530,6 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 
 	lines = {
 		"pn": pnLines,
-		#"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
 		"bv": bvLines,
