@@ -1807,6 +1807,76 @@ def writeHomerLogs():
 	with open("static/baseballreference/roster.json") as fh:
 		roster = json.load(fh)
 
+	playerFeeds = nested_dict()
+	teamFeeds = nested_dict()
+	for team, players in roster.items():
+		with open(f"static/splits/mlb_feed/{team}.json") as fh:
+			feed = json.load(fh)
+		teamFeeds[team][CURR_YEAR] = feed.copy()
+		for year in range(2015, int(CURR_YEAR)):
+			with open(f"static/splits/mlb_feed/{year}/{team}.json") as fh:
+				feed = json.load(fh)
+			teamFeeds[team][str(year)] = feed.copy()
+
+	for team, teamFeed in teamFeeds.items():
+		for year, feed in teamFeed.items():
+			for player, dt_pas in feed.items():
+				if player != "shohei ohtani":
+					continue
+				pos = roster[team].get(player, "")
+				if "P" in pos:
+					continue
+				
+				playerFeeds.setdefault(player, [])
+				for dt_pa, play in dt_pas.items():
+					playerFeeds[player].append((dt_pa, play["result"], play["hr/park"]))
+
+	for player, playerFeed in playerFeeds.items():
+		btwn = 0
+		hrs, closest = [], []
+		for dt_pa, result, hr_park in sorted(playerFeed):
+			if result == "Home Run":
+				hrs.append((dt_pa, btwn))
+				btwn = 0
+			elif int(hr_park.split("/")[0] or 0) > 0:
+				closest.append(dt_pa)
+			btwn += 1
+
+		lastHRDt = ""
+		lastHR = lastHR_PA = 0
+		if hrs:
+			lastHRDt = hrs[-1][0]
+			lastHR_PA = btwn
+
+		paBtwn = [pa for _,pa in hrs]
+		avg = sd = med = paBtwnDiff = z = z_median = 0
+		if len(paBtwn) > 1:
+			avg = round(sum(paBtwn) / len(paBtwn), 1)
+			sd = np.std(paBtwn, ddof=1)
+			if np.isnan(sd):
+				sd = 0
+			else:
+				sd = round(sd, 2)
+
+			med = median(paBtwn)
+			paBtwnDiff = round(lastHR_PA - avg, 2)
+			if sd:
+				z = round((lastHR_PA - avg) / sd, 2)
+				z_median = round((lastHR_PA - med) / sd, 2)
+
+		homerLogs[player] = {
+			"lastHRDt": lastHRDt,
+			"pa": {
+				"streak": lastHR_PA, "sd": sd, "z": z, "z_median": z_median,
+				"btwn": ",".join(map(str, paBtwn)), "med": med, "avg": avg, "diff": paBtwnDiff
+			},
+		}
+
+	with open("out.json", "w") as fh:
+		json.dump(homerLogs, fh, indent=4)
+
+	return
+
 	for team, players in roster.items():
 		feeds = {}
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
