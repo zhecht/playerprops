@@ -1808,55 +1808,62 @@ def writeHomerLogs():
 		roster = json.load(fh)
 
 	for team, players in roster.items():
+		feeds = {}
 		with open(f"static/splits/mlb_feed/{team}.json") as fh:
 			feed = json.load(fh)
+		feeds[CURR_YEAR] = feed.copy()
+		for year in range(2015, int(CURR_YEAR)):
+			with open(f"static/splits/mlb_feed/{year}/{team}.json") as fh:
+				feed = json.load(fh)
+			feeds[str(year)] = feed.copy()
+
 		for player, pos in players.items():
 			if "P" in pos:
 				continue
 
 			btwn = 0
-			hrs = []
-			for dt_pa, play in sorted(feed.get(player, {}).items()):
-				if play["result"] == "Home Run":
-					hrs.append((dt_pa, btwn))
-					btwn = 0
-				btwn += 1
+			hrs, closest = [], []
+			for year, feed in sorted(feeds.items()):
+				for dt_pa, play in sorted(feed.get(player, {}).items()):
+					if play["result"] == "Home Run":
+						hrs.append((dt_pa, btwn))
+						btwn = 0
+					elif int(play["hr/park"].split("/")[0] or 0) > 0:
+						closest.append(dt_pa)
+					btwn += 1
 
 			lastHRDt = ""
-			lastHR = lastHR_AB = 0
+			lastHR = lastHR_PA = 0
 			if hrs:
 				lastHRDt = hrs[-1][0]
-				lastHR_AB = btwn
+				lastHR_PA = btwn
 
-			if player == "eugenio suarez":
-				print(hrs)
-
-			abBtwn = [ab for _,ab in hrs]
-			avg = sd = med = abBtwnDiff = z = z_median = 0
-			if len(abBtwn) > 1:
-				avg = round(sum(abBtwn) / len(abBtwn), 1)
-				sd = np.std(abBtwn, ddof=1)
+			paBtwn = [pa for _,pa in hrs]
+			avg = sd = med = paBtwnDiff = z = z_median = 0
+			if len(paBtwn) > 1:
+				avg = round(sum(paBtwn) / len(paBtwn), 1)
+				sd = np.std(paBtwn, ddof=1)
 				if np.isnan(sd):
 					sd = 0
 				else:
 					sd = round(sd, 2)
 
-				med = median(abBtwn)
-				abBtwnDiff = round(lastHR_AB - avg, 2)
+				med = median(paBtwn)
+				paBtwnDiff = round(lastHR_PA - avg, 2)
 				if sd:
-					z = round((lastHR_AB - avg) / sd, 2)
-					z_median = round((lastHR_AB - med) / sd, 2)
+					z = round((lastHR_PA - avg) / sd, 2)
+					z_median = round((lastHR_PA - med) / sd, 2)
 
 			homerLogs[team][player] = {
-				"last": lastHR, "lastHRDt": lastHRDt,
-				"lastHR_AB": lastHR_AB,
-				"sd": sd, "z": z,
-				"abBtwn": abBtwn,
-				"sd": sd, "z": z, "z_median": z_median,
-				"med": med, "avg": avg, "abBtwnDiff": abBtwnDiff
+				"lastHRDt": lastHRDt,
+				"pa": {
+					"streak": lastHR_PA, "sd": sd, "z": z, "z_median": z_median,
+					"btwn": ",".join(map(str, paBtwn)), "med": med, "avg": avg, "diff": paBtwnDiff
+				},
 			}
 
-	with open("static/baseballreference/homer_logs.json", "w") as fh:
+	#with open("static/baseballreference/homer_logs.json", "w") as fh:
+	with open("out.json", "w") as fh:
 		json.dump(homerLogs, fh, indent=4)
 
 def writeHomerLogs2():
@@ -2628,7 +2635,7 @@ if __name__ == "__main__":
 	#readBirthdays()
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	#writeHomerLogs()
+	writeHomerLogs()
 	#writeBarrels()
 
 	#writeYears()
