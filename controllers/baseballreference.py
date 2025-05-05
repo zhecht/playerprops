@@ -2620,7 +2620,7 @@ if __name__ == "__main__":
 		writeSavantExpected(date)
 		writeSavantParkFactors()
 		writeSavantPercentiles()
-		writeHomerLogs()
+		writeHomerLogs2()
 		writeBarrels(date)
 		writeSavantExpectedHR()
 		writeSavantPitcherAdvanced()
@@ -2628,7 +2628,7 @@ if __name__ == "__main__":
 	#readBirthdays()
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	writeHomerLogs()
+	#writeHomerLogs()
 	#writeBarrels()
 
 	#writeYears()
