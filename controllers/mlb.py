@@ -3093,7 +3093,7 @@ if __name__ == '__main__':
 	parser.add_argument("--gamelogs", action="store_true")
 	parser.add_argument("--arb", action="store_true")
 	parser.add_argument("--writeGamelogs", action="store_true")
-	parser.add_argument("--commit", action="store_true")
+	parser.add_argument("--commit", "-c", action="store_true")
 	parser.add_argument("--leftRight", action="store_true")
 	parser.add_argument("--keep", action="store_true")
 	parser.add_argument("--tmrw", action="store_true")
