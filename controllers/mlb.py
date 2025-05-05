@@ -3184,7 +3184,7 @@ if __name__ == '__main__':
 		#writeBV()
 
 	if args.ev:
-		writeEV(date, propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under, no_kambi=args.no_kambi)
+		writeEV(date, propArg=args.prop, bookArg=args.book, teamArg=args.team, boost=args.boost, overArg=args.over, underArg=args.under, no_kambi=True)
 
 	if args.print:
 		sortEV(args.prop)
