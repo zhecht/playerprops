@@ -2703,12 +2703,14 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 					playerYears = []
 					convertedProp = prop.replace("single", "1b").replace("double", "2b")
 					feed = []
-					if "away_total" in prop:
-						team = away
-						opp = home
+					if "spread" in prop:
+						team, opp = away, home
+						if i == 1:
+							team, opp = opp, team
+					elif "away_total" in prop:
+						team, opp = away, home
 					elif "home_total" in prop:
-						team = home
-						opp = away
+						opp, team = away, home
 					elif player:
 						away, home = map(str, game.split(" @ "))
 						team = away
