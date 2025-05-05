@@ -1800,16 +1800,66 @@ def writeBarrels(date):
 		json.dump(barrels, fh)
 
 
-def writeHomerLogs2():
+def writeHomerLogs():
 	CURR_YEAR = str(datetime.now().year)
 	homerLogs = nested_dict()
 
+	with open("static/baseballreference/roster.json") as fh:
+		roster = json.load(fh)
 
+	for team, players in roster.items():
+		with open(f"static/splits/mlb_feed/{team}.json") as fh:
+			feed = json.load(fh)
+		for player, pos in players.items():
+			if "P" in pos:
+				continue
+
+			btwn = 0
+			hrs = []
+			for dt_pa, play in sorted(feed.get(player, {}).items()):
+				if play["result"] == "Home Run":
+					hrs.append((dt_pa, btwn))
+					btwn = 0
+				btwn += 1
+
+			lastHRDt = ""
+			lastHR = lastHR_AB = 0
+			if hrs:
+				lastHRDt = hrs[-1][0]
+				lastHR_AB = btwn
+
+			if player == "eugenio suarez":
+				print(hrs)
+
+			abBtwn = [ab for _,ab in hrs]
+			avg = sd = med = abBtwnDiff = z = z_median = 0
+			if len(abBtwn) > 1:
+				avg = round(sum(abBtwn) / len(abBtwn), 1)
+				sd = np.std(abBtwn, ddof=1)
+				if np.isnan(sd):
+					sd = 0
+				else:
+					sd = round(sd, 2)
+
+				med = median(abBtwn)
+				abBtwnDiff = round(lastHR_AB - avg, 2)
+				if sd:
+					z = round((lastHR_AB - avg) / sd, 2)
+					z_median = round((lastHR_AB - med) / sd, 2)
+
+			homerLogs[team][player] = {
+				"last": lastHR, "lastHRDt": lastHRDt,
+				"lastHR_AB": lastHR_AB,
+				"sd": sd, "z": z,
+				"abBtwn": abBtwn,
+				"sd": sd, "z": z, "z_median": z_median,
+				"med": med, "avg": avg, "abBtwnDiff": abBtwnDiff
+			}
 
 	with open("static/baseballreference/homer_logs.json", "w") as fh:
 		json.dump(homerLogs, fh, indent=4)
 
-def writeHomerLogs():
+def writeHomerLogs2():
 	CURR_YEAR = str(datetime.now().year)
 	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
@@ -2578,7 +2628,7 @@ if __name__ == "__main__":
 	#readBirthdays()
 	#writeSavantExpected(date)
 	#writeSavantPercentiles()
-	#writeHomerLogs()
+	writeHomerLogs()
 	#writeBarrels()
 
 	#writeYears()
