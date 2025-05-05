@@ -189,7 +189,7 @@ def writeCZ(date, token=None):
 	if not date:
 		date = str(datetime.now())[:10]
 
-	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/baseball/competitions/5806c896-4eec-4de1-874f-afed93114b8c/tabs/schedule"
+	url = "https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/sports/basketball/competitions/5806c896-4eec-4de1-874f-afed93114b8c/tabs/schedule"
 	outfile = "outCZ"
 	cookie = ""
 	with open("token") as fh:
