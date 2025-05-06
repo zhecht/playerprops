@@ -1695,7 +1695,7 @@ def writeStatsPage(date):
 					"player": player, "team": team, "opp": opp,
 					"game": game, "start": start, "startSortable": startSortable,
 					"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
-					"homerLogs": homerLogs[team].get(player, {}),
+					"homerLogs": homerLogs.get(player, {}),
 					"pitcherData": pitcherData,
 					"bvpHR": bvpHR, "bvpAvg": bvpAvg, "bvpH": bvpH,
 					"order": order,
