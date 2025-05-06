@@ -221,8 +221,7 @@ if __name__ == '__main__':
 		sport = "mlb"
 
 	if not sport:
-		print("NEED SPORT")
-		exit()
+		sport = "mlb"
 
 	date = args.date
 	if args.tmrw:
