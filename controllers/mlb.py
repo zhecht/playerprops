@@ -651,6 +651,9 @@ def writeCZ(date=None, debug=None):
 			skip = 1 if prop in ["away_total", "home_total", "hr"] else 2
 			if "total doubles" in market["name"].lower() or "total singles" in market["name"].lower():
 				skip = 2
+
+			if "- alternate" in fullProp:
+				skip = 1
 			mainLine = ""
 			for i in range(0, len(selections), skip):
 				try:
@@ -658,6 +661,7 @@ def writeCZ(date=None, debug=None):
 				except:
 					continue
 				if skip == 2:
+					#print(fullProp, prop, ou)
 					ou += f"/{selections[i+1]['price']['a']}"
 					if selections[i]["name"].lower().replace("|", "") in ["under", "home"]:
 						ou = f"{selections[i+1]['price']['a']}/{selections[i]['price']['a']}"
