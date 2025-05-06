@@ -544,7 +544,7 @@ def writeCZ(date=None, debug=None):
 		games.append(event["id"])
 
 	if debug:
-		games = ["8358e2ae-0e17-47db-bc75-0e5dfa3484da"]
+		games = ["4a2d0df2-70bd-48c9-834f-f5442e365955"]
 
 	res = nested_dict()
 	for gameId in games:
@@ -652,8 +652,8 @@ def writeCZ(date=None, debug=None):
 			if "total doubles" in market["name"].lower() or "total singles" in market["name"].lower():
 				skip = 2
 
-			#if "- alternate" in fullProp:
-			#	skip = 1
+			if "- alternate" in fullProp:
+				skip = 1
 			mainLine = ""
 			for i in range(0, len(selections), skip):
 				try:
@@ -711,12 +711,31 @@ def writeCZ(date=None, debug=None):
 							res[game][prop][line] = f"{ou}/{res[game][prop][line]}"
 						else:
 							res[game][prop][line] += "/"+ou
+				elif "alternate" in fullProp:
+					line = str(float(selections[i]["name"][1:-2]) - 0.5)
+					if line not in res[game][prop][player]:
+						res[game][prop][player][line] = ou
+					else:
+						o,u = map(str, res[game][prop][player][line].split("/"))
+						if int(ou) > int(o):
+							o = ou
+						if u:
+							o += "/"+u
+						res[game][prop][player][line] = o
 				else:
 					try:
 						line = str(float(market["line"]))
-						if player not in res[game][prop]:
-							res[game][prop][player] = {}
-						res[game][prop][player][line] = ou
+						if line not in res[game][prop][player]:
+							res[game][prop][player][line] = ou
+						else:
+							o,u = map(str, res[game][prop][player][line].split("/"))
+							if prop == "k":
+								print(player,o,u,ou,line)
+							if int(ou) > int(o):
+								o = ou
+							if u:
+								o += "/"+u
+							res[game][prop][player][line] = o
 					except:
 						res[game][prop][player] = ou
 
