@@ -548,219 +548,238 @@ def writeCZ(date=None, debug=None):
 
 	res = nested_dict()
 	for gameId in games:
-		url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/events/{gameId}"
-		time.sleep(0.2)
-		os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
-		with open(outfile) as fh:
-			data = json.load(fh)
+		for tab in ["", "Pitching"]:
+			url = f"https://api.americanwagering.com/regions/us/locations/mi/brands/czr/sb/v4/events/{gameId}"
+			if tab:
+				url += f"/tabs/{tab}"
+			time.sleep(0.2)
+			os.system(f"curl -s '{url}' --compressed -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://sportsbook.caesars.com/' -H 'content-type: application/json' -H 'X-Unique-Device-Id: 8478f41a-e3db-46b4-ab46-1ac1a65ba18b' -H 'X-Platform: cordova-desktop' -H 'X-App-Version: 7.13.2' -H 'x-aws-waf-token: {cookie}' -H 'Origin: https://sportsbook.caesars.com' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: cross-site' -H 'TE: trailers' -o {outfile}")
 
-		with open("out", "w") as fh:
-			json.dump(data, fh, indent=4)
+			with open(outfile) as fh:
+				data = json.load(fh)
 
-		#print(data["name"], data["startTime"])
+			with open("out", "w") as fh:
+				json.dump(data, fh, indent=4)
 
-		if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
-			continue
-			pass
+			#print(data["name"], data["startTime"])
 
-		game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
-		away,home = map(str, game.split(" @ "))
-		game = f"{convertFDTeam(away)} @ {convertFDTeam(home)}"
-		if game in res:
-			game = f"{convertFDTeam(away)}-gm2 @ {convertFDTeam(home)}-gm2"
-			#continue
-
-		for market in data["markets"]:
-			if "name" not in market:
+			if str(datetime.strptime(data["startTime"], "%Y-%m-%dT%H:%M:%SZ") - timedelta(hours=4))[:10] != date:
 				continue
+				pass
 
-			if market["active"] == False:
-				continue
-			prop = market["name"].lower().replace("|", "").split(" (")[0]
-			fullProp = prop
+			game = data["name"].lower().replace("|", "").replace(" at ", " @ ")
+			away,home = map(str, game.split(" @ "))
+			game = f"{convertFDTeam(away)} @ {convertFDTeam(home)}"
+			if game in res and not tab:
+				game = f"{convertFDTeam(away)}-gm2 @ {convertFDTeam(home)}-gm2"
+				#continue
 
-			prefix = player = ""
-			if "1st 3 innings" in prop:
-				prefix = "f3_"
-			elif "1st 5 innings" in prop:
-				prefix = "f5_"
-			elif "1st 7 innings" in prop:
-				prefix = "f7_"
+			for market in data["markets"]:
+				if "name" not in market:
+					continue
 
-			if prop in ["money line", "1st 3 innings money line", "1st 5 innings money line"]:
-				prop = "ml"
-			elif prop == "any run in 1st inning?":
-				prop = "rfi"
-			elif prop == "player to hit a home run":
-				prop = "hr"
-			elif market["templateName"].lower().split(" ")[0] in ["|batter|", "|pitcher|"]:
-				player = parsePlayer(market["name"].replace("|", "").split(" - ")[0])
+				if market["active"] == False:
+					continue
+				prop = market["name"].lower().replace("|", "").split(" (")[0]
+				fullProp = prop
 
-				if "total runs scored" in prop:
-					prop = "r"
-				elif "total bases" in prop:
-					prop = "tb"
-				elif "hits allowed" in prop:
-					prop = "h_allowed"
-				elif "walks allowed" in prop:
-					prop = "bb_allowed"
-				elif "total hits" in prop:
-					prop = "h"
-				elif "total singles" in prop:
-					prop = "single"
-				elif "total doubles" in prop:
-					prop = "double"
-				elif "total triples" in prop:
-					prop = "triple"
-				elif "total rbis" in prop:
-					prop = "rbi"
-				elif "strikeouts" in prop:
-					prop = "k"
-				elif "outs" in prop:
-					prop = "outs"
-				elif "win" in prop:
-					prop = "w"
-				elif "earned runs" in prop:
-					prop = "er"
+				prefix = player = ""
+				if "1st 3 innings" in prop:
+					prefix = "f3_"
+				elif "1st 5 innings" in prop:
+					prefix = "f5_"
+				elif "1st 7 innings" in prop:
+					prefix = "f7_"
+
+				if prop in ["money line", "1st 3 innings money line", "1st 5 innings money line"]:
+					prop = "ml"
+				elif prop == "any run in 1st inning?":
+					prop = "rfi"
+				elif prop == "player to hit a home run":
+					prop = "hr"
+				elif market["templateName"].lower().split(" ")[0] in ["|batter|", "|pitcher|"]:
+					player = parsePlayer(market["name"].replace("|", "").split(" - ")[0])
+
+					if "total runs scored" in prop:
+						prop = "r"
+					elif "total bases" in prop:
+						prop = "tb"
+					elif "hits allowed" in prop:
+						prop = "h_allowed"
+					elif "walks allowed" in prop:
+						prop = "bb_allowed"
+					elif "total hits + runs" in prop:
+						prop = "h+r+rbi"
+					elif "total hits" in prop:
+						prop = "h"
+					elif "total singles" in prop:
+						prop = "single"
+					elif "total doubles" in prop:
+						prop = "double"
+					elif "total triples" in prop:
+						prop = "triple"
+					elif "total rbis" in prop:
+						prop = "rbi"
+					elif "strikeouts" in prop:
+						prop = "k"
+					elif "outs" in prop:
+						prop = "outs"
+					elif "win" in prop:
+						prop = "w"
+					elif "earned runs" in prop:
+						prop = "er"
+					else:
+						continue
+				elif market["templateName"].endswith("Team Total Runs|"):
+					prop = f"""{market["metadata"]["team"].lower()}_total"""
+				elif "total runs" in prop:
+					if "odd/even" in prop:
+						continue
+					if prop.startswith("away"):
+						prop = "away_total"
+					elif prop.startswith("home"):
+						prop = "home_total"
+					else:
+						prop = "total"
+				elif "run line" in prop:
+					prop = "spread"
 				else:
+					#print(prop)
 					continue
-			elif market["templateName"].endswith("Team Total Runs|"):
-				prop = f"""{market["metadata"]["team"].lower()}_total"""
-			elif "total runs" in prop:
-				if "odd/even" in prop:
-					continue
-				if prop.startswith("away"):
-					prop = "away_total"
-				elif prop.startswith("home"):
-					prop = "home_total"
-				else:
-					prop = "total"
-			elif "run line" in prop:
-				prop = "spread"
-			else:
-				#print(prop)
-				continue
 
-			prop = f"{prefix}{prop}"
+				prop = f"{prefix}{prop}"
 
-			#if prop == "outs" and game == "sd @ det":
-			#	print(market["selections"])
+				#if prop == "outs" and game == "sd @ det":
+				#	print(market["selections"])
 
-			selections = market["selections"]
-			skip = 1 if prop in ["away_total", "home_total", "hr"] else 2
-			if "total doubles" in market["name"].lower() or "total singles" in market["name"].lower():
-				skip = 2
+				selections = market["selections"]
+				skip = 1 if prop in ["away_total", "home_total", "hr"] else 2
+				if "total doubles" in market["name"].lower() or "total singles" in market["name"].lower():
+					skip = 2
 
-			if "- alternate" in fullProp:
-				skip = 1
-			mainLine = ""
-			for i in range(0, len(selections), skip):
-				try:
-					ou = str(selections[i]["price"]["a"])
-				except:
-					continue
-				if skip == 2:
-					#print(fullProp, prop, ou)
+				if "- alternate" in fullProp:
+					skip = 1
+				mainLine = ""
+				for i in range(0, len(selections), skip):
 					try:
-						ou += f"/{selections[i+1]['price']['a']}"
+						ou = str(selections[i]["price"]["a"])
 					except:
 						continue
-					if selections[i]["name"].lower().replace("|", "") in ["under", "home"]:
-						ou = f"{selections[i+1]['price']['a']}/{selections[i]['price']['a']}"
+					if skip == 2:
+						#print(fullProp, prop, ou)
+						try:
+							ou += f"/{selections[i+1]['price']['a']}"
+						except:
+							continue
+						if selections[i]["name"].lower().replace("|", "") in ["under", "home"]:
+							ou = f"{selections[i+1]['price']['a']}/{selections[i]['price']['a']}"
 
-				if "ml" in prop or prop == "rfi":
-					res[game][prop] = ou
-				elif prop == "hr":
-					player = parsePlayer(selections[i]["name"].replace("|", ""))
-					res[game][prop][player]["0.5"] = ou
-				elif "spread" in prop:
-					line = str(float(market["line"]) * -1)
-					mainLine = line
-					res[game][prop][line] = ou
-				elif "total" in prop:
-					if "line" in market:
-						line = str(float(market["line"]))
-						if prop == "total":
-							mainLine = line
+					if "ml" in prop or prop == "rfi":
+						res[game][prop] = ou
+					elif prop == "hr":
+						player = parsePlayer(selections[i]["name"].replace("|", ""))
+						res[game][prop][player]["0.5"] = ou
+					elif "spread" in prop:
+						line = str(float(market["line"]) * -1)
+						mainLine = line
+						res[game][prop][line] = ou
+					elif "total" in prop:
+						if "line" in market:
+							line = str(float(market["line"]))
+							if prop == "total":
+								mainLine = line
 
-						#if game == "tor @ hou" and prop == "f5_total":
-						#	print(fullProp, line, ou)
+							#if game == "tor @ hou" and prop == "f5_total":
+							#	print(fullProp, line, ou)
 
-						if line not in res[game][prop]:
-							res[game][prop][line] = ou
+							if line not in res[game][prop]:
+								res[game][prop][line] = ou
+							else:
+								o = res[game][prop][line]
+								u = ""
+								if "/" in o:
+									o,u = map(str, o.split("/"))
+
+								if int(ou.split("/")[0]) > int(o):
+									o = ou.split("/")[0]
+								if "/" in ou and int(ou.split("/")[1]) > int(u):
+									u = ou.split("/")[1]
+
+								res[game][prop][line] = f"{o}/{u}"
 						else:
-							o = res[game][prop][line]
-							u = ""
-							if "/" in o:
-								o,u = map(str, o.split("/"))
-
-							if int(ou.split("/")[0]) > int(o):
-								o = ou.split("/")[0]
-							if "/" in ou and int(ou.split("/")[1]) > int(u):
-								u = ou.split("/")[1]
-
-							res[game][prop][line] = f"{o}/{u}"
-					else:
-						line = str(float(selections[i]["name"].split(" ")[-1]))
-						if prop == "total":
-							mainLine = line
-						if line not in res[game][prop]:
-							res[game][prop][line] = ou
-						elif "over" in selections[i]["name"].lower():
-							res[game][prop][line] = f"{ou}/{res[game][prop][line]}"
-						else:
-							res[game][prop][line] += "/"+ou
-				elif "alternate" in fullProp:
-					line = str(float(selections[i]["name"][1:-2]) - 0.5)
-					if line not in res[game][prop][player]:
-						res[game][prop][player][line] = ou
-					else:
-						o,u = map(str, res[game][prop][player][line].split("/"))
-						if int(ou) > int(o):
-							o = ou
-						if u:
-							o += "/"+u
-						res[game][prop][player][line] = o
-				else:
-					try:
-						line = str(float(market["line"]))
+							line = str(float(selections[i]["name"].split(" ")[-1]))
+							if prop == "total":
+								mainLine = line
+							if line not in res[game][prop]:
+								res[game][prop][line] = ou
+							elif "over" in selections[i]["name"].lower():
+								res[game][prop][line] = f"{ou}/{res[game][prop][line]}"
+							else:
+								res[game][prop][line] += "/"+ou
+					elif "alternate" in fullProp:
+						line = str(float(selections[i]["name"][1:-2]) - 0.5)
 						if line not in res[game][prop][player]:
 							res[game][prop][player][line] = ou
 						else:
-							o,u = map(str, res[game][prop][player][line].split("/"))
+							o = res[game][prop][player][line]
+							u = ""
+							if "/" in o:
+								o,u = map(str, res[game][prop][player][line].split("/"))
+							else:
+								o = o.split("/")[0]
+
 							if int(ou) > int(o):
 								o = ou
 							if u:
 								o += "/"+u
 							res[game][prop][player][line] = o
-					except:
-						res[game][prop][player]["0.5"] = ou
-
-			#print(market["name"], prop, mainLine)
-			if prop in ["spread", "total"]:
-				try:
-					linePrices = market["movingLines"]["linePrices"]
-				except:
-					continue
-				for prices in linePrices:
-					selections = prices["selections"]
-					if prop == "spread":
-						line = float(prices["line"]) * -1
-						ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
-						if selections[0]["selectionType"] == "home":
-							line *= -1
-							ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
-
-						line = str(line)
 					else:
-						line = str(float(prices["line"]))
-						ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
-						if selections[0]["selectionType"] == "under":
-							ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
-					if line == mainLine:
+						line = str(float(market["line"]))
+						if line not in res[game][prop][player]:
+							res[game][prop][player][line] = ou
+						else:
+							o = res[game][prop][player][line]
+							u = ""
+							if "/" in o:
+								o,u = map(str, res[game][prop][player][line].split("/"))
+							else:
+								o = o.split("/")[0]
+
+							if int(ou.split("/")[0]) > int(o):
+								o = ou.split("/")[0]
+							if skip != 1 and (not u or int(ou.split("/")[1]) > int(u)):
+								u = ou.split("/")[1]
+
+							if u:
+								o += "/"+u
+
+							res[game][prop][player][line] = o
+
+				#print(market["name"], prop, mainLine)
+				if prop in ["spread", "total"]:
+					try:
+						linePrices = market["movingLines"]["linePrices"]
+					except:
 						continue
-					res[game][prop][line] = ou
+					for prices in linePrices:
+						selections = prices["selections"]
+						if prop == "spread":
+							line = float(prices["line"]) * -1
+							ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
+							if selections[0]["selectionType"] == "home":
+								line *= -1
+								ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
+
+							line = str(line)
+						else:
+							line = str(float(prices["line"]))
+							ou = f"{selections[0]['price']['a']}/{selections[1]['price']['a']}"
+							if selections[0]["selectionType"] == "under":
+								ou = f"{selections[1]['price']['a']}/{selections[0]['price']['a']}"
+						if line == mainLine:
+							continue
+						res[game][prop][line] = ou
 
 
 	with open("static/mlb/caesars.json", "w") as fh:
