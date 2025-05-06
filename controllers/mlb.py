@@ -735,7 +735,7 @@ def writeCZ(date=None, debug=None):
 								o += "/"+u
 							res[game][prop][player][line] = o
 					except:
-						res[game][prop][player] = ou
+						res[game][prop][player]["0.5"] = ou
 
 			#print(market["name"], prop, mainLine)
 			if prop in ["spread", "total"]:
