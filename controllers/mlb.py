@@ -729,8 +729,6 @@ def writeCZ(date=None, debug=None):
 							res[game][prop][player][line] = ou
 						else:
 							o,u = map(str, res[game][prop][player][line].split("/"))
-							if prop == "k":
-								print(player,o,u,ou,line)
 							if int(ou) > int(o):
 								o = ou
 							if u:
