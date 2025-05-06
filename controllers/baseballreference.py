@@ -1873,6 +1873,9 @@ def writeHomerLogs():
 				"btwn": paBtwn,
 				"med": med, "avg": avg, "diff": paBtwnDiff
 			},
+			"closest": {
+				
+			}
 		}
 
 	with open("static/baseballreference/homer_logs.json", "w") as fh:
