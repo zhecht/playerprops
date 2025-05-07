@@ -2676,6 +2676,9 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 			for handicap, playerHandicap in handicaps:
 				player = handicaps[(handicap, playerHandicap)]
 
+				if player == "liover peguero":
+					continue
+
 				if prop in ["hr", "single", "r"] and playerHandicap == "1.5":
 					#print("skipping 2+ hr")
 					continue
