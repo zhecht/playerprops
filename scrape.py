@@ -1979,6 +1979,9 @@ async def getFDLinks(sport, tomorrow, gameArg, keep):
 			game = f"{away} @ {home}"
 			if gameArg and gameArg != game:
 				continue
+
+			if game in games:
+				game = f"{away}-gm2 @ {home}-gm2"
 			games[game] = url
 
 	browser.stop()
@@ -4019,7 +4022,6 @@ if __name__ == '__main__':
 		games = uc.loop().run_until_complete(getBRLinks(sport, args.tomorrow or args.tmrw, args.game))
 		runThreads("betrivers", sport, games, min(args.threads, len(games)), args.keep)
 	if args.fd:
-		#games["mtl @ wsh"] = "/ice-hockey/nhl/montreal-canadiens-@-washington-capitals-34230789"
 		games = uc.loop().run_until_complete(getFDLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
 		totThreads = min(args.threads, len(games))
 		runThreads("fanduel", sport, games, totThreads, keep=True)
