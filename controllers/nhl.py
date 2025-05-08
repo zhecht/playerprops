@@ -2959,7 +2959,7 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None, overArg
 
 	lines = {
 		"pn": pnLines,
-		"kambi": kambiLines,
+		#"kambi": kambiLines,
 		"mgm": mgmLines,
 		"fd": fdLines,
 		"espn": espnLines,
