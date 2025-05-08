@@ -3149,15 +3149,15 @@ def writeCirca(date, debug):
 
 	pages[1].save("outnbaprops.png", "PNG")
 	img = Image.open("outnbaprops.png")
-	left,top,right,bottom = 108,385,460,1534
+	left,top,right,bottom = 108,448,460,1534
 
 	boxH, boxW = 93, 360
 
 	props = [
-		("pts", 13, top, left, 1534),
-		("3ptm", 8, top, 866, 1190),
-		("reb", 7, 1250, 866, 1922),
-		("ast", 11, 1730, left, 2115)
+		("pts", 6, top, left, 1534),
+		("3ptm", 3, top, 866, 1190),
+		("reb", 3, 832, 866, 1922),
+		("ast", 2, 1120, left, 2115)
 	]
 	for prop, rows, top, left, bottom in props:
 		l = left
@@ -3171,6 +3171,9 @@ def writeCirca(date, debug):
 				player = parsePlayer(box_text[0].split(" (")[0])
 				team = convertNBATeam(box_text[0].split("(")[-1].replace(")", ""))
 
+				if not player.strip():
+					continue
+
 				line_img = img.crop((l+220,t+35,l+270,t+boxH))
 				line_text = pytesseract.image_to_string(line_img).split("\n")
 				line = line_text[0]
@@ -3179,7 +3182,7 @@ def writeCirca(date, debug):
 				elif line == "4" or line == "AY":
 					line = "4.5"
 				else:
-					line = line.replace("%", ".5").replace("h", ".5")
+					line = line.replace("T", "7").replace("%", ".5").replace("h", ".5")
 				if "." not in line and line.endswith("4"):
 					line = line[:-1]+".5"
 
@@ -3188,11 +3191,10 @@ def writeCirca(date, debug):
 
 				ou_img = img.crop((l+270,t+35,l+boxW,t+boxH))
 				ou_text = pytesseract.image_to_string(ou_img).split("\n")
+
+				#print(player, prop, ou_text)
 				ou = ou_text[0]+"/"+ou_text[1]
 				ou = ou.replace("EVEN", "+100").replace("\u201c", "-")
-
-				if prop == "reb":
-					print(team, player, line_text, line, ou)
 
 				if "+" not in ou and ou.startswith("4"):
 					ou = "+"+ou[1:]
@@ -3204,12 +3206,15 @@ def writeCirca(date, debug):
 				if "/7" in ou:
 					ou = ou.replace("/7", "/-")
 
+				if prop == "pts":
+					print(team, player, line_text, line, ou)
+
 				if not player or not team:
 					continue
 				data[teamGame.get(team, "")][prop][player][line] = ou
 
 				#if debug and rowIdx == 0:
-				if prop == "ast" and "hart" in player:
+				if prop == "pts" and "draymond" in player:
 					box_img.save("out-box.png", "PNG")
 					line_img.save("out.png", "PNG")
 				t += boxH+3
