@@ -1699,7 +1699,7 @@ async def writeMGMFromHTML(data, html, sport, game):
 				if not vals:
 					continue
 				ou = vals[0].text
-				if not alt and odds[i+1].select(".value"):
+				if not alt and i+1 < len(odds) and odds[i+1].select(".value"):
 					ou += "/"+odds[i+1].select(".value")[0].text
 				data[game][prop][player][line] = ou
 
