@@ -263,7 +263,7 @@ def writeCZ(date, token=None):
 			elif prop == "first 3pt field goal scorer":
 				prop = "first_3ptm"
 			elif "player total" in name:
-				p = prop.split(" total")[0]
+				p = prop.split(" total")[0].strip()
 				player = parsePlayer(p)
 				prop = prop.split(p+" ")[-1].replace("total ", "").replace("points + assists + rebounds", "pts+reb+ast").replace("points + assists", "pts+ast").replace("points + rebounds", "pts+reb").replace("rebounds + assists", "reb+ast").replace("blocks + steals", "blk+stl").replace("points", "pts").replace("rebounds", "reb").replace("assists", "ast").replace("steals", "stl").replace("blocks", "blk").replace("3pt field goals", "3ptm")
 			else:
