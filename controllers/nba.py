@@ -299,10 +299,10 @@ def writeCZ(date, token=None):
 						continue
 				elif skip == 1:
 					player = parsePlayer(selections[i]["name"].replace("|", "").strip())
-					res[game][prop][player] = ou
+					res[game][prop][player.strip()] = ou
 				else:
 					line = str(float(market["line"]))
-					res[game][prop][player] = {
+					res[game][prop][player.strip()] = {
 						line: ou
 					}
 
