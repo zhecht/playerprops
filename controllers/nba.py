@@ -3154,14 +3154,15 @@ def writeCirca(date, debug):
 	boxH, boxW = 93, 360
 
 	props = [
-		("pts", 12, top, left, 1534),
+		("pts", 13, top, left, 1534),
 		("3ptm", 8, top, 866, 1190),
-		("reb", 11, 1250, 866, 2303),
-		("ast", 11, 1250, 1229, 2303)
+		("reb", 7, 1250, 866, 1922),
+		("ast", 11, 1730, left, 2115)
 	]
 	for prop, rows, top, left, bottom in props:
 		l = left
-		totCols = 2 if prop in ["pts", "3ptm"] else 1
+		#totCols = 2 if prop in ["pts", "3ptm"] else 1
+		totCols = 2
 		for colIdx in range(totCols):
 			t = top
 			for rowIdx in range(rows):
