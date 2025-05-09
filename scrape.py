@@ -4013,6 +4013,9 @@ if __name__ == '__main__':
 	elif args.ncaab:
 		sport = "ncaab"
 
+	if not sport:
+		sport = "mlb"
+
 	games = {}
 	if args.bet365 or args.b365:
 		games = uc.loop().run_until_complete(get365Links(sport, args.keep, args.game))
