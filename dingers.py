@@ -1722,6 +1722,9 @@ def writeStatsPage(date):
 					"bpp": bppFactor, "playerFactor": playerFactor, "playerFactorColor": playerFactorColor
 				})
 
+		if prop == "hr":
+			with open(f"static/mlb/stats_bvp.json", "w") as fh:
+				json.dump({"date": date, "res": data}, fh)
 		with open(f"static/mlb/stats_{prop}.json", "w") as fh:
 			json.dump(data, fh)
 
