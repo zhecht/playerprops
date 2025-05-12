@@ -1555,11 +1555,13 @@ def writeStatsPage(date):
 				spread = next(iter(pinny[game]["spread"]))
 				total = next(iter(pinny[game]["total"]))
 				tt = pinny[game].get(f"{ah}_total", "")
+				ttOU = ""
 				if tt:
 					tt = next(iter(tt))
+					ttOU = pinny[game][f"{ah}_total"][tt]
 				gameLines = {
 					"ml": pinny[game]["ml"].split("/")[ahIdx],
-					"tt": tt,
+					"tt": tt, "ttOU": ttOU,
 					"spread": f"""{spread} {pinny[game]["spread"][spread]}""",
 					"total": total,
 					"totalOU": pinny[game]["total"][total]
