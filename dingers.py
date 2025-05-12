@@ -1561,7 +1561,8 @@ def writeStatsPage(date):
 					"ml": pinny[game]["ml"].split("/")[ahIdx],
 					"tt": tt,
 					"spread": f"""{spread} {pinny[game]["spread"][spread]}""",
-					"total": total
+					"total": total,
+					"totalOU": pinny[game]["total"][total]
 					#"total": f"""{total} {pinny[game]["total"][total]}""",
 				}
 			except:
