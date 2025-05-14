@@ -2824,8 +2824,8 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 					except:
 						pass
 
-					oppRank = oppRankLastYear = oppRankSeason = 0
-					oppRankClass = ""
+					oppRank = oppRankLastYear = 0
+					oppRankClass = oppRankSeason = ""
 					rankingsProp = convertRankingsProp(prop)
 					if opp and rankingsProp in rankings[opp]:
 						oppRank = rankings[opp][rankingsProp]['rank']
