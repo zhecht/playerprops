@@ -1862,7 +1862,7 @@ def getFairValue(ou, method=None):
 		return x
 	return implied
 
-def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False):
+def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=False, book=""):
 
 	prefix = ""
 	if sharp:
@@ -1937,11 +1937,13 @@ def devig(evData, player="", ou="575/-900", finalOdds=630, prop="hr", sharp=Fals
 
 	ev = min(evs)
 
+	if book:
+		prefix = book+"_"
+
 	if player not in evData:
 		evData[player] = {}
 	evData[player][f"{prefix}fairVal"] = fairVal
 	evData[player][f"{prefix}implied"] = implied
-	
 	evData[player][f"{prefix}ev"] = ev
 
 def writeDK(date, debug, keep):
@@ -3977,6 +3979,13 @@ def writeEV(propArg="", bookArg="fd", teamArg="", notd=None, boost=None):
 							if i == 1:
 								o = f"{o.split('/')[1]}/{o.split('/')[0]}"
 							devig(evData, key, o, line, prop=prop, sharp=True)
+
+						if "circa" in books and not bookOdds["circa"].startswith("-/"):
+							o = bookOdds["circa"]
+							if i == 1:
+								o,u = map(str, bookOdds["circa"].split("/"))
+								o = f"{u}/{o}"
+							devig(evData, key, o, line, prop=prop, book="vs-circa")
 						#devigger(evData, player, ou, line, dinger, avg=True, prop=prop)
 						if key not in evData:
 							#print(key)
