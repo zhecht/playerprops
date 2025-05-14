@@ -507,8 +507,8 @@ def mergeCirca():
 def writeCircaProps(page, data, teamGame):
 	page.save("outnhlprops.png", "PNG")
 	img = Image.open("outnhlprops.png")
-	bottom, top = 1620, 413
-	left,right = 140, 480
+	bottom, top = 1470, 418
+	left,right = 113, 450
 
 	#player_img = img.crop((90,415,470,bottom)) # l,t,r,b
 	#player_img = img.crop((150,390,450,bottom)) # l,t,r,b
@@ -518,11 +518,11 @@ def writeCircaProps(page, data, teamGame):
 	player_text = [x for x in player_text if x.strip()]
 	print(player_text)
 
-	over_img = img.crop((610,top,670,bottom))
+	over_img = img.crop((590,top,660,bottom))
 	over_text = pytesseract.image_to_string(over_img).split("\n")
 	over_text = [x.replace("\u201c", "-").replace("~", "-") for x in over_text if x.strip()]
 
-	under_img = img.crop((770,top,840,bottom))
+	under_img = img.crop((760,top,840,bottom))
 	under_text = pytesseract.image_to_string(under_img).split("\n")
 	under_text = [x.replace("\u201c", "-").replace("~", "-") for x in under_text if x.strip()]
 

@@ -1437,11 +1437,9 @@ def analyzeHistoryHR():
 			for dt, odds in dts.items():
 				if dt != date:
 					continue
-				oddsArr.append((odds, book))
+				oddsArr.append((int(odds.split("/")[0]), odds, book))
 
-		print(player, oddsArr)
-		for odds, book in oddsArr:
-			pass
+		print(player, sorted(oddsArr, reverse=True))
 
 def writeStatsPage(date):
 	if not date:
