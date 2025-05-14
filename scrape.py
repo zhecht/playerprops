@@ -1563,11 +1563,14 @@ async def getMGMLinks(sport=None, tomorrow=None, gameArg=None, main=False, keep=
 				if gameArg and gameArg != game:
 					continue
 
+				if game in data:
+					game = f"{away}-gm2 {sep} {home}-gm2"
+
 				markets = ["-1"]
 				if main:
 					markets = ["Innings", "Totals"]
 				elif sport == "mlb":
-					markets = ["Players"]
+					markets = ["Players", "Innings", "Totals"]
 				elif sport == "nhl":
 					markets = ["Spread", "Periods", "-1"]
 
@@ -1669,9 +1672,9 @@ async def writeMGMFromHTML(data, html, sport, game):
 			else:
 				t = convertCollege(fullProp.split(":")[0])
 
-			if t == game.split(" @ ")[0]:
+			if t == game.replace("-gm2", "").split(" @ ")[0]:
 				prop = "away_total"
-			elif t == game.split(" @ ")[-1]:
+			elif t == game.replace("-gm2", "").split(" @ ")[-1]:
 				prop = "home_total"
 			elif "spread" not in prop and "total" not in prop:
 				continue
@@ -1798,9 +1801,9 @@ async def writeMGM(sport):
 						team = convertMLBTeam(prop.split(":")[0])
 					else:
 						team = convertCollege(prop.split(":")[0].lower())
-					if team == game.split(" @ ")[0]:
+					if team == game.replace("-gm2", "").split(" @ ")[0]:
 						prop = "away_total"
-					elif team == game.split(" @ ")[-1]:
+					elif team == game.replace("-gm2", "").split(" @ ")[-1]:
 						prop = "home_total"
 					else:
 						prop = "total"
@@ -1810,9 +1813,9 @@ async def writeMGM(sport):
 					multProps = True
 				elif sport == "soccer" and prop.endswith("total goals") and ":" not in prop:
 					team = convertSoccer(prop.split(" - ")[0])
-					if team == game.split(" v ")[0]:
+					if team == game.replace("-gm2", "").split(" v ")[0]:
 						prop = "home_total"
-					elif team == game.split(" v ")[1]:
+					elif team == game.replace("-gm2", "").split(" v ")[1]:
 						prop = "away_total"
 					elif prop == "total goals":
 						prop = "total"
@@ -1823,9 +1826,9 @@ async def writeMGM(sport):
 					team = convertSoccer(prop.split(" - ")[0])
 					if prop == "total corners":
 						prop = "corners"
-					elif team == game.split(" v ")[0]:
+					elif team == game.replace("-gm2", "").split(" v ")[0]:
 						prop = "home_corners"
-					elif team == game.split(" v ")[1]:
+					elif team == game.replace("-gm2", "").split(" v ")[1]:
 						prop = "away_corners"
 					else:
 						continue
