@@ -1432,7 +1432,6 @@ def analyzeHistoryHR():
 	for player, books in history.items():
 		if player not in players:
 			continue
-		print(player)
 		oddsArr = []
 		for book, dts in books.items():
 			for dt, odds in dts.items():
