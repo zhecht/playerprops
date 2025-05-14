@@ -1409,6 +1409,41 @@ def parseESPN(espnLines):
 					else:
 						espnLines[game][prop][player] = espn[game][prop][p].copy()
 
+def analyzeHistoryHR():
+	headers = {"Accept": "application/vnd.github.v3.raw"}
+	url = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/history.json"
+	response = requests.get(url, headers=headers)
+	history = response.json()
+
+	date = "2025-05-13"
+	with open(f"static/splits/mlb_feed/{date}.json") as fh:
+		feed = json.load(fh)
+
+	players = []
+	for game, plays in feed.items():
+		if game == "all":
+			continue
+		hrs = [x["player"] for x in plays if x["result"] == "Home Run"]
+		for player in hrs:
+			if player not in players:
+				players.append(player)
+
+	data = nested_dict()
+	for player, books in history.items():
+		if player not in players:
+			continue
+		print(player)
+		oddsArr = []
+		for book, dts in books.items():
+			for dt, odds in dts.items():
+				if dt != date:
+					continue
+				oddsArr.append((odds, book))
+
+		print(player, oddsArr)
+		for odds, book in oddsArr:
+			pass
+
 def writeStatsPage(date):
 	if not date:
 		date = str(datetime.now())[:10]
@@ -2209,6 +2244,7 @@ if __name__ == '__main__':
 	parser.add_argument("--fix-feed", action="store_true")
 	parser.add_argument("--hot", action="store_true")
 	parser.add_argument("--recap", action="store_true")
+	parser.add_argument("--history", action="store_true")
 
 	args = parser.parse_args()
 
@@ -2278,6 +2314,9 @@ if __name__ == '__main__':
 
 	if args.lineups:
 		writeLineups(date)
+
+	if args.history:
+		analyzeHistoryHR()
 
 	if args.update:
 		date = args.date
