@@ -3149,15 +3149,15 @@ def writeCirca(date, debug):
 
 	pages[1].save("outnbaprops.png", "PNG")
 	img = Image.open("outnbaprops.png")
-	left,top,right,bottom = 108,448,460,1534
+	left,top,right,bottom = 108,444,460,1534
 
 	boxH, boxW = 93, 360
 
 	props = [
-		("pts", 6, top, left, 1534),
-		("3ptm", 3, top, 866, 1190),
-		("reb", 3, 832, 866, 1922),
-		("ast", 2, 1120, left, 2115)
+		("pts", 11, top, left, 1500),
+		("3ptm", 8, top, 866, 1190),
+		("reb", 7, 1311, 866, 1970),
+		("ast", 5, 1597, left, 2115)
 	]
 	for prop, rows, top, left, bottom in props:
 		l = left
