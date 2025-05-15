@@ -125,6 +125,8 @@ def writeStats(sport, date):
 					stats[team][player]["opp"] = opp
 
 					for play in playerStats.get("plys", []):
+						if play not in playData:
+							continue
 						p = getPlayType(sport, playData[play])
 						if p:
 							stats[team][player][p] = stats[team][player].get(p, 0) + 1
