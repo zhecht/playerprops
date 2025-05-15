@@ -735,6 +735,7 @@ def writeCZ(date=None, debug=None):
 								o += "/"+u
 							res[game][prop][player][line] = o
 					else:
+						print(prop, market)
 						line = str(float(market["line"]))
 						if line not in res[game][prop][player]:
 							res[game][prop][player][line] = ou
