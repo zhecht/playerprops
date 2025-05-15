@@ -658,7 +658,7 @@ def writeCZ(date=None, debug=None):
 				if "total doubles" in market["name"].lower() or "total singles" in market["name"].lower():
 					skip = 2
 
-				if "- alternate" in fullProp:
+				if "- alternate" in fullProp or "Alternate" in market["templateName"]:
 					skip = 1
 				mainLine = ""
 				for i in range(0, len(selections), skip):
@@ -717,7 +717,7 @@ def writeCZ(date=None, debug=None):
 								res[game][prop][line] = f"{ou}/{res[game][prop][line]}"
 							else:
 								res[game][prop][line] += "/"+ou
-					elif "alternate" in fullProp:
+					elif "alternate" in fullProp or "Alternate" in market["templateName"]:
 						line = str(float(selections[i]["name"][1:-2]) - 0.5)
 						if line not in res[game][prop][player]:
 							res[game][prop][player][line] = ou
@@ -735,7 +735,6 @@ def writeCZ(date=None, debug=None):
 								o += "/"+u
 							res[game][prop][player][line] = o
 					else:
-						print(prop, market)
 						line = str(float(market["line"]))
 						if line not in res[game][prop][player]:
 							res[game][prop][player][line] = ou
