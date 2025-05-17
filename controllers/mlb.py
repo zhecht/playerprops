@@ -1585,7 +1585,7 @@ def writeDK(date, propArg, keep, debug):
 		],
 		729: [6821],
 		1024: [11024],
-		1031: [17323, 15221, 9884, 17324, 9886, 17325, 15219, 17412, 17413],
+		1031: [17323, 15221, 17324, 9886, 17325, 15219, 17412, 17413],
 		1674: [16208, 16209]
 	}
 
@@ -1728,6 +1728,7 @@ def writeDK(date, propArg, keep, debug):
 					over = selection["displayOdds"]["american"].replace("\u2212", "-")
 					ou = over
 					if skip != 1:
+						#print(prop, game, idx)
 						under = selections[idx+1]["displayOdds"]["american"].replace("\u2212", "-")
 
 						isOver = selection["outcomeType"] in ["Over", "Away"]
