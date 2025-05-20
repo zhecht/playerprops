@@ -1185,6 +1185,9 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 			prop = "rfi"
 		elif prop.endswith("team total runs") or prop == "team total goals (excl ot)":
 			prop = "team_total"
+		elif prop.startswith("total game"):
+			p = prop.split(" ")[-1].replace("hits", "h").replace("runs", "hr").replace("strikeouts", "k").replace("bases", "sb")
+			prop = f"game_{p}"
 		elif "total runs" in prop or "total" in prop:
 			if "exact" in prop or "/" in prop or "range" in prop or "&" in prop or "any" in prop or "consecutive" in prop or "match total" in prop:
 				continue
