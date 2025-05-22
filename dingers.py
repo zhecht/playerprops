@@ -1729,6 +1729,7 @@ def writeStatsPage(date):
 				data.append({
 					"player": player, "team": team, "opp": opp,
 					"game": game, "start": start, "startSortable": startSortable,
+					"bvpStats": bvpStats,
 					"bvp": bvp, "pitcher": pitcher, "pitcherSummary": pitcherSummary,
 					"homerLogs": homerLogs.get(player, {}),
 					"pitcherData": pitcherData,
