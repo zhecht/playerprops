@@ -1727,8 +1727,7 @@ def writeDK(date, propArg, keep, debug):
 
 					over = selection["displayOdds"]["american"].replace("\u2212", "-")
 					ou = over
-					if skip != 1:
-						#print(prop, game, idx)
+					if skip != 1 and idx+1 < len(selections):
 						under = selections[idx+1]["displayOdds"]["american"].replace("\u2212", "-")
 
 						isOver = selection["outcomeType"] in ["Over", "Away"]

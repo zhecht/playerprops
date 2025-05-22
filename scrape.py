@@ -1456,7 +1456,12 @@ async def writeESPN(sport, rosters):
 								team = convertNHLTeam(btns[i].text_all)
 							elif sport == "nba":
 								team = convertNBATeam(btns[i].text_all)
-							line = str(float(btns[i].text_all.split(" ")[-2]))
+
+							try:
+								line = str(float(btns[i].text_all.split(" ")[-2]))
+							except:
+								print(game, prop, btns[i].text_all)
+								continue
 							ou = f"{btns[i].text_all.split(' ')[-1]}/{btns[i+1].text_all.split(' ')[-1]}"
 							data[game][prop][line] = ou.replace("Even", "+100")
 
@@ -4037,8 +4042,8 @@ if __name__ == '__main__':
 
 	if args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
-		#games["stl @ atl-game-props"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/aec65510-ef00-412c-922f-8cd99365de36/section/game_props"
-		#games["bos @ cle"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/1d3c96e4-4727-497f-874d-ca208608039a/section/player_props"
+		#games["tex @ nyy-lines"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/a017a540-49d7-479f-9f03-35f3eee3cdda/section/lines"
+		#games["tex @ nyy"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/a017a540-49d7-479f-9f03-35f3eee3cdda/section/player_props"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
