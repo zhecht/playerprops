@@ -1243,10 +1243,16 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 				p = "away" if game.startswith(t) else "home"
 				pre = "f5_" if "1st 5" in fullProp else ""
 				suf = "_no_OT" if sport == "nhl" else ""
-				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
-				data[game][f"{pre}{p}_total{suf}"][line] = ou
+				try:
+					line = str(float(btns[idx].find("span").text.split(" ")[-1]))
+					data[game][f"{pre}{p}_total{suf}"][line] = ou
+				except:
+					continue
 			else:
-				line = str(float(btns[idx].find("span").text.split(" ")[-1]))
+				try:
+					line = str(float(btns[idx].find("span").text.split(" ")[-1]))
+				except:
+					continue
 
 				
 				if fullProp in ["quarter total", "quarter spread"]:
@@ -1393,6 +1399,8 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 						continue
 					if line in data[game][prop][player]:
 						over = data[game][prop][player][line].split("/")[0]
+						if not over:
+							continue
 						if int(over) > int(o):
 							o = over
 
