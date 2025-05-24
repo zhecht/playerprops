@@ -4057,7 +4057,7 @@ if __name__ == '__main__':
 
 	if args.mgm:
 		games = uc.loop().run_until_complete(getMGMLinks(sport, args.tomorrow or args.tmrw, args.game, args.main, args.keep))
-		#games["phi @ nyr_Spreads"] = "/en/sports/events/philadelphia-flyers-at-new-york-rangers-17264543?market=Spread"
+		#games["kc @ min_Players"] = "/en/sports/events/kansas-city-royals-at-minnesota-twins-17440195"
 		totThreads = min(args.threads, len(games))
 		runThreads("mgm", sport, games, totThreads, keep=True)
 
