@@ -1224,8 +1224,10 @@ async def writeESPNGamePropsHTML(data, html, sport, game):
 		for idx in range(0, len(btns), 2):
 			if btns[idx].text == "See All Lines":
 				continue
-			ou = btns[idx].find_all("span")[-1].text
-			ou += "/"+btns[idx+1].find_all("span")[-1].text
+			spans = [x for x in btns[idx].find_all("span") if x.text.strip()]
+			ou = spans[-1].text
+			spans = [x for x in btns[idx+1].find_all("span") if x.text.strip()]
+			ou += "/"+spans[-1].text
 			ou = ou.replace("Even", "+100")
 
 			if fullProp == "quarter moneyline":
@@ -1383,8 +1385,10 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 					i += 1
 
 				try:
-					o = btns[i].find_all("span")[-1].text.replace("Even", "+100")
-					u = btns[i+1].find_all("span")[-1].text.replace("Even", "+100")
+					spans = [x for x in btns[i].find_all("span") if x.text.strip()]
+					o = spans[-1].text.replace("Even", "+100")
+					spans = [x for x in btns[i+1].find_all("span") if x.text.strip()]
+					u = spans[-1].text.replace("Even", "+100")
 				except:
 					#print(game, prop, player)
 					pass
@@ -1394,7 +1398,8 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 					data[game][prop][player] = f"{o}/{u}"
 				else:
 					try:
-						line = btns[i].find_all("span")[-2].text.split(" ")[-1]
+						spans = [x for x in btns[i].find_all("span") if x.text.strip()]
+						line = spans[-2].text.split(" ")[-1]
 					except:
 						continue
 					if line in data[game][prop][player]:
@@ -4051,7 +4056,7 @@ if __name__ == '__main__':
 	if args.espn:
 		games = uc.loop().run_until_complete(getESPNLinks(sport, args.tomorrow or args.tmrw, args.game, args.keep))
 		#games["tex @ nyy-lines"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/a017a540-49d7-479f-9f03-35f3eee3cdda/section/lines"
-		#games["tex @ nyy"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/a017a540-49d7-479f-9f03-35f3eee3cdda/section/player_props"
+		#games["kc @ min"] = "https://espnbet.com/sport/baseball/organization/united-states/competition/mlb/event/30f8f01f-b166-484c-a730-1cd2f61c4de3/section/player_props"
 		totThreads = min(args.threads, len(games)*2)
 		runThreads("espn", sport, games, totThreads, keep=True)
 
