@@ -1462,6 +1462,10 @@ def writeStatsPage(date):
 	response = requests.get(url, headers=headers)
 	lineups = response.json()
 
+	if date == "2025-05-26":
+		lineups["nyy"]["pitcher"] = "ryan yarbrough"
+		lineups["sd"]["pitcher"] = "randy vasquez"
+
 	url = "https://api.github.com/repos/zhecht/lines/contents/static/mlb/weather.json"
 	response = requests.get(url, headers=headers)
 	weather = response.json()
