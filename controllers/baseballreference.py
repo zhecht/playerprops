@@ -743,6 +743,9 @@ async def writePlayerHistory():
 							data[player][year][k].append(v)
 
 			
+			if "dec" in data[player][year] and "outs" not in data[player][year]:
+				data[player][year]["outs"] = [int(val)*3 + int(str(val).split(".")[-1]) for val in data[player][year]["ip"]]
+
 			if "rbi" in data[player][year]:
 				k = "h+r+rbi"
 				if k not in data[player][year]:
@@ -750,6 +753,11 @@ async def writePlayerHistory():
 
 				for h,r,rbi in zip(data[player][year]["h"],data[player][year]["r"],data[player][year]["rbi"]):
 					data[player][year][k].append(h+r+rbi)
+
+				if "1b" not in data[player][year]:
+					data[player][year]["1b"] = []
+					for h,dbl,tpl,hr in zip(data[player][year]["h"],data[player][year]["2b"],data[player][year]["3b"],data[player][year]["hr"]):
+						data[player][year]["1b"].append(h - hr - dbl - tpl)
 
 		with historyLock:
 			path = f"static/splits/mlb_historical/{team}.json"
@@ -765,6 +773,26 @@ async def writePlayerHistory():
 		q.task_done()
 
 	browser.stop()
+
+def adjustHistory():
+	for file in os.listdir("static/splits/mlb_historical/"):
+		team = file.split("/")[-1].split(".")[0]
+
+		with open(f"static/splits/mlb_historical/{team}.json") as fh:
+			hist = json.load(fh)
+
+		for player, years in hist.items():
+			for year, data in years.items():
+				if "outs" not in data and "ip" in data:
+					data["outs"] = [int(val)*3 + int(str(val).split(".")[-1]) for val in data["ip"]]
+				elif "1b" not in data and "2b" in data:
+					data["1b"] = []
+					for h,dbl,tpl,hr in zip(data["h"], data["2b"], data["3b"], data["hr"]):
+						single = h - hr - dbl - tpl
+						data["1b"].append(single)
+
+		with open(f"static/splits/mlb_historical/{team}.json", "w") as fh:
+			json.dump(hist, fh)
 
 def writeYears():
 	with open(f"{prefix}static/baseballreference/playerIds.json") as fh:
@@ -2665,5 +2693,6 @@ if __name__ == "__main__":
 	#writeSavantExpectedHR()
 	#writeSavantPitcherAdvanced()
 
+	adjustHistory()
 	if args.commit:
 		commitChanges()
