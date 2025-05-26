@@ -2693,6 +2693,5 @@ if __name__ == "__main__":
 	#writeSavantExpectedHR()
 	#writeSavantPitcherAdvanced()
 
-	adjustHistory()
 	if args.commit:
 		commitChanges()
