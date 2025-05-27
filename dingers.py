@@ -1409,13 +1409,12 @@ def parseESPN(espnLines):
 					else:
 						espnLines[game][prop][player] = espn[game][prop][p].copy()
 
-def analyzeHistoryHR():
+def analyzeHistoryHR(date):
 	headers = {"Accept": "application/vnd.github.v3.raw"}
 	url = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/history.json"
 	response = requests.get(url, headers=headers)
 	history = response.json()
 
-	date = "2025-05-13"
 	with open(f"static/splits/mlb_feed/{date}.json") as fh:
 		feed = json.load(fh)
 
@@ -2320,7 +2319,7 @@ if __name__ == '__main__':
 		writeLineups(date)
 
 	if args.history:
-		analyzeHistoryHR()
+		analyzeHistoryHR(date)
 
 	if args.update:
 		date = args.date
