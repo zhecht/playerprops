@@ -1321,6 +1321,7 @@ async def writeESPNFromHTML(data, html, sport, game, playersMapArg):
 		#print(fullProp, skip)
 
 		if prop in ["fgs"]:
+			continue
 			for btn in detail.find_all("button"):
 				try:
 					player = parsePlayer(btn.find("span").text)
