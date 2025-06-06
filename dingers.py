@@ -1647,9 +1647,6 @@ def writeStatsPage(date):
 				except:
 					pass
 
-				if player == "tarik skubal":
-					print(dailyLines)
-
 				if isPitcher:
 					if team not in lineups or player != lineups[team]["pitcher"]:
 						continue
