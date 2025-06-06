@@ -1649,7 +1649,7 @@ def writeStatsPage(date):
 					pass
 
 				if isPitcher:
-					if player != lineups[team]["pitcher"]:
+					if team not in lineups or player != lineups[team]["pitcher"]:
 						continue
 					pitcher = player
 
