@@ -553,7 +553,7 @@ def write_schedule(date):
 			seen[(awayTeam, homeTeam)] = True
 			boxscore = tds[2].find("a").get("href")
 			score = tds[2].find("a").text.strip()
-			if score.lower() == "postponed" or score.lower() == "canceled":
+			if score.lower() == "postponed" or score.lower() == "suspended" or score.lower() == "canceled":
 				continue
 
 			if date in ["2024-03-20", "2024-03-21"] and "lad" not in game:

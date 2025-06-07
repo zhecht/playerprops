@@ -337,7 +337,7 @@ def write_schedule(date):
 				continue
 			homeTeam = tds[1].find_all("a")[-1].get("href").split("/")[-2]
 			score = tds[2].find("a").text.strip()
-			if "Postponed" in score:
+			if "Postponed" in score or "Suspended" in score:
 				continue
 			if ", " in score:
 				scoreSp = score.replace(" (2OT)", "").replace(" (OT)", "").split(", ")
