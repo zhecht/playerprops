@@ -1050,7 +1050,7 @@ def writeFeed(date, yearArg):
 			for gameIdx, game in enumerate(schedule[date]):
 				starts[game["game"]] = game["start"]
 				gameIdxs[game["game"]] = gameIdx
-				if game["start"] and game["start"] != "LIVE" and game["start"] != "Postponed":
+				if game["start"] and game["start"] != "LIVE" and game["start"] != "Postponed" and game["start"] != "Suspended":
 					dt = datetime.strptime(game["start"], "%I:%M %p")
 					dt = int(dt.strftime("%H%M"))
 					if dt <= int(datetime.now().strftime("%H%M")):
