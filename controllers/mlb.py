@@ -2588,7 +2588,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 
 	gameStarted = {}
 	for gameData in schedule[date]:
-		if not gameData["start"] or gameData["start"] == "LIVE":
+		if not gameData["start"] or gameData["start"] == "LIVE" or gameData["start"].lower() == "suspended":
 			gameStarted[gameData["game"]] = True
 			continue	
 		dt = datetime.strptime(gameData["start"], "%I:%M %p")
