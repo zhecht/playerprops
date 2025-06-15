@@ -1454,15 +1454,15 @@ def arb(bookArg="dk"):
 		with open(f"static/{sport}/espn.json") as fh:
 			espnLines = json.load(fh)
 
+		with open(f"static/{sport}/mgm.json") as fh:
+			mgmLines = json.load(fh)
+
 		lines = {
 			"fd": fdLines,
 			"cz": czLines,
-			"espn": espnLines
+			"espn": espnLines,
+			"mgm": mgmLines
 		}
-
-		if sport == "nhl":
-			with open("static/nhl/mgm.json") as fh:
-				lines["mgm"] = json.load(fh)
 
 		for game in dkLines:
 			for prop in dkLines[game]:
@@ -1530,6 +1530,20 @@ def arb(bookArg="dk"):
 
 	for row in sorted(res, reverse=True)[:20]:
 		print(row)
+
+	data = []
+	for row in sorted(res, reverse=True):
+		keys = ["conversion", "sport", "game", "key", "prop", "over", "book", "under", "hedge"]
+		j = {}
+		for k, v in zip(keys, row):
+			if k == "hedge":
+				j[k] = float(v.split("=")[-1])
+			else:
+				j[k] = v
+		data.append(j)
+
+	with open("hedge.json", "w") as fh:
+		json.dump(data, fh, indent=4)
 
 def getDKProp(game, prop, subCat):
 	prefix = ""

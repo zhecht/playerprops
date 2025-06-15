@@ -1056,11 +1056,11 @@ async def getESPNLinks(sport, tomorrow, gameArg, keep):
 		if "live" in div.text_all.lower():
 			continue
 		if not tomorrow and sport != "nfl" and "Today" not in div.text_all:
-			break
+			#break
 			pass
 		if tomorrow and datetime.strftime(datetime.now() + timedelta(days=1), "%b %-d") not in div.text_all:
 			pass
-			continue
+			#continue
 
 		if sport == "mlb":
 			away = convertMLBTeam(teams[i].text)
