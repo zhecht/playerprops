@@ -2042,11 +2042,12 @@ def writeDK(date, debug, keep):
 			for event in data["events"]:
 				start = f"{event['startEventDate'].split('T')[0]}T{':'.join(event['startEventDate'].split('T')[1].split(':')[:2])}Z"
 				startDt = datetime.strptime(start, "%Y-%m-%dT%H:%MZ") - timedelta(hours=4)
+				game = event["name"].lower()
+
 				if startDt.day != int(date[-2:]):
 					started_events[event["id"]] = game
 					continue
 					pass
-				game = event["name"].lower()
 				games = []
 				for team in game.split(" @ "):
 					t = convertNBATeam(team)

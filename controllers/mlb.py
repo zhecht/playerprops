@@ -1438,10 +1438,10 @@ def writeBV():
 		json.dump(res, fh, indent=4)
 
 
-def arb(bookArg="fd"):
-	freebets = 100
+def arb(bookArg="dk"):
+	freebets = 292
 	res = []
-	for sport in ["nba", "nhl", "mlb"]:
+	for sport in ["mlb", "nba", "nhl"]:
 		with open(f"static/{sport}/fanduel.json") as fh:
 			fdLines = json.load(fh)
 
@@ -1451,28 +1451,32 @@ def arb(bookArg="fd"):
 		with open(f"static/{sport}/caesars.json") as fh:
 			czLines = json.load(fh)
 
+		with open(f"static/{sport}/espn.json") as fh:
+			espnLines = json.load(fh)
+
 		lines = {
-			"dk": dkLines,
-			"cz": czLines
+			"fd": fdLines,
+			"cz": czLines,
+			"espn": espnLines
 		}
 
 		if sport == "nhl":
 			with open("static/nhl/mgm.json") as fh:
 				lines["mgm"] = json.load(fh)
 
-		for game in fdLines:
-			for prop in fdLines[game]:
-				over = fdLines[game][prop]
+		for game in dkLines:
+			for prop in dkLines[game]:
+				over = dkLines[game][prop]
 				keys = [over]
 
 				if type(over) is dict:
-					keys = fdLines[game][prop].keys()
+					keys = dkLines[game][prop].keys()
 
 				for key in keys:
-					if type(fdLines[game][prop]) is str:
-						over = fdLines[game][prop]
+					if type(dkLines[game][prop]) is str:
+						over = dkLines[game][prop]
 					else:
-						over = fdLines[game][prop][key]
+						over = dkLines[game][prop][key]
 
 					if type(over) is dict:
 						continue

@@ -1553,7 +1553,8 @@ async def getMGMLinks(sport=None, tomorrow=None, gameArg=None, main=False, keep=
 				if "starting" not in t.text.lower() and "today" not in t.text.lower():
 					if tomorrow:
 						if "tomorrow" not in t.text.lower():
-							continue
+							#continue
+							pass
 					else:
 						pass
 						continue
@@ -4021,6 +4022,7 @@ if __name__ == '__main__':
 	parser.add_argument("--team", "-t")
 	parser.add_argument("--game", "-g")
 	parser.add_argument("--prop", "-p")
+	parser.add_argument("--date", "-d")
 	parser.add_argument("--sport")
 	parser.add_argument("--league")
 
