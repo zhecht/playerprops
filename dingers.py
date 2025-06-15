@@ -1095,7 +1095,7 @@ def writeFeed(date, yearArg):
 
 				pa = tds[2].text.strip()
 				dt = ""
-				if date in feedTimes:
+				if date in feedTimes and game in feedTimes[date]:
 					dt = feedTimes[date][game].get(pa, "")
 				j = {
 					"player": player,
