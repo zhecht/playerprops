@@ -2340,7 +2340,7 @@ def writeRanks(date):
 	with open(f"{prefix}static/mlb/daily.json") as fh:
 		daily = json.load(fh)
 
-	b = "https://api.github.com/repos/zhecht/lines/contents/static/mlb"
+	b = "https://api.github.com/repos/zhecht/odds/contents/static/mlb"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}/circa.json", headers=hdrs)
 	circaLines = response.json()
@@ -2551,7 +2551,7 @@ def writeEV(date, propArg="", bookArg="fd", teamArg="", boost=None, overArg=None
 
 	daily.setdefault(date, {})
 
-	b = "https://api.github.com/repos/zhecht/lines/contents/static/mlb"
+	b = "https://api.github.com/repos/zhecht/odds/contents/static/mlb"
 	headers = {"Accept": "application/vnd.github.v3.raw"}
 	
 	response = requests.get(f"{b}/lineups.json", headers=headers)

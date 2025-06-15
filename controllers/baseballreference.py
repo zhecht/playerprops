@@ -1695,7 +1695,7 @@ def writeBarrels(date):
 	with open("static/baseballreference/homer_logs.json") as fh:
 		homerLogs = json.load(fh)
 
-	b = "https://api.github.com/repos/zhecht/lines/contents/static"
+	b = "https://api.github.com/repos/zhecht/odds/contents/static"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}/dingers/ev.json", headers=hdrs)
 	evData = response.json()
@@ -1911,7 +1911,7 @@ def writeHomerLogs():
 
 def writeHomerLogs2():
 	CURR_YEAR = str(datetime.now().year)
-	b = "https://api.github.com/repos/zhecht/lines/contents/static/dingers/ev.json"
+	b = "https://api.github.com/repos/zhecht/odds/contents/static/dingers/ev.json"
 	hdrs = {"Accept": "application/vnd.github.v3.raw"}
 	response = requests.get(f"{b}", headers=hdrs)
 	evData = response.json()
