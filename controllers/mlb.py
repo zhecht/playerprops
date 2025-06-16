@@ -1526,19 +1526,17 @@ def arb(bookArg="dk"):
 									minIdx = i-1
 									break
 
-							res.append((minIdx, sport, game, key, prop, over, book, under, f"hedge={round(hedge, 2)}"))
+							res.append((minIdx, sport, game, key, prop, over, book, under, f"hedge={round(hedge, 2)}", round(hedge)))
 
 	for row in sorted(res, reverse=True)[:20]:
 		print(row)
 
 	data = []
 	for row in sorted(res, reverse=True):
-		keys = ["conversion", "sport", "game", "key", "prop", "line", "book", "hedgeLine", "hedge"]
+		keys = ["conversion", "sport", "game", "key", "prop", "line", "book", "hedgeLine", "hedgePrint", "hedge"]
 		j = {}
 		for k, v in zip(keys, row):
-			if k == "hedge":
-				j[k] = float(v.split("=")[-1])
-			elif k == "key":
+			if k == "key":
 				if " " in v:
 					j["player"] = v
 			else:
