@@ -1536,6 +1536,8 @@ def arb(bookArg="dk"):
 								opp = away
 							elif "spread" in prop:
 								handicap = key
+								if ouIdx == 1:
+									handicap = str(float(handicap) * -1)
 
 							res.append((minIdx, sport, game, team, key, handicap, prop, over, book, under, f"hedge={round(hedge, 2)}", round(hedge)))
 
