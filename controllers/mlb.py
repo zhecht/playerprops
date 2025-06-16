@@ -1526,6 +1526,14 @@ def arb(bookArg="dk"):
 									minIdx = i-1
 									break
 
+							team = opp = ""
+							if "away_total" in prop:
+								team = away
+								opp = home
+							elif "home_total" in prop:
+								team = home
+								opp = away
+
 							res.append((minIdx, sport, game, team, key, prop, over, book, under, f"hedge={round(hedge, 2)}", round(hedge)))
 
 	for row in sorted(res, reverse=True)[:20]:
