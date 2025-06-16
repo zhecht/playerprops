@@ -1465,6 +1465,7 @@ def arb(bookArg="dk"):
 		}
 
 		for game in dkLines:
+			away, home = map(str, game.split(" @ "))
 			for prop in dkLines[game]:
 				over = dkLines[game][prop]
 				keys = [over]
