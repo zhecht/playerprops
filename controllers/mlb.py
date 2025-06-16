@@ -1538,6 +1538,9 @@ def arb(bookArg="dk"):
 		for k, v in zip(keys, row):
 			if k == "hedge":
 				j[k] = float(v.split("=")[-1])
+			elif k == "key":
+				if " " in v:
+					j["player"] = v
 			else:
 				j[k] = v
 		data.append(j)
