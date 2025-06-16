@@ -1533,7 +1533,7 @@ def arb(bookArg="dk"):
 
 	data = []
 	for row in sorted(res, reverse=True):
-		keys = ["conversion", "sport", "game", "key", "prop", "over", "book", "under", "hedge"]
+		keys = ["conversion", "sport", "game", "key", "prop", "line", "book", "hedgeLine", "hedge"]
 		j = {}
 		for k, v in zip(keys, row):
 			if k == "hedge":
